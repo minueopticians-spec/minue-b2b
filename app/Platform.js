@@ -232,6 +232,15 @@ const T = {
   astucePrix:{fr:"Plus vous commandez, moins cher le prix unitaire ! Consultez Tarifs pour voir les paliers.",es:"¡Cuantas más unidades, menor el precio! Consulta Tarifas para ver los tramos.",en:"The more you order, the lower the unit price! Check Pricing for volume tiers."},
   prixFixeClient:{fr:"Prix négocié",es:"Precio negociado",en:"Negotiated price"},
   eliminarCmd:{fr:"Supprimer la commande",es:"Eliminar pedido",en:"Delete order"},
+  eliminar:{fr:"Supprimer",es:"Eliminar",en:"Delete"},
+  eliminarTarea:{fr:"Supprimer la tâche",es:"Eliminar tarea",en:"Delete task"},
+  telephone:{fr:"Téléphone",es:"Teléfono",en:"Phone"},
+  ville:{fr:"Ville",es:"Ciudad",en:"City"},
+  pays:{fr:"Pays",es:"País",en:"Country"},
+  notesUser:{fr:"Notes internes",es:"Notas internas",en:"Internal notes"},
+  panierMoyen:{fr:"Panier moyen",es:"Ticket medio",en:"Avg. order"},
+  voirTout:{fr:"Voir tout",es:"Ver todo",en:"See all"},
+  stockBajo:{fr:"Stock faible",es:"Stock bajo",en:"Low stock"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -510,6 +519,7 @@ export default function App() {
   const [colFilter, setColFilter] = useState("all");
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
+  const [filterPanel, setFilterPanel] = useState(null);
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
 
@@ -567,7 +577,7 @@ export default function App() {
     } catch(e) { console.log("DB update order:", e); }
   };
 
-  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[]}).eq("id",prod.id); } catch(e) {} };
+  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) {} };
   const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) {} };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false}).eq("email",u.origEmail||u.email); } catch(e) {} };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) {} };
@@ -663,7 +673,7 @@ export default function App() {
     setLoginErr("");
     setUser(found);
     setLang(found.lang || "fr");
-    setView(found.role === "admin" ? "a-ord" : found.role === "distributor" ? "d-dash" : "c-cat");
+    setView(found.role === "admin" ? "a-stats" : found.role === "distributor" ? "d-dash" : "c-cat");
   };
 
   if (!user) {
@@ -698,7 +708,7 @@ export default function App() {
     ? [["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-account","monCompte"]]
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-account","monCompte"]]
-    : [["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-stats","stats"]];
+    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
@@ -772,7 +782,7 @@ export default function App() {
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     return (
       <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-        <div style={{height:140,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+        <div style={{height:168,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
           {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
           <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
@@ -781,7 +791,7 @@ export default function App() {
           </div>}
           {inCart && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{cart[p.id]}</span>}
         </div>
-        <div style={{padding:"12px 14px"}}>
+        <div style={{padding:"12px 14px",background:"#faf6f1"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
             <span style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</span>
             <span style={{fontSize:14,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</span>
@@ -877,6 +887,9 @@ export default function App() {
 
           {/* EDIT STOCK */}
           {modal === "editSt" && <>
+            {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden"}}>
+              <img src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6}} />
+            </div>}
             <div style={{fontSize:15,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:16}}>{ed.model} - {ed.color}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,textAlign:"center"}}>
@@ -891,15 +904,31 @@ export default function App() {
                 </div>
               </div>
             </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
+              <div>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("forme")}</div>
+                <select value={ed.shape||""} onChange={e => setEd(p => ({...p, shape:e.target.value}))} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="">—</option>
+                  {["ronde","carree","catEye","rectangulaire","aviateur","oversize","geometrique"].map(v => <option key={v} value={v}>{t(v)}</option>)}
+                </select>
+              </div>
+              <div>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("couleur")}</div>
+                <select value={ed.colorFamily||""} onChange={e => setEd(p => ({...p, colorFamily:e.target.value}))} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="">—</option>
+                  {["noir","careyCol","marron","vert","dore","rose","bleu","rougeVin","orangeCol","cremeNude","gris","transparentCol","multicolore"].map(v => <option key={v} value={v}>{t(v)}</option>)}
+                </select>
+              </div>
+            </div>
             <div style={{marginBottom:16}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("etiquetas")}</div>
-              <div style={{display:"flex",gap:6}}>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {[["top",t("topVenta"),"#c4956a"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),"#722f37"],["icons","Icons","#b8860b"],["privee","Privée","#18332f"]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
                   <button key={tg} onClick={() => setEd(p => ({...p, tags: on ? tags.filter(x=>x!==tg) : [...tags, tg]}))} style={{padding:"6px 12px",background:on?cl:"transparent",color:on?"#fff":cl,border:"1px solid "+(on?cl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",textTransform:"uppercase"}}>{lb}</button>
                 ); })}
               </div>
             </div>
-            <Btn onClick={() => { setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[]} : pr)); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
+            <Btn onClick={() => { setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[], shape: ed.shape||"", colorFamily: ed.colorFamily||""} : pr)); dbUpdateProduct({...ed, stock: parseInt(ed.stock)||0}); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
           </>}
 
           {/* NEW PRODUCT */}
@@ -1139,6 +1168,24 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 12px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
+                <input value={ed.phone || ""} onChange={e => setEd(p => ({...p, phone: e.target.value}))} placeholder="+34..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("ville")}</div>
+                <input value={ed.city || ""} onChange={e => setEd(p => ({...p, city: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pays")}</div>
+                <input value={ed.country || ""} onChange={e => setEd(p => ({...p, country: e.target.value}))} placeholder="FR, ES, DE..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
+              <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>
             <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
@@ -1164,8 +1211,26 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 12px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
+                <input value={ed.phone || ""} onChange={e => setEd(p => ({...p, phone: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("ville")}</div>
+                <input value={ed.city || ""} onChange={e => setEd(p => ({...p, city: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pays")}</div>
+                <input value={ed.country || ""} onChange={e => setEd(p => ({...p, country: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
+              <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={3} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false} : u)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, active: !(u.active !== false)} : u)); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
@@ -1462,7 +1527,7 @@ export default function App() {
             </div>
             <div style={{display:"flex",gap:8}}>
               <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
+              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
             </div>
           </>}
         </div>
@@ -1491,23 +1556,29 @@ export default function App() {
 
       {/* CLIENT VIEWS */}
       {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
-        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
-            <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
+            <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
+          <span style={{flex:1}} />
+          <button onClick={() => setFilterPanel(filterPanel==="shape"?null:"shape")} style={{padding:"5px 12px",background:filterPanel==="shape"?C.dk:shapeFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="shape"?C.bg:shapeFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="shape"||shapeFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            {t("forme")}{shapeFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="shape"?C.bg:C.dk}} />}
+          </button>
+          <button onClick={() => setFilterPanel(filterPanel==="color"?null:"color")} style={{padding:"5px 12px",background:filterPanel==="color"?C.dk:colorFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="color"?C.bg:colorFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="color"||colorFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            {t("couleur")}{colorFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="color"?C.bg:C.dk}} />}
+          </button>
         </div>
-        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("forme")}</span>
-          {["all","ronde","carree","catEye","rectangulaire","aviateur","oversize","geometrique"].map(v => (
-            <button key={v} onClick={() => setShapeFilter(v)} style={{padding:"4px 10px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.gr,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("toutes"):t(v)}</button>
+        {filterPanel==="shape"&&<div style={{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln}}>
+          {[["all","toutes"],["ronde","ronde"],["carree","carree"],["catEye","catEye"],["rectangulaire","rectangulaire"],["aviateur","aviateur"],["oversize","oversize"],["geometrique","geometrique"]].map(([v,k]) => (
+            <button key={v} onClick={() => { setShapeFilter(v); if(v!=="all") setFilterPanel(null); }} style={{padding:"5px 12px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.dk,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{v==="all"?t("toutes"):t(k)}</button>
           ))}
-        </div>
-        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("couleur")}</span>
-          {["all","noir","careyCol","marron","vert","dore","rose","bleu","rougeVin","orangeCol","cremeNude","gris","transparentCol","multicolore"].map(v => (
-            <button key={v} onClick={() => setColorFilter(v)} style={{padding:"4px 10px",background:colorFilter===v?C.dk:"transparent",color:colorFilter===v?C.bg:C.gr,border:"1px solid "+(colorFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("tous"):t(v)}</button>
+        </div>}
+        {filterPanel==="color"&&<div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln,alignItems:"center"}}>
+          <button onClick={() => { setColorFilter("all"); setFilterPanel(null); }} style={{padding:"4px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:9,fontFamily:BD,borderRadius:20}}>{t("tous")}</button>
+          {[["noir","#1a1a1a"],["careyCol","#8B6914"],["marron","#7B4B2A"],["vert","#2d6b4f"],["dore","#C5A55A"],["rose","#D4839A"],["bleu","#3B6B9E"],["rougeVin","#722f37"],["orangeCol","#D4763A"],["cremeNude","#E8D5C0"],["gris","#8C8C8C"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
+            <button key={v} onClick={() => { setColorFilter(v); setFilterPanel(null); }} title={t(v)} style={{width:26,height:26,borderRadius:13,background:bg,border:colorFilter===v?"3px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 4px "+C.dk:"none",padding:0}} />
           ))}
-        </div>
+        </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
           {products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
@@ -1694,23 +1765,29 @@ export default function App() {
       </Sec>}
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
-        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
-            <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
+            <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
+          <span style={{flex:1}} />
+          <button onClick={() => setFilterPanel(filterPanel==="shape"?null:"shape")} style={{padding:"5px 12px",background:filterPanel==="shape"?C.dk:shapeFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="shape"?C.bg:shapeFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="shape"||shapeFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            {t("forme")}{shapeFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="shape"?C.bg:C.dk}} />}
+          </button>
+          <button onClick={() => setFilterPanel(filterPanel==="color"?null:"color")} style={{padding:"5px 12px",background:filterPanel==="color"?C.dk:colorFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="color"?C.bg:colorFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="color"||colorFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            {t("couleur")}{colorFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="color"?C.bg:C.dk}} />}
+          </button>
         </div>
-        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("forme")}</span>
-          {["all","ronde","carree","catEye","rectangulaire","aviateur","oversize","geometrique"].map(v => (
-            <button key={v} onClick={() => setShapeFilter(v)} style={{padding:"4px 10px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.gr,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("toutes"):t(v)}</button>
+        {filterPanel==="shape"&&<div style={{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln}}>
+          {[["all","toutes"],["ronde","ronde"],["carree","carree"],["catEye","catEye"],["rectangulaire","rectangulaire"],["aviateur","aviateur"],["oversize","oversize"],["geometrique","geometrique"]].map(([v,k]) => (
+            <button key={v} onClick={() => { setShapeFilter(v); if(v!=="all") setFilterPanel(null); }} style={{padding:"5px 12px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.dk,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{v==="all"?t("toutes"):t(k)}</button>
           ))}
-        </div>
-        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("couleur")}</span>
-          {["all","noir","careyCol","marron","vert","dore","rose","bleu","rougeVin","orangeCol","cremeNude","gris","transparentCol","multicolore"].map(v => (
-            <button key={v} onClick={() => setColorFilter(v)} style={{padding:"4px 10px",background:colorFilter===v?C.dk:"transparent",color:colorFilter===v?C.bg:C.gr,border:"1px solid "+(colorFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("tous"):t(v)}</button>
+        </div>}
+        {filterPanel==="color"&&<div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln,alignItems:"center"}}>
+          <button onClick={() => { setColorFilter("all"); setFilterPanel(null); }} style={{padding:"4px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:9,fontFamily:BD,borderRadius:20}}>{t("tous")}</button>
+          {[["noir","#1a1a1a"],["careyCol","#8B6914"],["marron","#7B4B2A"],["vert","#2d6b4f"],["dore","#C5A55A"],["rose","#D4839A"],["bleu","#3B6B9E"],["rougeVin","#722f37"],["orangeCol","#D4763A"],["cremeNude","#E8D5C0"],["gris","#8C8C8C"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
+            <button key={v} onClick={() => { setColorFilter(v); setFilterPanel(null); }} title={t(v)} style={{width:26,height:26,borderRadius:13,background:bg,border:colorFilter===v?"3px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 4px "+C.dk:"none",padding:0}} />
           ))}
-        </div>
+        </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
       </Sec>}
@@ -1849,14 +1926,19 @@ export default function App() {
         </div>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
           {products.filter(p => colFilter === "all" || p.col === colFilter).map((p, i) => (
-            <div key={p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"11px 14px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh}}>
-              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:1}}>{p.model}</span>
-              <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span>
-              <span style={{fontSize:9,fontFamily:BD,color:p.col==="Acetato"?"#7a5c3a":C.gr2,background:p.col==="Acetato"?"#e8d5c0":"transparent",padding:"2px 6px",borderRadius:2}}>{p.col}</span>
-              <span style={{fontSize:10,fontFamily:BD,color:C.gr2,minWidth:90}}>{p.sku}</span>
-              <span style={{fontSize:13,fontWeight:600,fontFamily:BD,color:p.stock<10?C.yl:C.gn,minWidth:40,textAlign:"center"}}>{p.stock}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr,minWidth:55}}>{p.fixedPrice > 0 ? fmt(p.fixedPrice)+" €" : "Volume"}</span>
-              <Btn small ghost onClick={() => { setModal("editSt"); setEd({...p, stock: String(p.stock)}); }}>{t("editer")}</Btn>
+            <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock: String(p.stock)}); }}>
+              <div style={{width:40,height:40,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
+                {p.imageUrl ? <img src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:BD}}>—</span>}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span>
+                </div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr2,marginTop:1}}>{p.sku}</div>
+              </div>
+              <span style={{fontSize:9,fontFamily:BD,color:p.col==="Acetato"?"#7a5c3a":C.gr2,background:p.col==="Acetato"?"#e8d5c0":C.bg,padding:"2px 6px",borderRadius:10,flexShrink:0}}>{p.col}</span>
+              <span style={{fontSize:14,fontWeight:700,fontFamily:BD,color:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,minWidth:32,textAlign:"center",flexShrink:0}}>{p.stock}</span>
             </div>
           ))}
         </div>
@@ -1873,7 +1955,7 @@ export default function App() {
                 <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{fmt(ttc)} €</span>
                 <Badge l={PL[o.pay]} c={PC[o.pay]} />
               </div>
-              <button onClick={(e) => { e.stopPropagation(); if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_,j) => j!==i)); }}} style={{background:C.rd,border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,padding:"6px 10px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>{t("eliminarCmd").split(" ").pop()}</button>
+              <button onClick={(e) => { e.stopPropagation(); if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_,j) => j!==i)); }}} style={{background:C.rd,border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,padding:"6px 10px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>{t("eliminar")}</button>
             </div>
           ); })}
         </div>
@@ -1946,12 +2028,19 @@ export default function App() {
       {view === "a-users" && <Sec title={t("gestionUsers")} right={<Btn small onClick={() => { setModal("newUser"); setEd({role:"client",name:"",co:"",email:"",pw:"",lang:"fr",commRate:15,active:true}); }}>{t("nouvelUser")}</Btn>}>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
           {users.filter(u => u.role !== "admin").map((u, i) => (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",opacity:u.active===false?0.5:1}} onClick={() => { setModal("editUser"); setEd({...u, origEmail: u.email}); }}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",opacity:u.active===false?0.5:1}} onClick={() => { setModal("editUser"); setEd({...u, origEmail: u.email}); }}>
               <Badge l={u.role === "distributor" ? t("distributeur") : t("client")} c={u.role === "distributor" ? C.bl : C.gn} />
-              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:1}}>{u.name}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{u.co}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{u.email}</span>
-              {u.commRate && <span style={{fontSize:10,fontFamily:BD,color:C.yl}}>{u.commRate}%</span>}
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{u.name}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{u.co}</span>
+                </div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:1}}>
+                  {u.email}{u.city ? " · "+u.city : ""}{u.country ? " ("+u.country+")" : ""}{u.phone ? " · "+u.phone : ""}
+                </div>
+              </div>
+              {u.notes && <span style={{fontSize:9,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:10}}>📝</span>}
+              {u.commRate > 0 && <span style={{fontSize:10,fontFamily:BD,color:C.yl}}>{u.commRate}%</span>}
               <Badge l={u.active !== false ? t("userActif") : t("userInactif")} c={u.active !== false ? C.gn : C.rd} />
             </div>
           ))}
@@ -1969,28 +2058,120 @@ export default function App() {
       </Sec>}
 
       {view === "a-stats" && <Sec title={t("tableauBord")}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+        {/* KPI ROW */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:20}}>
           {renderKPI(t("ca"), fmt(orders.reduce((s,o) => s+o.total, 0))+" €")}
           {renderKPI(t("commandes"), String(orders.length))}
           {renderKPI(t("unites"), String(orders.reduce((s,o) => s+o.items, 0)))}
           {renderKPI(t("clients"), String(clients.length))}
+          {renderKPI(t("produits"), String(products.length))}
+          {renderKPI(t("panierMoyen"), orders.length ? fmt(orders.reduce((s,o) => s+o.total, 0)/orders.length)+" €" : "—")}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:18}}>
-            <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:12,fontWeight:500}}>{t("canaux")}</div>
-            {[["Agent Sud",55,C.dk],["Direct",28,C.gn],["Faire",17,C.yl]].map(([n,p,col], i) => (
-              <div key={i} style={{marginBottom:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",fontFamily:BD,fontSize:11,marginBottom:3}}><span>{n}</span><span style={{color:C.gr}}>{p}%</span></div>
-                <div style={{height:4,background:C.bg2,borderRadius:2}}><div style={{height:4,background:col,borderRadius:2,width:p+"%"}} /></div>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14,marginBottom:14}}>
+          {/* URGENT TASKS */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("tareas")} — {t("haute")}</span>
+              <Btn small ghost onClick={() => setView("a-tasks")}>{t("voirTout")}</Btn>
+            </div>
+            {tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").length === 0
+              ? <div style={{fontSize:11,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>✓ {t("aucuneCmd")}</div>
+              : tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").slice(0,4).map((tk,i) => (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",borderBottom:"1px solid "+C.bg2}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                  <span style={{width:8,height:8,borderRadius:4,background:C.rd,flexShrink:0}} />
+                  <span style={{fontSize:11,fontFamily:BD,color:C.dk,flex:1,cursor:"pointer"}}>{tk.title}</span>
+                  <Badge l={t(tk.status)} c={tk.status==="enCours"?C.yl:C.gr} />
+                </div>
+              ))
+            }
+          </div>
+
+          {/* LOW STOCK */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("stockBajo")}</span>
+              <Btn small ghost onClick={() => setView("a-stock")}>{t("voirTout")}</Btn>
+            </div>
+            {products.filter(p => p.stock < 10).sort((a,b) => a.stock - b.stock).slice(0,6).map((p,i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid "+C.bg2}}>
+                {p.imageUrl ? <img src={p.imageUrl} style={{width:28,height:28,objectFit:"contain",borderRadius:3}} /> : <span style={{width:28,height:28,background:C.bg,borderRadius:3,display:"flex",alignItems:"center",justifyContent:"center",fontSize:6,color:C.ln}}>—</span>}
+                <span style={{fontSize:11,fontFamily:BD,color:C.dk,flex:1}}>{p.model} <span style={{color:C.gr}}>{p.color}</span></span>
+                <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:p.stock<5?C.rd:C.yl}}>{p.stock}</span>
               </div>
             ))}
+            {products.filter(p => p.stock < 10).length === 0 && <div style={{fontSize:11,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>✓ Stock OK</div>}
           </div>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:18}}>
-            <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:12,fontWeight:500}}>{t("prixCustom")}</div>
-            {clients.filter(c => c.customPrice > 0).length
-              ? clients.filter(c => c.customPrice > 0).map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontFamily:BD,fontSize:12,borderBottom:"1px solid "+C.bg2}}><span>{c.name}</span><span style={{color:C.bl,fontWeight:600}}>{fmt(c.customPrice)} €</span></div>)
-              : <div style={{fontSize:11,color:C.gr2,fontFamily:BD}}>{t("tousStandard")}</div>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14,marginBottom:14}}>
+          {/* RECENT ORDERS */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("commandes")} récentes</span>
+              <Btn small ghost onClick={() => setView("a-ord")}>{t("voirTout")}</Btn>
+            </div>
+            {orders.slice(0,5).map((o,i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid "+C.bg2}}>
+                <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{o.id}</span>
+                <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.client}</span>
+                <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{o.date}</span>
+                <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(o.total)} €</span>
+                <Badge l={SL[o.status]} c={SC[o.status]} />
+              </div>
+            ))}
+            {orders.length === 0 && <div style={{fontSize:11,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>—</div>}
+          </div>
+
+          {/* PENDING PAYMENTS */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("enAttente")} — {t("paiement")}</span>
+            </div>
+            {orders.filter(o => o.pay === "pending" || o.pay === "invoiced").length === 0
+              ? <div style={{fontSize:11,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>✓ {t("tousStandard")}</div>
+              : orders.filter(o => o.pay === "pending" || o.pay === "invoiced").slice(0,5).map((o,i) => (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid "+C.bg2}}>
+                  <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{o.id}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.client}</span>
+                  <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(o.total)} €</span>
+                  <Badge l={PL[o.pay]} c={PC[o.pay]} />
+                </div>
+              ))
             }
+          </div>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14}}>
+          {/* CHANNELS */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:12}}>{t("canaux")}</div>
+            {(() => {
+              const channels = {};
+              orders.forEach(o => { channels[o.dist] = (channels[o.dist]||0) + o.total; });
+              const total = Object.values(channels).reduce((s,v) => s+v, 0) || 1;
+              const colors = {"Agent Sud":C.dk,"Direct":C.gn,"Faire":C.yl};
+              return Object.entries(channels).sort((a,b) => b[1]-a[1]).map(([ch,val],i) => (
+                <div key={i} style={{marginBottom:8}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontFamily:BD,fontSize:11,marginBottom:3}}><span>{ch}</span><span style={{color:C.gr}}>{fmt(val)} € ({Math.round(val/total*100)}%)</span></div>
+                  <div style={{height:4,background:C.bg2,borderRadius:2}}><div style={{height:4,background:colors[ch]||C.bl,borderRadius:2,width:Math.round(val/total*100)+"%"}} /></div>
+                </div>
+              ));
+            })()}
+            {orders.length === 0 && <div style={{fontSize:11,fontFamily:BD,color:C.gr2,textAlign:"center"}}>—</div>}
+          </div>
+
+          {/* CUSTOM PRICES + TOP CLIENTS */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
+            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:12}}>{t("clients")} — {t("prixCustom")}</div>
+            {clients.filter(c => c.customPrice > 0).length
+              ? clients.filter(c => c.customPrice > 0).map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",fontFamily:BD,fontSize:11,borderBottom:"1px solid "+C.bg2}}><span>{c.name} <span style={{color:C.gr2}}>({c.country||"—"})</span></span><span style={{color:C.bl,fontWeight:600}}>{fmt(c.customPrice)} €</span></div>)
+              : <div style={{fontSize:11,color:C.gr2,fontFamily:BD,textAlign:"center"}}>{t("tousStandard")}</div>
+            }
+            {clients.filter(c => c.earlyPay).length > 0 && <>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gn,marginTop:10,fontWeight:600}}>Early Pay (-3%)</div>
+              {clients.filter(c => c.earlyPay).map((c,i) => <div key={i} style={{fontSize:11,fontFamily:BD,color:C.dk,padding:"3px 0"}}>{c.name}</div>)}
+            </>}
           </div>
         </div>
       </Sec>}
