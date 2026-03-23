@@ -527,6 +527,7 @@ export default function App() {
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
+  const [userFilter, setUserFilter] = useState("all");
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
 
@@ -1143,19 +1144,23 @@ export default function App() {
 
           {/* NEW USER */}
           {modal === "newUser" && <>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              <div style={{marginBottom:12}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("roleLabel")}</div>
-                <select value={ed.role || "client"} onChange={e => setEd(p => ({...p, role: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  <option value="client">{t("client")}</option>
-                  <option value="distributor">{t("distributeur")}</option>
-                </select>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("roleLabel")}</div>
+              <div style={{display:"flex",gap:8}}>
+                {[["client",t("client"),"🏪",C.gn],["distributor",t("distributeur")+" / Showroom","🤝",C.bl]].map(([v,l,icon,col]) => (
+                  <button key={v} onClick={() => setEd(p => ({...p, role:v, commRate:v==="distributor"?15:0}))} style={{flex:1,padding:"12px 14px",background:ed.role===v?col+"12":"transparent",border:"2px solid "+(ed.role===v?col:C.ln),borderRadius:8,cursor:"pointer",textAlign:"left"}}>
+                    <div style={{fontSize:18,marginBottom:4}}>{icon}</div>
+                    <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:ed.role===v?col:C.gr}}>{l}</div>
+                  </button>
+                ))}
               </div>
-              <div style={{marginBottom:12}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("langue")}</div>
-                <select value={ed.lang || "fr"} onChange={e => setEd(p => ({...p, lang: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  <option value="fr">FR</option><option value="es">ES</option><option value="en">EN</option>
-                </select>
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("langue")}</div>
+              <div style={{display:"flex",gap:6}}>
+                {[["fr","FR"],["es","ES"],["en","EN"]].map(([v,l]) => (
+                  <button key={v} onClick={() => setEd(p => ({...p, lang:v}))} style={{padding:"6px 14px",background:ed.lang===v?C.dk:"transparent",color:ed.lang===v?C.bg:C.gr,border:"1px solid "+(ed.lang===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+                ))}
               </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
@@ -2080,9 +2085,14 @@ export default function App() {
         </div>
       </Sec>}
 
-      {view === "a-users" && <Sec title={t("gestionUsers")} right={<Btn small onClick={() => { setModal("newUser"); setEd({role:"client",name:"",co:"",email:"",pw:"",lang:"fr",commRate:15,active:true}); }}>{t("nouvelUser")}</Btn>}>
+      {view === "a-users" && <Sec title={t("gestionUsers")} right={<Btn small onClick={() => { setModal("newUser"); setEd({role:"client",name:"",co:"",email:"",pw:"",lang:"fr",commRate:0,active:true}); }}>{t("nouvelUser")}</Btn>}>
+        <div style={{display:"flex",gap:6,marginBottom:12}}>
+          {[["all",t("tous")],["client",t("client")],["distributor",t("distributeur")]].map(([v,l]) => (
+            <button key={v} onClick={() => setUserFilter(v)} style={{padding:"5px 14px",background:userFilter===v?C.dk:"transparent",color:userFilter===v?C.bg:C.gr,border:"1px solid "+(userFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l} {v!=="all" && <span style={{fontSize:9,color:userFilter===v?C.bg+"99":C.gr2}}>({users.filter(u => u.role === v).length})</span>}</button>
+          ))}
+        </div>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {users.filter(u => u.role !== "admin").map((u, i) => (
+          {users.filter(u => u.role !== "admin" && (userFilter === "all" || u.role === userFilter)).map((u, i) => (
             <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",opacity:u.active===false?0.5:1}} onClick={() => { setModal("editUser"); setEd({...u, origEmail: u.email}); }}>
               <Badge l={u.role === "distributor" ? t("distributeur") : t("client")} c={u.role === "distributor" ? C.bl : C.gn} />
               <div style={{flex:1,minWidth:0}}>
