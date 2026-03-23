@@ -563,6 +563,8 @@ export default function App() {
         if (nws && nws.length > 0) setNews(nws.map(dbToNews));
         const {data:fqs} = await supabase.from("faqs").select("*");
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
+        const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
+        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
       } catch(e) { console.log("DB load fallback:", e); }
     };
     load();
@@ -596,6 +598,9 @@ export default function App() {
   const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveTask = async (t) => { if (!dbReady) return; try { const {data} = await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire"}).select().single(); return data; } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status}).eq("id",t.id); } catch(e) { console.log('DB error:', e); } };
+  const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log('DB error:', e); } };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -1499,7 +1504,7 @@ export default function App() {
                 </select>
               </div>
             </div>
-            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.title){ const nt = {...ed, id:tasks.length+10, date:new Date().toLocaleDateString("fr-FR")}; setTasks(p => [...p, nt]); dbSaveTask(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT TASK */}
@@ -1533,8 +1538,8 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
+              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); dbUpdateTask(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); dbDeleteTask(ed.id); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
             </div>
           </>}
         </div>
