@@ -510,7 +510,8 @@ const Sec = ({title, sub, right, children}) => (
 export default function App() {
   const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); return s ? JSON.parse(s) : null; } catch(e) { return null; } });
   const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_user"); } catch(e) { return false; } });
-  const [lang, setLang] = useState("fr");
+  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); return u.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : "fr"; } catch(e) { return "fr"; } });
+  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); u.lang = l; localStorage.setItem("minue_user", JSON.stringify(u)); } } catch(e) {} };
   const [view, _setView] = useState(() => { try { return typeof window !== "undefined" && localStorage.getItem("minue_view") || "c-cat"; } catch(e) { return "c-cat"; } });
   const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
   const [cart, setCart] = useState({});
@@ -589,19 +590,33 @@ export default function App() {
   }, [dbReady]);
 
   const dbSaveOrder = async (order, lines) => {
-    if (!dbReady) return;
+    if (!dbReady) { console.log("DB not ready"); return; }
     try {
-      const {data} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
-      if (data && lines) { await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
-    } catch(e) { console.log("DB save order:", e); }
+      const payload = {order_number:order.id,client_name:order.client,distributor:order.dist||"Direct",status:order.status||"confirmed",payment:order.pay||"pending",shipping_cost:Math.max(order.shippingCost||0, 0),carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:Number(order.total)||0,items_count:Number(order.items)||0,commission:Number(order.comm)||0};
+      console.log("Saving order:", payload);
+      const {data, error} = await supabase.from("orders").insert(payload).select().single();
+      if (error) { console.log("ORDER INSERT ERROR:", error); return; }
+      console.log("Order saved:", data.id);
+      if (data && lines && lines.length > 0) {
+        const linePayload = lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:Number(l.qty)||1,unit_price:Number(l.price)||0,collection:l.col||"Essential"}));
+        const {error:lineErr} = await supabase.from("order_lines").insert(linePayload);
+        if (lineErr) console.log("ORDER LINES ERROR:", lineErr);
+        else console.log("Lines saved:", linePayload.length);
+      }
+    } catch(e) { console.log("DB save order exception:", e); }
   };
 
   const dbUpdateOrder = async (order) => {
-    if (!dbReady || !order.dbId) return;
+    if (!dbReady || !order.dbId) { console.log("Update order skip: dbReady=",dbReady,"dbId=",order.dbId); return; }
     try {
-      await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm}).eq("id",order.dbId);
-      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
-    } catch(e) { console.log("DB update order:", e); }
+      const {error} = await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track||"",carrier:order.carrier||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:Number(order.total)||0,items_count:Number(order.items)||0,shipping_cost:Math.max(Number(order.shippingCost)||0,0),commission:Number(order.comm)||0}).eq("id",order.dbId);
+      if (error) { console.log("ORDER UPDATE ERROR:", error); return; }
+      if (order.lines) {
+        await supabase.from("order_lines").delete().eq("order_id",order.dbId);
+        const {error:lineErr} = await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:Number(l.qty)||1,unit_price:Number(l.price)||0,collection:l.col||"Essential"})));
+        if (lineErr) console.log("ORDER LINES UPDATE ERROR:", lineErr);
+      }
+    } catch(e) { console.log("DB update order exception:", e); }
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
@@ -682,7 +697,7 @@ export default function App() {
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     });
     const newOrder = {
-      id: "#" + (2625 + orders.length),
+      id: "#MN-" + Date.now().toString(36).toUpperCase(),
       client: activeClientName || "—",
       dist: user.role === "distributor" ? "Agent Sud" : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
@@ -1111,7 +1126,7 @@ export default function App() {
                 <span style={{fontWeight:600}}>{fmt(edTotal)} €</span>
               </div>
             </div>}
-            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); const newOrd = {id:"#"+(2625+orders.length), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", notes:"", clientNotes:"", shippingCost:edQty>=20?0:-1, lines:lns}; setOrders(p => [newOrd, ...p]); dbSaveOrder(newOrd, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
+            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); const newOrd = {id:"#MN-"+Date.now().toString(36).toUpperCase(), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", notes:"", clientNotes:"", shippingCost:edQty>=20?0:-1, lines:lns}; setOrders(p => [newOrd, ...p]); dbSaveOrder(newOrd, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
           </>}
 
           {/* EDIT ORDER */}
