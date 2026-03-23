@@ -552,18 +552,6 @@ export default function App() {
             {loginErr && <div style={{fontSize:11,color:C.rd,fontFamily:BD,marginTop:6}}>{loginErr}</div>}
           </div>
           <Btn onClick={doLogin} style={{width:"100%",padding:"13px 0",fontSize:13}}>{t("connexion")}</Btn>
-
-          <div style={{marginTop:24,paddingTop:16,borderTop:"1px solid "+C.ln}}>
-            <div style={{fontSize:10,color:C.gr2,fontFamily:BD,marginBottom:8,textAlign:"center"}}>{t("accesDemo")}</div>
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {[users.find(u=>u.role==="admin"), users.find(u=>u.role==="distributor"), users.find(u=>u.role==="client")].filter(Boolean).map(u => (
-                <button key={u.email} onClick={() => { setLoginEmail(u.email); setLoginPw(u.pw); setLoginErr(""); }} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 12px",background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontFamily:BD,fontSize:11,color:C.dk}}>
-                  <span><span style={{fontWeight:600}}>{u.name}</span> <span style={{color:C.gr}}>({u.role === "distributor" ? t("distributeur") : t(u.role)})</span></span>
-                  <span style={{color:C.gr2,fontSize:10}}>{u.email}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     );
