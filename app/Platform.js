@@ -259,6 +259,30 @@ const T = {
   tousClients:{fr:"Tous les clients",es:"Todos los clientes",en:"All clients"},
   selectionPrivee:{fr:"Sélection Privée",es:"Selección Privée",en:"Private Selection"},
   selectionSub:{fr:"Éditions spéciales à prix privilégié, disponibilité limitée.",es:"Ediciones especiales a precio privilegiado, disponibilidad limitada.",en:"Special editions at privileged pricing, limited availability."},
+  forme:{fr:"Forme",es:"Forma",en:"Shape"},
+  couleur:{fr:"Couleur",es:"Color",en:"Color"},
+  toutes:{fr:"Toutes",es:"Todas",en:"All"},
+  tous:{fr:"Tous",es:"Todos",en:"All"},
+  ronde:{fr:"Ronde",es:"Redonda",en:"Round"},
+  carree:{fr:"Carrée",es:"Cuadrada",en:"Square"},
+  catEye:{fr:"Cat-eye",es:"Cat-eye",en:"Cat-eye"},
+  rectangulaire:{fr:"Rectangulaire",es:"Rectangular",en:"Rectangular"},
+  aviateur:{fr:"Aviateur",es:"Aviador",en:"Aviator"},
+  oversize:{fr:"Oversize",es:"Oversize",en:"Oversize"},
+  geometrique:{fr:"Géométrique",es:"Geométrica",en:"Geometric"},
+  noir:{fr:"Noir",es:"Negro",en:"Black"},
+  careyCol:{fr:"Carey",es:"Carey",en:"Carey"},
+  marron:{fr:"Marron",es:"Marrón",en:"Brown"},
+  vert:{fr:"Vert",es:"Verde",en:"Green"},
+  dore:{fr:"Doré",es:"Dorado",en:"Gold"},
+  rose:{fr:"Rose",es:"Rosa",en:"Pink"},
+  bleu:{fr:"Bleu",es:"Azul",en:"Blue"},
+  rougeVin:{fr:"Rouge/Vin",es:"Rojo/Vino",en:"Red/Wine"},
+  orangeCol:{fr:"Orange",es:"Naranja",en:"Orange"},
+  cremeNude:{fr:"Crème/Nude",es:"Crema/Nude",en:"Cream/Nude"},
+  gris:{fr:"Gris",es:"Gris",en:"Grey"},
+  transparentCol:{fr:"Transparent",es:"Transparente",en:"Transparent"},
+  multicolore:{fr:"Multicolore",es:"Multicolor",en:"Multicolor"},
 };
 
 /* ═══ PRICING TIERS (Essential only) ═══ */
@@ -484,12 +508,14 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [shapeFilter, setShapeFilter] = useState("all");
+  const [colorFilter, setColorFilter] = useState("all");
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
 
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
-  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
+  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
   const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
@@ -1465,14 +1491,26 @@ export default function App() {
 
       {/* CLIENT VIEWS */}
       {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
-        <div style={{display:"flex",gap:4,marginBottom:14}}>
+        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
           ))}
         </div>
+        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("forme")}</span>
+          {["all","ronde","carree","catEye","rectangulaire","aviateur","oversize","geometrique"].map(v => (
+            <button key={v} onClick={() => setShapeFilter(v)} style={{padding:"4px 10px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.gr,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("toutes"):t(v)}</button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("couleur")}</span>
+          {["all","noir","careyCol","marron","vert","dore","rose","bleu","rougeVin","orangeCol","cremeNude","gris","transparentCol","multicolore"].map(v => (
+            <button key={v} onClick={() => setColorFilter(v)} style={{padding:"4px 10px",background:colorFilter===v?C.dk:"transparent",color:colorFilter===v?C.bg:C.gr,border:"1px solid "+(colorFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("tous"):t(v)}</button>
+          ))}
+        </div>
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
-          {products.filter(p => (colFilter === "all" || p.col === colFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
+          {products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
         </div>
       </Sec>}
 
@@ -1656,13 +1694,25 @@ export default function App() {
       </Sec>}
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
-        <div style={{display:"flex",gap:4,marginBottom:14}}>
+        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
           ))}
         </div>
+        <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("forme")}</span>
+          {["all","ronde","carree","catEye","rectangulaire","aviateur","oversize","geometrique"].map(v => (
+            <button key={v} onClick={() => setShapeFilter(v)} style={{padding:"4px 10px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.gr,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("toutes"):t(v)}</button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{fontSize:9,fontFamily:BD,color:C.gr,textTransform:"uppercase",letterSpacing:0.5,marginRight:4}}>{t("couleur")}</span>
+          {["all","noir","careyCol","marron","vert","dore","rose","bleu","rougeVin","orangeCol","cremeNude","gris","transparentCol","multicolore"].map(v => (
+            <button key={v} onClick={() => setColorFilter(v)} style={{padding:"4px 10px",background:colorFilter===v?C.dk:"transparent",color:colorFilter===v?C.bg:C.gr,border:"1px solid "+(colorFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:3}}>{v==="all"?t("tous"):t(v)}</button>
+          ))}
+        </div>
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
       </Sec>}
 
       {view === "d-cart" && <Sec title={t("panier")}>
