@@ -480,8 +480,8 @@ const Btn = ({children, onClick, disabled, small, ghost, style}) => (
 );
 
 const Sec = ({title, sub, right, children}) => (
-  <div style={{padding:"28px 24px"}}>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:sub?6:18}}>
+  <div style={{padding:"20px min(24px, 4vw)"}}>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:sub?6:18,flexWrap:"wrap",gap:8}}>
       <h1 style={{fontSize:24,fontWeight:400,letterSpacing:1,margin:0,fontFamily:DP,color:C.dk}}>{title}</h1>
       {right}
     </div>
@@ -679,7 +679,7 @@ export default function App() {
   if (!user) {
     return (
       <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,fontFamily:DP}}>
-        <img src={LOGO} alt="Minuë" style={{width:140,height:140,objectFit:"contain",borderRadius:16,marginBottom:8}} />
+        <img src={LOGO} alt="Minuë" style={{width:"min(120px, 30vw)",height:"min(120px, 30vw)",objectFit:"contain",borderRadius:16,marginBottom:8}} />
         <div style={{letterSpacing:4,fontSize:13,color:C.gr,marginBottom:12,fontFamily:BD}}>Eyewear · B2B Portal</div>
         <div style={{display:"flex",gap:4,marginBottom:36}}>
           {["fr","es","en"].map(l => (
@@ -716,9 +716,9 @@ export default function App() {
     return (
     <nav style={{background:C.dk,position:"sticky",top:0,zIndex:100}}>
       {/* TOP BAR */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 16px",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px min(16px, 3vw)",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:102,borderRadius:5}} />
+          <img src={LOGO} alt="Minuë" style={{height:"min(50px, 12vw)",borderRadius:4}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -738,7 +738,7 @@ export default function App() {
           const on = view === v;
           const isCart = k === "panier" && cartCount > 0;
           return (
-            <button key={v} onClick={() => setView(v)} style={{position:"relative",background:"none",border:"none",padding:"10px 12px",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:on?600:400,color:on?C.bg:"rgba(248,239,230,0.4)",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+            <button key={v} onClick={() => setView(v)} style={{position:"relative",background:"none",border:"none",padding:"8px min(12px, 2.5vw)",cursor:"pointer",fontSize:"min(13px, 3.2vw)",fontFamily:BD,fontWeight:on?600:400,color:on?C.bg:"rgba(248,239,230,0.4)",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
               {t(k)}
               {isCart && <span style={{background:C.gn,color:C.bg,fontSize:8,fontWeight:700,padding:"1px 5px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
               {on && <div style={{position:"absolute",bottom:0,left:12,right:12,height:2,background:rc,borderRadius:1}} />}
@@ -782,7 +782,7 @@ export default function App() {
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     return (
       <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-        <div style={{height:168,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+        <div style={{height:"min(168px, 40vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
           {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
           <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
@@ -826,7 +826,7 @@ export default function App() {
   const renderKPI = (label, value, accent) => (
     <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"18px 14px"}}>
       <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:8,fontWeight:500}}>{label}</div>
-      <div style={{fontSize:24,fontWeight:300,fontFamily:DP,color:accent||C.dk,lineHeight:1}}>{value}</div>
+      <div style={{fontSize:"min(22px, 5vw)",fontWeight:300,fontFamily:DP,color:accent||C.dk,lineHeight:1}}>{value}</div>
     </div>
   );
 
@@ -836,7 +836,7 @@ export default function App() {
     const titles = {editCl:t("condComm"),editSt:t("editerStock"),newProd:t("nouveauProduit"),newOrd:t("nouvelleCmd"),editOrd:t("modifierCmd"),viewOrd:t("detailCmd"),newCl:t("nouveauClient"),newUser:t("nouveauUser"),editUser:t("editUser"),newPromo:t("nouveauPromo"),editPromo:t("editPromo"),newNews:t("nouvelleNouveaute"),editNews:t("titreNouveaute"),viewInv:t("factureDetail"),newFaq:t("nouvelleFaq"),editFaq:t("questionLabel"),newTask:t("nouvelleTache"),editTask:t("titreTache")};
     return (
       <div style={{position:"fixed",inset:0,background:"rgba(24,51,47,0.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}} onClick={() => setModal(null)}>
-        <div style={{background:C.wh,padding:"24px 20px",borderRadius:8,width:"100%",maxWidth:480,maxHeight:"85vh",overflow:"auto",margin:"0 16px"}} onClick={e => e.stopPropagation()}>
+        <div style={{background:C.wh,padding:"24px 20px",borderRadius:8,width:"100%",maxWidth:480,maxHeight:"90vh",overflow:"auto",margin:"0 16px"}} onClick={e => e.stopPropagation()}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:20}}>
             <h2 style={{fontSize:18,fontWeight:400,fontFamily:DP,color:C.dk,margin:0}}>{titles[modal] || ""}</h2>
             <button onClick={() => setModal(null)} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:C.gr}}>x</button>
@@ -1168,7 +1168,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 12px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"8px 12px"}}>
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
                 <input value={ed.phone || ""} onChange={e => setEd(p => ({...p, phone: e.target.value}))} placeholder="+34..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
@@ -1211,7 +1211,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 12px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"8px 12px"}}>
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
                 <input value={ed.phone || ""} onChange={e => setEd(p => ({...p, phone: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
@@ -1472,7 +1472,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
               <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"0 10px"}}>
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("priorite")}</div>
                 <select value={ed.priority||"moyenne"} onChange={e => setEd(p => ({...p, priority:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
@@ -1505,7 +1505,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
               <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"0 10px"}}>
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("priorite")}</div>
                 <select value={ed.priority||"moyenne"} onChange={e => setEd(p => ({...p, priority:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
@@ -1555,7 +1555,7 @@ export default function App() {
       {renderModal()}
 
       {/* CLIENT VIEWS */}
-      {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
+      {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -1580,7 +1580,7 @@ export default function App() {
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
         </div>
       </Sec>}
@@ -1626,7 +1626,7 @@ export default function App() {
       {view === "c-ord" && <Sec title={t("mesCmd")}>{orders.filter(o => o.client === user.co).length ? <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.filter(o => o.client === user.co).map((o,i) => <div key={i}>{renderOrderRow(o, i, false, false)}{o.clientNotes && <div style={{padding:"8px 14px 12px",background:"#f0f6fa",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD,color:C.bl}}><span style={{fontWeight:600,fontSize:10}}>{t("noteDuCmd")}:</span> {o.clientNotes}</div>}</div>)}</div> : <p style={{color:C.gr,fontFamily:BD}}>{t("aucuneCmd")}</p>}</Sec>}
 
       {view === "c-tarifs" && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
           {TIERS.map((tier, i) => { const isA = cartCount >= tier.min && cartCount <= tier.max && customPrice === 0; return (
             <div key={i} style={{background:C.wh,border:"2px solid "+(isA?C.gn:C.ln),borderRadius:6,padding:18,position:"relative"}}>
               {isA && <div style={{position:"absolute",top:-10,right:12,background:C.gn,color:C.bg,fontSize:9,fontFamily:BD,padding:"2px 8px",borderRadius:3,fontWeight:600}}>{t("votreTarif")}</div>}
@@ -1670,7 +1670,7 @@ export default function App() {
       </Sec>}
 
       {(view === "c-selection" || view === "d-selection") && <Sec title={t("selectionPrivee")} sub={t("selectionSub")}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {products.filter(p => (p.tags||[]).includes("privee")).map(p => renderCard(p))}
           {products.filter(p => (p.tags||[]).includes("privee")).length === 0 && <div style={{gridColumn:"1/-1",textAlign:"center",padding:40}}>
             <div style={{fontSize:20,fontFamily:DP,color:C.dk,marginBottom:8}}>{t("selectionPrivee")}</div>
@@ -1680,7 +1680,7 @@ export default function App() {
       </Sec>}
 
       {view === "c-promo" && <Sec title={t("promosClient")} sub={t("promosSub")}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:12}}>
           {promos.filter(p => p.on && (p.visible||[]).includes("client") && (!p.targetClients || p.targetClients.length === 0 || p.targetClients.includes(user.co))).map((p,i) => renderPromoCard(p, i, false))}
           {promos.filter(p => p.on && (p.visible||[]).includes("client") && (!p.targetClients || p.targetClients.length === 0 || p.targetClients.includes(user.co))).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
         </div>
@@ -1738,7 +1738,7 @@ export default function App() {
 
       {/* DISTRIBUTOR VIEWS */}
       {view === "d-dash" && <Sec title={t("dashboard")} sub={user.co + " - " + t("commission") + " " + (user.commRate||0) + " %"}>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:24}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
             {renderKPI(t("ventesTot"), fmt(distSales)+" €")}
             {renderKPI(t("commTot"), fmt(distComm)+" €", C.gn)}
             {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn)}
@@ -1764,7 +1764,7 @@ export default function App() {
           </div>
       </Sec>}
 
-      {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:200}} />}>
+      {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -1789,7 +1789,7 @@ export default function App() {
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
       </Sec>}
 
       {view === "d-cart" && <Sec title={t("panier")}>
@@ -1842,7 +1842,7 @@ export default function App() {
       </Sec>}
 
       {view === "d-promo" && <Sec title={t("promosActives")} sub={t("promosSub")}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:12}}>
           {promos.filter(p => p.on && (p.visible||[]).includes("distributor")).map((p,i) => renderPromoCard(p, i, false))}
           {promos.filter(p => p.on && (p.visible||[]).includes("distributor")).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
         </div>
@@ -1962,7 +1962,7 @@ export default function App() {
       </Sec>}
 
       {view === "a-promo" && <Sec title={t("gestionPromos")} right={<Btn small onClick={() => { setModal("newPromo"); setEd({name:"",type:"percent",disc:5,cond:{fr:"",es:"",en:""},on:true,visible:["client","distributor"]}); }}>{t("nouvellePromo")}</Btn>}>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:12}}>
           {promos.map((p,i) => renderPromoCard(p, i, true))}
         </div>
       </Sec>}
@@ -1991,7 +1991,7 @@ export default function App() {
             <button key={a} onClick={() => setTaskFilter(a)} style={{padding:"5px 12px",background:taskFilter===a?C.dk:"transparent",color:taskFilter===a?C.bg:C.gr,border:"1px solid "+(taskFilter===a?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3}}>{a==="all"?t("toutesAreas"):t(a)}</button>
           ))}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12}}>
           {["aFaire","enCours","fait"].map(st => {
             const prioOrder = {haute:0,moyenne:1,basse:2};
             const prioColor = {haute:C.rd,moyenne:C.yl,basse:C.gn};
@@ -2068,7 +2068,7 @@ export default function App() {
           {renderKPI(t("panierMoyen"), orders.length ? fmt(orders.reduce((s,o) => s+o.total, 0)/orders.length)+" €" : "—")}
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14,marginBottom:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:12}}>
           {/* URGENT TASKS */}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
@@ -2104,7 +2104,7 @@ export default function App() {
           </div>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:14,marginBottom:14}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:12}}>
           {/* RECENT ORDERS */}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:16}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
