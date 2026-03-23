@@ -827,7 +827,7 @@ export default function App() {
     const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
     const cq = getCardQty(p.id);
     const tags = p.tags || [];
-    const tagConf = {top:{l:t("topVenta"),c:"#c0392b"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:C.gn}};
+    const tagConf = {top:{l:t("topVenta"),c:"#c0392b"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:C.gn},icons:{l:"Icons",c:"#b8860b"}};
     return (
       <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
         <div style={{height:120,background:"linear-gradient(135deg,"+C.bg+","+C.bg2+")",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2}}>MINUE
@@ -951,7 +951,7 @@ export default function App() {
             <div style={{marginBottom:16}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("etiquetas")}</div>
               <div style={{display:"flex",gap:6}}>
-                {[["top",t("topVenta"),"#c0392b"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),C.gn]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
+                {[["top",t("topVenta"),"#c0392b"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),C.gn],["icons","Icons","#b8860b"]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
                   <button key={tg} onClick={() => setEd(p => ({...p, tags: on ? tags.filter(x=>x!==tg) : [...tags, tg]}))} style={{padding:"6px 12px",background:on?cl:"transparent",color:on?"#fff":cl,border:"1px solid "+(on?cl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",textTransform:"uppercase"}}>{lb}</button>
                 ); })}
               </div>
