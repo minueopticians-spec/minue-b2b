@@ -744,7 +744,8 @@ export default function App() {
     const tagConf = {top:{l:t("topVenta"),c:"#c0392b"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:C.gn},icons:{l:"Icons",c:"#b8860b"}};
     return (
       <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-        <div style={{height:120,background:"linear-gradient(135deg,"+C.bg+","+C.bg2+")",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2}}>MINUE
+        <div style={{height:140,background:"linear-gradient(135deg,"+C.bg+","+C.bg2+")",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+          {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
           <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:p.stock<10?C.yl:C.gn,background:"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:600}}>{p.stock}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
