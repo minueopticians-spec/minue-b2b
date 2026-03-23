@@ -257,6 +257,8 @@ const T = {
   toutesAreas:{fr:"Tout",es:"Todo",en:"All"},
   promoClients:{fr:"Clients ciblés",es:"Clientes objetivo",en:"Target clients"},
   tousClients:{fr:"Tous les clients",es:"Todos los clientes",en:"All clients"},
+  selectionPrivee:{fr:"Sélection Privée",es:"Selección Privée",en:"Private Selection"},
+  selectionSub:{fr:"Éditions spéciales à prix privilégié, disponibilité limitée.",es:"Ediciones especiales a precio privilegiado, disponibilidad limitada.",en:"Special editions at privileged pricing, limited availability."},
 };
 
 /* ═══ PRICING TIERS (Essential only) ═══ */
@@ -564,8 +566,8 @@ export default function App() {
   /* Cart calculations — Essential uses tiers, Acetato uses fixedPrice */
   const cartEntries = Object.entries(cart).filter(([,q]) => q > 0);
   const cartCount = cartEntries.reduce((s,[,q]) => s + q, 0);
-  const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => x.id === +id); return p && p.col === "Essential"; });
-  const acetatoEntries = cartEntries.filter(([id]) => { const p = products.find(x => x.id === +id); return p && p.col === "Acetato"; });
+  const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Essential"; });
+  const acetatoEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Acetato"; });
   const essentialCount = essentialEntries.reduce((s,[,q]) => s + q, 0);
   const acetatoCount = acetatoEntries.reduce((s,[,q]) => s + q, 0);
   const activeClientName = user && user.role === "client" ? user.co : cartCl;
@@ -574,7 +576,7 @@ export default function App() {
   const earlyPay = activeClient ? activeClient.earlyPay : false;
   const essentialUnitPrice = getPrice(essentialCount || 1, customPrice);
   const essentialTotal = essentialCount * essentialUnitPrice;
-  const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => x.id === +id); return s + (p ? p.fixedPrice : ACETATO_PRICE) * q; }, 0);
+  const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); return s + (p ? p.fixedPrice : ACETATO_PRICE) * q; }, 0);
   const cartTotal = essentialTotal + acetatoTotal;
   const earlyPaySaving = earlyPay ? cartTotal * 0.03 : 0;
   const finalTotal = cartTotal - earlyPaySaving;
@@ -609,7 +611,7 @@ export default function App() {
   /* Place order */
   const doOrder = () => {
     const lines = cartEntries.map(([id, q]) => {
-      const p = products.find(x => x.id === +id);
+      const p = products.find(x => String(x.id) === String(id));
       const price = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice;
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     });
@@ -667,20 +669,20 @@ export default function App() {
   /* ═══ ROLE & NAV CONFIG ═══ */
   const role = user.role;
   const navItems = role === "client"
-    ? [["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-account","monCompte"]]
+    ? [["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-account","monCompte"]]
     : [["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-stats","stats"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
-    const rc = role==="admin"?"#e8a87c":role==="distributor"?"#87ceeb":"#c8dcd8";
+    const rc = role==="admin"?"#e8a87c":role==="distributor"?"#87ceeb":"#c4956a";
     return (
     <nav style={{background:C.dk,position:"sticky",top:0,zIndex:100}}>
       {/* TOP BAR */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 16px",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:67,borderRadius:4}} />
+          <img src={LOGO} alt="Minuë" style={{height:102,borderRadius:5}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -700,7 +702,7 @@ export default function App() {
           const on = view === v;
           const isCart = k === "panier" && cartCount > 0;
           return (
-            <button key={v} onClick={() => setView(v)} style={{position:"relative",background:"none",border:"none",padding:"10px 12px",cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:on?600:400,color:on?C.bg:"rgba(248,239,230,0.4)",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
+            <button key={v} onClick={() => setView(v)} style={{position:"relative",background:"none",border:"none",padding:"10px 12px",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:on?600:400,color:on?C.bg:"rgba(248,239,230,0.4)",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
               {t(k)}
               {isCart && <span style={{background:C.gn,color:C.bg,fontSize:8,fontWeight:700,padding:"1px 5px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
               {on && <div style={{position:"absolute",bottom:0,left:12,right:12,height:2,background:rc,borderRadius:1}} />}
@@ -741,13 +743,13 @@ export default function App() {
     const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
     const cq = getCardQty(p.id);
     const tags = p.tags || [];
-    const tagConf = {top:{l:t("topVenta"),c:"#c0392b"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:C.gn},icons:{l:"Icons",c:"#b8860b"}};
+    const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     return (
       <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-        <div style={{height:140,background:"linear-gradient(135deg,"+C.bg+","+C.bg2+")",display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+        <div style={{height:140,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
           {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
-          <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:p.stock<10?C.yl:C.gn,background:"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:600}}>{p.stock}</span>
+          <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
             {tags.map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
           </div>}
@@ -866,7 +868,7 @@ export default function App() {
             <div style={{marginBottom:16}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("etiquetas")}</div>
               <div style={{display:"flex",gap:6}}>
-                {[["top",t("topVenta"),"#c0392b"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),C.gn],["icons","Icons","#b8860b"]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
+                {[["top",t("topVenta"),"#c4956a"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),"#722f37"],["icons","Icons","#b8860b"],["privee","Privée","#18332f"]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
                   <button key={tg} onClick={() => setEd(p => ({...p, tags: on ? tags.filter(x=>x!==tg) : [...tags, tg]}))} style={{padding:"6px 12px",background:on?cl:"transparent",color:on?"#fff":cl,border:"1px solid "+(on?cl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",textTransform:"uppercase"}}>{lb}</button>
                 ); })}
               </div>
@@ -925,7 +927,7 @@ export default function App() {
                 {products.map(p => <option key={p.id} value={p.id}>{p.model} - {p.color} ({p.stock})</option>)}
               </select>
               <input id="noq" type="number" defaultValue="2" min="1" style={{width:55,padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,textAlign:"center"}} />
-              <Btn small onClick={() => { const sel = document.getElementById("nop"); const qi = document.getElementById("noq"); const p = products.find(x => x.id === +sel.value); if(p) setEd(prev => ({...prev, lines:[...(prev.lines||[]), {model:p.model, color:p.color, sku:p.sku, qty:parseInt(qi.value)||2, price:0}]})); }}>{t("ajouter")}</Btn>
+              <Btn small onClick={() => { const sel = document.getElementById("nop"); const qi = document.getElementById("noq"); const p = products.find(x => String(x.id) === String(sel.value)); if(p) setEd(prev => ({...prev, lines:[...(prev.lines||[]), {model:p.model, color:p.color, sku:p.sku, qty:parseInt(qi.value)||2, price:0}]})); }}>{t("ajouter")}</Btn>
             </div>
             {edLines.length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
               {edLines.map((l, i) => (
@@ -1481,7 +1483,7 @@ export default function App() {
               {customPrice > 0 && <div style={{background:"#f0f6fa",border:"1px solid "+C.bl+"30",borderRadius:6,padding:"10px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.bl,fontWeight:500}}>{t("prixFixeClient")}: {fmt(customPrice)} €/{t("unites")}</div>}
               {customPrice === 0 && renderTierBar()}
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
-              {cartEntries.map(([id, q]) => { const p = products.find(x => x.id === +id); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
+              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
                   <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -1555,6 +1557,16 @@ export default function App() {
               <a href={r.url} target="_blank" rel="noopener noreferrer" style={{padding:"6px 14px",background:r.type==="download"?C.dk:"transparent",color:r.type==="download"?C.bg:C.dk,border:"1px solid "+(r.type==="download"?C.dk:C.ln),fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3,textDecoration:"none",whiteSpace:"nowrap",cursor:"pointer"}}>{r.type==="download"?t("telecharger"):t("acceder")}</a>
             </div>
           ))}
+        </div>
+      </Sec>}
+
+      {(view === "c-selection" || view === "d-selection") && <Sec title={t("selectionPrivee")} sub={t("selectionSub")}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+          {products.filter(p => (p.tags||[]).includes("privee")).map(p => renderCard(p))}
+          {products.filter(p => (p.tags||[]).includes("privee")).length === 0 && <div style={{gridColumn:"1/-1",textAlign:"center",padding:40}}>
+            <div style={{fontSize:20,fontFamily:DP,color:C.dk,marginBottom:8}}>{t("selectionPrivee")}</div>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr}}>Bientôt disponible · Próximamente · Coming soon</div>
+          </div>}
         </div>
       </Sec>}
 
@@ -1667,7 +1679,7 @@ export default function App() {
               {customPrice > 0 && <div style={{background:"#f0f6fa",border:"1px solid "+C.bl+"30",borderRadius:6,padding:"10px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.bl,fontWeight:500}}>{t("prixFixeClient")}: {fmt(customPrice)} €/{t("unites")}</div>}
               {customPrice === 0 && renderTierBar()}
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
-              {cartEntries.map(([id, q]) => { const p = products.find(x => x.id === +id); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
+              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
                   <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
