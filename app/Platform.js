@@ -1,5 +1,6 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "./supabase";
 
 /* ═══ COLORS & FONTS ═══ */
 const C = {dk:"#18332f",bg:"#f8efe6",bg2:"#f0e5d8",gr:"#6b7f7a",gr2:"#96a5a1",ln:"#d4cdc4",gn:"#2d6b4f",yl:"#b8860b",rd:"#a33030",bl:"#1a5276",wh:"#ffffff"};
@@ -484,6 +485,73 @@ export default function App() {
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
 
+  /* ═══ SUPABASE DATA LAYER ═══ */
+  const dbReady = !!supabase;
+  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
+  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
+  const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
+  const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
+  const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
+  const dbToFaq = r => ({id:r.id,q:{fr:r.question_fr||"",es:r.question_es||"",en:r.question_en||""},a:{fr:r.answer_fr||"",es:r.answer_es||"",en:r.answer_en||""},on:r.active!==false});
+
+  useEffect(() => {
+    if (!dbReady) return;
+    const load = async () => {
+      try {
+        const {data:prods} = await supabase.from("products").select("*").eq("active",true);
+        if (prods && prods.length > 0) setProducts(prods.map(dbToProduct));
+        const {data:usrs} = await supabase.from("users").select("*");
+        if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
+        const {data:cls} = await supabase.from("clients").select("*");
+        if (cls && cls.length > 0) setClients(cls.map(dbToClient));
+        const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
+        if (ords && ords.length > 0) {
+          const {data:allLines} = await supabase.from("order_lines").select("*");
+          const linesByOrder = {};
+          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection}); });
+          setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
+        }
+        const {data:prms} = await supabase.from("promos").select("*");
+        if (prms && prms.length > 0) setPromos(prms.map(dbToPromo));
+        const {data:nws} = await supabase.from("news").select("*").order("created_at",{ascending:false});
+        if (nws && nws.length > 0) setNews(nws.map(dbToNews));
+        const {data:fqs} = await supabase.from("faqs").select("*");
+        if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
+      } catch(e) { console.log("DB load fallback:", e); }
+    };
+    load();
+  }, [dbReady]);
+
+  const dbSaveOrder = async (order, lines) => {
+    if (!dbReady) return;
+    try {
+      const {data} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
+      if (data && lines) { await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
+    } catch(e) { console.log("DB save order:", e); }
+  };
+
+  const dbUpdateOrder = async (order) => {
+    if (!dbReady || !order.dbId) return;
+    try {
+      await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm}).eq("id",order.dbId);
+      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
+    } catch(e) { console.log("DB update order:", e); }
+  };
+
+  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[]}).eq("id",prod.id); } catch(e) {} };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) {} };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false}).eq("email",u.origEmail||u.email); } catch(e) {} };
+  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) {} };
+  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) {} };
+  const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) {} };
+  const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) {} };
+  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) {} };
+  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) {} };
+  const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) {} };
+  const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) {} };
+  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) {} };
+
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
 
@@ -555,6 +623,7 @@ export default function App() {
       status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : -1, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
+    dbSaveOrder(newOrder, lines);
     setCart({}); setCartCl(""); setSubmitted(true);
     setTimeout(() => { setSubmitted(false); setView(user.role === "distributor" ? "d-ord" : "c-ord"); }, 1500);
   };
