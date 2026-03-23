@@ -452,7 +452,7 @@ export default function App() {
 
   // Convert DB rows to app format
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name,taxId:r.tax_id,address:r.address,postalCode:r.postal_code,phone:r.phone,companyEmail:r.company_email,bankHolder:r.bank_holder,iban:r.iban,bic:r.bic});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
