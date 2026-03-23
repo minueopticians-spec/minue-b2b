@@ -1,11 +1,11 @@
 'use client';
-import { useState, useEffect, useCallback } from "react";
-import { supabase } from "./supabase";
+import { useState } from "react";
 
 /* ═══ COLORS & FONTS ═══ */
 const C = {dk:"#18332f",bg:"#f8efe6",bg2:"#f0e5d8",gr:"#6b7f7a",gr2:"#96a5a1",ln:"#d4cdc4",gn:"#2d6b4f",yl:"#b8860b",rd:"#a33030",bl:"#1a5276",wh:"#ffffff"};
 const DP = "'Cormorant Garamond',Georgia,serif";
 const BD = "'DM Sans',system-ui,sans-serif";
+const LOGO = "data:image/jpeg;base64,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";
 const fmt = n => n.toFixed(2).replace(".",",");
 
 /* ═══ i18n DICTIONARY ═══ */
@@ -230,6 +230,32 @@ const T = {
   suivreColis:{fr:"Suivre le colis",es:"Seguir envío",en:"Track shipment"},
   astucePrix:{fr:"Plus vous commandez, moins cher le prix unitaire ! Consultez Tarifs pour voir les paliers.",es:"¡Cuantas más unidades, menor el precio! Consulta Tarifas para ver los tramos.",en:"The more you order, the lower the unit price! Check Pricing for volume tiers."},
   prixFixeClient:{fr:"Prix négocié",es:"Precio negociado",en:"Negotiated price"},
+  eliminarCmd:{fr:"Supprimer la commande",es:"Eliminar pedido",en:"Delete order"},
+  confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
+  reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
+  tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
+  gestionTareas:{fr:"Gestion des tâches",es:"Gestión de tareas",en:"Task management"},
+  nouvelleTache:{fr:"+ Tâche",es:"+ Tarea",en:"+ Task"},
+  titreTache:{fr:"Titre",es:"Título",en:"Title"},
+  descTache:{fr:"Description",es:"Descripción",en:"Description"},
+  priorite:{fr:"Priorité",es:"Prioridad",en:"Priority"},
+  haute:{fr:"Haute",es:"Alta",en:"High"},
+  moyenne:{fr:"Moyenne",es:"Media",en:"Medium"},
+  basse:{fr:"Basse",es:"Baja",en:"Low"},
+  area:{fr:"Domaine",es:"Área",en:"Area"},
+  commercial:{fr:"Commercial",es:"Comercial",en:"Commercial"},
+  finances:{fr:"Finances",es:"Finanzas",en:"Finance"},
+  marketing:{fr:"Marketing",es:"Marketing",en:"Marketing"},
+  produits:{fr:"Produits",es:"Productos",en:"Products"},
+  clientsArea:{fr:"Clients",es:"Clientes",en:"Clients"},
+  logistique:{fr:"Logistique",es:"Logística",en:"Logistics"},
+  admin:{fr:"Admin",es:"Admin",en:"Admin"},
+  fait:{fr:"Fait",es:"Hecho",en:"Done"},
+  enCours:{fr:"En cours",es:"En curso",en:"In progress"},
+  aFaire:{fr:"À faire",es:"Pendiente",en:"To do"},
+  toutesAreas:{fr:"Tout",es:"Todo",en:"All"},
+  promoClients:{fr:"Clients ciblés",es:"Clientes objetivo",en:"Target clients"},
+  tousClients:{fr:"Tous les clients",es:"Todos los clientes",en:"All clients"},
 };
 
 /* ═══ PRICING TIERS (Essential only) ═══ */
@@ -369,6 +395,15 @@ const CLIENTS_INIT = [
   {id:5,name:"Brillen Hamburg",contact:"Anna",city:"Hamburg",country:"DE",orders:4,total:2148,status:"vip",channel:"Faire",customPrice:16.50,earlyPay:true,notes:""},
 ];
 
+const TASKS_INIT = [
+  {id:1,title:"Preparar lookbook SS26",desc:"Fotos + textos para distribuidores",priority:"haute",area:"marketing",status:"enCours",date:"20/03/2026"},
+  {id:2,title:"Revisar factura Optique Rivoli",desc:"Comprobar importes y enviar",priority:"haute",area:"finances",status:"aFaire",date:"22/03/2026"},
+  {id:3,title:"Contactar nuevas ópticas Berlín",desc:"Lista de 10 ópticas potenciales",priority:"moyenne",area:"commercial",status:"aFaire",date:"23/03/2026"},
+  {id:4,title:"Actualizar stock Acetato",desc:"Verificar unidades físicas vs sistema",priority:"moyenne",area:"produits",status:"enCours",date:"21/03/2026"},
+  {id:5,title:"Enviar credenciales a Minuë Colombia",desc:"Email con acceso B2B portal",priority:"haute",area:"clientsArea",status:"fait",date:"23/03/2026"},
+  {id:6,title:"Configurar envío DHL Le Bruit des Vagues",desc:"Pedido #2611 parcial",priority:"basse",area:"logistique",status:"aFaire",date:"22/03/2026"},
+];
+
 const FAQ_INIT = [
   {id:1,q:{fr:"Quel est le minimum de commande ?",es:"¿Cuál es el pedido mínimo?",en:"What is the minimum order?"},a:{fr:"Il n'y a pas de minimum par modèle. Le prix unitaire dépend du volume total de votre commande (voir Tarifs).",es:"No hay mínimo por modelo. El precio unitario depende del volumen total del pedido (ver Tarifas).",en:"No minimum per model. Unit price depends on your total order volume (see Pricing)."},on:true},
   {id:2,q:{fr:"Comment fonctionne le pronto pago ?",es:"¿Cómo funciona el pronto pago?",en:"How does early payment work?"},a:{fr:"Si vous payez dans les 7 jours suivant la facture, vous bénéficiez d'une remise de 3% sur le total. Cette option est activée par votre gestionnaire.",es:"Si pagas en los 7 días siguientes a la factura, obtienes un 3% de descuento. Esta opción la activa tu gestor.",en:"Pay within 7 days of invoice for a 3% discount. Your account manager enables this option."},on:true},
@@ -438,6 +473,8 @@ export default function App() {
   const [accountData, setAccountData] = useState({});
   const [accountSaved, setAccountSaved] = useState(false);
   const [faqs, setFaqs] = useState(FAQ_INIT);
+  const [tasks, setTasks] = useState(TASKS_INIT);
+  const [taskFilter, setTaskFilter] = useState("all");
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpExpanded, setHelpExpanded] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -446,197 +483,6 @@ export default function App() {
   const [colFilter, setColFilter] = useState("all");
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
-
-  /* ═══ SUPABASE DATA LAYER ═══ */
-  const dbReady = !!supabase;
-
-  // Convert DB rows to app format
-  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
-  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name,taxId:r.tax_id,address:r.address,postalCode:r.postal_code,phone:r.phone,companyEmail:r.company_email,bankHolder:r.bank_holder,iban:r.iban,bic:r.bic});
-  const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
-  const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
-  const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
-  const dbToFaq = r => ({id:r.id,q:{fr:r.question_fr||"",es:r.question_es||"",en:r.question_en||""},a:{fr:r.answer_fr||"",es:r.answer_es||"",en:r.answer_en||""},on:r.active!==false});
-
-  // Load all data from Supabase on mount
-  useEffect(() => {
-    if (!dbReady) return;
-    const load = async () => {
-      try {
-        // Products
-        const {data:prods} = await supabase.from("products").select("*").eq("active",true);
-        if (prods && prods.length > 0) setProducts(prods.map(dbToProduct));
-
-        // Users
-        const {data:usrs} = await supabase.from("users").select("*");
-        if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
-
-        // Clients
-        const {data:cls} = await supabase.from("clients").select("*");
-        if (cls && cls.length > 0) setClients(cls.map(dbToClient));
-
-        // Orders + lines
-        const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
-        if (ords && ords.length > 0) {
-          const {data:allLines} = await supabase.from("order_lines").select("*");
-          const linesByOrder = {};
-          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection}); });
-          setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
-        }
-
-        // Promos
-        const {data:prms} = await supabase.from("promos").select("*");
-        if (prms && prms.length > 0) setPromos(prms.map(dbToPromo));
-
-        // News
-        const {data:nws} = await supabase.from("news").select("*").order("created_at",{ascending:false});
-        if (nws && nws.length > 0) setNews(nws.map(dbToNews));
-
-        // FAQs
-        const {data:fqs} = await supabase.from("faqs").select("*");
-        if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
-      } catch(e) { console.log("DB load fallback to INIT data:", e); }
-    };
-    load();
-  }, [dbReady]);
-
-  // Save helpers
-  const dbSaveOrder = async (order, lines) => {
-    if (!dbReady) return;
-    try {
-      const {data,error} = await supabase.from("orders").insert({
-        order_number: order.id, client_name: order.client, distributor: order.dist,
-        status: order.status, payment: order.pay, shipping_cost: order.shippingCost||0,
-        carrier: order.carrier||"", track_number: order.track||"", track_url: order.trackUrl||"",
-        notes_internal: order.notes||"", notes_client: order.clientNotes||"",
-        total: order.total, items_count: order.items, commission: order.comm
-      }).select().single();
-      if (data && lines) {
-        await supabase.from("order_lines").insert(lines.map(l => ({
-          order_id: data.id, model: l.model, color: l.color, sku: l.sku,
-          quantity: l.qty, unit_price: l.price, collection: l.col||"Essential"
-        })));
-      }
-    } catch(e) { console.log("DB save order:", e); }
-  };
-
-  const dbUpdateOrder = async (order) => {
-    if (!dbReady || !order.dbId) return;
-    try {
-      await supabase.from("orders").update({
-        status: order.status, payment: order.pay, track_number: order.track,
-        carrier: order.carrier, track_url: order.trackUrl,
-        notes_internal: order.notes, notes_client: order.clientNotes,
-        total: order.total, items_count: order.items, shipping_cost: order.shippingCost,
-        commission: order.comm
-      }).eq("id", order.dbId);
-      // Update lines: delete old, insert new
-      if (order.lines) {
-        await supabase.from("order_lines").delete().eq("order_id", order.dbId);
-        await supabase.from("order_lines").insert(order.lines.map(l => ({
-          order_id: order.dbId, model: l.model, color: l.color, sku: l.sku,
-          quantity: l.qty, unit_price: l.price, collection: l.col||"Essential"
-        })));
-      }
-    } catch(e) { console.log("DB update order:", e); }
-  };
-
-  const dbUpdateProduct = async (prod) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("products").update({ stock: prod.stock, tags: prod.tags||[] }).eq("id", prod.id);
-    } catch(e) { console.log("DB update product:", e); }
-  };
-
-  const dbSaveUser = async (u) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("users").insert({
-        email: u.email, password_hash: u.pw, role: u.role, name: u.name,
-        company: u.co, lang: u.lang, comm_rate: u.commRate||0, active: true
-      });
-    } catch(e) { console.log("DB save user:", e); }
-  };
-
-  const dbUpdateUser = async (u) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("users").update({
-        name: u.name, company: u.co, password_hash: u.pw, comm_rate: u.commRate, active: u.active!==false
-      }).eq("email", u.origEmail || u.email);
-    } catch(e) { console.log("DB update user:", e); }
-  };
-
-  const dbSaveClient = async (c) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("clients").insert({ name:c.name, contact:c.contact, city:c.city, country:c.country||"FR", channel:"Direct", status:"prospect" });
-    } catch(e) { console.log("DB save client:", e); }
-  };
-
-  const dbUpdateClient = async (c) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("clients").update({
-        custom_price:c.customPrice||0, early_pay:!!c.earlyPay, status:c.status, notes:c.notes,
-        company_name:c.companyName, tax_id:c.taxId, address:c.address, postal_code:c.postalCode,
-        phone:c.phone, company_email:c.companyEmail, bank_holder:c.bankHolder, iban:c.iban, bic:c.bic
-      }).eq("id", c.id);
-    } catch(e) { console.log("DB update client:", e); }
-  };
-
-  const dbSavePromo = async (p) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("promos").insert({ name:p.name, type:p.type, discount:p.disc, condition_fr:p.cond?.fr, condition_es:p.cond?.es, condition_en:p.cond?.en, visible_to:p.visible, active:true });
-    } catch(e) { console.log("DB save promo:", e); }
-  };
-
-  const dbUpdatePromo = async (p) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("promos").update({ name:p.name, type:p.type, discount:p.disc, condition_fr:p.cond?.fr, condition_es:p.cond?.es, condition_en:p.cond?.en, visible_to:p.visible, active:p.on!==false }).eq("id", p.id);
-    } catch(e) { console.log("DB update promo:", e); }
-  };
-
-  const dbSaveNews = async (n) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("news").insert({ title_fr:n.title?.fr, title_es:n.title?.es, title_en:n.title?.en, content_fr:n.content?.fr, content_es:n.content?.es, content_en:n.content?.en, url:n.url||"", pinned:!!n.pinned, active:true });
-    } catch(e) { console.log("DB save news:", e); }
-  };
-
-  const dbUpdateNews = async (n) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("news").update({ title_fr:n.title?.fr, title_es:n.title?.es, title_en:n.title?.en, content_fr:n.content?.fr, content_es:n.content?.es, content_en:n.content?.en, url:n.url||"", pinned:!!n.pinned, active:n.on!==false }).eq("id", n.id);
-    } catch(e) { console.log("DB update news:", e); }
-  };
-
-  const dbSaveFaq = async (f) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("faqs").insert({ question_fr:f.q?.fr, question_es:f.q?.es, question_en:f.q?.en, answer_fr:f.a?.fr, answer_es:f.a?.es, answer_en:f.a?.en, active:true });
-    } catch(e) { console.log("DB save faq:", e); }
-  };
-
-  const dbUpdateFaq = async (f) => {
-    if (!dbReady) return;
-    try {
-      await supabase.from("faqs").update({ question_fr:f.q?.fr, question_es:f.q?.es, question_en:f.q?.en, answer_fr:f.a?.fr, answer_es:f.a?.es, answer_en:f.a?.en, active:f.on!==false }).eq("id", f.id);
-    } catch(e) { console.log("DB update faq:", e); }
-  };
-
-  const dbSaveAccountData = async (data) => {
-    if (!dbReady || !user) return;
-    try {
-      await supabase.from("clients").update({
-        company_name:data.companyName, tax_id:data.taxId, address:data.address, postal_code:data.postalCode,
-        phone:data.phone, company_email:data.companyEmail, bank_holder:data.bankHolder, iban:data.iban, bic:data.bic
-      }).eq("user_id", user.id);
-    } catch(e) { console.log("DB save account:", e); }
-  };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -709,7 +555,6 @@ export default function App() {
       status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : -1, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
-    dbSaveOrder(newOrder, lines);
     setCart({}); setCartCl(""); setSubmitted(true);
     setTimeout(() => { setSubmitted(false); setView(user.role === "distributor" ? "d-ord" : "c-ord"); }, 1500);
   };
@@ -727,7 +572,7 @@ export default function App() {
   if (!user) {
     return (
       <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,fontFamily:DP}}>
-        <div style={{letterSpacing:8,fontSize:42,color:C.dk,fontWeight:300}}>MINUË</div>
+        <img src={LOGO} alt="Minuë" style={{width:140,height:140,objectFit:"contain",borderRadius:16,marginBottom:8}} />
         <div style={{letterSpacing:4,fontSize:13,color:C.gr,marginBottom:12,fontFamily:BD}}>Eyewear · B2B Portal</div>
         <div style={{display:"flex",gap:4,marginBottom:36}}>
           {["fr","es","en"].map(l => (
@@ -756,7 +601,7 @@ export default function App() {
     ? [["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-account","monCompte"]]
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-account","monCompte"]]
-    : [["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-users","utilisateurs"],["a-stats","stats"]];
+    : [["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-stats","stats"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
@@ -766,7 +611,7 @@ export default function App() {
       {/* TOP BAR */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 16px",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <span style={{letterSpacing:4,fontSize:17,color:C.bg,fontWeight:300,fontFamily:DP}}>MINUË</span>
+          <img src={LOGO} alt="Minuë" style={{height:67,borderRadius:4}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -860,16 +705,13 @@ export default function App() {
 
   const renderOrderRow = (o, i, showComm, showDist) => (
     <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 14px",borderBottom:"1px solid "+C.bg2,background:C.wh,flexWrap:"wrap",cursor:"pointer"}} onClick={() => { if (role === "admin") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o}); }}}>
-      <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,minWidth:50}}>{o.id}</span>
-      <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:1,minWidth:100}}>{o.client}</span>
-      {showDist && <span style={{fontSize:11,fontFamily:BD,color:C.gr,minWidth:60}}>{o.dist}</span>}
-      <span style={{fontSize:11,fontFamily:BD,color:C.gr,minWidth:70}}>{o.date}</span>
-      <span style={{fontSize:12,fontFamily:BD,color:C.dk,minWidth:30,textAlign:"center"}}>{o.items}</span>
-      <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,minWidth:60,textAlign:"right"}}>{fmt(o.total)} €</span>
-      {showComm && <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.gn,minWidth:55,textAlign:"right"}}>{fmt(o.comm)} €</span>}
+      <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{o.id}</span>
+      <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:"1 1 80px",minWidth:60}}>{o.client}</span>
+      <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{o.date}</span>
+      <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(o.total)} €</span>
       <Badge l={SL[o.status]} c={SC[o.status]} />
       <Badge l={PL[o.pay]} c={PC[o.pay]} />
-      <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>-&gt;</span>
+      <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>→</span>
     </div>
   );
 
@@ -883,10 +725,10 @@ export default function App() {
   /* ═══ MODAL ═══ */
   const renderModal = () => {
     if (!modal) return null;
-    const titles = {editCl:t("condComm"),editSt:t("editerStock"),newProd:t("nouveauProduit"),newOrd:t("nouvelleCmd"),editOrd:t("modifierCmd"),viewOrd:t("detailCmd"),newCl:t("nouveauClient"),newUser:t("nouveauUser"),editUser:t("editUser"),newPromo:t("nouveauPromo"),editPromo:t("editPromo"),newNews:t("nouvelleNouveaute"),editNews:t("titreNouveaute"),viewInv:t("factureDetail"),newFaq:t("nouvelleFaq"),editFaq:t("questionLabel")};
+    const titles = {editCl:t("condComm"),editSt:t("editerStock"),newProd:t("nouveauProduit"),newOrd:t("nouvelleCmd"),editOrd:t("modifierCmd"),viewOrd:t("detailCmd"),newCl:t("nouveauClient"),newUser:t("nouveauUser"),editUser:t("editUser"),newPromo:t("nouveauPromo"),editPromo:t("editPromo"),newNews:t("nouvelleNouveaute"),editNews:t("titreNouveaute"),viewInv:t("factureDetail"),newFaq:t("nouvelleFaq"),editFaq:t("questionLabel"),newTask:t("nouvelleTache"),editTask:t("titreTache")};
     return (
       <div style={{position:"fixed",inset:0,background:"rgba(24,51,47,0.4)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}} onClick={() => setModal(null)}>
-        <div style={{background:C.wh,padding:"28px 32px",borderRadius:8,width:480,maxHeight:"85vh",overflow:"auto"}} onClick={e => e.stopPropagation()}>
+        <div style={{background:C.wh,padding:"24px 20px",borderRadius:8,width:"100%",maxWidth:480,maxHeight:"85vh",overflow:"auto",margin:"0 16px"}} onClick={e => e.stopPropagation()}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:20}}>
             <h2 style={{fontSize:18,fontWeight:400,fontFamily:DP,color:C.dk,margin:0}}>{titles[modal] || ""}</h2>
             <button onClick={() => setModal(null)} style={{background:"none",border:"none",fontSize:18,cursor:"pointer",color:C.gr}}>x</button>
@@ -916,7 +758,10 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesComm")}</div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, customPrice: ed.customPrice, earlyPay: ed.earlyPay, notes: ed.notes} : c)); dbUpdateClient(ed); setModal(null); }} style={{width:"100%"}}>{t("enregistrerCond")}</Btn>
+            <div style={{display:"flex",gap:8}}>
+              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, customPrice: ed.customPrice, earlyPay: ed.earlyPay, notes: ed.notes} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
+              <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
+            </div>
           </>}
 
           {/* NEW CLIENT */}
@@ -929,7 +774,7 @@ export default function App() {
                 </div>
               ))}
             </div>
-            <Btn onClick={() => { if(ed.name){const nc={...ed, id: clients.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false}; setClients(p => [...p, nc]); dbSaveClient(nc); setModal(null);} }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT STOCK */}
@@ -956,7 +801,7 @@ export default function App() {
                 ); })}
               </div>
             </div>
-            <Btn onClick={() => { const sp={...ed,stock:parseInt(ed.stock)||0,tags:ed.tags||[]}; setProducts(p => p.map(pr => pr.id === sp.id ? {...pr, stock:sp.stock, tags:sp.tags} : pr)); dbUpdateProduct(sp); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
+            <Btn onClick={() => { setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[]} : pr)); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
           </>}
 
           {/* NEW PRODUCT */}
@@ -1027,7 +872,7 @@ export default function App() {
                 <span style={{fontWeight:600}}>{fmt(edTotal)} €</span>
               </div>
             </div>}
-            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); const no={id:"#"+(2625+orders.length), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", clientNotes:"", shippingCost:0, lines:lns}; setOrders(p => [no, ...p]); dbSaveOrder(no, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
+            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); setOrders(p => [{id:"#"+(2625+p.length), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", lines:lns}, ...p]); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
           </>}
 
           {/* EDIT ORDER */}
@@ -1041,10 +886,20 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden",maxHeight:220,overflowY:"auto"}}>
                 {ed.lines.map((l, i) => (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 12px",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:4,padding:"6px 12px",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
                     <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
                     <span style={{color:C.gr}}>{l.color}</span>
-                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qty}</span>
+                    <button onClick={() => {
+                      const nl = ed.lines.map((x,j) => j===i ? {...x, qty: Math.max(1, x.qty-1)} : x);
+                      const ni = nl.reduce((s,x)=>s+x.qty,0); const nt = nl.reduce((s,x)=>s+x.price*x.qty,0);
+                      setEd(p => ({...p, lines:nl, items:ni, total:nt}));
+                    }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk,padding:0}}>-</button>
+                    <span style={{fontWeight:600,minWidth:24,textAlign:"center"}}>{l.qty}</span>
+                    <button onClick={() => {
+                      const nl = ed.lines.map((x,j) => j===i ? {...x, qty: x.qty+1} : x);
+                      const ni = nl.reduce((s,x)=>s+x.qty,0); const nt = nl.reduce((s,x)=>s+x.price*x.qty,0);
+                      setEd(p => ({...p, lines:nl, items:ni, total:nt}));
+                    }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk,padding:0}}>+</button>
                     <span style={{fontWeight:600,minWidth:50,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
                     <button onClick={() => {
                       const removed = ed.lines[i];
@@ -1053,7 +908,7 @@ export default function App() {
                       const newTotal = newLines.reduce((s, x) => s + x.price * x.qty, 0);
                       const note = (ed.clientNotes ? ed.clientNotes + "\n" : "") + removed.model + " " + removed.color + " (x" + removed.qty + ") " + t("artSupprime");
                       setEd(p => ({...p, lines: newLines, items: newItems, total: newTotal, clientNotes: note}));
-                    }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:9,fontFamily:BD,fontWeight:600,padding:"2px 6px",flexShrink:0}}>{t("supprimerLigne")}</button>
+                    }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:9,fontFamily:BD,fontWeight:600,padding:"2px 4px",flexShrink:0}}>✕</button>
                   </div>
                 ))}
                 <div style={{display:"flex",justifyContent:"space-between",padding:"7px 12px",background:C.bg,fontFamily:BD,fontSize:11,fontWeight:600}}>
@@ -1102,7 +957,10 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesClient")} <span style={{color:C.gr2,fontSize:9}}>({t("client")} {t("voirPlus").toLowerCase()})</span></div>
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={() => { const upd={...ed, pay:ed.pay, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:upd.status, pay:upd.pay, track:upd.track, carrier:upd.carrier, trackUrl:upd.trackUrl, notes:upd.notes, clientNotes:upd.clientNotes, lines:upd.lines, items:upd.items, total:upd.total, shippingCost:upd.shippingCost, comm:upd.comm} : o)); dbUpdateOrder(upd); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <div style={{display:"flex",gap:8}}>
+              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
+            </div>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
@@ -1183,7 +1041,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
-            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); dbSaveUser(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT USER */}
@@ -1209,8 +1067,8 @@ export default function App() {
               <input type="number" value={ed.commRate || 15} onChange={e => setEd(p => ({...p, commRate: parseInt(e.target.value)||15}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false} : u)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, active: !(u.active !== false)} : u)); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1246,7 +1104,16 @@ export default function App() {
                 ); })}
               </div>
             </div>
-            <Btn onClick={() => { if(ed.name){ setPromos(p => [...p, {...ed, id: p.length+10, on:true}]); dbSavePromo(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("promoClients")}</div>
+              <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                <button onClick={() => setEd(p => ({...p, targetClients:[]}))} style={{padding:"4px 10px",background:(!ed.targetClients||ed.targetClients.length===0)?C.dk:"transparent",color:(!ed.targetClients||ed.targetClients.length===0)?C.bg:C.gr,border:"1px solid "+((!ed.targetClients||ed.targetClients.length===0)?C.dk:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,cursor:"pointer"}}>{t("tousClients")}</button>
+                {clients.map(c => { const tgt = ed.targetClients||[]; const on = tgt.includes(c.name); return (
+                  <button key={c.name} onClick={() => setEd(p => ({...p, targetClients: on ? tgt.filter(x=>x!==c.name) : [...tgt, c.name]}))} style={{padding:"4px 10px",background:on?C.bl:"transparent",color:on?"#fff":C.gr,border:"1px solid "+(on?C.bl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,cursor:"pointer"}}>{c.name}</button>
+                ); })}
+              </div>
+            </div>
+            <Btn onClick={() => { if(ed.name){ setPromos(p => [...p, {...ed, id: p.length+10, on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT PROMO */}
@@ -1281,9 +1148,18 @@ export default function App() {
                 ); })}
               </div>
             </div>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("promoClients")}</div>
+              <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                <button onClick={() => setEd(p => ({...p, targetClients:[]}))} style={{padding:"4px 10px",background:(!ed.targetClients||ed.targetClients.length===0)?C.dk:"transparent",color:(!ed.targetClients||ed.targetClients.length===0)?C.bg:C.gr,border:"1px solid "+((!ed.targetClients||ed.targetClients.length===0)?C.dk:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,cursor:"pointer"}}>{t("tousClients")}</button>
+                {clients.map(c => { const tgt = ed.targetClients||[]; const on = tgt.includes(c.name); return (
+                  <button key={c.name} onClick={() => setEd(p => ({...p, targetClients: on ? tgt.filter(x=>x!==c.name) : [...tgt, c.name]}))} style={{padding:"4px 10px",background:on?C.bl:"transparent",color:on?"#fff":C.gr,border:"1px solid "+(on?C.bl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,cursor:"pointer"}}>{c.name}</button>
+                ); })}
+              </div>
+            </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); dbUpdatePromo(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tp={...ed,on:!ed.on}; setPromos(p => p.map(pr => pr.id === tp.id ? {...pr, on: tp.on} : pr)); dbUpdatePromo(tp); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...pr, on: !pr.on} : pr)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1312,7 +1188,7 @@ export default function App() {
             <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
-            <Btn onClick={() => { if(ed.title && ed.title.fr){ setNews(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR"), on:true}]); dbSaveNews(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.title && ed.title.fr){ setNews(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR"), on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT NEWS */}
@@ -1341,8 +1217,8 @@ export default function App() {
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); dbUpdateNews(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tn={...ed,on:!ed.on}; setNews(p => p.map(n => n.id === tn.id ? {...n, on:tn.on} : n)); dbUpdateNews(tn); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...n, on:!n.on} : n)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1404,7 +1280,7 @@ export default function App() {
                 <textarea value={(ed.a && ed.a[l]) || ""} onChange={e => setEd(p => ({...p, a:{...(p.a||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
               </div>
             ))}
-            <Btn onClick={() => { if(ed.q && ed.q.fr){ setFaqs(p => [...p, {...ed, id:p.length+10, on:true}]); dbSaveFaq(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.q && ed.q.fr){ setFaqs(p => [...p, {...ed, id:p.length+10, on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT FAQ */}
@@ -1418,8 +1294,77 @@ export default function App() {
               </div>
             ))}
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); dbUpdateFaq(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tf={...ed,on:!ed.on}; setFaqs(p => p.map(f => f.id === tf.id ? {...f, on:tf.on} : f)); dbUpdateFaq(tf); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...f, on:!f.on} : f)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+            </div>
+          </>}
+
+          {/* NEW TASK */}
+          {modal === "newTask" && <>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("titreTache")}</div>
+              <input value={ed.title||""} onChange={e => setEd(p => ({...p, title:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
+              <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("priorite")}</div>
+                <select value={ed.priority||"moyenne"} onChange={e => setEd(p => ({...p, priority:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="haute">{t("haute")}</option><option value="moyenne">{t("moyenne")}</option><option value="basse">{t("basse")}</option>
+                </select>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("area")}</div>
+                <select value={ed.area||"commercial"} onChange={e => setEd(p => ({...p, area:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  {["commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
+                </select>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Status</div>
+                <select value={ed.status||"aFaire"} onChange={e => setEd(p => ({...p, status:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="aFaire">{t("aFaire")}</option><option value="enCours">{t("enCours")}</option><option value="fait">{t("fait")}</option>
+                </select>
+              </div>
+            </div>
+            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+          </>}
+
+          {/* EDIT TASK */}
+          {modal === "editTask" && <>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("titreTache")}</div>
+              <input value={ed.title||""} onChange={e => setEd(p => ({...p, title:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+            </div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
+              <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("priorite")}</div>
+                <select value={ed.priority||"moyenne"} onChange={e => setEd(p => ({...p, priority:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="haute">{t("haute")}</option><option value="moyenne">{t("moyenne")}</option><option value="basse">{t("basse")}</option>
+                </select>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("area")}</div>
+                <select value={ed.area||"commercial"} onChange={e => setEd(p => ({...p, area:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  {["commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
+                </select>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Status</div>
+                <select value={ed.status||"aFaire"} onChange={e => setEd(p => ({...p, status:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  <option value="aFaire">{t("aFaire")}</option><option value="enCours">{t("enCours")}</option><option value="fait">{t("fait")}</option>
+                </select>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
         </div>
@@ -1436,7 +1381,7 @@ export default function App() {
       </div>
       <div style={{fontSize:24,fontWeight:300,fontFamily:DP,color:C.gn,marginBottom:6}}>{p.type==="percent"?"-"+p.disc+" %":t("cadeau")}</div>
       <div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{(p.cond && p.cond[lang]) || (p.cond && p.cond.fr) || ""}</div>
-      {canEdit && <div style={{display:"flex",gap:4,marginTop:8}}>{(p.visible||[]).map(v => <Badge key={v} l={v==="distributor"?t("distributeur"):t("client")} c={v==="distributor"?C.bl:C.gn} />)}</div>}
+      {canEdit && <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>{(p.visible||[]).map(v => <Badge key={v} l={v==="distributor"?t("distributeur"):t("client")} c={v==="distributor"?C.bl:C.gn} />)}{p.targetClients && p.targetClients.length > 0 && <span style={{fontSize:9,fontFamily:BD,color:C.bl,padding:"2px 6px",background:C.bl+"15",borderRadius:3}}>{p.targetClients.join(", ")}</span>}</div>}
     </div>
   );
 
@@ -1545,8 +1490,8 @@ export default function App() {
 
       {view === "c-promo" && <Sec title={t("promosClient")} sub={t("promosSub")}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(260px,1fr))",gap:14}}>
-          {promos.filter(p => p.on && (p.visible||[]).includes("client")).map((p,i) => renderPromoCard(p, i, false))}
-          {promos.filter(p => p.on && (p.visible||[]).includes("client")).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
+          {promos.filter(p => p.on && (p.visible||[]).includes("client") && (!p.targetClients || p.targetClients.length === 0 || p.targetClients.includes(user.co))).map((p,i) => renderPromoCard(p, i, false))}
+          {promos.filter(p => p.on && (p.visible||[]).includes("client") && (!p.targetClients || p.targetClients.length === 0 || p.targetClients.includes(user.co))).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
         </div>
       </Sec>}
 
@@ -1594,7 +1539,7 @@ export default function App() {
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
@@ -1738,7 +1683,7 @@ export default function App() {
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
@@ -1752,13 +1697,11 @@ export default function App() {
       {view === "a-cl" && <Sec title={t("clients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR"}); }}>{t("nouveau")}</Btn>}>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
           {clients.map((c, i) => (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
-              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:1}}>{c.name}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.contact}</span>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",flexWrap:"wrap"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
+              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:"1 1 100px",minWidth:60}}>{c.name}</span>
               <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.city}</span>
-              <span style={{fontSize:10,fontFamily:BD,color:C.gr2,minWidth:50}}>{c.channel}</span>
-              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,minWidth:65}}>{fmt(c.total)} €</span>
-              {c.customPrice > 0 ? <Badge l={fmt(c.customPrice)+" €"} c={C.bl} /> : <Badge l="Auto" c={C.gr} />}
+              <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{c.channel}</span>
+              {c.customPrice > 0 ? <Badge l={fmt(c.customPrice)+" €"} c={C.bl} /> : null}
               {c.earlyPay && <Badge l="-3%" c={C.gn} />}
               <Badge l={c.status==="vip"?"VIP":c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="vip"?C.yl:c.status==="prospect"?C.gr2:C.gn} />
             </div>
@@ -1790,14 +1733,15 @@ export default function App() {
       {view === "a-inv" && <Sec title={t("factures")}>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
           {orders.map((o, i) => { const ship = o.shippingCost > 0 ? o.shippingCost : 0; const ttc = (o.total + ship) * 1.21; return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("viewInv"); setEd({...o}); }}>
-              <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk,minWidth:55}}>F-{o.id.replace("#","")}</span>
-              <span style={{fontSize:12,fontFamily:BD,flex:1}}>{o.client}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{o.date}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr,minWidth:55}}>{fmt(o.total)} €</span>
-              {ship > 0 && <span style={{fontSize:9,fontFamily:BD,color:C.yl}}>+{fmt(ship)}</span>}
-              <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600,minWidth:60}}>{fmt(ttc)} €</span>
-              <Badge l={PL[o.pay]} c={PC[o.pay]} />
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,flex:1,cursor:"pointer",flexWrap:"wrap",minWidth:0}} onClick={() => { setModal("viewInv"); setEd({...o}); }}>
+                <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{("F-"+o.id.replace("#",""))}</span>
+                <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:"1 1 100px",minWidth:60}}>{o.client}</span>
+                <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{o.date}</span>
+                <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{fmt(ttc)} €</span>
+                <Badge l={PL[o.pay]} c={PC[o.pay]} />
+              </div>
+              <button onClick={(e) => { e.stopPropagation(); if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_,j) => j!==i)); }}} style={{background:C.rd,border:"none",color:"#fff",cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,padding:"6px 10px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>{t("eliminarCmd").split(" ").pop()}</button>
             </div>
           ); })}
         </div>
@@ -1824,6 +1768,46 @@ export default function App() {
               <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{(n.content&&n.content[lang])||n.content?.fr||""}</div>
             </div>
           ))}
+        </div>
+      </Sec>}
+
+      {view === "a-tasks" && <Sec title={t("gestionTareas")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire"}); }}>{t("nouvelleTache")}</Btn>}>
+        <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap"}}>
+          {["all","commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => (
+            <button key={a} onClick={() => setTaskFilter(a)} style={{padding:"5px 12px",background:taskFilter===a?C.dk:"transparent",color:taskFilter===a?C.bg:C.gr,border:"1px solid "+(taskFilter===a?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3}}>{a==="all"?t("toutesAreas"):t(a)}</button>
+          ))}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(250px,1fr))",gap:14}}>
+          {["aFaire","enCours","fait"].map(st => {
+            const prioOrder = {haute:0,moyenne:1,basse:2};
+            const prioColor = {haute:C.rd,moyenne:C.yl,basse:C.gn};
+            const areaColor = {commercial:"#2980b9",finances:"#27ae60",marketing:"#8e44ad",produits:"#d35400",clientsArea:"#16a085",logistique:"#2c3e50",admin:"#7f8c8d"};
+            const filtered = tasks.filter(tk => tk.status === st && (taskFilter === "all" || tk.area === taskFilter)).sort((a,b) => (prioOrder[a.priority]||1) - (prioOrder[b.priority]||1));
+            return (
+              <div key={st}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                  <span style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{t(st)}</span>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.gr,background:C.bg,padding:"2px 8px",borderRadius:8}}>{filtered.length}</span>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:8,minHeight:100,background:C.bg,borderRadius:6,padding:8,border:"1px solid "+C.ln}}>
+                  {filtered.map((tk,i) => (
+                    <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"12px 14px",cursor:"pointer",borderLeft:"4px solid "+(prioColor[tk.priority]||C.gr)}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                        <span style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</span>
+                        <Badge l={t(tk.priority)} c={prioColor[tk.priority]||C.gr} />
+                      </div>
+                      {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:6,lineHeight:1.4}}>{tk.desc}</div>}
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                        <span style={{fontSize:9,fontFamily:BD,color:"#fff",background:areaColor[tk.area]||C.gr,padding:"2px 8px",borderRadius:3}}>{t(tk.area)}</span>
+                        <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{tk.date}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {filtered.length === 0 && <div style={{textAlign:"center",padding:20,fontSize:11,color:C.gr2,fontFamily:BD}}>—</div>}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Sec>}
 
