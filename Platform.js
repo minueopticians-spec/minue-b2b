@@ -287,6 +287,14 @@ const T = {
   notesPlaceholder:{fr:"Instructions spéciales, adresse alternative...",es:"Instrucciones especiales, dirección alternativa...",en:"Special instructions, alternative address..."},
   dirEnvioClient:{fr:"Adresse de livraison du client",es:"Dirección de envío del cliente",en:"Client shipping address"},
   utiliserAdresse:{fr:"Utiliser l'adresse du client",es:"Usar dirección del cliente",en:"Use client address"},
+  resumeClient:{fr:"Résumé",es:"Resumen",en:"Summary"},
+  totalDepense:{fr:"Total commandé",es:"Total pedido",en:"Total ordered"},
+  nbCommandes:{fr:"Commandes",es:"Pedidos",en:"Orders"},
+  dernierCmd:{fr:"Dernière commande",es:"Último pedido",en:"Last order"},
+  notesPrivees:{fr:"Notes privées",es:"Notas privadas",en:"Private notes"},
+  notesPriveesDesc:{fr:"Visibles uniquement par vous",es:"Solo visibles para ti",en:"Only visible to you"},
+  editarCmd:{fr:"Modifier la commande",es:"Editar pedido",en:"Edit order"},
+  cmdNonConfirmee:{fr:"Non confirmée — modifiable",es:"No confirmada — editable",en:"Not confirmed — editable"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -538,7 +546,8 @@ const Sec = ({title, sub, right, children}) => (
 
 /* ═══ MAIN APP ═══ */
 export default function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   C = darkMode ? CD : CL;
   const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); return s ? JSON.parse(s) : null; } catch(e) { return null; } });
   const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_user"); } catch(e) { return false; } });
@@ -868,7 +877,37 @@ export default function App() {
             <button key={l} onClick={() => setLang(l)} style={{width:22,height:22,borderRadius:11,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:9,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
           ))}
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
-          <button onClick={() => setDarkMode(!darkMode)} style={{width:24,height:24,borderRadius:12,background:"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}} title={darkMode?"Light mode":"Dark mode"}>{darkMode?"☀️":"🌙"}</button>
+          {(() => {
+            const notifs = role === "admin"
+              ? [...users.filter(u => u.active === false && u.role !== "admin").map(u => ({type:"access",text:u.name+" — "+t("solliciterAcces")})),
+                 ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title})),
+                 ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado")}))]
+              : role === "distributor"
+              ? [...orders.filter(o => o.dist === "Agent Sud" && (o.status === "shipped" || o.status === "delivered")).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status]}))]
+              : [...orders.filter(o => o.client === (user.name||user.co)).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status]})),
+                 ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name}))];
+            const count = notifs.length;
+            return <>
+              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:24,height:24,borderRadius:12,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>🔔
+                {count > 0 && <span style={{position:"absolute",top:-2,right:-4,width:16,height:16,borderRadius:8,background:"#e74c3c",fontSize:9,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
+              </button>
+              {notifOpen && <div style={{position:"fixed",top:48,right:12,width:"min(340px, 85vw)",maxHeight:"60vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:200,overflow:"hidden"}} onClick={e => e.stopPropagation()}>
+                <div style={{padding:"12px 16px",borderBottom:"1px solid "+C.ln,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:700}}>Notifications</span>
+                  <button onClick={() => setNotifOpen(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:16,color:C.gr}}>✕</button>
+                </div>
+                <div style={{overflowY:"auto",maxHeight:"calc(60vh - 50px)"}}>
+                  {notifs.length === 0 && <div style={{padding:30,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>✓ {t("aucuneCmd")}</div>}
+                  {notifs.map((n,i) => (
+                    <div key={i} style={{padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:8}}>
+                      <span style={{width:6,height:6,borderRadius:3,background:n.type==="access"?"#f39c12":n.type==="task"?C.rd:n.type==="stock"?C.yl:C.gn,flexShrink:0}} />
+                      <span>{n.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>}
+            </>;
+          })()}
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
           <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
@@ -993,13 +1032,39 @@ export default function App() {
               <Badge l={ed.status==="vip"?"VIP":ed.status==="prospect"?t("prospect"):t("actif")} c={ed.status==="vip"?C.yl:ed.status==="prospect"?C.gr2:C.gn} />
             </div>
             <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.contact} · {ed.city}, {ed.country} · {ed.channel}</div>
-            <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"1px solid "+C.ln}}>
-              {[["info",t("fichaCliente")],["cond",t("condiciones")]].map(([v,l]) => (
-                <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 16px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"info")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"info")===v?600:400,color:(ed._tab||"info")===v?C.dk:C.gr}}>{l}</button>
+            <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"1px solid "+C.ln,overflowX:"auto"}}>
+              {[["resume",t("resumeClient")],["info",t("fichaCliente")],...(role==="admin"?[["cond",t("condiciones")]]:[]),["notes",t("notesPrivees")]].map(([v,l]) => (
+                <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 14px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"resume")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"resume")===v?600:400,color:(ed._tab||"resume")===v?C.dk:C.gr,whiteSpace:"nowrap"}}>{l}</button>
               ))}
             </div>
 
-            {(ed._tab||"info") === "info" && <>
+            {/* RESUME TAB */}
+            {(ed._tab||"resume") === "resume" && (() => {
+              const clOrders = orders.filter(o => o.client === ed.name);
+              const totalSpent = clOrders.reduce((s,o) => s + o.total, 0);
+              const totalUnits = clOrders.reduce((s,o) => s + o.items, 0);
+              const lastOrd = clOrders[0];
+              return <>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:8,marginBottom:16}}>
+                  {renderKPI(t("nbCommandes"), String(clOrders.length))}
+                  {renderKPI(t("totalDepense"), fmt(totalSpent)+" €", C.gn)}
+                  {renderKPI(t("unites"), String(totalUnits))}
+                  {renderKPI(t("dernierCmd"), lastOrd ? lastOrd.date : "—")}
+                </div>
+                {clOrders.length > 0 ? <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",maxHeight:250,overflowY:"auto"}}>
+                  {clOrders.map((o,i) => (
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("viewOrd"); setEd({...o, idx:orders.indexOf(o)}); }}>
+                      <span style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.date}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} uds · {fmt(o.total)} €</span>
+                      <Badge l={SL[o.status]} c={SC[o.status]} />
+                    </div>
+                  ))}
+                </div> : <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:20}}>—</div>}
+              </>;
+            })()}
+
+            {(ed._tab||"resume") === "info" && <>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
                 <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("datosPersonales")}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
@@ -1077,7 +1142,13 @@ export default function App() {
               </div>
             </>}
 
-            <div style={{display:"flex",gap:8}}>
+            {/* PRIVATE NOTES TAB */}
+            {(ed._tab||"resume") === "notes" && <>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:10}}>{t("notesPriveesDesc")}</div>
+              <textarea value={ed.privateNotes || ""} onChange={e => setEd(p => ({...p, privateNotes: e.target.value}))} rows={6} placeholder="..." style={{width:"100%",padding:12,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",lineHeight:1.6}} />
+            </>}
+
+            <div style={{display:"flex",gap:8,marginTop:12}}>
               <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
@@ -1324,13 +1395,16 @@ export default function App() {
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
-          {modal === "viewOrd" && <>
+          {modal === "viewOrd" && (() => {
+            const canEdit = role === "distributor" && ed.status === "confirmed";
+            return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
               <Badge l={SL[ed.status]} c={SC[ed.status]} />
               <Badge l={PL[ed.pay]} c={PC[ed.pay]} />
             </div>
-            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:canEdit?8:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
+            {canEdit && <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>✏️ {t("cmdNonConfirmee")}</div>}
             {ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
@@ -1338,8 +1412,16 @@ export default function App() {
                   <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
                     <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
                     <span style={{color:C.gr}}>{l.color}</span>
-                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qty}</span>
-                    <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                    {canEdit ? <>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: Math.max(1, nl[i].qty-1)}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>-</button>
+                      <span style={{fontWeight:600,minWidth:22,textAlign:"center"}}>{l.qty}</span>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: nl[i].qty+1}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>+</button>
+                      <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                      <button onClick={() => { const nl = ed.lines.filter((_,j) => j!==i); const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:14,padding:"0 2px"}}>✕</button>
+                    </> : <>
+                      <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qty}</span>
+                      <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                    </>}
                   </div>
                 ))}
                 <div style={{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:C.bg,fontFamily:BD,fontSize:12,fontWeight:600}}>
@@ -1348,6 +1430,10 @@ export default function App() {
                 </div>
               </div>
             </>}
+            {canEdit && <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesCmd")}</div>
+              <textarea value={ed.clientNotes||""} onChange={e => setEd(p => ({...p, clientNotes:e.target.value}))} rows={2} placeholder={t("notesPlaceholder")} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>}
             {(ed.track || ed.carrier) && <div style={{marginBottom:12,padding:"12px 14px",background:C.bg,borderRadius:4,border:"1px solid "+C.ln}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("tracking")}</div>
               <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
@@ -1356,11 +1442,13 @@ export default function App() {
               </div>
               {ed.trackUrl && <a href={ed.trackUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,marginTop:8,fontSize:11,fontFamily:BD,color:C.bl,textDecoration:"none",fontWeight:600,padding:"5px 12px",background:C.bl+"10",borderRadius:3}}>{t("suivreColis")} →</a>}
             </div>}
-            {ed.clientNotes && <div style={{padding:"12px 14px",background:"#f0f6fa",borderRadius:4,border:"1px solid "+C.bl+"30"}}>
+            {!canEdit && ed.clientNotes && <div style={{padding:"12px 14px",background:"#f0f6fa",borderRadius:4,border:"1px solid "+C.bl+"30"}}>
               <div style={{fontSize:10,fontFamily:BD,color:C.bl,fontWeight:600,marginBottom:4}}>{t("noteDuCmd")}</div>
               <div style={{fontSize:12,fontFamily:BD,color:C.dk,lineHeight:1.5,whiteSpace:"pre-line"}}>{ed.clientNotes}</div>
             </div>}
-          </>}
+            {canEdit && <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, lines:ed.lines, items:ed.items, total:ed.total, clientNotes:ed.clientNotes} : o)); setModal(null); }} style={{width:"100%",marginTop:8}}>{t("editarCmd")}</Btn>}
+          </>;
+          })()}
 
           {/* NEW USER */}
           {modal === "newUser" && <>
@@ -1810,6 +1898,9 @@ export default function App() {
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:BD}}>
       {renderNav()}
 
+      {/* NOTIF OVERLAY */}
+      {notifOpen && <div style={{position:"fixed",inset:0,zIndex:190}} onClick={() => setNotifOpen(false)} />}
+
       {/* PROFILE POPUP */}
       {profileOpen && <div style={{position:"fixed",inset:0,zIndex:180}} onClick={() => setProfileOpen(false)}>
         <div style={{position:"absolute",top:52,right:16,width:"min(340px, 85vw)",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.12)",overflow:"hidden"}} onClick={e => e.stopPropagation()}>
@@ -2153,7 +2244,7 @@ export default function App() {
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
             {renderKPI(t("ventesTot"), fmt(distSales)+" €")}
-            {renderKPI(t("commTot"), fmt(distComm)+" €", C.gn)}
+            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn)}
             {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn)}
             {renderKPI(t("aPercevoir"), fmt(distComm-distPaid)+" €", C.yl)}
           </div>
@@ -2762,8 +2853,8 @@ export default function App() {
         </div>
       </Sec>}
 
-      {/* FLOATING CART BUTTON (client + distributor only) */}
-      {role !== "admin" && cartCount > 0 && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:20,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
+      {/* FLOATING CART BUTTON - hide on cart page */}
+      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:20,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
         <span style={{fontSize:18}}>🛒</span>
         <span>{cartCount}</span>
         <span style={{fontSize:10,fontWeight:400,opacity:0.7}}>{fmt(finalTotal)} €</span>
