@@ -283,6 +283,18 @@ const T = {
   direccion:{fr:"Adresse",es:"Dirección",en:"Address"},
   fichaCliente:{fr:"Fiche client",es:"Ficha del cliente",en:"Client file"},
   condiciones:{fr:"Conditions commerciales",es:"Condiciones comerciales",en:"Commercial terms"},
+  notesCmd:{fr:"Notes pour cette commande",es:"Notas para este pedido",en:"Notes for this order"},
+  notesPlaceholder:{fr:"Instructions spéciales, adresse alternative...",es:"Instrucciones especiales, dirección alternativa...",en:"Special instructions, alternative address..."},
+  dirEnvioClient:{fr:"Adresse de livraison du client",es:"Dirección de envío del cliente",en:"Client shipping address"},
+  utiliserAdresse:{fr:"Utiliser l'adresse du client",es:"Usar dirección del cliente",en:"Use client address"},
+  resumeClient:{fr:"Résumé",es:"Resumen",en:"Summary"},
+  totalDepense:{fr:"Total commandé",es:"Total pedido",en:"Total ordered"},
+  nbCommandes:{fr:"Commandes",es:"Pedidos",en:"Orders"},
+  dernierCmd:{fr:"Dernière commande",es:"Último pedido",en:"Last order"},
+  notesPrivees:{fr:"Notes privées",es:"Notas privadas",en:"Private notes"},
+  notesPriveesDesc:{fr:"Visibles uniquement par vous",es:"Solo visibles para ti",en:"Only visible to you"},
+  editarCmd:{fr:"Modifier la commande",es:"Editar pedido",en:"Edit order"},
+  cmdNonConfirmee:{fr:"Non confirmée — modifiable",es:"No confirmada — editable",en:"Not confirmed — editable"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -536,12 +548,9 @@ const Sec = ({title, sub, right, children}) => (
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   C = darkMode ? CD : CL;
-  const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); return s ? JSON.parse(s) : null; } catch(e) { return null; } });
-  const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_user"); } catch(e) { return false; } });
-  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); return u.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : "fr"; } catch(e) { return "fr"; } });
-  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); u.lang = l; localStorage.setItem("minue_user", JSON.stringify(u)); } } catch(e) { console.log('DB error:', e); } };
-  const [view, _setView] = useState(() => { try { return typeof window !== "undefined" && localStorage.getItem("minue_view") || "c-cat"; } catch(e) { return "c-cat"; } });
-  const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
+  const [user, setUser] = useState(null);
+  const [lang, setLang] = useState("fr");
+  const [view, setView] = useState("c-cat");
   const [cart, setCart] = useState({});
   const [cartCl, setCartCl] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
@@ -570,6 +579,7 @@ export default function App() {
   const [ordStatusFilter, setOrdStatusFilter] = useState("all");
   const [ordPayFilter, setOrdPayFilter] = useState("all");
   const [stockSearch, setStockSearch] = useState("");
+  const [cartNotes, setCartNotes] = useState("");
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
@@ -582,9 +592,9 @@ export default function App() {
 
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
-  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
-  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
+  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
+  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
   const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
@@ -599,10 +609,7 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls && cls.length > 0) {
-          setClients(cls.map(dbToClient));
-          if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); }
-        }
+        if (cls && cls.length > 0) setClients(cls.map(dbToClient));
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
         if (ords && ords.length > 0) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
@@ -616,16 +623,10 @@ export default function App() {
         if (nws && nws.length > 0) setNews(nws.map(dbToNews));
         const {data:fqs} = await supabase.from("faqs").select("*");
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
-        const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
-        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
-        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_user", JSON.stringify(fresh)); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_user"); } catch(e) { console.log('DB error:', e); } } }
       } catch(e) { console.log("DB load fallback:", e); }
-      setLoading(false);
     };
     load();
   }, [dbReady]);
-
-  const getNextOrderNumber = async () => { if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0"); try { const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1); if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); } return "#MN-0001"; } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); } };
 
   const dbSaveOrder = async (order, lines) => {
     if (!dbReady) return;
@@ -643,21 +644,18 @@ export default function App() {
     } catch(e) { console.log("DB update order:", e); }
   };
 
-  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
-  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
-  const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
-  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[]}).eq("id",prod.id); } catch(e) {} };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) {} };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false}).eq("email",u.origEmail||u.email); } catch(e) {} };
+  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) {} };
+  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) {} };
+  const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) {} };
+  const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) {} };
+  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) {} };
+  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) {} };
+  const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) {} };
+  const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) {} };
+  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) {} };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -727,11 +725,11 @@ export default function App() {
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
-      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
+      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: cartNotes, lines
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
-    setCart({}); setCartCl(""); setSubmitted(true);
+    setCart({}); setCartCl(""); setCartNotes(""); setSubmitted(true);
     setTimeout(() => { setSubmitted(false); setView(user.role === "distributor" ? "d-ord" : "c-ord"); }, 1500);
   };
 
@@ -750,12 +748,11 @@ export default function App() {
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
-    setUsers(p => [...p, nu]); dbSaveUser(nu);
+    setUsers(p => [...p, nu]);
     setLoginErr("");
     setRegSent(true);
   };
 
-  if (!user && loading) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg}}><img src={LOGO} alt="Minue" style={{width:80,height:80,objectFit:"contain",borderRadius:12,marginBottom:12,opacity:0.7}} /><div style={{fontSize:12,fontFamily:BD,color:C.gr}}>Chargement...</div></div>); }
   if (!user) {
     return (
       <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,fontFamily:DP}}>
@@ -845,10 +842,10 @@ export default function App() {
   /* ═══ ROLE & NAV CONFIG ═══ */
   const role = user.role;
   const navItems = role === "client"
-    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-account","monCompte"]]
+    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-account","monCompte"]]
-    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"]];
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-help","faq"],["d-account","monCompte"]]
+    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
@@ -869,7 +866,7 @@ export default function App() {
           <button onClick={() => setDarkMode(!darkMode)} style={{width:24,height:24,borderRadius:12,background:"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}} title={darkMode?"Light mode":"Dark mode"}>{darkMode?"☀️":"🌙"}</button>
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
-          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
+          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -991,13 +988,39 @@ export default function App() {
               <Badge l={ed.status==="vip"?"VIP":ed.status==="prospect"?t("prospect"):t("actif")} c={ed.status==="vip"?C.yl:ed.status==="prospect"?C.gr2:C.gn} />
             </div>
             <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.contact} · {ed.city}, {ed.country} · {ed.channel}</div>
-            <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"1px solid "+C.ln}}>
-              {[["info",t("fichaCliente")],["cond",t("condiciones")]].map(([v,l]) => (
-                <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 16px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"info")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"info")===v?600:400,color:(ed._tab||"info")===v?C.dk:C.gr}}>{l}</button>
+            <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"1px solid "+C.ln,overflowX:"auto"}}>
+              {[["resume",t("resumeClient")],["info",t("fichaCliente")],...(role==="admin"?[["cond",t("condiciones")]]:[]),["notes",t("notesPrivees")]].map(([v,l]) => (
+                <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 14px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"resume")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"resume")===v?600:400,color:(ed._tab||"resume")===v?C.dk:C.gr,whiteSpace:"nowrap"}}>{l}</button>
               ))}
             </div>
 
-            {(ed._tab||"info") === "info" && <>
+            {/* RESUME TAB */}
+            {(ed._tab||"resume") === "resume" && (() => {
+              const clOrders = orders.filter(o => o.client === ed.name);
+              const totalSpent = clOrders.reduce((s,o) => s + o.total, 0);
+              const totalUnits = clOrders.reduce((s,o) => s + o.items, 0);
+              const lastOrd = clOrders[0];
+              return <>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(110px,1fr))",gap:8,marginBottom:16}}>
+                  {renderKPI(t("nbCommandes"), String(clOrders.length))}
+                  {renderKPI(t("totalDepense"), fmt(totalSpent)+" €", C.gn)}
+                  {renderKPI(t("unites"), String(totalUnits))}
+                  {renderKPI(t("dernierCmd"), lastOrd ? lastOrd.date : "—")}
+                </div>
+                {clOrders.length > 0 ? <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",maxHeight:250,overflowY:"auto"}}>
+                  {clOrders.map((o,i) => (
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"9px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("viewOrd"); setEd({...o, idx:orders.indexOf(o)}); }}>
+                      <span style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.date}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} uds · {fmt(o.total)} €</span>
+                      <Badge l={SL[o.status]} c={SC[o.status]} />
+                    </div>
+                  ))}
+                </div> : <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:20}}>—</div>}
+              </>;
+            })()}
+
+            {(ed._tab||"resume") === "info" && <>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
                 <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("datosPersonales")}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
@@ -1075,7 +1098,13 @@ export default function App() {
               </div>
             </>}
 
-            <div style={{display:"flex",gap:8}}>
+            {/* PRIVATE NOTES TAB */}
+            {(ed._tab||"resume") === "notes" && <>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:10}}>{t("notesPriveesDesc")}</div>
+              <textarea value={ed.privateNotes || ""} onChange={e => setEd(p => ({...p, privateNotes: e.target.value}))} rows={6} placeholder="..." style={{width:"100%",padding:12,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",lineHeight:1.6}} />
+            </>}
+
+            <div style={{display:"flex",gap:8,marginTop:12}}>
               <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
@@ -1084,14 +1113,32 @@ export default function App() {
           {/* NEW CLIENT */}
           {modal === "newCl" && <>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              {[[t("boutique"),"name"],[t("contact"),"contact"],[t("ville"),"city"],[t("pays"),"country"]].map(([l,k]) => (
-                <div key={k} style={{marginBottom:12}}>
+              {[[t("boutique"),"name"],[t("contact"),"contact"],[t("ville"),"city"],[t("pays"),"country"],[t("codePostal"),"postalCode"],[t("telephone"),"phone"]].map(([l,k]) => (
+                <div key={k} style={{marginBottom:10}}>
                   <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
                   <input value={ed[k] || ""} onChange={e => setEd(p => ({...p, [k]: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
                 </div>
               ))}
             </div>
-            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginTop:8,marginBottom:8}}>{t("dirEnvio")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              {[[t("direccion"),"shippingAddress"],[t("ville"),"shippingCity"],[t("codePostal"),"shippingPostal"],[t("pays"),"shippingCountry"]].map(([l,k]) => (
+                <div key={k} style={{marginBottom:10}}>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
+                  <input value={ed[k] || ""} onChange={e => setEd(p => ({...p, [k]: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                </div>
+              ))}
+            </div>
+            <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginTop:8,marginBottom:8}}>{t("dirFacturacion")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
+                <div key={k} style={{marginBottom:10}}>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
+                  <input value={ed[k] || ""} onChange={e => setEd(p => ({...p, [k]: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                </div>
+              ))}
+            </div>
+            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT STOCK */}
@@ -1298,19 +1345,22 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
-          {modal === "viewOrd" && <>
+          {modal === "viewOrd" && (() => {
+            const canEdit = role === "distributor" && ed.status === "confirmed";
+            return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
               <Badge l={SL[ed.status]} c={SC[ed.status]} />
               <Badge l={PL[ed.pay]} c={PC[ed.pay]} />
             </div>
-            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:canEdit?8:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
+            {canEdit && <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>✏️ {t("cmdNonConfirmee")}</div>}
             {ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
@@ -1318,8 +1368,16 @@ export default function App() {
                   <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
                     <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
                     <span style={{color:C.gr}}>{l.color}</span>
-                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qty}</span>
-                    <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                    {canEdit ? <>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: Math.max(1, nl[i].qty-1)}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>-</button>
+                      <span style={{fontWeight:600,minWidth:22,textAlign:"center"}}>{l.qty}</span>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: nl[i].qty+1}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>+</button>
+                      <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                      <button onClick={() => { const nl = ed.lines.filter((_,j) => j!==i); const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:14,padding:"0 2px"}}>✕</button>
+                    </> : <>
+                      <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qty}</span>
+                      <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
+                    </>}
                   </div>
                 ))}
                 <div style={{display:"flex",justifyContent:"space-between",padding:"10px 12px",background:C.bg,fontFamily:BD,fontSize:12,fontWeight:600}}>
@@ -1328,6 +1386,10 @@ export default function App() {
                 </div>
               </div>
             </>}
+            {canEdit && <div style={{marginBottom:14}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesCmd")}</div>
+              <textarea value={ed.clientNotes||""} onChange={e => setEd(p => ({...p, clientNotes:e.target.value}))} rows={2} placeholder={t("notesPlaceholder")} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>}
             {(ed.track || ed.carrier) && <div style={{marginBottom:12,padding:"12px 14px",background:C.bg,borderRadius:4,border:"1px solid "+C.ln}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("tracking")}</div>
               <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
@@ -1336,11 +1398,13 @@ export default function App() {
               </div>
               {ed.trackUrl && <a href={ed.trackUrl} target="_blank" rel="noopener noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,marginTop:8,fontSize:11,fontFamily:BD,color:C.bl,textDecoration:"none",fontWeight:600,padding:"5px 12px",background:C.bl+"10",borderRadius:3}}>{t("suivreColis")} →</a>}
             </div>}
-            {ed.clientNotes && <div style={{padding:"12px 14px",background:"#f0f6fa",borderRadius:4,border:"1px solid "+C.bl+"30"}}>
+            {!canEdit && ed.clientNotes && <div style={{padding:"12px 14px",background:"#f0f6fa",borderRadius:4,border:"1px solid "+C.bl+"30"}}>
               <div style={{fontSize:10,fontFamily:BD,color:C.bl,fontWeight:600,marginBottom:4}}>{t("noteDuCmd")}</div>
               <div style={{fontSize:12,fontFamily:BD,color:C.dk,lineHeight:1.5,whiteSpace:"pre-line"}}>{ed.clientNotes}</div>
             </div>}
-          </>}
+            {canEdit && <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, lines:ed.lines, items:ed.items, total:ed.total, clientNotes:ed.clientNotes} : o)); setModal(null); }} style={{width:"100%",marginTop:8}}>{t("editarCmd")}</Btn>}
+          </>;
+          })()}
 
           {/* NEW USER */}
           {modal === "newUser" && <>
@@ -1403,7 +1467,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); dbSaveUser(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT USER */}
@@ -1447,8 +1511,8 @@ export default function App() {
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={3} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, active: !(u.active !== false)} : u)); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1538,8 +1602,8 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); dbUpdatePromo(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tp={...ed,on:!ed.on}; setPromos(p => p.map(pr => pr.id === tp.id ? {...pr, on: tp.on} : pr)); dbUpdatePromo(tp); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...pr, on: !pr.on} : pr)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1597,8 +1661,8 @@ export default function App() {
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); dbUpdateNews(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tn={...ed,on:!ed.on}; setNews(p => p.map(n => n.id === tn.id ? {...n, on:tn.on} : n)); dbUpdateNews(tn); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...n, on:!n.on} : n)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1674,8 +1738,8 @@ export default function App() {
               </div>
             ))}
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); dbUpdateFaq(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tf={...ed,on:!ed.on}; setFaqs(p => p.map(f => f.id === tf.id ? {...f, on:tf.on} : f)); dbUpdateFaq(tf); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...f, on:!f.on} : f)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1719,7 +1783,7 @@ export default function App() {
                 </select>
               </div>
             </div>
-            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); dbSaveTask(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT TASK */}
@@ -1763,8 +1827,8 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); dbUpdateTask(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); dbDeleteTask(ed.id); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
+              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
             </div>
           </>}
         </div>
@@ -1819,7 +1883,7 @@ export default function App() {
             </div>
             <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
               {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
-              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
+              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
             </div>
           </div>
         </div>
@@ -2103,39 +2167,54 @@ export default function App() {
           </div>
 
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
       </Sec>}
 
       {/* DISTRIBUTOR VIEWS */}
-      {view === "d-dash" && <Sec title={t("dashboard")} sub={user.co + " - " + t("commission") + " " + (user.commRate||0) + " %"}>
+      {view === "d-dash" && <>
+        <div style={{padding:"min(30px, 6vw) min(24px, 4vw) min(20px, 4vw)",background:darkMode?"linear-gradient(135deg,#141c1a,#1e2d29)":"linear-gradient(135deg,"+CL.dk+","+CL.dk+"dd)",color:darkMode?"#e8dfd6":"#f8efe6"}}>
+          <div style={{fontSize:"min(24px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:4}}>{t("bienvenida")}, {user.name} ✦</div>
+          <div style={{fontSize:12,fontFamily:BD,opacity:0.6}}>{user.co}</div>
+        </div>
+        <div style={{padding:"20px min(24px, 4vw)"}}>
+          {/* ORDER NOTIFICATIONS */}
+          {distOrders.length > 0 && <div style={{marginBottom:20}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("notifTitre")}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {distOrders.slice(0,3).map((o,i) => (
+                <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={() => { setModal("viewOrd"); setEd({...o, idx:orders.indexOf(o)}); }}>
+                  <span style={{fontSize:13,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
+                  <span style={{fontSize:12,fontFamily:BD,color:C.gr,flex:1}}>{o.client}</span>
+                  <Badge l={SL[o.status]} c={SC[o.status]} />
+                  <Badge l={PL[o.pay]} c={PC[o.pay]} />
+                </div>
+              ))}
+            </div>
+          </div>}
+
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
             {renderKPI(t("ventesTot"), fmt(distSales)+" €")}
-            {renderKPI(t("commTot"), fmt(distComm)+" €", C.gn)}
+            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn)}
             {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn)}
             {renderKPI(t("aPercevoir"), fmt(distComm-distPaid)+" €", C.yl)}
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
             <div>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:8,fontWeight:500}}>{t("dernieresCmd")}</div>
-              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{distOrders.map((o,i) => renderOrderRow(o, i, true, false))}</div>
+              <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("dernieresCmd")}</div>
+              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{distOrders.slice(0,5).map((o,i) => renderOrderRow(o, i, true, false))}</div>
             </div>
             <div>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:8,fontWeight:500}}>{t("mesClients")}</div>
+              <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("mesClients")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6}}>
-                {distClients.map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 14px",borderBottom:"1px solid "+C.bg2}}><div><div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{c.contact} - {c.city}</div></div><span style={{fontSize:12,fontWeight:600,fontFamily:BD}}>{fmt(c.total)} €</span></div>)}
-              </div>
-              <div style={{marginTop:12}}>
-                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("stockBas")}</div>
-                <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"10px 14px"}}>
-                  {products.filter(p => p.stock < 10).map(p => <div key={p.id} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontFamily:BD,fontSize:11}}><span style={{color:C.dk}}>{p.model} {p.color}</span><span style={{color:C.yl,fontWeight:600}}>{p.stock}</span></div>)}
-                </div>
+                {distClients.map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 14px",borderBottom:"1px solid "+C.bg2}}><div><div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{c.contact} · {c.city}</div></div><span style={{fontSize:12,fontWeight:600,fontFamily:BD}}>{fmt(c.total)} €</span></div>)}
               </div>
             </div>
           </div>
-      </Sec>}
+        </div>
+      </>}
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
@@ -2192,6 +2271,13 @@ export default function App() {
                 </div>
               ); })}
               <div style={{borderTop:"2px solid "+C.dk,marginTop:12,paddingTop:16}}>
+                {(() => { const selCl = distClients.find(c => c.name === cartCl); return selCl && (selCl.shippingAddress || selCl.city) ? <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"10px 14px",marginBottom:12,fontSize:11,fontFamily:BD,color:C.gr}}>
+                  <span style={{fontWeight:600,color:C.dk}}>📦 {t("dirEnvioClient")}:</span> {selCl.shippingAddress || selCl.address || "—"}, {selCl.shippingCity || selCl.city || ""} {selCl.shippingPostal || ""} {selCl.shippingCountry || selCl.country || ""}
+                </div> : null; })()}
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesCmd")}</div>
+                  <textarea value={cartNotes} onChange={e => setCartNotes(e.target.value)} rows={2} placeholder={t("notesPlaceholder")} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+                </div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",padding:"12px 0"}}>
                   <div>
                     <div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{t("totalHT")}</div>
@@ -2206,11 +2292,36 @@ export default function App() {
         {submitted && <div style={{position:"fixed",inset:0,background:"rgba(24,51,47,0.5)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:200}}><div style={{background:C.wh,padding:"40px 50px",textAlign:"center",borderRadius:8}}><div style={{fontSize:32,color:C.gn}}>OK</div><div style={{fontSize:18,fontFamily:DP,color:C.dk,marginTop:8}}>{t("cmdEnvoyee")}</div></div></div>}
       </Sec>}
 
-      {view === "d-ord" && <Sec title={t("mesCmd")}><div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.filter(o => o.dist === "Agent Sud").map((o,i) => renderOrderRow(o, i, true, false))}</div></Sec>}
+      {view === "d-ord" && <Sec title={t("mesCmd")}>
+        <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
+          {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
+            <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+          ))}
+          <span style={{width:1,height:16,background:C.ln,margin:"0 2px"}} />
+          {[["all",t("tous")],["pending",t("pending")],["paid",t("paid")]].map(([v,l]) => (
+            <button key={v} onClick={() => setOrdPayFilter(v)} style={{padding:"5px 12px",background:ordPayFilter===v?C.bl:"transparent",color:ordPayFilter===v?"#fff":C.gr,border:"1px solid "+(ordPayFilter===v?C.bl:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+          ))}
+        </div>
+        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{distOrders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).map((o,i) => renderOrderRow(o, orders.indexOf(o), true, false))}</div>
+      </Sec>}
 
-      {view === "d-cl" && <Sec title={t("mesClients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR"}); }}>{t("nouveau")}</Btn>}>
+      {view === "d-cl" && <Sec title={t("mesClients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:""}); }}>{t("nouveau")}</Btn>}>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {distClients.map((c, i) => <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:1}}>{c.name}</span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.contact} - {c.city}</span><span style={{fontSize:12,fontWeight:600,fontFamily:BD,minWidth:65}}>{fmt(c.total)} €</span><Badge l={c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="prospect"?C.yl:C.gn} /></div>)}
+          {distClients.map((c, i) => {
+            const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
+            return (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"info"}); }}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.city}</span>
+                </div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:1}}>{flags[c.country]||"🌍"} {c.country||"—"} · {c.contact}</div>
+              </div>
+              <Badge l={c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="prospect"?C.yl:C.gn} />
+            </div>
+            );
+          })}
         </div>
       </Sec>}
 
@@ -2241,11 +2352,32 @@ export default function App() {
       </Sec>}
 
       {view === "d-account" && <Sec title={t("monCompte")}>
-        <div style={{maxWidth:600}}>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"20px 22px",marginBottom:16}}>
-            <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:14}}>{t("donneesEntreprise")}</div>
+        <div style={{maxWidth:640}}>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("adresse"),"address"],[t("ville"),"city"],[t("codePostal"),"postalCode"],[t("pays"),"country"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.name}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.email}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.co || "—"}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commission")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.gn,padding:"9px 0",fontWeight:600}}>{user.commRate||0}%</div>
+              </div>
+            </div>
+          </div>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("donneesEntreprise")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("ville"),"city"],[t("codePostal"),"postalCode"],[t("pays"),"country"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
                 <div key={k} style={{marginBottom:12}}>
                   <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
                   <input value={accountData[k]||""} onChange={e => { setAccountData(p => ({...p,[k]:e.target.value})); setAccountSaved(false); }} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
@@ -2253,8 +2385,8 @@ export default function App() {
               ))}
             </div>
           </div>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"20px 22px",marginBottom:16}}>
-            <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:14}}>{t("donneesBancaires")}</div>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("donneesBancaires")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
               {[[t("titulaire"),"bankHolder"],[t("iban"),"iban"],[t("bic"),"bic"]].map(([l,k]) => (
                 <div key={k} style={{marginBottom:12}}>
@@ -2265,7 +2397,7 @@ export default function App() {
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
@@ -2655,31 +2787,31 @@ export default function App() {
           </div>
         </div>
       </Sec>}
-      <button onClick={() => setHelpOpen(!helpOpen)} style={{position:"fixed",bottom:20,right:20,width:48,height:48,borderRadius:24,background:C.dk,color:C.bg,border:"none",cursor:"pointer",fontSize:18,fontFamily:BD,fontWeight:700,boxShadow:"0 4px 16px rgba(24,51,47,0.25)",zIndex:150,display:"flex",alignItems:"center",justifyContent:"center"}}>{helpOpen ? "x" : "?"}</button>
-
-      {helpOpen && <div style={{position:"fixed",bottom:80,right:20,width:360,maxWidth:"calc(100vw - 40px)",maxHeight:"70vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:150,display:"flex",flexDirection:"column",overflow:"hidden"}}>
-        <div style={{padding:"16px 18px",borderBottom:"1px solid "+C.ln,display:"flex",justifyContent:"space-between",alignItems:"center",flexShrink:0}}>
-          <div>
-            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500}}>{t("faq")}</div>
-            <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("faqSub")}</div>
-          </div>
-          {role === "admin" && <Btn small onClick={() => { setHelpOpen(false); setModal("newFaq"); setEd({q:{fr:"",es:"",en:""},a:{fr:"",es:"",en:""},on:true}); }}>{t("nouvelleFaq")}</Btn>}
-        </div>
-        <div style={{overflowY:"auto",padding:"8px 0",flex:1}}>
+      {/* FAQ VIEWS */}
+      {(view === "c-help" || view === "d-help" || view === "a-faq") && <Sec title={t("faq")} sub={t("faqSub")} right={role === "admin" ? <Btn small onClick={() => { setModal("newFaq"); setEd({q:{fr:"",es:"",en:""},a:{fr:"",es:"",en:""},on:true}); }}>{t("nouvelleFaq")}</Btn> : null}>
+        <div style={{maxWidth:700}}>
           {faqs.filter(f => role === "admin" ? true : f.on).map((f, i) => (
-            <div key={i} style={{borderBottom:"1px solid "+C.bg2,opacity:f.on?1:0.4}}>
-              <button onClick={() => setHelpExpanded(helpExpanded === f.id ? null : f.id)} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 18px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
-                <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:500,flex:1,paddingRight:8}}>{(f.q && f.q[lang]) || f.q?.fr || ""}</span>
-                <span style={{fontSize:14,color:C.gr,fontFamily:BD,flexShrink:0,transform:helpExpanded===f.id?"rotate(45deg)":"none",transition:"transform 0.2s"}}>+</span>
+            <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:8,opacity:f.on?1:0.4,overflow:"hidden"}}>
+              <button onClick={() => setHelpExpanded(helpExpanded === f.id ? null : f.id)} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
+                <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,flex:1,paddingRight:8}}>{(f.q && f.q[lang]) || f.q?.fr || ""}</span>
+                <span style={{fontSize:16,color:C.gr,fontFamily:BD,flexShrink:0,transform:helpExpanded===f.id?"rotate(45deg)":"none",transition:"transform 0.2s"}}>+</span>
               </button>
-              {helpExpanded === f.id && <div style={{padding:"0 18px 14px",fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.6}}>
+              {helpExpanded === f.id && <div style={{padding:"0 18px 16px",fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.7}}>
                 {(f.a && f.a[lang]) || f.a?.fr || ""}
-                {role === "admin" && <div style={{marginTop:8}}><Btn small ghost onClick={() => { setHelpOpen(false); setModal("editFaq"); setEd({...f}); }}>{t("editer")}</Btn></div>}
+                {role === "admin" && <div style={{marginTop:10}}><Btn small ghost onClick={() => { setModal("editFaq"); setEd({...f}); }}>{t("editer")}</Btn></div>}
               </div>}
             </div>
           ))}
+          {faqs.filter(f => role === "admin" ? true : f.on).length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:30}}>—</div>}
         </div>
-      </div>}
+      </Sec>}
+
+      {/* FLOATING CART BUTTON - hide on cart page */}
+      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:20,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
+        <span style={{fontSize:18}}>🛒</span>
+        <span>{cartCount}</span>
+        <span style={{fontSize:10,fontWeight:400,opacity:0.7}}>{fmt(finalTotal)} €</span>
+      </button>}
     </div>
   );
 }
