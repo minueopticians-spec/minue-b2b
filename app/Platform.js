@@ -548,9 +548,12 @@ const Sec = ({title, sub, right, children}) => (
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   C = darkMode ? CD : CL;
-  const [user, setUser] = useState(null);
-  const [lang, setLang] = useState("fr");
-  const [view, setView] = useState("c-cat");
+  const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); return s ? JSON.parse(s) : null; } catch(e) { return null; } });
+  const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_user"); } catch(e) { return false; } });
+  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); return u.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : "fr"; } catch(e) { return "fr"; } });
+  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); u.lang = l; localStorage.setItem("minue_user", JSON.stringify(u)); } } catch(e) { console.log('DB error:', e); } };
+  const [view, _setView] = useState(() => { try { return typeof window !== "undefined" && localStorage.getItem("minue_view") || "c-cat"; } catch(e) { return "c-cat"; } });
+  const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
   const [cart, setCart] = useState({});
   const [cartCl, setCartCl] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
@@ -592,9 +595,9 @@ export default function App() {
 
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
-  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false});
-  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
+  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
+  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
   const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
@@ -609,7 +612,7 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls && cls.length > 0) setClients(cls.map(dbToClient));
+        if (cls && cls.length > 0) { setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
         if (ords && ords.length > 0) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
@@ -623,10 +626,16 @@ export default function App() {
         if (nws && nws.length > 0) setNews(nws.map(dbToNews));
         const {data:fqs} = await supabase.from("faqs").select("*");
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
+        const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
+        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
+        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_user", JSON.stringify(fresh)); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_user"); } catch(e) { console.log('DB error:', e); } } }
       } catch(e) { console.log("DB load fallback:", e); }
+      setLoading(false);
     };
     load();
   }, [dbReady]);
+
+  const getNextOrderNumber = async () => { if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0"); try { const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1); if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); } return "#MN-0001"; } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); } };
 
   const dbSaveOrder = async (order, lines) => {
     if (!dbReady) return;
@@ -644,18 +653,21 @@ export default function App() {
     } catch(e) { console.log("DB update order:", e); }
   };
 
-  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[]}).eq("id",prod.id); } catch(e) {} };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) {} };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false}).eq("email",u.origEmail||u.email); } catch(e) {} };
-  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) {} };
-  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) {} };
-  const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) {} };
-  const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) {} };
-  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) {} };
-  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) {} };
-  const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) {} };
-  const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) {} };
-  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) {} };
+  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
+  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
+  const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
+  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -748,11 +760,12 @@ export default function App() {
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
-    setUsers(p => [...p, nu]);
+    setUsers(p => [...p, nu]); dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
   };
 
+  if (!user && loading) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg}}><img src={LOGO} alt="Minue" style={{width:80,height:80,objectFit:"contain",borderRadius:12,marginBottom:12,opacity:0.7}} /><div style={{fontSize:12,fontFamily:BD,color:C.gr}}>Chargement...</div></div>); }
   if (!user) {
     return (
       <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,fontFamily:DP}}>
@@ -866,7 +879,7 @@ export default function App() {
           <button onClick={() => setDarkMode(!darkMode)} style={{width:24,height:24,borderRadius:12,background:"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}} title={darkMode?"Light mode":"Dark mode"}>{darkMode?"☀️":"🌙"}</button>
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
-          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
+          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -1345,7 +1358,7 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
@@ -1467,7 +1480,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); dbSaveUser(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT USER */}
@@ -1511,8 +1524,8 @@ export default function App() {
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={3} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, active: !(u.active !== false)} : u)); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1602,8 +1615,8 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...pr, on: !pr.on} : pr)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setPromos(p => p.map(pr => pr.id === ed.id ? {...ed} : pr)); dbUpdatePromo(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const tp={...ed,on:!ed.on}; setPromos(p => p.map(pr => pr.id === tp.id ? {...pr, on: tp.on} : pr)); dbUpdatePromo(tp); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1661,8 +1674,8 @@ export default function App() {
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...n, on:!n.on} : n)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setNews(p => p.map(n => n.id === ed.id ? {...ed} : n)); dbUpdateNews(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const tn={...ed,on:!ed.on}; setNews(p => p.map(n => n.id === tn.id ? {...n, on:tn.on} : n)); dbUpdateNews(tn); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1738,8 +1751,8 @@ export default function App() {
               </div>
             ))}
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...f, on:!f.on} : f)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn onClick={() => { setFaqs(p => p.map(f => f.id === ed.id ? {...ed} : f)); dbUpdateFaq(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const tf={...ed,on:!ed.on}; setFaqs(p => p.map(f => f.id === tf.id ? {...f, on:tf.on} : f)); dbUpdateFaq(tf); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1783,7 +1796,7 @@ export default function App() {
                 </select>
               </div>
             </div>
-            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.title){ setTasks(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR")}]); dbSaveTask(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT TASK */}
@@ -1827,8 +1840,8 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
+              <Btn onClick={() => { setTasks(p => p.map(tk => tk.id === ed.id ? {...ed} : tk)); dbUpdateTask(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setTasks(p => p.filter(tk => tk.id !== ed.id)); dbDeleteTask(ed.id); setModal(null); }} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarTarea")}</Btn>
             </div>
           </>}
         </div>
@@ -1883,7 +1896,7 @@ export default function App() {
             </div>
             <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
               {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
-              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
+              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
             </div>
           </div>
         </div>
@@ -2167,7 +2180,7 @@ export default function App() {
           </div>
 
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
@@ -2397,7 +2410,7 @@ export default function App() {
             </div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:12}}>
-            <Btn onClick={() => setAccountSaved(true)}>{t("sauvegarder")}</Btn>
+            <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
           </div>
         </div>
