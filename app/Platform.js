@@ -398,7 +398,7 @@ const TIERS = [
   {min:30,max:39,price:18.90,label:"30-39",payK:"deuxPaiements30",shipK:"gratuit",dispK:"exp3"},
   {min:40,max:60,price:17.90,label:"40-60",payK:"deuxPaiements1545",shipK:"gratuit",dispK:"exp3"},
 ];
-const ACETATO_PRICE = 29.90;
+const ACETATO_PRICE = 27.90;
 const getTier = q => TIERS.find(t => q >= t.min && q <= t.max) || TIERS[4];
 const getNextTier = q => { const i = TIERS.findIndex(t => q >= t.min && q <= t.max); return i >= 0 && i < TIERS.length - 1 ? TIERS[i+1] : null; };
 const getPrice = (q, cp) => cp > 0 ? cp : getTier(q).price;
@@ -520,6 +520,7 @@ const PRODUCTS_INIT = [
   {id:51,model:"COOPER II",color:"Grass",sku:"MN-COP2-GRS",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:52,model:"COOPER II",color:"Tiger",sku:"MN-COP2-TGR",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:53,model:"COOPER II",color:"Sierra",sku:"MN-COP2-SRA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:178,model:"COOPER II",color:"Moonlight",sku:"MN-COP2-MLT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   /* ── ICONS ── */
   /* GUGU */
   {id:100,model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
