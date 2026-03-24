@@ -745,10 +745,13 @@ export default function App() {
   const nextTier = getNextTier(essentialCount || 1);
 
   /* Distributor clients */
-  const distClients = clients.filter(c => c.channel === "Agent Sud");
+  const distCo = user ? (user.co||"") : "";
+  const isMyChannel = (ch) => { if (!ch || !distCo) return false; const a = ch.toLowerCase(); const b = distCo.toLowerCase(); return a === b || b.includes(a) || a.includes(b.replace(/ showroom$/i,"").trim()); };
+  const distClients = clients.filter(c => isMyChannel(c.channel));
+  const distLabel = distCo.replace(/ Showroom$/i,"").trim() || "Direct";
 
   /* Distributor dashboard KPIs (pre-calculated, no IIFE needed) */
-  const distOrders = orders.filter(o => o.dist === "Agent Sud");
+  const distOrders = orders.filter(o => isMyChannel(o.dist));
   const distSales = distOrders.reduce((s, o) => s + o.total, 0);
   const distComm = distOrders.reduce((s, o) => s + o.comm, 0);
   const distPaid = distOrders.filter(o => o.pay === "paid").reduce((s, o) => s + o.comm, 0);
@@ -779,7 +782,7 @@ export default function App() {
     const newOrder = {
       id: "#MN-" + String(orders.length + 1).padStart(4, "0"),
       client: activeClientName || "—",
-      dist: user.role === "distributor" ? "Agent Sud" : "Direct",
+      dist: user.role === "distributor" ? distLabel : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
@@ -930,7 +933,7 @@ export default function App() {
                  ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title,go:"a-tasks"})),
                  ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado"),go:"a-stock"}))]
               : role === "distributor"
-              ? [...orders.filter(o => o.dist === "Agent Sud" && (o.status === "shipped" || o.status === "delivered")).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status],go:"d-ord"}))]
+              ? [...orders.filter(o => isMyChannel(o.dist) && (o.status === "shipped" || o.status === "delivered")).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status],go:"d-ord"}))]
               : [...orders.filter(o => o.client === (user.name||user.co)).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status],go:"c-ord"})),
                  ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name,go:"c-promo"}))];
             const count = notifs.length;
@@ -1251,7 +1254,7 @@ export default function App() {
                 </div>
               ))}
             </div>
-            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?distLabel:"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT STOCK */}
@@ -1342,7 +1345,7 @@ export default function App() {
             <div style={{marginBottom:14}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("canal")}</div>
               <select value={ed.dist || "Direct"} onChange={e => setEd(p => ({...p, dist: e.target.value}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                {["Direct","Agent Sud","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
+                {["Direct","Agent Sud","MPM Diffusion","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("articles")}</div>
@@ -1368,7 +1371,7 @@ export default function App() {
                 <span style={{fontWeight:600}}>{fmt(edTotal)} €</span>
               </div>
             </div>}
-            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); setOrders(p => [{id:"#MN-"+String(p.length+1).padStart(4,"0"), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", lines:lns}, ...p]); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
+            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); const distUser = users.find(u => u.role==="distributor" && (u.co||"").toLowerCase().includes((ed.dist||"").toLowerCase().replace(/ showroom$/i,""))); const commRate = distUser ? (distUser.commRate||15)/100 : 0; setOrders(p => [{id:"#MN-"+String(p.length+1).padStart(4,"0"), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?edTotal*commRate:0, status:"confirmed", pay:"pending", track:"", lines:lns}, ...p]); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
           </>}
 
           {/* EDIT ORDER */}
@@ -1380,7 +1383,7 @@ export default function App() {
                 <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{ed.date} · {ed.dist}</span>
               </div>
               <span style={{flex:1}} />
-              <Badge l={ed.dist} c={ed.dist==="Agent Sud"?C.bl:ed.dist==="Faire"?C.yl:C.gn} />
+              <Badge l={ed.dist} c={ed.dist==="Direct"?C.gn:ed.dist==="Faire"?C.yl:C.bl} />
             </div>
             {ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
@@ -1458,7 +1461,7 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { const distUser = users.find(u => u.role==="distributor" && (u.co||"").toLowerCase().includes((ed.dist||"").toLowerCase().replace(/ showroom$/i,""))); const commRate = distUser ? (distUser.commRate||15)/100 : 0; const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?ed.total*commRate:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
@@ -2949,7 +2952,7 @@ export default function App() {
                 const channels = {};
                 orders.forEach(o => { channels[o.dist] = (channels[o.dist]||0) + o.total; });
                 const total = Object.values(channels).reduce((s,v) => s+v, 0) || 1;
-                const colors = {"Agent Sud":C.dk,"Direct":C.gn,"Faire":C.yl};
+                const colors = {"Direct":C.gn,"Faire":C.yl}; const defaultColor = C.bl;
                 return Object.entries(channels).sort((a,b) => b[1]-a[1]).map(([ch,val],i) => (
                   <div key={i} style={{marginBottom:10}}>
                     <div style={{display:"flex",justifyContent:"space-between",fontFamily:BD,fontSize:12,marginBottom:4}}><span style={{fontWeight:600}}>{ch}</span><span style={{color:C.gr}}>{fmt(val)} € ({Math.round(val/total*100)}%)</span></div>
