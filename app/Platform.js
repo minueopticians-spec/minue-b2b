@@ -1077,7 +1077,10 @@ export default function App() {
       {/* TOP BAR */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px min(16px, 3vw)",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:"min(65px, 16vw)",borderRadius:4}} />
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
+            <img src={LOGO} alt="Minuë" style={{height:"min(88px, 22vw)",borderRadius:4}} />
+            <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"rgba(248,239,230,0.5)",background:"rgba(248,239,230,0.08)",padding:"2px 8px",borderRadius:3,marginTop:4,letterSpacing:2,textTransform:"uppercase"}}>Beta</span>
+          </div>
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -1096,8 +1099,8 @@ export default function App() {
                  ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name,go:"c-promo"}))];
             const count = notifs.length;
             return <>
-              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:32,height:32,borderRadius:16,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:37,height:37,borderRadius:18,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 {count > 0 && <span style={{position:"absolute",top:-2,right:-4,width:16,height:16,borderRadius:8,background:"#e74c3c",fontSize:9,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
               </button>
               {notifOpen && <div style={{position:"fixed",top:48,right:12,width:"min(340px, 85vw)",maxHeight:"60vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:200,overflow:"hidden"}} onClick={e => e.stopPropagation()}>
@@ -1422,7 +1425,7 @@ export default function App() {
             </>}
 
             <div style={{display:"flex",gap:8,marginTop:12}}>
-              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
+              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); if(ed.privateNotes !== undefined && user) dbSavePrivateNote(user.email, String(ed.id), ed.privateNotes||""); dbUpdateClient(ed); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
           </>}
@@ -1455,7 +1458,7 @@ export default function App() {
                 </div>
               ))}
             </div>
-            <Btn onClick={() => { if(ed.name){setClients(p => [...p, {...ed, id: p.length+10, orders:0, total:0, status:"prospect", channel: role==="distributor"?distLabel:"Direct", customPrice:0, earlyPay:false}]); setModal(null);} }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.name){const nc = {...ed, id: Date.now(), orders:0, total:0, status:"prospect", channel: role==="distributor"?distLabel:"Direct", customPrice:0, earlyPay:false}; setClients(p => [...p, nc]); dbSaveClient(nc); setModal(null);} }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT STOCK */}
@@ -1980,7 +1983,7 @@ export default function App() {
                 ); })}
               </div>
             </div>
-            <Btn onClick={() => { if(ed.name){ setPromos(p => [...p, {...ed, id: p.length+10, on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.name){ const np = {...ed, id: Date.now(), on:true}; setPromos(p => [...p, np]); dbSavePromo(np); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT PROMO */}
@@ -2055,7 +2058,7 @@ export default function App() {
             <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
-            <Btn onClick={() => { if(ed.title && ed.title.fr){ setNews(p => [...p, {...ed, id:p.length+10, date:new Date().toLocaleDateString("fr-FR"), on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.title && ed.title.fr){ const nn = {...ed, id:Date.now(), date:new Date().toLocaleDateString("fr-FR"), on:true}; setNews(p => [...p, nn]); dbSaveNews(nn); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT NEWS */}
@@ -2147,7 +2150,7 @@ export default function App() {
                 <textarea value={(ed.a && ed.a[l]) || ""} onChange={e => setEd(p => ({...p, a:{...(p.a||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
               </div>
             ))}
-            <Btn onClick={() => { if(ed.q && ed.q.fr){ setFaqs(p => [...p, {...ed, id:p.length+10, on:true}]); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.q && ed.q.fr){ const nf = {...ed, id:Date.now(), on:true}; setFaqs(p => [...p, nf]); dbSaveFaq(nf); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT FAQ */}
@@ -2249,7 +2252,7 @@ export default function App() {
 
             {ed._tab === "notes" && <>
               <textarea value={ed.distNotes||""} onChange={e => setEd(p => ({...p, distNotes:e.target.value}))} rows={6} placeholder="..." style={{width:"100%",padding:12,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",lineHeight:1.6}} />
-              <Btn onClick={() => { setPrivateNotes(p => ({...p, ["dist_"+ed.email]:ed.distNotes})); setModal(null); }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { setPrivateNotes(p => ({...p, ["dist_"+ed.email]:ed.distNotes})); if(user) dbSavePrivateNote(user.email, "dist_"+ed.email, ed.distNotes||""); setModal(null); }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
             </>}
           </>}
 
@@ -2273,7 +2276,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Image URL</div>
               <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
-            <Btn onClick={() => { setPackItems(p => [...p, {...ed, id:Date.now(), on:true}]); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { const np = {...ed, id:Date.now(), on:true}; setPackItems(p => [...p, np]); dbSavePackaging(np); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT PACKAGING */}
@@ -2297,9 +2300,9 @@ export default function App() {
               <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...ed} : pk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...pk, on:!pk.on} : pk)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
-              <Btn ghost onClick={() => { if(confirm("Supprimer?")){ setPackItems(p => p.filter(pk => pk.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
+              <Btn onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...ed} : pk)); dbUpdatePackaging(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const toggled = {...ed, on:!ed.on}; setPackItems(p => p.map(pk => pk.id === ed.id ? toggled : pk)); dbUpdatePackaging(toggled); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn ghost onClick={() => { if(confirm("Supprimer?")){ setPackItems(p => p.filter(pk => pk.id !== ed.id)); dbDeletePackaging(ed.id); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
           </>}
 
