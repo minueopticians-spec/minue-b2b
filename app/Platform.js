@@ -553,7 +553,7 @@ export default function App() {
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active!==false,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
@@ -633,15 +633,18 @@ export default function App() {
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveUser = async (u) => { if (!dbReady) return; try { 
-    const {data, error} = await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false?true:false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).select().single();
+    const isActive = u.active !== false;
+    console.log("Saving user:", u.email, "active:", isActive, "role:", u.role);
+    const {data, error} = await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co||"",lang:u.lang||"fr",comm_rate:u.commRate||0,active:isActive,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).select().single();
     if (error) { console.log("USER INSERT ERROR:", error); return; }
-    if (data && (u.role === "client" || u.role === "distributor")) {
-      const {error:clErr} = await supabase.from("clients").insert({user_id:data.id, name:u.name, contact:u.name, city:u.city||null, country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:u.co||null, phone:u.phone||null, company_email:u.email});
+    console.log("User saved:", data.id, "active:", data.active);
+    if (data && isActive && (u.role === "client" || u.role === "distributor")) {
+      const {error:clErr} = await supabase.from("clients").insert({user_id:data.id, name:u.name, contact:u.name, city:u.city||null, country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:u.co||null, phone:u.phone||null});
       if (clErr) console.log("CLIENT AUTO-CREATE ERROR:", clErr);
-      else setClients(p => [...p, {id:Date.now(), userId:data.id, name:u.name, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]);
+      else { console.log("Client created for", u.name); setClients(p => [...p, {id:Date.now(), userId:data.id, name:u.name, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]); }
     }
-  } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  } catch(e) { console.log('DB save user error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co||"",password_hash:u.pw,comm_rate:u.commRate||0,active:u.active===true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
   const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
@@ -743,12 +746,13 @@ export default function App() {
     setView(found.role === "admin" ? "a-stats" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
-  const doRegister = () => {
+  const doRegister = async () => {
     if (!regData.name || !regData.email || !regData.pw) { setLoginErr(t("errLogin")); return; }
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
-    setUsers(p => [...p, nu]); dbSaveUser(nu);
+    setUsers(p => [...p, nu]);
+    await dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
   };
