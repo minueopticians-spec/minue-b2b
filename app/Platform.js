@@ -304,6 +304,8 @@ const T = {
   tuTarifa:{fr:"Votre tarif",es:"Tu tarifa",en:"Your pricing"},
   proximoTramo:{fr:"Plus que %n unités pour débloquer",es:"Solo %n unidades más para desbloquear",en:"Only %n more units to unlock"},
   porUnidad:{fr:"/unité",es:"/unidad",en:"/unit"},
+  exporterCSV:{fr:"Exporter CSV",es:"Exportar CSV",en:"Export CSV"},
+  sessionExpiree:{fr:"Session expirée. Veuillez vous reconnecter.",es:"Sesión expirada. Vuelve a iniciar sesión.",en:"Session expired. Please log in again."},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -558,10 +560,10 @@ export default function App() {
   const [darkMode] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   C = darkMode ? CD : CL;
-  const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); return s ? JSON.parse(s) : null; } catch(e) { return null; } });
-  const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_user"); } catch(e) { return false; } });
-  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); return u.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : "fr"; } catch(e) { return "fr"; } });
-  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_user"); if (s) { const u = JSON.parse(s); u.lang = l; localStorage.setItem("minue_user", JSON.stringify(u)); } } catch(e) { console.log('DB error:', e); } };
+  const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); if (Date.now() - sess.ts > 86400000) { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); return null; } return sess.user; } return null; } catch(e) { return null; } });
+  const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_session"); } catch(e) { return false; } });
+  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); return sess.user?.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : "fr"; } catch(e) { return "fr"; } });
+  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); sess.user.lang = l; localStorage.setItem("minue_session", JSON.stringify(sess)); } } catch(e) { console.log('DB error:', e); } };
   const [view, _setView] = useState(() => { try { return typeof window !== "undefined" && localStorage.getItem("minue_view") || "c-cat"; } catch(e) { return "c-cat"; } });
   const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
   const [cart, setCart] = useState({});
@@ -638,7 +640,7 @@ export default function App() {
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
         if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
-        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_user", JSON.stringify(fresh)); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_user"); } catch(e) { console.log('DB error:', e); } } }
+        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) { console.log('DB error:', e); } } }
       } catch(e) { console.log("DB load fallback:", e); }
       setLoading(false);
     };
@@ -664,20 +666,8 @@ export default function App() {
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { 
-    const hashed = await hashPw(u.pw, u.email);
-    const {data, error} = await supabase.from("users").insert({email:u.email,password_hash:hashed,role:u.role,name:u.name,company:u.co||"",lang:u.lang||"fr",comm_rate:u.commRate||0,active:u.active!==false?true:false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).select().single();
-    if (error) { console.log("USER INSERT ERROR:", error); return; }
-    if (data && u.active !== false && (u.role === "client" || u.role === "distributor")) {
-      const {error:clErr} = await supabase.from("clients").insert({user_id:data.id, name:u.name, contact:u.name, city:u.city||null, country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:u.co||null, phone:u.phone||null});
-      if (!clErr) setClients(p => [...p, {id:Date.now(), userId:data.id, name:u.name, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]);
-    }
-  } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { 
-    const updates = {name:u.name,company:u.co||"",comm_rate:u.commRate||0,active:u.active===true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null};
-    if (u.pw && u.pw.length < 64) { updates.password_hash = await hashPw(u.pw, u.origEmail||u.email); }
-    await supabase.from("users").update(updates).eq("email",u.origEmail||u.email);
-  } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hashed = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hashed,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
   const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
@@ -769,32 +759,23 @@ export default function App() {
 
   /* ═══ LOGIN SCREEN ═══ */
   const doLogin = async () => {
-    const email = loginEmail.toLowerCase().trim();
-    const hashed = await hashPw(loginPw, email);
-    // Support both hashed and plaintext during migration
-    const found = users.find(u => u.email.toLowerCase() === email && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
+    const hashed = await hashPw(loginPw, loginEmail); const found = users.find(u => u.email.toLowerCase() === loginEmail.toLowerCase().trim() && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
     if (!found || found.active === false) { setLoginErr(t("errLogin")); return; }
-    // Auto-migrate plaintext to hash
-    if (found.pw.length !== 64 && dbReady) {
-      supabase.from("users").update({password_hash: hashed}).eq("email", found.email);
-      found.pw = hashed;
-    }
     setLoginErr("");
-    setUser(found);
-    try { localStorage.setItem("minue_user", JSON.stringify(found)); } catch(e) {}
+    if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
+    setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
     setLang(found.lang || "fr");
     setView(found.role === "admin" ? "a-stats" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
-  const doRegister = async () => {
+  const doRegister = () => {
     if (!regData.name || !regData.email || !regData.pw) { setLoginErr(t("errLogin")); return; }
     if (regData.pw.length < 8) { setLoginErr("Min. 8 caractères"); return; }
-    if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regData.email)) { setLoginErr("Email invalide"); return; }
+    if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
-    setUsers(p => [...p, nu]);
-    await dbSaveUser(nu);
+    setUsers(p => [...p, nu]); dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
   };
@@ -944,7 +925,7 @@ export default function App() {
           })()}
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
-          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
+          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -1039,6 +1020,22 @@ export default function App() {
       <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>→</span>
     </div>
   );
+
+  const exportCSV = (filename, headers, rows) => {
+    const csv = [headers.join(";"), ...rows.map(r => r.map(v => '"'+(String(v||"").replace(/"/g,'""'))+'"').join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  };
+  const exportClients = () => {
+    const h = ["Nom","Contact","Email","Ville","CP","Pays","Canal","Status","Prix custom","Early Pay","Tél","Adresse","Raison sociale","NIF","Notes"];
+    const rows = clients.map(c => [c.name,c.contact,c.companyEmail||"",c.city,c.postalCode||"",c.country,c.channel,c.status,c.customPrice||"",c.earlyPay?"Oui":"",c.phone||"",c.address||"",c.companyName||"",c.taxId||"",c.notes||""]);
+    exportCSV("minue_clients_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
+  };
+  const exportOrders = () => {
+    const h = ["Nº","Client","Distributeur","Date","Unités","Total €","Status","Paiement","Transporteur","Tracking","Notes"];
+    const rows = orders.map(o => [o.id,o.client,o.dist,o.date,o.items,o.total,o.status,o.pay,o.carrier||"",o.track||"",o.clientNotes||""]);
+    exportCSV("minue_pedidos_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
+  };
 
   const renderKPI = (label, value, accent) => (
     <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 14px"}}>
@@ -1521,7 +1518,7 @@ export default function App() {
             </div>
             <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pwLabel")}</div>
-              <input value={ed.pw || ""} onChange={e => setEd(p => ({...p, pw: e.target.value}))} placeholder="min. 8 chars" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <input value={ed.pw || ""} onChange={e => setEd(p => ({...p, pw: e.target.value}))} placeholder="min. 6 chars" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             {ed.role === "distributor" && <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
@@ -1545,7 +1542,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={async () => { if(!ed.email || !ed.name || !ed.pw) return; if(ed.pw.length < 8) { alert("Min. 8 caractères"); return; } if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ed.email)) { alert("Email invalide"); return; } setUsers(p => [...p, {...ed, active: true}]); await dbSaveUser({...ed, active:true}); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); dbSaveUser(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT USER */}
@@ -1563,8 +1560,8 @@ export default function App() {
               </div>
             </div>
             <div style={{marginBottom:12}}>
-              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pwLabel")} <span style={{color:C.gr2,fontWeight:400}}>(dejar vacío para no cambiar)</span></div>
-              <input type="password" value={ed._newPw || ""} onChange={e => setEd(p => ({...p, _newPw: e.target.value}))} placeholder="••••••••" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pwLabel")}</div>
+              <input value={ed.pw || ""} onChange={e => setEd(p => ({...p, pw: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             {ed.role === "distributor" && <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
@@ -1589,7 +1586,7 @@ export default function App() {
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={3} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={async () => { const pwToSave = ed._newPw && ed._newPw.length >= 8 ? ed._newPw : ed.pw; if (ed._newPw && ed._newPw.length > 0 && ed._newPw.length < 8) { alert("Min. 8 caractères"); return; } setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:pwToSave, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); await dbUpdateUser({...ed, pw:pwToSave}); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
@@ -1964,7 +1961,7 @@ export default function App() {
             </div>
             <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
               {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
-              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
+              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
             </div>
           </div>
         </div>
@@ -2515,7 +2512,7 @@ export default function App() {
       </Sec>}
 
       {/* ADMIN VIEWS */}
-      {view === "a-ord" && <Sec title={t("commandes")} right={<Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn>}>
+      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn></div>}>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
           {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -2530,7 +2527,7 @@ export default function App() {
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).map((o, i) => renderOrderRow(o, orders.indexOf(o), true, true))}</div>
       </Sec>}
 
-      {view === "a-cl" && <Sec title={t("clients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn>}>
+      {view === "a-cl" && <Sec title={t("clients")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn></div>}>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
           {[["all",t("tous")],["actif",t("actif")],["prospect",t("prospect")],["vip","VIP"]].map(([v,l]) => (
             <button key={v} onClick={() => setClientFilter(v)} style={{padding:"5px 12px",background:clientFilter===v?C.dk:"transparent",color:clientFilter===v?C.bg:C.gr,border:"1px solid "+(clientFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
