@@ -1389,7 +1389,7 @@ export default function App() {
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Status</div>
                 <div style={{display:"flex",gap:6}}>
-                  {[["prospect",t("prospect")],["actif",t("actif")],["vip","VIP"]].map(([v,l]) => (
+                  {[["prospect",t("prospect")],["active",t("actif")],["vip","VIP"]].map(([v,l]) => (
                     <button key={v} onClick={() => setEd(p => ({...p, status:v}))} style={{padding:"5px 12px",background:ed.status===v?C.dk:"transparent",color:ed.status===v?C.bg:C.gr,border:"1px solid "+(ed.status===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{l}</button>
                   ))}
                 </div>
@@ -3101,7 +3101,7 @@ export default function App() {
 
       {view === "a-cl" && <Sec title={t("clients")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn></div>}>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all",t("tous")],["actif",t("actif")],["prospect",t("prospect")],["vip","VIP"]].map(([v,l]) => (
+          {[["all",t("tous")],["active",t("actif")],["prospect",t("prospect")],["vip","VIP"]].map(([v,l]) => (
             <button key={v} onClick={() => setClientFilter(v)} style={{padding:"5px 12px",background:clientFilter===v?C.dk:"transparent",color:clientFilter===v?C.bg:C.gr,border:"1px solid "+(clientFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           <span style={{flex:1}} />
