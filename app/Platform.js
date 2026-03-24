@@ -10,11 +10,7 @@ const DP = "'Cormorant Garamond',Georgia,serif";
 const BD = "'DM Sans',system-ui,sans-serif";
 const LOGO = "data:image/jpeg;base64,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";
 const fmt = n => n.toFixed(2).replace(".",",");
-const hashPw = async (plain, email) => {
-  const data = new TextEncoder().encode("minue_" + (email||"").toLowerCase().trim() + "_" + plain);
-  const buf = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
-};
+const hashPw = async (plain, email) => { const data = new TextEncoder().encode("minue_" + (email||"").toLowerCase().trim() + "_" + plain); const buf = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join(""); };
 
 /* ═══ i18n DICTIONARY ═══ */
 const T = {
@@ -306,6 +302,18 @@ const T = {
   porUnidad:{fr:"/unité",es:"/unidad",en:"/unit"},
   exporterCSV:{fr:"Exporter CSV",es:"Exportar CSV",en:"Export CSV"},
   sessionExpiree:{fr:"Session expirée. Veuillez vous reconnecter.",es:"Sesión expirada. Vuelve a iniciar sesión.",en:"Session expired. Please log in again."},
+  favoris:{fr:"Favoris",es:"Favoritos",en:"Favorites"},
+  ajouteFav:{fr:"Ajouté aux favoris",es:"Añadido a favoritos",en:"Added to favorites"},
+  voirFavoris:{fr:"Voir favoris",es:"Ver favoritos",en:"View favorites"},
+  packaging:{fr:"Packaging",es:"Packaging",en:"Packaging"},
+  packagingSub:{fr:"Étuis, présentoirs et merchandising",es:"Fundas, expositores y merchandising",en:"Cases, displays and merchandising"},
+  packType:{fr:"Type",es:"Tipo",en:"Type"},
+  packDesc:{fr:"Description",es:"Descripción",en:"Description"},
+  editPack:{fr:"Modifier packaging",es:"Editar packaging",en:"Edit packaging"},
+  nouveauPack:{fr:"Nouveau",es:"Nuevo",en:"New"},
+  fondFiltrer:{fr:"Filtrer",es:"Filtrar",en:"Filter"},
+  tusMasPedidos:{fr:"Vos modèles les plus commandés",es:"Tus diseños más pedidos",en:"Your most ordered designs"},
+  vecesComprado:{fr:"commandé %n fois",es:"pedido %n veces",en:"ordered %n times"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -595,6 +603,17 @@ export default function App() {
   const [ordPayFilter, setOrdPayFilter] = useState("all");
   const [stockSearch, setStockSearch] = useState("");
   const [cartNotes, setCartNotes] = useState("");
+  const [favs, setFavs] = useState([]);
+  const dbToggleFav = async (productId) => { if (!dbReady || !user) return; try { const isFav = favs.includes(productId); if (isFav) { await supabase.from("user_favorites").delete().eq("user_email", user.email).eq("product_id", productId); } else { await supabase.from("user_favorites").insert({user_email: user.email, product_id: productId}); } } catch(e) { console.log("Fav error:", e); } };
+  const [favFilter, setFavFilter] = useState(false);
+  const [packItems, setPackItems] = useState([
+    {id:1,type:"Étui",name:{fr:"Étui rigide Minuë",es:"Funda rígida Minuë",en:"Minuë hard case"},desc:{fr:"Étui noir avec logo doré, inclus avec chaque paire",es:"Funda negra con logo dorado, incluida con cada par",en:"Black case with gold logo, included with every pair"},imageUrl:"https://cdn.shopify.com/s/files/1/0783/5765/0865/files/funda_minue.jpg",on:true},
+    {id:2,type:"Étui",name:{fr:"Étui souple voyage",es:"Funda blanda viaje",en:"Soft travel case"},desc:{fr:"Pochette microfibre avec cordon",es:"Bolsa microfibra con cordón",en:"Microfibre pouch with drawstring"},imageUrl:"",on:true},
+    {id:3,type:"Display",name:{fr:"Présentoir comptoir 6 pièces",es:"Expositor mostrador 6 uds",en:"Counter display 6 pcs"},desc:{fr:"Présentoir en bois naturel pour 6 paires, logo gravé",es:"Expositor madera natural para 6 pares, logo grabado",en:"Natural wood display for 6 pairs, engraved logo"},imageUrl:"",on:true},
+    {id:4,type:"Display",name:{fr:"Présentoir mural 12 pièces",es:"Expositor pared 12 uds",en:"Wall display 12 pcs"},desc:{fr:"Support mural élégant en métal noir",es:"Soporte pared elegante metal negro",en:"Elegant black metal wall mount"},imageUrl:"",on:true},
+    {id:5,type:"Merchandising",name:{fr:"Miroir de comptoir Minuë",es:"Espejo mostrador Minuë",en:"Minuë counter mirror"},desc:{fr:"Miroir rond avec socle en laiton, logo gravé",es:"Espejo redondo con base latón, logo grabado",en:"Round mirror with brass base, engraved logo"},imageUrl:"",on:true},
+    {id:6,type:"Merchandising",name:{fr:"Chiffon microfibre Minuë",es:"Paño microfibra Minuë",en:"Minuë microfibre cloth"},desc:{fr:"Chiffon nettoyant avec logo, inclus avec chaque paire",es:"Paño limpiador con logo, incluido con cada par",en:"Cleaning cloth with logo, included with every pair"},imageUrl:"",on:true}
+  ]);
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
@@ -641,6 +660,8 @@ export default function App() {
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
         if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
         if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) { console.log('DB error:', e); } } }
+        // Load favorites
+        if (user) { const {data:fvs} = await supabase.from("user_favorites").select("product_id").eq("user_email",user.email); if (fvs) setFavs(fvs.map(f => f.product_id)); }
       } catch(e) { console.log("DB load fallback:", e); }
       setLoading(false);
     };
@@ -666,7 +687,7 @@ export default function App() {
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hashed = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hashed,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
@@ -771,7 +792,6 @@ export default function App() {
   const doRegister = () => {
     if (!regData.name || !regData.email || !regData.pw) { setLoginErr(t("errLogin")); return; }
     if (regData.pw.length < 8) { setLoginErr("Min. 8 caractères"); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regData.email)) { setLoginErr("Email invalide"); return; }
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
@@ -870,10 +890,10 @@ export default function App() {
   /* ═══ ROLE & NAV CONFIG ═══ */
   const role = user.role;
   const navItems = role === "client"
-    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
+    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-help","faq"],["d-account","monCompte"]]
-    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
@@ -893,13 +913,13 @@ export default function App() {
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {(() => {
             const notifs = role === "admin"
-              ? [...users.filter(u => u.active === false && u.role !== "admin").map(u => ({type:"access",text:u.name+" — "+t("solliciterAcces")})),
-                 ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title})),
-                 ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado")}))]
+              ? [...users.filter(u => u.active === false && u.role !== "admin").map(u => ({type:"access",text:u.name+" — "+t("solliciterAcces"),go:"a-users"})),
+                 ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title,go:"a-tasks"})),
+                 ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado"),go:"a-stock"}))]
               : role === "distributor"
-              ? [...orders.filter(o => o.dist === "Agent Sud" && (o.status === "shipped" || o.status === "delivered")).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status]}))]
-              : [...orders.filter(o => o.client === (user.name||user.co)).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status]})),
-                 ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name}))];
+              ? [...orders.filter(o => o.dist === "Agent Sud" && (o.status === "shipped" || o.status === "delivered")).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status],go:"d-ord"}))]
+              : [...orders.filter(o => o.client === (user.name||user.co)).slice(0,5).map(o => ({type:"order",text:o.id+" → "+SL[o.status],go:"c-ord"})),
+                 ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name,go:"c-promo"}))];
             const count = notifs.length;
             return <>
               <button onClick={() => setNotifOpen(!notifOpen)} style={{width:24,height:24,borderRadius:12,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
@@ -914,7 +934,7 @@ export default function App() {
                 <div style={{overflowY:"auto",maxHeight:"calc(60vh - 50px)"}}>
                   {notifs.length === 0 && <div style={{padding:30,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>✓ {t("aucuneCmd")}</div>}
                   {notifs.map((n,i) => (
-                    <div key={i} style={{padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:8}}>
+                    <div key={i} onClick={() => { setView(n.go); setNotifOpen(false); }} style={{padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:8,cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e => e.currentTarget.style.background=C.bg} onMouseLeave={e => e.currentTarget.style.background="transparent"}>
                       <span style={{width:6,height:6,borderRadius:3,background:n.type==="access"?"#f39c12":n.type==="task"?C.rd:n.type==="stock"?C.yl:C.gn,flexShrink:0}} />
                       <span>{n.text}</span>
                     </div>
@@ -988,6 +1008,9 @@ export default function App() {
             {tags.map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
           </div>}
           {inCart && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{cart[p.id]}</span>}
+          {role !== "admin" && <button onClick={(e) => { e.stopPropagation(); setFavs(f => f.includes(p.id) ? f.filter(x => x!==p.id) : [...f, p.id]); dbToggleFav(p.id); }} style={{position:"absolute",top:8,right:role==="admin"?42:38,background:"rgba(255,255,255,0.85)",border:"none",cursor:"pointer",width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill={favs.includes(p.id)?"#6b4c3b":"none"} stroke={favs.includes(p.id)?"#6b4c3b":"#999"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>}
         </div>
         <div style={{padding:"12px 14px",background:darkMode?C.bg2:"#faf6f1"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
@@ -1150,7 +1173,7 @@ export default function App() {
               </div>
             </>}
 
-            {(ed._tab||"info") === "cond" && <>
+            {(ed._tab||"resume") === "cond" && <>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16}}>
                 <div style={{display:"flex",gap:8,marginBottom:12}}>
                   <button onClick={() => setEd(p => ({...p, customPrice: 0}))} style={{flex:1,padding:10,background:ed.customPrice===0?C.dk:C.wh,color:ed.customPrice===0?C.bg:C.dk,border:"1px solid "+(ed.customPrice===0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("tarifAuto")}</button>
@@ -1818,6 +1841,56 @@ export default function App() {
             </div>
           </>}
 
+          {/* NEW PACKAGING */}
+          {modal === "newPack" && <>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("packType")}</div>
+              <select value={ed.type} onChange={e => setEd(p => ({...p, type:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                <option value="Étui">Étui / Funda</option><option value="Display">Display / Expositor</option><option value="Merchandising">Merchandising</option>
+              </select>
+            </div>
+            {["fr","es","en"].map(l => (
+              <div key={l} style={{marginBottom:10}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("nom")} ({l.toUpperCase()})</div>
+                <input value={(ed.name&&ed.name[l])||""} onChange={e => setEd(p => ({...p, name:{...(p.name||{}), [l]:e.target.value}}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,marginTop:6}}>{t("packDesc")} ({l.toUpperCase()})</div>
+                <textarea value={(ed.desc&&ed.desc[l])||""} onChange={e => setEd(p => ({...p, desc:{...(p.desc||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+            ))}
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Image URL</div>
+              <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+            </div>
+            <Btn onClick={() => { setPackItems(p => [...p, {...ed, id:Date.now(), on:true}]); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+          </>}
+
+          {/* EDIT PACKAGING */}
+          {modal === "editPack" && <>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("packType")}</div>
+              <select value={ed.type} onChange={e => setEd(p => ({...p, type:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                <option value="Étui">Étui / Funda</option><option value="Display">Display / Expositor</option><option value="Merchandising">Merchandising</option>
+              </select>
+            </div>
+            {["fr","es","en"].map(l => (
+              <div key={l} style={{marginBottom:10}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("nom")} ({l.toUpperCase()})</div>
+                <input value={(ed.name&&ed.name[l])||""} onChange={e => setEd(p => ({...p, name:{...(p.name||{}), [l]:e.target.value}}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,marginTop:6}}>{t("packDesc")} ({l.toUpperCase()})</div>
+                <textarea value={(ed.desc&&ed.desc[l])||""} onChange={e => setEd(p => ({...p, desc:{...(p.desc||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+            ))}
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Image URL</div>
+              <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <Btn onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...ed} : pk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...pk, on:!pk.on} : pk)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn ghost onClick={() => { if(confirm("Supprimer?")){ setPackItems(p => p.filter(pk => pk.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
+            </div>
+          </>}
+
           {/* NEW TASK */}
           {modal === "newTask" && <>
             <div style={{marginBottom:12}}>
@@ -2002,8 +2075,30 @@ export default function App() {
           {/* BEST SELLERS - social proof */}
           <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("topVentas")}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:28}}>
-            {(() => { const sold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { sold[l.model+"|"+l.color] = (sold[l.model+"|"+l.color]||0) + (l.qty||0); })); const topSkus = Object.entries(sold).sort((a,b) => b[1]-a[1]).slice(0,4).map(([k]) => k.split("|")); const topProds = topSkus.map(([m,c]) => products.find(p => p.model === m && p.color === c)).filter(Boolean); return topProds.length > 0 ? topProds.map(p => renderCard(p)) : products.filter(p => (p.tags||[]).includes("top")).slice(0,4).map(p => renderCard(p)); })()}
+            {(() => { const sold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { sold[l.model+"|"+l.color] = (sold[l.model+"|"+l.color]||0) + (l.qty||0); })); const topSkus = Object.entries(sold).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => k.split("|")); const topProds = topSkus.map(([m,c]) => products.find(p => p.model === m && p.color === c)).filter(Boolean); return topProds.length > 0 ? topProds.map(p => renderCard(p)) : products.filter(p => (p.tags||[]).includes("top")).slice(0,3).map(p => renderCard(p)); })()}
           </div>
+
+          {/* YOUR MOST ORDERED */}
+          {(() => { const myOrders = orders.filter(o => o.client === (user.name||user.co)); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; mySold[k] = (mySold[k]||0) + (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1]-a[1]).slice(0,4); const myTopProds = myTop.map(([k,qty]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c); return p ? {p,qty} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
+            <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("tusMasPedidos")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:28}}>
+              {myTopProds.map(({p,qty}) => (
+                <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",position:"relative"}}>
+                  <div style={{height:"min(140px, 35vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                    {p.imageUrl ? <img src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:28,fontFamily:DP,color:C.ln}}>MINUË</span>}
+                  </div>
+                  <div style={{padding:"10px 14px",background:"#faf6f1"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+                      <span style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:600}}>x{qty}</span>
+                    </div>
+                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginTop:2}}>{p.color}</div>
+                    <div style={{fontSize:9,color:C.gr2,fontFamily:BD,marginTop:2}}>{t("vecesComprado").replace("%n",String(qty))}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </> : null; })()}
 
           {/* RECOMMENDATIONS */}
           <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("recoPour")}</div>
@@ -2063,8 +2158,11 @@ export default function App() {
       {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
-            <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+            <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
+          {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill={favFilter?"#fff":"#6b4c3b"} stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> {favs.length}
+          </button>}
           <span style={{flex:1}} />
           <button onClick={() => setFilterPanel(filterPanel==="shape"?null:"shape")} style={{padding:"5px 12px",background:filterPanel==="shape"?C.dk:shapeFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="shape"?C.bg:shapeFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="shape"||shapeFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
             {t("forme")}{shapeFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="shape"?C.bg:C.dk}} />}
@@ -2086,7 +2184,7 @@ export default function App() {
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
-          {products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
+          {products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
         </div>
       </Sec>}
 
@@ -2327,8 +2425,11 @@ export default function App() {
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
-            <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+            <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
+          {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill={favFilter?"#fff":"#6b4c3b"} stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> {favs.length}
+          </button>}
           <span style={{flex:1}} />
           <button onClick={() => setFilterPanel(filterPanel==="shape"?null:"shape")} style={{padding:"5px 12px",background:filterPanel==="shape"?C.dk:shapeFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="shape"?C.bg:shapeFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="shape"||shapeFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
             {t("forme")}{shapeFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="shape"?C.bg:C.dk}} />}
@@ -2349,7 +2450,7 @@ export default function App() {
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>{products.filter(p => (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>{products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
       </Sec>}
 
       {view === "d-cart" && <Sec title={t("panier")}>
@@ -2418,7 +2519,7 @@ export default function App() {
           {distClients.map((c, i) => {
             const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
             return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"info"}); }}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"resume"}); }}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
@@ -2895,6 +2996,52 @@ export default function App() {
           </div>
         </div>
       </Sec>}
+      {/* PACKAGING VIEWS */}
+      {(view === "c-pack" || view === "d-pack") && <Sec title={t("packaging")} sub={t("packagingSub")}>
+        {["Étui","Display","Merchandising"].map(type => {
+          const items = packItems.filter(pk => pk.on && pk.type === type);
+          return items.length > 0 ? <div key={type} style={{marginBottom:24}}>
+            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{type}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+              {items.map((pk,i) => (
+                <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
+                  {pk.imageUrl ? <div style={{height:140,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                    <img src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} />
+                  </div> : <div style={{height:140,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:24,color:C.ln,letterSpacing:2}}>MINUË</div>}
+                  <div style={{padding:"14px 16px"}}>
+                    <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600}}>{(pk.name&&pk.name[lang])||pk.name?.fr||""}</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:6,lineHeight:1.5}}>{(pk.desc&&pk.desc[lang])||pk.desc?.fr||""}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div> : null;
+        })}
+      </Sec>}
+
+      {view === "a-pack" && <Sec title={t("packaging")} sub={t("packagingSub")} right={<Btn small onClick={() => { setModal("newPack"); setEd({type:"Étui",name:{fr:"",es:"",en:""},desc:{fr:"",es:"",en:""},imageUrl:"",on:true}); }}>{t("nouveauPack")}</Btn>}>
+        {["Étui","Display","Merchandising"].map(type => {
+          const items = packItems.filter(pk => pk.type === type);
+          return items.length > 0 ? <div key={type} style={{marginBottom:24}}>
+            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{type}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
+              {items.map((pk,i) => (
+                <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",opacity:pk.on?1:0.4,cursor:"pointer"}} onClick={() => { setModal("editPack"); setEd({...pk}); }}>
+                  {pk.imageUrl ? <div style={{height:120,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                    <img src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} />
+                  </div> : <div style={{height:120,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:20,color:C.ln}}>MINUË</div>}
+                  <div style={{padding:"12px 14px"}}>
+                    <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{(pk.name&&pk.name[lang])||pk.name?.fr||""}</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:4,lineHeight:1.4}}>{((pk.desc&&pk.desc[lang])||pk.desc?.fr||"").substring(0,80)}</div>
+                    {!pk.on && <Badge l="OFF" c={C.rd} />}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div> : null;
+        })}
+      </Sec>}
+
       {/* FAQ VIEWS */}
       {(view === "c-help" || view === "d-help" || view === "a-faq") && <Sec title={t("faq")} sub={t("faqSub")} right={role === "admin" ? <Btn small onClick={() => { setModal("newFaq"); setEd({q:{fr:"",es:"",en:""},a:{fr:"",es:"",en:""},on:true}); }}>{t("nouvelleFaq")}</Btn> : null}>
         <div style={{maxWidth:700}}>
