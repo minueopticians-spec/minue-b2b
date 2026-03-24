@@ -1550,7 +1550,7 @@ export default function App() {
             <div style={{marginBottom:14}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("canal")}</div>
               <select value={ed.dist || "Direct"} onChange={e => setEd(p => ({...p, dist: e.target.value}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
+                {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("articles")}</div>
