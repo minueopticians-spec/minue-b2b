@@ -259,6 +259,17 @@ const T = {
   pendientes:{fr:"En attente",es:"Pendientes",en:"Pending"},
   solicitudes:{fr:"demandes d'accès",es:"solicitudes de acceso",en:"access requests"},
   activerCompte:{fr:"Activer le compte",es:"Activar cuenta",en:"Activate account"},
+  monProfil:{fr:"Mon profil",es:"Mi perfil",en:"My profile"},
+  fermer:{fr:"Fermer",es:"Cerrar",en:"Close"},
+  topVentas:{fr:"Meilleures ventes",es:"Top ventas",en:"Top sales"},
+  clientsPays:{fr:"Clients par pays",es:"Clientes por país",en:"Clients by country"},
+  codePostal:{fr:"Code postal",es:"Código postal",en:"Postal code"},
+  rechercherClient:{fr:"Rechercher client...",es:"Buscar cliente...",en:"Search client..."},
+  echeance:{fr:"Échéance",es:"Vencimiento",en:"Due date"},
+  assignee:{fr:"Assigné à",es:"Asignado a",en:"Assigned to"},
+  enRetard:{fr:"En retard",es:"Atrasada",en:"Overdue"},
+  sansEcheance:{fr:"Sans échéance",es:"Sin vencimiento",en:"No due date"},
+  deconnexion:{fr:"Déconnexion",es:"Cerrar sesión",en:"Log out"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -500,10 +511,10 @@ const Btn = ({children, onClick, disabled, small, ghost, style}) => (
 const Sec = ({title, sub, right, children}) => (
   <div style={{padding:"20px min(24px, 4vw)"}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:sub?6:18,flexWrap:"wrap",gap:8}}>
-      <h1 style={{fontSize:24,fontWeight:400,letterSpacing:1,margin:0,fontFamily:DP,color:C.dk}}>{title}</h1>
+      <h1 style={{fontSize:"min(26px, 5.5vw)",fontWeight:500,letterSpacing:0.5,margin:0,fontFamily:DP,color:C.dk,lineHeight:1.2}}>{title}</h1>
       {right}
     </div>
-    {sub && <p style={{color:C.gr,fontSize:12,fontFamily:BD,margin:"0 0 18px"}}>{sub}</p>}
+    {sub && <p style={{color:C.gr,fontSize:12,fontFamily:BD,margin:"0 0 18px",lineHeight:1.5}}>{sub}</p>}
     {children}
   </div>
 );
@@ -540,6 +551,9 @@ export default function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpExpanded, setHelpExpanded] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [clientSearch, setClientSearch] = useState("");
+  const [clientFilter, setClientFilter] = useState("all");
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
@@ -584,9 +598,9 @@ export default function App() {
         const {data:fqs} = await supabase.from("faqs").select("*");
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
-        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
+        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
+        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_user", JSON.stringify(fresh)); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_user"); } catch(e) { console.log('DB error:', e); } } }
       } catch(e) { console.log("DB load fallback:", e); }
-      if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active !== false) { setUser(fresh); try { localStorage.setItem("minue_user", JSON.stringify(fresh)); } catch(e) { console.log('DB error:', e); } } else if (fresh && fresh.active === false) { setUser(null); try { localStorage.removeItem("minue_user"); } catch(e) { console.log('DB error:', e); } } }
       setLoading(false);
     };
     load();
@@ -596,55 +610,30 @@ export default function App() {
     if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0");
     try {
       const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1);
-      if (data && data.length > 0) {
-        const last = data[0].order_number;
-        const num = parseInt(last.replace(/\D/g, "")) || 0;
-        return "#MN-" + String(num + 1).padStart(4, "0");
-      }
+      if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); }
       return "#MN-0001";
     } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); }
   };
 
   const dbSaveOrder = async (order, lines) => {
-    if (!dbReady) { console.log("DB not ready"); return; }
+    if (!dbReady) return;
     try {
-      const payload = {order_number:order.id,client_name:order.client,distributor:order.dist||"Direct",status:order.status||"confirmed",payment:order.pay||"pending",shipping_cost:Math.max(order.shippingCost||0,0),carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:Number(order.total)||0,items_count:Number(order.items)||0,commission:Number(order.comm)||0};
-      console.log("Saving order:", payload.order_number);
-      const {data, error} = await supabase.from("orders").insert(payload).select().single();
-      if (error) { console.log("ORDER INSERT ERROR:", error); return; }
-      if (data && lines && lines.length > 0) {
-        const {error:lineErr} = await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:Number(l.qty)||1,unit_price:Number(l.price)||0,collection:l.col||"Essential"})));
-        if (lineErr) console.log("ORDER LINES ERROR:", lineErr);
-      }
-    } catch(e) { console.log("DB save order exception:", e); }
+      const {data} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
+      if (data && lines) { await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
+    } catch(e) { console.log("DB save order:", e); }
   };
 
   const dbUpdateOrder = async (order) => {
-    if (!dbReady || !order.dbId) { console.log("Update skip: dbId=",order.dbId); return; }
+    if (!dbReady || !order.dbId) return;
     try {
-      const {error} = await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track||"",carrier:order.carrier||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:Number(order.total)||0,items_count:Number(order.items)||0,shipping_cost:Math.max(Number(order.shippingCost)||0,0),commission:Number(order.comm)||0}).eq("id",order.dbId);
-      if (error) { console.log("ORDER UPDATE ERROR:", error); return; }
-      if (order.lines) {
-        await supabase.from("order_lines").delete().eq("order_id",order.dbId);
-        await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:Number(l.qty)||1,unit_price:Number(l.price)||0,collection:l.col||"Essential"})));
-      }
-    } catch(e) { console.log("DB update order exception:", e); }
+      await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm}).eq("id",order.dbId);
+      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
+    } catch(e) { console.log("DB update order:", e); }
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { 
-    const isActive = u.active !== false;
-    console.log("Saving user:", u.email, "active:", isActive, "role:", u.role);
-    const {data, error} = await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co||"",lang:u.lang||"fr",comm_rate:u.commRate||0,active:isActive,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).select().single();
-    if (error) { console.log("USER INSERT ERROR:", error); return; }
-    console.log("User saved:", data.id, "active:", data.active);
-    if (data && isActive && (u.role === "client" || u.role === "distributor")) {
-      const {error:clErr} = await supabase.from("clients").insert({user_id:data.id, name:u.name, contact:u.name, city:u.city||null, country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:u.co||null, phone:u.phone||null});
-      if (clErr) console.log("CLIENT AUTO-CREATE ERROR:", clErr);
-      else { console.log("Client created for", u.name); setClients(p => [...p, {id:Date.now(), userId:data.id, name:u.name, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]); }
-    }
-  } catch(e) { console.log('DB save user error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co||"",password_hash:u.pw,comm_rate:u.commRate||0,active:u.active===true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
   const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
@@ -653,8 +642,8 @@ export default function App() {
   const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire"}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status}).eq("id",t.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log('DB error:', e); } };
   const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
 
@@ -713,21 +702,20 @@ export default function App() {
   };
 
   /* Place order */
-  const doOrder = async () => {
-    const orderId = await getNextOrderNumber();
+  const doOrder = () => {
     const lines = cartEntries.map(([id, q]) => {
       const p = products.find(x => String(x.id) === String(id));
       const price = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice;
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     });
     const newOrder = {
-      id: orderId,
+      id: "#MN-" + String(orders.length + 1).padStart(4, "0"),
       client: activeClientName || "—",
       dist: user.role === "distributor" ? "Agent Sud" : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
-      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: "", lines
+      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : -1, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
@@ -741,18 +729,16 @@ export default function App() {
     if (!found || found.active === false) { setLoginErr(t("errLogin")); return; }
     setLoginErr("");
     setUser(found);
-    try { localStorage.setItem("minue_user", JSON.stringify(found)); } catch(e) { console.log('DB error:', e); }
     setLang(found.lang || "fr");
     setView(found.role === "admin" ? "a-stats" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
-  const doRegister = async () => {
+  const doRegister = () => {
     if (!regData.name || !regData.email || !regData.pw) { setLoginErr(t("errLogin")); return; }
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
     setUsers(p => [...p, nu]);
-    await dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
   };
@@ -870,7 +856,7 @@ export default function App() {
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           <button onClick={() => setDarkMode(!darkMode)} style={{width:24,height:24,borderRadius:12,background:"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}} title={darkMode?"Light mode":"Dark mode"}>{darkMode?"☀️":"🌙"}</button>
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
-          <div style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0}}>{user.name[0]}</div>
+          <div onClick={() => setProfileOpen(!profileOpen)} style={{width:24,height:24,borderRadius:12,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
           <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
@@ -1143,7 +1129,7 @@ export default function App() {
                 <span style={{fontWeight:600}}>{fmt(edTotal)} €</span>
               </div>
             </div>}
-            <Btn disabled={!ed.client || edQty === 0} onClick={async () => { const lns = edLines.map(l => ({...l, price: edUp})); const ordId = await getNextOrderNumber(); const newOrd = {id:ordId, client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", notes:"", clientNotes:"", shippingCost:edQty>=20?0:0, lines:lns}; setOrders(p => [newOrd, ...p]); dbSaveOrder(newOrd, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
+            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); setOrders(p => [{id:"#MN-"+String(p.length+1).padStart(4,"0"), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", lines:lns}, ...p]); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
           </>}
 
           {/* EDIT ORDER */}
@@ -1229,7 +1215,7 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
@@ -1379,7 +1365,7 @@ export default function App() {
             </div>
             <div style={{display:"flex",gap:8}}>
               <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={async () => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); if (tu.active && (tu.role === "client" || tu.role === "distributor") && !clients.find(c => c.name === tu.name)) { const {data:usr} = await supabase.from("users").select("id").eq("email",tu.origEmail||tu.email).single(); if (usr) { const {error} = await supabase.from("clients").insert({user_id:usr.id, name:tu.name, contact:tu.name, city:tu.city||null, country:tu.country||"FR", channel:tu.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:tu.co||null, phone:tu.phone||null, company_email:tu.email||tu.origEmail}); if (!error) setClients(p => [...p, {id:Date.now(), userId:usr.id, name:tu.name, contact:tu.name, city:tu.city||"", country:tu.country||"FR", channel:tu.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]); } } setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("activerCompte")}</Btn>
+              <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
             </div>
           </>}
 
@@ -1620,6 +1606,16 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
               <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("echeance")}</div>
+                <input type="date" value={ed.dueDate||""} onChange={e => setEd(p => ({...p, dueDate:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("assignee")}</div>
+                <input value={ed.assignee||""} onChange={e => setEd(p => ({...p, assignee:e.target.value}))} placeholder="Alejandro, Marc..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+            </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"0 10px"}}>
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("priorite")}</div>
@@ -1652,6 +1648,16 @@ export default function App() {
             <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descTache")}</div>
               <textarea value={ed.desc||""} onChange={e => setEd(p => ({...p, desc:e.target.value}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("echeance")}</div>
+                <input type="date" value={ed.dueDate||""} onChange={e => setEd(p => ({...p, dueDate:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("assignee")}</div>
+                <input value={ed.assignee||""} onChange={e => setEd(p => ({...p, assignee:e.target.value}))} placeholder="Alejandro, Marc..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(100px,1fr))",gap:"0 10px"}}>
               <div style={{marginBottom:12}}>
@@ -1700,6 +1706,41 @@ export default function App() {
   return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:BD}}>
       {renderNav()}
+
+      {/* PROFILE POPUP */}
+      {profileOpen && <div style={{position:"fixed",inset:0,zIndex:180}} onClick={() => setProfileOpen(false)}>
+        <div style={{position:"absolute",top:52,right:16,width:"min(340px, 85vw)",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.12)",overflow:"hidden"}} onClick={e => e.stopPropagation()}>
+          <div style={{padding:"20px 20px 16px",background:darkMode?"#1e2d29":CL.dk,color:"#f8efe6"}}>
+            <div style={{fontSize:18,fontFamily:DP,fontWeight:500}}>{user.name}</div>
+            <div style={{fontSize:11,fontFamily:BD,opacity:0.6,marginTop:2}}>{user.email}</div>
+            <div style={{marginTop:8}}><Badge l={role==="admin"?"Admin":role==="distributor"?t("distributeur"):t("client")} c={role==="admin"?"#96a5a1":role==="distributor"?C.bl:C.gn} /></div>
+          </div>
+          <div style={{padding:"14px 20px"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 12px"}}>
+              <div>
+                <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("entreprise")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.co || "—"}</div>
+              </div>
+              <div>
+                <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("langue")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{(user.lang||"fr").toUpperCase()}</div>
+              </div>
+              {user.city && <div>
+                <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("ville")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.city}{user.country ? " ("+user.country+")" : ""}</div>
+              </div>}
+              {user.phone && <div>
+                <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("telephone")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.phone}</div>
+              </div>}
+            </div>
+            <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
+              {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
+              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_user"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
+            </div>
+          </div>
+        </div>
+      </div>}
       {renderModal()}
 
       {/* CLIENT VIEWS */}
@@ -2094,18 +2135,33 @@ export default function App() {
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.map((o, i) => renderOrderRow(o, i, true, true))}</div>
       </Sec>}
 
-      {view === "a-cl" && <Sec title={t("clients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR"}); }}>{t("nouveau")}</Btn>}>
+      {view === "a-cl" && <Sec title={t("clients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn>}>
+        <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
+          {[["all",t("tous")],["actif",t("actif")],["prospect",t("prospect")],["vip","VIP"]].map(([v,l]) => (
+            <button key={v} onClick={() => setClientFilter(v)} style={{padding:"5px 12px",background:clientFilter===v?C.dk:"transparent",color:clientFilter===v?C.bg:C.gr,border:"1px solid "+(clientFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+          ))}
+          <span style={{flex:1}} />
+          <input placeholder={t("rechercherClient")} value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{padding:"6px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(180px, 35vw)"}} />
+        </div>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {clients.map((c, i) => (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",flexWrap:"wrap"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
-              <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,flex:"1 1 100px",minWidth:60}}>{c.name}</span>
-              <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.city}</span>
-              <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{c.channel}</span>
+          {clients.filter(c => (clientFilter === "all" || c.status === clientFilter) && (!clientSearch || c.name.toLowerCase().includes(clientSearch.toLowerCase()) || (c.city||"").toLowerCase().includes(clientSearch.toLowerCase()) || (c.country||"").toLowerCase().includes(clientSearch.toLowerCase()))).map((c, i) => {
+            const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
+            return (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
+                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.city}{c.postalCode ? " "+c.postalCode : ""}</span>
+                </div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:1}}>{flags[c.country]||"🌍"} {c.country||"—"} · {c.channel}</div>
+              </div>
               {c.customPrice > 0 ? <Badge l={fmt(c.customPrice)+" €"} c={C.bl} /> : null}
               {c.earlyPay && <Badge l="-3%" c={C.gn} />}
               <Badge l={c.status==="vip"?"VIP":c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="vip"?C.yl:c.status==="prospect"?C.gr2:C.gn} />
             </div>
-          ))}
+            );
+          })}
+          {clients.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:20,textAlign:"center"}}>—</div>}
         </div>
       </Sec>}
 
@@ -2202,9 +2258,13 @@ export default function App() {
                         <Badge l={t(tk.priority)} c={prioColor[tk.priority]||C.gr} />
                       </div>
                       {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:6,lineHeight:1.4}}>{tk.desc}</div>}
-                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                         <span style={{fontSize:9,fontFamily:BD,color:"#fff",background:areaColor[tk.area]||C.gr,padding:"2px 8px",borderRadius:3}}>{t(tk.area)}</span>
-                        <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{tk.date}</span>
+                        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                          {tk.assignee && <span style={{fontSize:9,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3}}>👤 {tk.assignee}</span>}
+                          {tk.dueDate && (() => { const d = new Date(tk.dueDate); const overdue = d < new Date() && tk.status !== "fait"; return <span style={{fontSize:9,fontFamily:BD,color:overdue?C.rd:C.gr2,fontWeight:overdue?600:400}}>{overdue?"⚠ ":""}{d.toLocaleDateString()}</span>; })()}
+                          {!tk.dueDate && <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{tk.date}</span>}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -2396,9 +2456,47 @@ export default function App() {
             </div>
           </div>
         </div>
-      </Sec>}
 
-      {/* ═══ FLOATING HELP BUTTON + FAQ PANEL ═══ */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginTop:12}}>
+          {/* TOP SELLING */}
+          <div style={{background:C.wh,borderRadius:8,overflow:"hidden",border:"1px solid "+C.ln}}>
+            <div style={{padding:"12px 16px",borderBottom:"1px solid "+C.ln}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("topVentas")}</span>
+            </div>
+            <div style={{padding:"8px 16px"}}>
+              {(() => { const sold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { sold[l.model] = (sold[l.model]||0) + (l.qty||0); })); return Object.entries(sold).sort((a,b) => b[1]-a[1]).slice(0,6).map(([model,qty],i) => {
+                const p = products.find(x => x.model === model);
+                return (<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid "+C.bg2}}>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr2,fontWeight:700,minWidth:20}}>{i+1}.</span>
+                  {p?.imageUrl ? <img src={p.imageUrl} style={{width:28,height:28,objectFit:"contain",borderRadius:3}} /> : <span style={{width:28}} />}
+                  <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:1,fontWeight:500}}>{model}</span>
+                  <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.gn}}>{qty} uds</span>
+                </div>);
+              }); })()}
+              {orders.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>—</div>}
+            </div>
+          </div>
+
+          {/* CLIENTS BY COUNTRY */}
+          <div style={{background:C.wh,borderRadius:8,overflow:"hidden",border:"1px solid "+C.ln}}>
+            <div style={{padding:"12px 16px",borderBottom:"1px solid "+C.ln}}>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("clientsPays")}</span>
+            </div>
+            <div style={{padding:"12px 16px"}}>
+              {(() => { const cc = {}; clients.forEach(c => { const k = c.country || "—"; cc[k] = (cc[k]||0)+1; }); const total = clients.length || 1; const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"}; return Object.entries(cc).sort((a,b) => b[1]-a[1]).slice(0,8).map(([co,n],i) => (
+                <div key={i} style={{marginBottom:8}}>
+                  <div style={{display:"flex",justifyContent:"space-between",fontFamily:BD,fontSize:12,marginBottom:3}}>
+                    <span style={{fontWeight:500}}>{flags[co]||"🌍"} {co}</span>
+                    <span style={{color:C.gr}}>{n} ({Math.round(n/total*100)}%)</span>
+                  </div>
+                  <div style={{height:5,background:C.bg2,borderRadius:3}}><div style={{height:5,background:C.gn,borderRadius:3,width:Math.round(n/total*100)+"%"}} /></div>
+                </div>
+              )); })()}
+              {clients.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:10,textAlign:"center"}}>—</div>}
+            </div>
+          </div>
+        </div>
+      </Sec>}
       <button onClick={() => setHelpOpen(!helpOpen)} style={{position:"fixed",bottom:20,right:20,width:48,height:48,borderRadius:24,background:C.dk,color:C.bg,border:"none",cursor:"pointer",fontSize:18,fontFamily:BD,fontWeight:700,boxShadow:"0 4px 16px rgba(24,51,47,0.25)",zIndex:150,display:"flex",alignItems:"center",justifyContent:"center"}}>{helpOpen ? "x" : "?"}</button>
 
       {helpOpen && <div style={{position:"fixed",bottom:80,right:20,width:360,maxWidth:"calc(100vw - 40px)",maxHeight:"70vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:150,display:"flex",flexDirection:"column",overflow:"hidden"}}>
