@@ -311,9 +311,13 @@ const T = {
   packDesc:{fr:"Description",es:"Descripción",en:"Description"},
   editPack:{fr:"Modifier packaging",es:"Editar packaging",en:"Edit packaging"},
   nouveauPack:{fr:"Nouveau",es:"Nuevo",en:"New"},
+  packEtui:{fr:"Étuis",es:"Fundas",en:"Cases"},
+  packDisplay:{fr:"Présentoirs",es:"Expositores",en:"Displays"},
+  packMerch:{fr:"Merchandising",es:"Merchandising",en:"Merchandising"},
   fondFiltrer:{fr:"Filtrer",es:"Filtrar",en:"Filter"},
   tusMasPedidos:{fr:"Vos modèles les plus commandés",es:"Tus diseños más pedidos",en:"Your most ordered designs"},
   vecesComprado:{fr:"commandé %n fois",es:"pedido %n veces",en:"ordered %n times"},
+  recoInteligente:{fr:"Vous pourriez aimer",es:"Te puede interesar",en:"You might like"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -606,6 +610,7 @@ export default function App() {
   const [favs, setFavs] = useState([]);
   const dbToggleFav = async (productId) => { if (!dbReady || !user) return; try { const isFav = favs.includes(productId); if (isFav) { await supabase.from("user_favorites").delete().eq("user_email", user.email).eq("product_id", productId); } else { await supabase.from("user_favorites").insert({user_email: user.email, product_id: productId}); } } catch(e) { console.log("Fav error:", e); } };
   const [favFilter, setFavFilter] = useState(false);
+  const [privateNotes, setPrivateNotes] = useState({});
   const [packItems, setPackItems] = useState([
     {id:1,type:"Étui",name:{fr:"Étui rigide Minuë",es:"Funda rígida Minuë",en:"Minuë hard case"},desc:{fr:"Étui noir avec logo doré, inclus avec chaque paire",es:"Funda negra con logo dorado, incluida con cada par",en:"Black case with gold logo, included with every pair"},imageUrl:"https://cdn.shopify.com/s/files/1/0783/5765/0865/files/funda_minue.jpg",on:true},
     {id:2,type:"Étui",name:{fr:"Étui souple voyage",es:"Funda blanda viaje",en:"Soft travel case"},desc:{fr:"Pochette microfibre avec cordon",es:"Bolsa microfibra con cordón",en:"Microfibre pouch with drawstring"},imageUrl:"",on:true},
@@ -660,8 +665,12 @@ export default function App() {
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
         if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
         if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) { console.log('DB error:', e); } } }
-        // Load favorites
         if (user) { const {data:fvs} = await supabase.from("user_favorites").select("product_id").eq("user_email",user.email); if (fvs) setFavs(fvs.map(f => f.product_id)); }
+        // Load packaging
+        const {data:pks} = await supabase.from("packaging").select("*").order("sort_order",{ascending:true});
+        if (pks && pks.length > 0) setPackItems(pks.map(r => ({id:r.id,type:r.type,name:{fr:r.name_fr||"",es:r.name_es||"",en:r.name_en||""},desc:{fr:r.desc_fr||"",es:r.desc_es||"",en:r.desc_en||""},imageUrl:r.image_url||"",on:r.active!==false})));
+        // Load private notes
+        if (user) { const {data:pns} = await supabase.from("private_notes").select("*").eq("author_email",user.email); if (pns) { const notesMap = {}; pns.forEach(n => { notesMap[n.client_id] = n.content; }); setPrivateNotes(notesMap); } }
       } catch(e) { console.log("DB load fallback:", e); }
       setLoading(false);
     };
@@ -697,6 +706,10 @@ export default function App() {
   const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSavePackaging = async (pk) => { if (!dbReady) return; try { const {data} = await supabase.from("packaging").insert({type:pk.type,name_fr:pk.name?.fr,name_es:pk.name?.es,name_en:pk.name?.en,desc_fr:pk.desc?.fr,desc_es:pk.desc?.es,desc_en:pk.desc?.en,image_url:pk.imageUrl||"",active:true}).select().single(); return data; } catch(e) { console.log('DB error:', e); } };
+  const dbUpdatePackaging = async (pk) => { if (!dbReady) return; try { await supabase.from("packaging").update({type:pk.type,name_fr:pk.name?.fr,name_es:pk.name?.es,name_en:pk.name?.en,desc_fr:pk.desc?.fr,desc_es:pk.desc?.es,desc_en:pk.desc?.en,image_url:pk.imageUrl||"",active:pk.on!==false}).eq("id",pk.id); } catch(e) { console.log('DB error:', e); } };
+  const dbDeletePackaging = async (id) => { if (!dbReady) return; try { await supabase.from("packaging").delete().eq("id",id); } catch(e) { console.log('DB error:', e); } };
+  const dbSavePrivateNote = async (authorEmail, clientId, content) => { if (!dbReady) return; try { await supabase.from("private_notes").upsert({author_email:authorEmail,client_id:clientId,content:content},{onConflict:"author_email,client_id"}); } catch(e) { console.log('DB error:', e); } };
   const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
   const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
   const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
@@ -1045,18 +1058,20 @@ export default function App() {
   );
 
   const exportCSV = (filename, headers, rows) => {
-    const csv = [headers.join(";"), ...rows.map(r => r.map(v => '"'+(String(v||"").replace(/"/g,'""'))+'"').join(";"))].join("\n");
+    const clean = v => String(v||"").replace(/"/g,'""').replace(/\n/g,' ');
+    const csv = [headers.join(";"), ...rows.map(r => r.map(v => '"'+clean(v)+'"').join(";"))].join("\r\n");
     const blob = new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8;"});
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   };
   const exportClients = () => {
-    const h = ["Nom","Contact","Email","Ville","CP","Pays","Canal","Status","Prix custom","Early Pay","Tél","Adresse","Raison sociale","NIF","Notes"];
-    const rows = clients.map(c => [c.name,c.contact,c.companyEmail||"",c.city,c.postalCode||"",c.country,c.channel,c.status,c.customPrice||"",c.earlyPay?"Oui":"",c.phone||"",c.address||"",c.companyName||"",c.taxId||"",c.notes||""]);
+    const h = ["Nom","Contact","Email","Ville","CP","Pays","Canal","Status","Prix custom","Early Pay","Tel","Adresse","Raison sociale","NIF","Notes"];
+    const rows = clients.map(c => [c.name||"",c.contact||"",c.companyEmail||"",c.city||"",c.postalCode||"",c.country||"",c.channel||"",c.status||"",c.customPrice||0,c.earlyPay?"Oui":"Non",c.phone||"",c.address||"",c.companyName||"",c.taxId||"",c.notes||""]);
     exportCSV("minue_clients_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
   };
   const exportOrders = () => {
-    const h = ["Nº","Client","Distributeur","Date","Unités","Total €","Status","Paiement","Transporteur","Tracking","Notes"];
-    const rows = orders.map(o => [o.id,o.client,o.dist,o.date,o.items,o.total,o.status,o.pay,o.carrier||"",o.track||"",o.clientNotes||""]);
+    const h = ["No","Client","Distributeur","Date","Unites","Total","Status","Paiement","Transporteur","Tracking","Notes"];
+    const rows = orders.map(o => [o.id||"",o.client||"",o.dist||"",o.date||"",o.items||0,o.total||0,o.status||"",o.pay||"",o.carrier||"",o.track||"",o.clientNotes||""]);
     exportCSV("minue_pedidos_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
   };
 
@@ -1203,7 +1218,7 @@ export default function App() {
             </>}
 
             <div style={{display:"flex",gap:8,marginTop:12}}>
-              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
+              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined, privateNotes:undefined} : c)); if (ed.privateNotes !== undefined) { setPrivateNotes(p => ({...p, [ed.id]:ed.privateNotes})); dbSavePrivateNote(user.email, ed.id, ed.privateNotes||""); } dbUpdateClient(ed); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
           </>}
@@ -1861,7 +1876,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Image URL</div>
               <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
-            <Btn onClick={() => { setPackItems(p => [...p, {...ed, id:Date.now(), on:true}]); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={async () => { const dbPk = await dbSavePackaging(ed); setPackItems(p => [...p, {...ed, id:dbPk?.id||Date.now(), on:true}]); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT PACKAGING */}
@@ -1885,9 +1900,9 @@ export default function App() {
               <input value={ed.imageUrl||""} onChange={e => setEd(p => ({...p, imageUrl:e.target.value}))} placeholder="https://..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...ed} : pk)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...pk, on:!pk.on} : pk)); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
-              <Btn ghost onClick={() => { if(confirm("Supprimer?")){ setPackItems(p => p.filter(pk => pk.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
+              <Btn onClick={() => { setPackItems(p => p.map(pk => pk.id === ed.id ? {...ed} : pk)); dbUpdatePackaging(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { const toggled = {...ed, on:!ed.on}; setPackItems(p => p.map(pk => pk.id === ed.id ? toggled : pk)); dbUpdatePackaging(toggled); setModal(null); }}>{ed.on ? t("desactiver") : t("userActif")}</Btn>
+              <Btn ghost onClick={() => { if(confirm("Supprimer?")){ setPackItems(p => p.filter(pk => pk.id !== ed.id)); dbDeletePackaging(ed.id); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
           </>}
 
@@ -2100,12 +2115,20 @@ export default function App() {
             </div>
           </> : null; })()}
 
-          {/* RECOMMENDATIONS */}
-          <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("recoPour")}</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:28}}>
-            {products.filter(p => (p.tags||[]).some(t => ["top","new","rec"].includes(t))).slice(0,6).map(p => renderCard(p))}
-            {products.filter(p => (p.tags||[]).some(t => ["top","new","rec"].includes(t))).length === 0 && products.slice(0,6).map(p => renderCard(p))}
-          </div>
+          {/* SMART RECOMMENDATIONS - products client hasn't ordered yet, popular globally */}
+          {(() => {
+            const myOrders = orders.filter(o => o.client === (user.name||user.co));
+            const myModels = new Set(); myOrders.forEach(o => (o.lines||[]).forEach(l => myModels.add(l.model+"|"+l.color)));
+            const globalSold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { globalSold[l.model+"|"+l.color] = (globalSold[l.model+"|"+l.color]||0) + (l.qty||0); }));
+            const recos = Object.entries(globalSold).filter(([k]) => !myModels.has(k)).sort((a,b) => b[1]-a[1]).slice(0,4).map(([k]) => { const [m,c] = k.split("|"); return products.find(p => p.model === m && p.color === c); }).filter(Boolean);
+            const display = recos.length > 0 ? recos : products.filter(p => !myModels.has(p.model+"|"+p.color) && (p.tags||[]).some(t => ["top","new","rec"].includes(t))).slice(0,4);
+            return display.length > 0 ? <>
+              <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("recoInteligente")}</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:28}}>
+                {display.map(p => renderCard(p))}
+              </div>
+            </> : null;
+          })()}
 
           {/* PRICING TIER NUDGE */}
           {customPrice === 0 && (() => {
@@ -2519,7 +2542,7 @@ export default function App() {
           {distClients.map((c, i) => {
             const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
             return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"resume"}); }}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"resume", privateNotes: privateNotes[c.id]||""}); }}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
@@ -2640,7 +2663,7 @@ export default function App() {
           {clients.filter(c => (clientFilter === "all" || c.status === clientFilter) && (!clientSearch || c.name.toLowerCase().includes(clientSearch.toLowerCase()) || (c.city||"").toLowerCase().includes(clientSearch.toLowerCase()) || (c.country||"").toLowerCase().includes(clientSearch.toLowerCase()))).map((c, i) => {
             const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
             return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, privateNotes: privateNotes[c.id]||""}); }}>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
@@ -2998,10 +3021,10 @@ export default function App() {
       </Sec>}
       {/* PACKAGING VIEWS */}
       {(view === "c-pack" || view === "d-pack") && <Sec title={t("packaging")} sub={t("packagingSub")}>
-        {["Étui","Display","Merchandising"].map(type => {
+        {[["Étui","packEtui"],["Display","packDisplay"],["Merchandising","packMerch"]].map(([type,key]) => {
           const items = packItems.filter(pk => pk.on && pk.type === type);
           return items.length > 0 ? <div key={type} style={{marginBottom:24}}>
-            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{type}</div>
+            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{t(key)}</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
               {items.map((pk,i) => (
                 <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
@@ -3020,10 +3043,10 @@ export default function App() {
       </Sec>}
 
       {view === "a-pack" && <Sec title={t("packaging")} sub={t("packagingSub")} right={<Btn small onClick={() => { setModal("newPack"); setEd({type:"Étui",name:{fr:"",es:"",en:""},desc:{fr:"",es:"",en:""},imageUrl:"",on:true}); }}>{t("nouveauPack")}</Btn>}>
-        {["Étui","Display","Merchandising"].map(type => {
+        {[["Étui","packEtui"],["Display","packDisplay"],["Merchandising","packMerch"]].map(([type,key]) => {
           const items = packItems.filter(pk => pk.type === type);
           return items.length > 0 ? <div key={type} style={{marginBottom:24}}>
-            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{type}</div>
+            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>{t(key)}</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12}}>
               {items.map((pk,i) => (
                 <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",opacity:pk.on?1:0.4,cursor:"pointer"}} onClick={() => { setModal("editPack"); setEd({...pk}); }}>
