@@ -1085,7 +1085,7 @@ export default function App() {
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
           {["fr","es","en"].map(l => (
-            <button key={l} onClick={() => setLang(l)} style={{width:23,height:23,borderRadius:12,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:10,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
+            <button key={l} onClick={() => setLang(l)} style={{width:24,height:24,borderRadius:12,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:10,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
           ))}
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {(() => {
@@ -1099,8 +1099,8 @@ export default function App() {
                  ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name,go:"c-promo"}))];
             const count = notifs.length;
             return <>
-              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:30,height:30,borderRadius:15,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:26,height:26,borderRadius:13,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 {count > 0 && <span style={{position:"absolute",top:-2,right:-4,width:16,height:16,borderRadius:8,background:"#e74c3c",fontSize:9,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
               </button>
               {notifOpen && <div style={{position:"fixed",top:48,right:12,width:"min(340px, 85vw)",maxHeight:"60vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:200,overflow:"hidden"}} onClick={e => e.stopPropagation()}>
@@ -1122,7 +1122,7 @@ export default function App() {
           })()}
           <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:8,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 7px",borderRadius:4,letterSpacing:1.5,border:"1px solid #d4a03040"}}>VIP</span>}
-          <div onClick={() => setProfileOpen(!profileOpen)} style={{width:25,height:25,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
+          <div onClick={() => setProfileOpen(!profileOpen)} style={{width:26,height:26,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
           <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
@@ -1550,7 +1550,7 @@ export default function App() {
             <div style={{marginBottom:14}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("canal")}</div>
               <select value={ed.dist || "Direct"} onChange={e => setEd(p => ({...p, dist: e.target.value}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                {["Direct","Agent Sud","MPM Diffusion","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
+                {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","Faire"].map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
             <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("articles")}</div>
