@@ -1066,7 +1066,7 @@ export default function App() {
   const navItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
@@ -1173,7 +1173,7 @@ export default function App() {
   const renderModelCard = (modelName, variants) => {
     const first = variants.find(v => v.imageUrl) || variants[0];
     const isAcetato = first.col === "Acetato";
-    const displayPrice = isAcetato ? first.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
+    const displayPrice = isAcetato ? first.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
     const totalStock = variants.reduce((s,v) => s + v.stock, 0);
     const inCartCount = variants.reduce((s,v) => s + (cart[v.id]||0), 0);
     const tags = [...new Set(variants.flatMap(v => v.tags||[]))];
@@ -1211,7 +1211,7 @@ export default function App() {
   const renderCard = (p) => {
     const inCart = cart[p.id] > 0;
     const isAcetato = p.col === "Acetato";
-    const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
+    const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
     const cq = getCardQty(p.id);
     const tags = p.tags || [];
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
@@ -1683,7 +1683,7 @@ export default function App() {
             <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:"50vh",overflowY:"auto"}}>
               {ed.variants.map(v => {
                 const isAcetato = v.col === "Acetato";
-                const price = isAcetato ? v.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
+                const price = isAcetato ? v.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
                 const cq = getCardQty(v.id);
                 return (
                   <div key={v.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:cart[v.id]>0?C.gn+"08":C.bg,border:"1px solid "+(cart[v.id]>0?C.gn+"30":C.ln),borderRadius:6}}>
@@ -2695,6 +2695,52 @@ export default function App() {
         </div>
       </Sec>}
 
+      {/* TARIFS DISTRIBUTOR */}
+      {view === "d-tarifs" && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
+        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
+          <div style={{padding:"14px 16px",background:C.dk,color:C.bg}}>
+            <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Essential & Icons</div>
+          </div>
+          {TIERS.map((tier, i) => {
+            const isActive = essentialCount >= tier.min && essentialCount <= tier.max;
+            return (
+              <div key={i} style={{display:"flex",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid "+C.bg2,background:isActive?C.gn+"08":"transparent"}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tier.label} {t("unites")}</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t(tier.payK)} · {t(tier.shipK)}</div>
+                </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:isActive?C.gn:C.dk}}>{fmt(tier.price)} €</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>/ ud</div>
+                </div>
+                {isActive && <span style={{marginLeft:8,fontSize:9,fontFamily:BD,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:10,fontWeight:600}}>{t("votreTarif")}</span>}
+              </div>
+            );
+          })}
+        </div>
+        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
+          <div style={{padding:"14px 16px",background:"#7a5c3a",color:C.bg}}>
+            <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Acetato</div>
+          </div>
+          <div style={{display:"flex",alignItems:"center",padding:"14px 16px"}}>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{t("prixFixe")}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>PVP 70 €</div>
+            </div>
+            <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.dk}}>{fmt(ACETATO_PRICE)} €</div>
+            <span style={{marginLeft:8,fontSize:9,fontFamily:BD,color:C.gr}}>/ ud</span>
+          </div>
+        </div>
+        <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
+          <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.6}}>
+            • PVP Essential & Icons: 45-50 €<br/>
+            • PVP Acetato: 70 €<br/>
+            • {t("gratuit")} ≥ 20 {t("unites")}<br/>
+            • Early pay: -3%
+          </div>
+        </div>
+      </Sec>}
+
       {(view === "c-selection" || view === "d-selection") && <Sec title={t("selectionPrivee")} sub={t("selectionSub")}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
           {products.filter(p => (p.tags||[]).includes("privee")).map(p => renderCard(p))}
@@ -2838,7 +2884,7 @@ export default function App() {
             <div>
               <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("mesClients")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6}}>
-                {distClients.map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 14px",borderBottom:"1px solid "+C.bg2}}><div><div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{c.contact} · {c.city}</div></div><span style={{fontSize:12,fontWeight:600,fontFamily:BD}}>{fmt(c.total)} €</span></div>)}
+                {distClients.map(c => { const cOrds = distOrders.filter(o => o.client === c.name); return {...c, _total: cOrds.reduce((s,o) => s+o.total, 0), _orders: cOrds.length}; }).sort((a,b) => b._total - a._total).map((c, i) => <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 14px",borderBottom:"1px solid "+C.bg2}}><div><div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{c.contact} · {c.city} · {c._orders} cmd</div></div><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:c._total>0?C.gn:C.gr}}>{fmt(c._total)} €</span></div>)}
               </div>
             </div>
           </div>
