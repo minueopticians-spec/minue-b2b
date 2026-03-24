@@ -592,6 +592,19 @@ export default function App() {
     load();
   }, [dbReady]);
 
+  const getNextOrderNumber = async () => {
+    if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0");
+    try {
+      const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1);
+      if (data && data.length > 0) {
+        const last = data[0].order_number;
+        const num = parseInt(last.replace(/\D/g, "")) || 0;
+        return "#MN-" + String(num + 1).padStart(4, "0");
+      }
+      return "#MN-0001";
+    } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); }
+  };
+
   const dbSaveOrder = async (order, lines) => {
     if (!dbReady) { console.log("DB not ready"); return; }
     try {
@@ -689,20 +702,21 @@ export default function App() {
   };
 
   /* Place order */
-  const doOrder = () => {
+  const doOrder = async () => {
+    const orderId = await getNextOrderNumber();
     const lines = cartEntries.map(([id, q]) => {
       const p = products.find(x => String(x.id) === String(id));
       const price = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice;
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     });
     const newOrder = {
-      id: "#MN-" + Date.now().toString(36).toUpperCase(),
+      id: orderId,
       client: activeClientName || "—",
       dist: user.role === "distributor" ? "Agent Sud" : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
-      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : -1, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: "", lines
+      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
@@ -1117,7 +1131,7 @@ export default function App() {
                 <span style={{fontWeight:600}}>{fmt(edTotal)} €</span>
               </div>
             </div>}
-            <Btn disabled={!ed.client || edQty === 0} onClick={() => { const lns = edLines.map(l => ({...l, price: edUp})); const newOrd = {id:"#MN-"+Date.now().toString(36).toUpperCase(), client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", notes:"", clientNotes:"", shippingCost:edQty>=20?0:0, lines:lns}; setOrders(p => [newOrd, ...p]); dbSaveOrder(newOrd, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
+            <Btn disabled={!ed.client || edQty === 0} onClick={async () => { const lns = edLines.map(l => ({...l, price: edUp})); const ordId = await getNextOrderNumber(); const newOrd = {id:ordId, client:ed.client, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:edTotal, comm:ed.dist==="Agent Sud"?edTotal*0.15:0, status:"confirmed", pay:"pending", track:"", carrier:"", trackUrl:"", notes:"", clientNotes:"", shippingCost:edQty>=20?0:0, lines:lns}; setOrders(p => [newOrd, ...p]); dbSaveOrder(newOrd, lns); setModal(null); }} style={{width:"100%"}}>{t("creerCmd")} ({edQty} uds - {fmt(edTotal)} €)</Btn>
           </>}
 
           {/* EDIT ORDER */}
