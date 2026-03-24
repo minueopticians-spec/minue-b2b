@@ -315,6 +315,16 @@ const T = {
   packDisplay:{fr:"Présentoirs",es:"Expositores",en:"Displays"},
   packMerch:{fr:"Merchandising",es:"Merchandising",en:"Merchandising"},
   fondFiltrer:{fr:"Filtrer",es:"Filtrar",en:"Filter"},
+  couleurs:{fr:"couleurs",es:"colores",en:"colors"},
+  voirModele:{fr:"Voir le modèle",es:"Ver modelo",en:"View model"},
+  stockDisponible:{fr:"en stock",es:"en stock",en:"in stock"},
+  envioPartial:{fr:"Envoi partiel",es:"Envío parcial",en:"Partial shipment"},
+  enviado:{fr:"Envoyé",es:"Enviado",en:"Shipped"},
+  pendienteEnvio:{fr:"En attente d'envoi",es:"Pendiente de envío",en:"Pending shipment"},
+  recibido:{fr:"reçu",es:"recibido",en:"received"},
+  pendiente:{fr:"en attente",es:"pendiente",en:"pending"},
+  progreso:{fr:"Progression",es:"Progreso",en:"Progress"},
+  factura:{fr:"Facture",es:"Factura",en:"Invoice"},
   tusMasPedidos:{fr:"Vos modèles les plus commandés",es:"Tus diseños más pedidos",en:"Your most ordered designs"},
   vecesComprado:{fr:"commandé %n fois",es:"pedido %n veces",en:"ordered %n times"},
   recoInteligente:{fr:"Vous pourriez aimer",es:"Te puede interesar",en:"You might like"},
@@ -499,7 +509,6 @@ const PRODUCTS_INIT = [
   /* HAYEK */
   {id:43,model:"HAYEK",color:"Carey",sku:"MN-HAYK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE},
   {id:44,model:"HAYEK",color:"Olive",sku:"MN-HAYK-OLV",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE},
-  /* JUNO Sienna */
   {id:45,model:"JUNO",color:"Sienna",sku:"MN-JUNO-SNA",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE},
   /* BLYTH */
   {id:46,model:"BLYTH",color:"Greenwave",sku:"MN-BLTH-GRW",col:"Essential",cat:"Essential",stock:15,fixedPrice:0},
@@ -607,12 +616,43 @@ const PRODUCTS_INIT = [
   {id:171,model:"LAMARR",color:"Carbon Mate",sku:"MN-LMRR-CMT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
   {id:172,model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
   {id:173,model:"LAMARR",color:"Carey",sku:"MN-LMRR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
-  {id:174,model:"LAMARR",color:"Dark",sku:"MN-LMRR-DRK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]}
+  {id:174,model:"LAMARR",color:"Dark",sku:"MN-LMRR-DRK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* KERR */
+  {id:176,model:"KERR",color:"Black",sku:"MN-KERR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:177,model:"KERR",color:"Carey",sku:"MN-KERR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]}
 ];
 
 const ORDERS_INIT = [
-  {id:"#2611",client:"Le Bruit des Vagues",dist:"Agent Sud",date:"13/03/2026",items:50,total:850.26,comm:127.54,status:"partial",pay:"pending",shippingCost:0,track:"131DAFC1021215124R",carrier:"DHL",trackUrl:"https://www.dhl.com/track?id=131DAFC1021215124R",clientNotes:"5 unidades del modelo BAKER pendientes de restock. Envío parcial realizado.",
-    lines:[{model:"BAKER",color:"Tea",sku:"MN-BAKR-TEA",qty:2,price:17.9},{model:"BAKER",color:"Cloud",sku:"MN-BAKR-CLD",qty:2,price:17.9},{model:"VITTI",color:"Velvet",sku:"MN-VTTI-VLV",qty:2,price:17.9},{model:"BERGMAN",color:"Black",sku:"MN-BRGM-BLK",qty:2,price:17.9},{model:"TURA",color:"Guiza",sku:"MN-TURA-GZA",qty:2,price:17.9},{model:"CARDINALE",color:"Carey",sku:"MN-CARD-CRY",qty:2,price:17.9},{model:"GARDNER",color:"Amber Doré",sku:"MN-GRDN-ADR",qty:2,price:17.9},{model:"CARDINALE",color:"Apple",sku:"MN-CARD-APL",qty:2,price:17.9},{model:"TURA",color:"Coffee",sku:"MN-TURA-COF",qty:2,price:17.9},{model:"BERGMAN",color:"Carey",sku:"MN-BRGM-CRY",qty:2,price:17.9}]},
+  {id:"#MN-2611",client:"Le Bruit des Vagues",dist:"MPM Diffusion",date:"13/03/2026",items:50,total:850.26,comm:127.54,status:"partial",pay:"pending",shippingCost:0,track:"131DAFC1021215124R",carrier:"Zeleris",trackUrl:"",clientNotes:"Envío 1: 35 uds entregado (Factura M2026003). Envío 2: 15 uds pendiente 1ª semana abril. Pago: 50% a 15 días (04/04) + 50% a 45 días (04/05).",
+    lines:[
+      {model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",qty:2,price:17.01,qtyReceived:0},
+      {model:"GARDNER",color:"Amber Doré",sku:"MN-GRDN-ADR",qty:2,price:17.01,qtyReceived:2},
+      {model:"VITTI",color:"Velvet",sku:"MN-VTTI-VLV",qty:2,price:17.01,qtyReceived:0},
+      {model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",qty:2,price:17.01,qtyReceived:0},
+      {model:"NOVA",color:"Jade",sku:"MN-NOVA-JDE",qty:2,price:17.01,qtyReceived:0},
+      {model:"NOVA",color:"Ruby",sku:"MN-NOVA-RBY",qty:2,price:17.01,qtyReceived:0},
+      {model:"BOLDEN",color:"Nude",sku:"MN-BLDN-NDE",qty:2,price:17.01,qtyReceived:2},
+      {model:"HEDY",color:"Matcha",sku:"MN-HEDY-MTC",qty:2,price:17.01,qtyReceived:2},
+      {model:"HEDY",color:"Guiza",sku:"MN-HEDY-GZA",qty:2,price:17.01,qtyReceived:2},
+      {model:"ARIELLE",color:"Dusty",sku:"MN-AREL-DSY",qty:2,price:17.01,qtyReceived:1},
+      {model:"DENEUVE",color:"Tea",sku:"MN-DNVE-TEA",qty:2,price:17.01,qtyReceived:2},
+      {model:"HART",color:"Sunset",sku:"MN-HART-SNS",qty:2,price:17.01,qtyReceived:2},
+      {model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",qty:2,price:17.01,qtyReceived:2},
+      {model:"GRANT",color:"Carey",sku:"MN-GRNT-CRY",qty:2,price:17.01,qtyReceived:2},
+      {model:"BERRY",color:"Navy",sku:"MN-BRRY-NVY",qty:2,price:17.01,qtyReceived:1},
+      {model:"STONE",color:"Tea",sku:"MN-STON-TEA",qty:2,price:17.01,qtyReceived:2},
+      {model:"ROBERTS",color:"Jasper",sku:"MN-RBRT-JSP",qty:2,price:17.01,qtyReceived:2},
+      {model:"ROBERTS",color:"Green Carey",sku:"MN-RBRT-GCR",qty:2,price:17.01,qtyReceived:2},
+      {model:"THURMAN",color:"Cloud",sku:"MN-THRM-CLD",qty:2,price:17.01,qtyReceived:2},
+      {model:"MACLAINE",color:"Black",sku:"MN-MCLN-BLK",qty:2,price:17.01,qtyReceived:2},
+      {model:"HARLOW",color:"Gold-Green",sku:"MN-HRLW-GGR",qty:2,price:17.01,qtyReceived:1},
+      {model:"LOREN",color:"Black",sku:"MN-LORN-BLK",qty:2,price:17.01,qtyReceived:0},
+      {model:"LOREN",color:"Toffee",sku:"MN-LORN-TFE",qty:2,price:17.01,qtyReceived:2},
+      {model:"ZIYI",color:"Mandarine",sku:"MN-ZIYI-MND",qty:2,price:17.01,qtyReceived:2},
+      {model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",qty:2,price:17.01,qtyReceived:2}
+    ]},
+  {id:"#MN-0002",client:"Il et Elle",dist:"MPM Diffusion",date:"20/01/2026",items:20,total:398.00,comm:59.70,status:"delivered",pay:"pending",shippingCost:0,track:"",carrier:"",trackUrl:"",clientNotes:"",
+    lines:[{model:"HEDY",color:"Guiza",qty:2,price:19.90},{model:"HAZEL",color:"Petal",qty:2,price:19.90},{model:"KERR",color:"Black",qty:2,price:19.90},{model:"CLEO",color:"Black",qty:2,price:19.90},{model:"CLEO",color:"Tea",qty:2,price:19.90},{model:"THURMAN",color:"Black",qty:2,price:19.90},{model:"LAMARR",color:"Carey",qty:2,price:19.90},{model:"MACLAINE",color:"Black",qty:2,price:19.90},{model:"MACLAINE",color:"Tea",qty:2,price:19.90},{model:"LANE",color:"Tea",qty:2,price:19.90}]},
   {id:"#2589",client:"Optique Rivoli",dist:"Agent Sud",date:"05/03/2026",items:30,total:537,comm:80.55,status:"delivered",pay:"paid",shippingCost:0,track:"ZEL001",carrier:"GLS",trackUrl:"https://www.gls-spain.es/track?id=ZEL001",clientNotes:"",
     lines:[{model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",qty:6,price:17.9},{model:"BERGMAN",color:"Brown",sku:"MN-BRGM-BRN",qty:6,price:17.9},{model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",qty:6,price:17.9},{model:"BAKER",color:"Mint",sku:"MN-BAKR-MNT",qty:6,price:17.9},{model:"TURA",color:"Velvet",sku:"MN-TURA-VLV",qty:6,price:17.9}]},
   {id:"#2615",client:"Concept Store Lyon",dist:"Direct",date:"18/03/2026",items:40,total:716,comm:0,status:"confirmed",pay:"invoiced",shippingCost:0,track:"",carrier:"",trackUrl:"",clientNotes:"",
@@ -1124,6 +1164,46 @@ export default function App() {
     );
   };
 
+  const colorDot = {Black:"#1a1a1a",Carey:"#8B6914","Brown Carey":"#7B5B2A",Brown:"#6B3A2A",Tea:"#c4956a",Cloud:"#d4cfc8",Mint:"#7ec8a0",Cocoa:"#5c3a28",Champagne:"#e8d5b8",Green:"#3d6b4f",Bronze:"#8b6914",Shade:"#5a5a6a",Sienna:"#a0522d",Olive:"#6b7a3a",Felline:"#8a7a5a",Chalk:"#e8e0d0",Mocha:"#7a5c40",Sepia:"#704214",Bold:"#2a2a3a",Apple:"#5c8a3a",Guiza:"#9a7a4a",Velvet:"#5a2a4a",Coffee:"#4a3020","Amber Doré":"#c5a55a",Burnt:"#8a3a1a",Jungle:"#2a5a3a",Noir:"#1a1a1a",Petal:"#d4839a","Hunter Blend":"#4a5a3a",Shadow:"#4a4a5a",Dusty:"#c4a090","Pale Sandstone":"#d4c4a8",Dusy:"#c4a090",Honey:"#d4a040",Sunset:"#d47a3a",Caramel:"#a0742a",Mandarine:"#d4763a",Bruma:"#a0a0b0",Ebony:"#2a2a2a",Nude:"#d4b8a0",Oliva:"#6b7a3a",Wine:"#722f37",Jara:"#8a3a4a",Matcha:"#7a9a5a",Leaf:"#4a7a3a",Greenwave:"#3a8a6a",Buttercup:"#d4a830",Havana:"#6b4a2a",Grass:"#4a8a3a",Tiger:"#b87a30",Sierra:"#a06030","Gold Green":"#8aa050",Kaffa:"#5a3a2a",Navy:"#2a3a6a",Carbon:"#3a3a3a","Carey Brown":"#7a5a3a","Gold-Black":"#2a2a2a","Gold-Brown":"#8a6a30","Gold-Green":"#6a8a30",Carrot:"#d47030",Peanut:"#c4a060",Jasper:"#8a4a3a","Green Carey":"#5a7a3a",Ember:"#b04a2a","Black Cherry":"#4a1a2a",Snow:"#e8e8e8",Toffee:"#8a5a2a",Cream:"#f0e0c8",Rowan:"#8a3a2a",Cedar:"#6a3a1a",Rosse:"#c04a5a",Copo:"#e0e8f0",Jade:"#3a8a6a",Ruby:"#9a2a3a",Agate:"#8a7a6a",Amber:"#c4903a","Carbon Mate":"#3a3a3a",Louvre:"#8a8a8a",Dark:"#2a2a2a",Bay:"#6a8a5a",Lightblue:"#7aacca",Opal:"#b0c0d0",Ambar:"#c4903a"};
+
+  const renderModelCard = (modelName, variants) => {
+    const first = variants.find(v => v.imageUrl) || variants[0];
+    const isAcetato = first.col === "Acetato";
+    const displayPrice = isAcetato ? first.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
+    const totalStock = variants.reduce((s,v) => s + v.stock, 0);
+    const inCartCount = variants.reduce((s,v) => s + (cart[v.id]||0), 0);
+    const tags = [...new Set(variants.flatMap(v => v.tags||[]))];
+    const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
+    const hasFav = variants.some(v => favs.includes(v.id));
+    return (
+      <div key={modelName} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewModel"); setEd({model:modelName, variants}); }}>
+        <div style={{height:"min(168px, 40vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+          {first.imageUrl ? <img src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
+          <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":first.col==="Icons"?"#b8860b":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":first.col==="Icons"?"#f5ecd8":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{first.col}</span>
+          {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
+            {tags.filter(tg => tg !== "icons").map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
+          </div>}
+          {inCartCount > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{inCartCount}</span>}
+          {hasFav && <span style={{position:"absolute",top:8,right:38,fontSize:12}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b4c3b" stroke="#6b4c3b" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </span>}
+          <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:totalStock<10?"#fff":C.dk,background:totalStock<10?C.rd:totalStock<20?C.yl+"30":"rgba(255,255,255,0.85)",padding:"3px 7px",borderRadius:10,fontWeight:600}}>{totalStock}</span>
+        </div>
+        <div style={{padding:"12px 14px",background:"#faf6f1"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+            <span style={{fontSize:15,fontWeight:600,fontFamily:DP,color:C.dk}}>{modelName}</span>
+            <span style={{fontSize:13,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</span>
+          </div>
+          <div style={{display:"flex",gap:4,marginTop:8,alignItems:"center",flexWrap:"wrap"}}>
+            {variants.slice(0,7).map(v => <div key={v.id} title={v.color} style={{width:16,height:16,borderRadius:8,background:colorDot[v.color]||"#aaa",border:"2px solid "+(cart[v.id]>0?C.gn:v.stock<5?C.rd+"50":"#e0d8d0"),flexShrink:0}} />)}
+            {variants.length > 7 && <span style={{fontSize:9,fontFamily:BD,color:C.gr}}>+{variants.length-7}</span>}
+          </div>
+          <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:6}}>{variants.length} {t("couleurs")}</div>
+        </div>
+      </div>
+    );
+  };
+
   const renderCard = (p) => {
     const inCart = cart[p.id] > 0;
     const isAcetato = p.col === "Acetato";
@@ -1150,7 +1230,10 @@ export default function App() {
             <span style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</span>
             <span style={{fontSize:14,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</span>
           </div>
-          <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginTop:2}}>{p.color}</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginTop:2}}>
+            <span style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color}</span>
+            <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>PVP {isAcetato ? "70" : "45-50"} €</span>
+          </div>
           <div style={{fontSize:10,color:C.gr2,fontFamily:BD,marginTop:1}}>{p.sku}</div>
           <div style={{display:"flex",gap:6,marginTop:10,alignItems:"center"}}>
             <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:3,overflow:"hidden"}}>
@@ -1578,14 +1661,59 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
+          {/* VIEW MODEL */}
+          {modal === "viewModel" && ed.variants && <>
+            <div style={{display:"flex",gap:14,alignItems:"center",marginBottom:16}}>
+              {(() => { const first = ed.variants.find(v => v.imageUrl) || ed.variants[0]; return first.imageUrl ? <img src={first.imageUrl} alt={ed.model} style={{width:80,height:80,objectFit:"contain",borderRadius:6,border:"1px solid "+C.ln}} /> : <div style={{width:80,height:80,borderRadius:6,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:18,color:C.ln,border:"1px solid "+C.ln}}>MINUË</div>; })()}
+              <div>
+                <div style={{fontSize:22,fontFamily:DP,color:C.dk,fontWeight:600}}>{ed.model}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>{ed.variants[0].col} · {ed.variants.length} {t("couleurs")} · {ed.variants.reduce((s,v) => s+v.stock,0)} {t("stockDisponible")}</div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:"50vh",overflowY:"auto"}}>
+              {ed.variants.map(v => {
+                const isAcetato = v.col === "Acetato";
+                const price = isAcetato ? v.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 17.90);
+                const cq = getCardQty(v.id);
+                return (
+                  <div key={v.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:cart[v.id]>0?C.gn+"08":C.bg,border:"1px solid "+(cart[v.id]>0?C.gn+"30":C.ln),borderRadius:6}}>
+                    <div style={{width:20,height:20,borderRadius:10,background:colorDot[v.color]||"#aaa",border:"2px solid #e0d8d0",flexShrink:0}} />
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600}}>{v.color}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{v.sku} · stock: {v.stock}</div>
+                    </div>
+                    {role !== "admin" && <button onClick={(e) => { e.stopPropagation(); setFavs(f => f.includes(v.id) ? f.filter(x => x!==v.id) : [...f, v.id]); }} style={{background:"none",border:"none",cursor:"pointer",padding:2}}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill={favs.includes(v.id)?"#6b4c3b":"none"} stroke={favs.includes(v.id)?"#6b4c3b":"#ccc"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>}
+                    <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(price)} €</span>
+                    {role !== "admin" && <>
+                      <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:3,overflow:"hidden"}}>
+                        <button onClick={() => setCardQty(v.id, cq-1)} style={{width:26,height:28,background:C.wh,border:"none",cursor:"pointer",fontSize:12,color:C.dk}}>-</button>
+                        <span style={{minWidth:24,textAlign:"center",fontSize:12,fontFamily:BD,fontWeight:600}}>{cq}</span>
+                        <button onClick={() => setCardQty(v.id, cq+1)} style={{width:26,height:28,background:C.wh,border:"none",cursor:"pointer",fontSize:12,color:C.dk}}>+</button>
+                      </div>
+                      <button onClick={() => addToCart(v.id, cq)} style={{padding:"6px 12px",background:C.dk,color:C.bg,border:"none",fontSize:10,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>+</button>
+                    </>}
+                    {v.stock === 0 && <span style={{fontSize:9,fontFamily:BD,color:"#fff",background:C.rd,padding:"2px 6px",borderRadius:3}}>{t("agotado")}</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </>}
+
           {modal === "viewOrd" && (() => {
             const canEdit = role === "distributor" && ed.status === "confirmed";
+            const isPartial = ed.status === "partial";
+            const shippedQty = isPartial && ed.lines ? ed.lines.reduce((s,l) => s + (l.qtyReceived||0), 0) : 0;
+            const pendingQty = isPartial ? ed.items - shippedQty : 0;
+            const shippedLines = isPartial && ed.lines ? ed.lines.filter(l => (l.qtyReceived||0) > 0) : [];
+            const pendingLines = isPartial && ed.lines ? ed.lines.filter(l => (l.qtyReceived||0) < l.qty) : [];
             return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
@@ -1594,7 +1722,62 @@ export default function App() {
             </div>
             <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:canEdit?8:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
             {canEdit && <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>✏️ {t("cmdNonConfirmee")}</div>}
-            {ed.lines && ed.lines.length > 0 && <>
+
+            {/* PARTIAL PROGRESS */}
+            {isPartial && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("envioPartial")}</span>
+                <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{shippedQty} / {ed.items} {t("unites")}</span>
+              </div>
+              <div style={{height:6,background:C.bg2,borderRadius:3,overflow:"hidden",marginBottom:10}}>
+                <div style={{height:6,background:C.gn,borderRadius:3,width:Math.round(shippedQty/ed.items*100)+"%"}} />
+              </div>
+              <div style={{display:"flex",gap:12}}>
+                <div style={{flex:1,background:C.gn+"10",borderRadius:6,padding:"8px 12px",textAlign:"center"}}>
+                  <div style={{fontSize:18,fontFamily:BD,color:C.gn,fontWeight:700}}>{shippedQty}</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.gn}}>{t("enviado")}</div>
+                </div>
+                <div style={{flex:1,background:C.yl+"10",borderRadius:6,padding:"8px 12px",textAlign:"center"}}>
+                  <div style={{fontSize:18,fontFamily:BD,color:C.yl,fontWeight:700}}>{pendingQty}</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.yl}}>{t("pendienteEnvio")}</div>
+                </div>
+              </div>
+            </div>}
+
+            {/* SHIPPED ITEMS (partial) */}
+            {isPartial && shippedLines.length > 0 && <>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:700,marginBottom:6}}>✓ {t("enviado")} — {shippedQty} {t("unites")}</div>
+              <div style={{background:C.wh,border:"1px solid "+C.gn+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
+                {shippedLines.map((l, i) => (
+                  <div key={"s"+i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                    <span style={{width:6,height:6,borderRadius:3,background:C.gn,flexShrink:0}} />
+                    <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
+                    <span style={{color:C.gr}}>{l.color}</span>
+                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qtyReceived||l.qty}</span>
+                    <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * (l.qtyReceived||l.qty))} €</span>
+                  </div>
+                ))}
+              </div>
+            </>}
+
+            {/* PENDING ITEMS (partial) */}
+            {isPartial && pendingLines.length > 0 && <>
+              <div style={{fontSize:11,fontFamily:BD,color:C.yl,fontWeight:700,marginBottom:6}}>⏳ {t("pendienteEnvio")} — {pendingQty} {t("unites")}</div>
+              <div style={{background:C.wh,border:"1px solid "+C.yl+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
+                {pendingLines.map((l, i) => { const pend = l.qty - (l.qtyReceived||0); return (
+                  <div key={"p"+i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,opacity:0.7}}>
+                    <span style={{width:6,height:6,borderRadius:3,background:C.yl,flexShrink:0}} />
+                    <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
+                    <span style={{color:C.gr}}>{l.color}</span>
+                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{pend}</span>
+                    <span style={{fontWeight:600,minWidth:55,textAlign:"right",color:C.gr}}>{fmt(l.price * pend)} €</span>
+                  </div>
+                ); })}
+              </div>
+            </>}
+
+            {/* NORMAL LINES (non-partial) */}
+            {!isPartial && ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
                 {ed.lines.map((l, i) => (
@@ -1619,6 +1802,12 @@ export default function App() {
                 </div>
               </div>
             </>}
+
+            {/* TOTAL (partial) */}
+            {isPartial && <div style={{display:"flex",justifyContent:"space-between",padding:"10px 14px",background:C.bg,borderRadius:4,fontFamily:BD,fontSize:12,fontWeight:600,marginBottom:14}}>
+              <span>{ed.items} {t("unites")}</span>
+              <span>{fmt(ed.total)} €</span>
+            </div>}
             {canEdit && <div style={{marginBottom:14}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesCmd")}</div>
               <textarea value={ed.clientNotes||""} onChange={e => setEd(p => ({...p, clientNotes:e.target.value}))} rows={2} placeholder={t("notesPlaceholder")} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
