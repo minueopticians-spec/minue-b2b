@@ -445,7 +445,7 @@ const PRODUCTS_INIT = [
   /* ARIELLE */
   {id:57,model:"ARIELLE",color:"Velvet",sku:"MN-AREL-VLV",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:58,model:"ARIELLE",color:"Carey",sku:"MN-AREL-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0},
-  {id:59,model:"ARIELLE",color:"Dusy",sku:"MN-AREL-DSY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:59,model:"ARIELLE",color:"Dusty",sku:"MN-AREL-DSY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
   {id:60,model:"ARIELLE",color:"Pale Sandstone",sku:"MN-AREL-PLS",col:"Essential",cat:"Essential",stock:8,fixedPrice:0},
   /* DOVER */
   {id:61,model:"DOVER",color:"Hunter Blend",sku:"MN-DOVR-HBL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,tags:["rec"]},
@@ -467,6 +467,7 @@ const PRODUCTS_INIT = [
   {id:73,model:"BOLDEN",color:"Ebony",sku:"MN-BLDN-EBN",col:"Essential",cat:"Essential",stock:20,fixedPrice:0},
   {id:74,model:"BOLDEN",color:"Bruma",sku:"MN-BLDN-BRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:75,model:"BOLDEN",color:"Oliva",sku:"MN-BLDN-OLV",col:"Essential",cat:"Essential",stock:14,fixedPrice:0},
+  {id:175,model:"BOLDEN",color:"Wine",sku:"MN-BLDN-WNE",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:76,model:"BOLDEN",color:"Nude",sku:"MN-BLDN-NDE",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
   /* NOVA */
   {id:77,model:"NOVA",color:"Black",sku:"MN-NOVA-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0},
@@ -498,6 +499,115 @@ const PRODUCTS_INIT = [
   /* HAYEK */
   {id:43,model:"HAYEK",color:"Carey",sku:"MN-HAYK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE},
   {id:44,model:"HAYEK",color:"Olive",sku:"MN-HAYK-OLV",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE},
+  /* JUNO Sienna */
+  {id:45,model:"JUNO",color:"Sienna",sku:"MN-JUNO-SNA",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE},
+  /* BLYTH */
+  {id:46,model:"BLYTH",color:"Greenwave",sku:"MN-BLTH-GRW",col:"Essential",cat:"Essential",stock:15,fixedPrice:0},
+  {id:47,model:"BLYTH",color:"Carey",sku:"MN-BLTH-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0},
+  /* COOPER II */
+  {id:48,model:"COOPER II",color:"Caramel",sku:"MN-COP2-CRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:49,model:"COOPER II",color:"Buttercup",sku:"MN-COP2-BTC",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:50,model:"COOPER II",color:"Havana",sku:"MN-COP2-HVN",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:51,model:"COOPER II",color:"Grass",sku:"MN-COP2-GRS",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:52,model:"COOPER II",color:"Tiger",sku:"MN-COP2-TGR",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:53,model:"COOPER II",color:"Sierra",sku:"MN-COP2-SRA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  /* ── ICONS ── */
+  /* GUGU */
+  {id:100,model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* MOORE */
+  {id:101,model:"MOORE",color:"Kaffa",sku:"MN-MOOR-KFA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:102,model:"MOORE",color:"Black",sku:"MN-MOOR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* CLEO */
+  {id:103,model:"CLEO",color:"Tea",sku:"MN-CLEO-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:104,model:"CLEO",color:"Black",sku:"MN-CLEO-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* GRANT */
+  {id:105,model:"GRANT",color:"Black",sku:"MN-GRNT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:106,model:"GRANT",color:"Carey",sku:"MN-GRNT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:107,model:"GRANT",color:"Caramel",sku:"MN-GRNT-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* BERRY */
+  {id:108,model:"BERRY",color:"Navy",sku:"MN-BRRY-NVY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:109,model:"BERRY",color:"Carbon",sku:"MN-BRRY-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:110,model:"BERRY",color:"Carey Brown",sku:"MN-BRRY-CBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:111,model:"BERRY",color:"Tea",sku:"MN-BRRY-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* STONE */
+  {id:112,model:"STONE",color:"Black",sku:"MN-STON-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:113,model:"STONE",color:"Tea",sku:"MN-STON-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* FOSTER */
+  {id:114,model:"FOSTER",color:"Gold-Black",sku:"MN-FSTR-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:115,model:"FOSTER",color:"Carbon",sku:"MN-FSTR-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:116,model:"FOSTER",color:"Gold-Brown",sku:"MN-FSTR-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* ROBERTS */
+  {id:117,model:"ROBERTS",color:"Carrot",sku:"MN-RBRT-CRT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:118,model:"ROBERTS",color:"Peanut",sku:"MN-RBRT-PNT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:119,model:"ROBERTS",color:"Jasper",sku:"MN-RBRT-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:120,model:"ROBERTS",color:"Black",sku:"MN-RBRT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:121,model:"ROBERTS",color:"Green Carey",sku:"MN-RBRT-GCR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:122,model:"ROBERTS",color:"Carey",sku:"MN-RBRT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* THURMAN */
+  {id:123,model:"THURMAN",color:"Black",sku:"MN-THRM-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:124,model:"THURMAN",color:"Carey",sku:"MN-THRM-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:125,model:"THURMAN",color:"Ember",sku:"MN-THRM-EMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:126,model:"THURMAN",color:"Caramel",sku:"MN-THRM-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:127,model:"THURMAN",color:"Cloud",sku:"MN-THRM-CLD",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* MACLAINE */
+  {id:128,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:129,model:"MACLAINE",color:"Black",sku:"MN-MCLN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* LAWRENCE */
+  {id:130,model:"LAWRENCE",color:"Guiza",sku:"MN-LWRC-GZA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:131,model:"LAWRENCE",color:"Caramel",sku:"MN-LWRC-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:132,model:"LAWRENCE",color:"Carey",sku:"MN-LWRC-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:133,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:134,model:"LAWRENCE",color:"Velvet",sku:"MN-LWRC-VLV",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:135,model:"LAWRENCE",color:"Black",sku:"MN-LWRC-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* MIRREN */
+  {id:136,model:"MIRREN",color:"Black",sku:"MN-MRRN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:137,model:"MIRREN",color:"Carey",sku:"MN-MRRN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:138,model:"MIRREN",color:"Tea",sku:"MN-MRRN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* LANE */
+  {id:139,model:"LANE",color:"Black",sku:"MN-LANE-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:140,model:"LANE",color:"Lightblue",sku:"MN-LANE-LBL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:141,model:"LANE",color:"Opal",sku:"MN-LANE-OPL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:142,model:"LANE",color:"Tea",sku:"MN-LANE-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:143,model:"LANE",color:"Ambar",sku:"MN-LANE-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:144,model:"LANE",color:"Carey",sku:"MN-LANE-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:145,model:"LANE",color:"Grass",sku:"MN-LANE-GRS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* HARLOW */
+  {id:146,model:"HARLOW",color:"Gold-Green",sku:"MN-HRLW-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:147,model:"HARLOW",color:"Gold-Brown",sku:"MN-HRLW-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:148,model:"HARLOW",color:"Gold-Black",sku:"MN-HRLW-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* MAKEY */
+  {id:149,model:"MAKEY",color:"Carey",sku:"MN-MAKY-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:150,model:"MAKEY",color:"Black Cherry",sku:"MN-MAKY-BCH",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:151,model:"MAKEY",color:"Black",sku:"MN-MAKY-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:152,model:"MAKEY",color:"Snow",sku:"MN-MAKY-SNW",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* LOREN */
+  {id:153,model:"LOREN",color:"Toffee",sku:"MN-LORN-TFE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:154,model:"LOREN",color:"Cream",sku:"MN-LORN-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:155,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:156,model:"LOREN",color:"Carey",sku:"MN-LORN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* CARROL */
+  {id:157,model:"CARROL",color:"Rowan",sku:"MN-CRRL-RWN",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:158,model:"CARROL",color:"Cedar",sku:"MN-CRRL-CDR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* ARETHA */
+  {id:159,model:"ARETHA",color:"Rosse",sku:"MN-ARTH-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:160,model:"ARETHA",color:"Carey",sku:"MN-ARTH-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:161,model:"ARETHA",color:"Black",sku:"MN-ARTH-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* KARINA */
+  {id:162,model:"KARINA",color:"Copo",sku:"MN-KRNA-CPO",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:163,model:"KARINA",color:"Jade",sku:"MN-KRNA-JDE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:164,model:"KARINA",color:"Black",sku:"MN-KRNA-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:165,model:"KARINA",color:"Ruby",sku:"MN-KRNA-RBY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* ZIYI */
+  {id:166,model:"ZIYI",color:"Mandarine",sku:"MN-ZIYI-MND",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:167,model:"ZIYI",color:"Rosse",sku:"MN-ZIYI-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:168,model:"ZIYI",color:"Jasper",sku:"MN-ZIYI-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:169,model:"ZIYI",color:"Agate",sku:"MN-ZIYI-AGT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:170,model:"ZIYI",color:"Amber",sku:"MN-ZIYI-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  /* LAMARR */
+  {id:171,model:"LAMARR",color:"Carbon Mate",sku:"MN-LMRR-CMT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:172,model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:173,model:"LAMARR",color:"Carey",sku:"MN-LMRR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
+  {id:174,model:"LAMARR",color:"Dark",sku:"MN-LMRR-DRK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]}
 ];
 
 const ORDERS_INIT = [
@@ -734,7 +844,7 @@ export default function App() {
   /* Cart calculations — Essential uses tiers, Acetato uses fixedPrice */
   const cartEntries = Object.entries(cart).filter(([,q]) => q > 0);
   const cartCount = cartEntries.reduce((s,[,q]) => s + q, 0);
-  const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Essential"; });
+  const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col !== "Acetato"; });
   const acetatoEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Acetato"; });
   const essentialCount = essentialEntries.reduce((s,[,q]) => s + q, 0);
   const acetatoCount = acetatoEntries.reduce((s,[,q]) => s + q, 0);
@@ -2277,7 +2387,7 @@ export default function App() {
 
       {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
+          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
@@ -2544,7 +2654,7 @@ export default function App() {
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
+          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
@@ -2815,7 +2925,7 @@ export default function App() {
 
       {view === "a-stock" && <Sec title={t("gestionStock")} right={<Btn small onClick={() => { setModal("newProd"); setEd({model:"",color:"",sku:"",cat:"Essential",col:"Essential",stock:"20",fixedPrice:0}); }}>{t("nouveauProduit")}</Btn>}>
         <div style={{display:"flex",gap:6,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
+          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
           ))}
           <span style={{flex:1}} />
