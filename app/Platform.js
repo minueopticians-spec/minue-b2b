@@ -782,6 +782,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [expandedTier, setExpandedTier] = useState(-1);
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
@@ -2707,27 +2708,46 @@ export default function App() {
 
       {/* TARIFS DISTRIBUTOR */}
       {view === "d-tarifs" && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
-          <div style={{padding:"14px 16px",background:C.dk,color:C.bg}}>
-            <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Essential & Icons</div>
-          </div>
-          {TIERS.map((tier, i) => {
-            const isActive = essentialCount >= tier.min && essentialCount <= tier.max;
-            return (
-              <div key={i} style={{display:"flex",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid "+C.bg2,background:isActive?C.gn+"08":"transparent"}}>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tier.label} {t("unites")}</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t(tier.payK)} · {t(tier.shipK)}</div>
+        {(() => {
+          const tierConditions = [
+            ["Paiement unique / Pago único","Envoi payant / Envío de pago","Présentoir en option / Expositor opcional","PVP 45-50 €"],
+            ["Paiement unique / Pago único","Envoi payant / Envío de pago","1 présentoir inclus / 1 expositor incluido","PVP 45-50 €"],
+            ["2 paiements à 30 jours / 2 pagos a 30 días","Envoi gratuit / Envío gratuito","2 présentoirs inclus / 2 expositores incluidos","PVP 45-50 €"],
+            ["2 paiements à 30 jours / 2 pagos a 30 días","Envoi gratuit / Envío gratuito","3 présentoirs inclus / 3 expositores incluidos","PVP 45-50 €"],
+            ["2 paiements 15/45 jours / 2 pagos 15/45 días","Envoi gratuit / Envío gratuito","3 présentoirs inclus / 3 expositores incluidos","Meilleur tarif / Mejor tarifa","PVP 45-50 €"]
+          ];
+          return <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
+            <div style={{padding:"14px 16px",background:C.dk,color:C.bg}}>
+              <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Essential & Icons</div>
+            </div>
+            {TIERS.map((tier, i) => {
+              const isActive = essentialCount >= tier.min && essentialCount <= tier.max;
+              const isOpen = expandedTier === i;
+              return (
+                <div key={i}>
+                  <div onClick={() => setExpandedTier(isOpen ? -1 : i)} style={{display:"flex",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid "+C.bg2,background:isActive?C.gn+"08":"transparent",cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e => {if(!isActive) e.currentTarget.style.background=C.bg}} onMouseLeave={e => {if(!isActive) e.currentTarget.style.background="transparent"}}>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tier.label} {t("unites")}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.bl,marginTop:3,cursor:"pointer"}}>{isOpen ? "▲ Masquer" : "▼ Voir conditions"}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:isActive?C.gn:C.dk}}>{fmt(tier.price)} €</div>
+                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>/ ud</div>
+                    </div>
+                    {isActive && <span style={{marginLeft:8,fontSize:9,fontFamily:BD,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:10,fontWeight:600}}>{t("votreTarif")}</span>}
+                  </div>
+                  {isOpen && <div style={{padding:"10px 16px 14px",background:isActive?C.gn+"05":C.bg,borderBottom:"1px solid "+C.ln}}>
+                    {(tierConditions[i]||[]).map((cond, j) => (
+                      <div key={j} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0",fontSize:11,fontFamily:BD,color:C.dk}}>
+                        <span style={{color:C.gn,fontSize:10}}>✓</span> {cond}
+                      </div>
+                    ))}
+                  </div>}
                 </div>
-                <div style={{textAlign:"right"}}>
-                  <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:isActive?C.gn:C.dk}}>{fmt(tier.price)} €</div>
-                  <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>/ ud</div>
-                </div>
-                {isActive && <span style={{marginLeft:8,fontSize:9,fontFamily:BD,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:10,fontWeight:600}}>{t("votreTarif")}</span>}
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>;
+        })()}
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
           <div style={{padding:"14px 16px",background:"#7a5c3a",color:C.bg}}>
             <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Acetato</div>
@@ -2935,10 +2955,10 @@ export default function App() {
       {view === "d-cart" && <Sec title={t("panier")}>
         <div style={{marginBottom:14,padding:"12px 16px",background:C.wh,border:"1px solid "+C.ln,borderRadius:4,display:"flex",alignItems:"center",gap:10}}>
           <span style={{fontSize:11,color:C.gr,fontFamily:BD,fontWeight:500}}>{t("cmdPour")}</span>
-          <select value={cartCl} onChange={e => setCartCl(e.target.value)} style={{flex:1,padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk}}>
+          {distClients.length > 0 ? <select value={cartCl} onChange={e => setCartCl(e.target.value)} style={{flex:1,padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk}}>
             <option value="">{t("choisir")}</option>
             {distClients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-          </select>
+          </select> : <span style={{flex:1,fontSize:11,fontFamily:BD,color:C.gr2,fontStyle:"italic"}}>Chargement clients...</span>}
         </div>
         {cartEntries.length === 0
           ? <div style={{textAlign:"center",padding:40,fontFamily:BD,color:C.gr}}><p>{t("panierVide")}</p><Btn onClick={() => setView("d-cat")}>{t("voirCat")}</Btn></div>
