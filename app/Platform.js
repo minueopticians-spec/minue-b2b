@@ -270,6 +270,13 @@ const T = {
   enRetard:{fr:"En retard",es:"Atrasada",en:"Overdue"},
   sansEcheance:{fr:"Sans échéance",es:"Sin vencimiento",en:"No due date"},
   deconnexion:{fr:"Déconnexion",es:"Cerrar sesión",en:"Log out"},
+  filtrerStatus:{fr:"État",es:"Estado",en:"Status"},
+  filtrerPay:{fr:"Paiement",es:"Pago",en:"Payment"},
+  rechercherProd:{fr:"Rechercher produit...",es:"Buscar producto...",en:"Search product..."},
+  agotado:{fr:"Rupture",es:"Agotado",en:"Out of stock"},
+  alerteStock:{fr:"Alerte stock",es:"Alerta stock",en:"Stock alert"},
+  notifTitre:{fr:"Mises à jour",es:"Novedades de pedidos",en:"Order updates"},
+  notifStatus:{fr:"Votre commande %s est passée à",es:"Tu pedido %s ha cambiado a",en:"Your order %s changed to"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -554,6 +561,9 @@ export default function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
   const [clientFilter, setClientFilter] = useState("all");
+  const [ordStatusFilter, setOrdStatusFilter] = useState("all");
+  const [ordPayFilter, setOrdPayFilter] = useState("all");
+  const [stockSearch, setStockSearch] = useState("");
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
@@ -606,19 +616,12 @@ export default function App() {
     load();
   }, [dbReady]);
 
-  const getNextOrderNumber = async () => {
-    if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0");
-    try {
-      const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1);
-      if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); }
-      return "#MN-0001";
-    } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); }
-  };
+  const getNextOrderNumber = async () => { if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0"); try { const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1); if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); } return "#MN-0001"; } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); } };
 
   const dbSaveOrder = async (order, lines) => {
     if (!dbReady) return;
     try {
-      const {data} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
+      const {data, error} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
       if (data && lines) { await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
     } catch(e) { console.log("DB save order:", e); }
   };
@@ -642,9 +645,9 @@ export default function App() {
   const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log('DB error:', e); } };
-  const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
+  const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
+  const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
   const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
 
   /* i18n helper */
@@ -715,7 +718,7 @@ export default function App() {
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
-      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : -1, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
+      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
@@ -738,7 +741,7 @@ export default function App() {
     if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
-    setUsers(p => [...p, nu]);
+    setUsers(p => [...p, nu]); dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
   };
@@ -1134,9 +1137,13 @@ export default function App() {
 
           {/* EDIT ORDER */}
           {modal === "editOrd" && <>
-            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16}}>
-              <span style={{fontSize:20,fontFamily:DP,color:C.dk,fontWeight:500}}>{ed.id}</span>
-              <span style={{fontSize:13,fontFamily:BD,color:C.gr}}>{ed.client}</span>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
+              <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
+              <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600}}>{ed.client}</span>
+                <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{ed.date} · {ed.dist}</span>
+              </div>
+              <span style={{flex:1}} />
               <Badge l={ed.dist} c={ed.dist==="Agent Sud"?C.bl:ed.dist==="Faire"?C.yl:C.gn} />
             </div>
             {ed.lines && ed.lines.length > 0 && <>
@@ -1215,19 +1222,19 @@ export default function App() {
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setOrders(p => p.map((o, i) => i === ed.idx ? {...o, status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0} : o)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist==="Agent Sud"?ed.total*0.15:0}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setOrders(p => p.filter((_, i) => i !== ed.idx)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
           {modal === "viewOrd" && <>
-            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16}}>
-              <span style={{fontSize:20,fontFamily:DP,color:C.dk,fontWeight:500}}>{ed.id}</span>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
+              <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
               <Badge l={SL[ed.status]} c={SC[ed.status]} />
               <Badge l={PL[ed.pay]} c={PC[ed.pay]} />
             </div>
-            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.date} - {ed.dist}</div>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
             {ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
@@ -1753,8 +1760,26 @@ export default function App() {
           <Btn onClick={() => setView("c-cat")} style={{marginTop:16,background:darkMode?"#e8dfd6":CL.bg,color:darkMode?"#141c1a":CL.dk,border:"none"}}>{t("descubrirCol")} →</Btn>
         </div>
 
-        {/* RECOMMENDATIONS */}
+        {/* ORDER NOTIFICATIONS */}
         <div style={{padding:"20px min(24px, 4vw)"}}>
+          {orders.filter(o => o.client === (user.name || user.co)).length > 0 && <>
+            <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("notifTitre")}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:28}}>
+              {orders.filter(o => o.client === (user.name || user.co)).slice(0,3).map((o,i) => (
+                <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px",display:"flex",alignItems:"center",gap:12,cursor:"pointer"}} onClick={() => { setModal("viewOrd"); setEd({...o, idx:orders.indexOf(o)}); }}>
+                  <span style={{fontSize:14,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:0.5}}>{o.id}</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:500}}>{o.items} {t("unites")} · {fmt(o.total)} €</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{o.date}</div>
+                  </div>
+                  <Badge l={SL[o.status]} c={SC[o.status]} />
+                  {o.track && <a href={o.trackUrl||"#"} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.bl,textDecoration:"none"}} onClick={e => e.stopPropagation()}>📦 Track</a>}
+                </div>
+              ))}
+            </div>
+          </>}
+
+          {/* RECOMMENDATIONS */}
           <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>{t("recoPour")}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:28}}>
             {products.filter(p => (p.tags||[]).some(t => ["top","new","rec"].includes(t))).slice(0,6).map(p => renderCard(p))}
@@ -2131,8 +2156,19 @@ export default function App() {
       </Sec>}
 
       {/* ADMIN VIEWS */}
-      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:8,alignItems:"center"}}><span style={{fontSize:11,color:C.gr,fontFamily:BD}}>{orders.length}</span><Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn></div>}>
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.map((o, i) => renderOrderRow(o, i, true, true))}</div>
+      {view === "a-ord" && <Sec title={t("commandes")} right={<Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn>}>
+        <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
+          {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
+            <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+          ))}
+          <span style={{width:1,height:16,background:C.ln,margin:"0 2px"}} />
+          {[["all",t("tous")],["pending",t("pending")],["invoiced",t("invoiced")],["paid",t("paid")]].map(([v,l]) => (
+            <button key={v} onClick={() => setOrdPayFilter(v)} style={{padding:"5px 12px",background:ordPayFilter===v?C.bl:"transparent",color:ordPayFilter===v?"#fff":C.gr,border:"1px solid "+(ordPayFilter===v?C.bl:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
+          ))}
+          <span style={{flex:1}} />
+          <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).length} / {orders.length}</span>
+        </div>
+        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).map((o, i) => renderOrderRow(o, orders.indexOf(o), true, true))}</div>
       </Sec>}
 
       {view === "a-cl" && <Sec title={t("clients")} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn>}>
@@ -2166,14 +2202,20 @@ export default function App() {
       </Sec>}
 
       {view === "a-stock" && <Sec title={t("gestionStock")} right={<Btn small onClick={() => { setModal("newProd"); setEd({model:"",color:"",sku:"",cat:"Essential",col:"Essential",stock:"20",fixedPrice:0}); }}>{t("nouveauProduit")}</Btn>}>
-        <div style={{display:"flex",gap:4,marginBottom:14}}>
+        <div style={{display:"flex",gap:6,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
           ))}
+          <span style={{flex:1}} />
+          {(() => { const out = products.filter(p => p.stock === 0).length; const low = products.filter(p => p.stock > 0 && p.stock < 5).length; return <>
+            {out > 0 && <span style={{fontSize:10,fontFamily:BD,color:"#fff",background:C.rd,padding:"3px 10px",borderRadius:10,fontWeight:600}}>{out} {t("agotado")}</span>}
+            {low > 0 && <span style={{fontSize:10,fontFamily:BD,color:C.yl,background:C.yl+"15",padding:"3px 10px",borderRadius:10,fontWeight:600}}>{low} {t("alerteStock")}</span>}
+          </>; })()}
+          <input placeholder={t("rechercherProd")} value={stockSearch} onChange={e => setStockSearch(e.target.value)} style={{padding:"6px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(170px, 30vw)"}} />
         </div>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {products.filter(p => colFilter === "all" || p.col === colFilter).map((p, i) => (
-            <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock: String(p.stock)}); }}>
+          {products.filter(p => (colFilter === "all" || p.col === colFilter) && (!stockSearch || p.model.toLowerCase().includes(stockSearch.toLowerCase()) || p.color.toLowerCase().includes(stockSearch.toLowerCase()) || p.sku.toLowerCase().includes(stockSearch.toLowerCase()))).map((p, i) => (
+            <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"08":p.stock<5?C.yl+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock: String(p.stock)}); }}>
               <div style={{width:40,height:40,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
                 {p.imageUrl ? <img src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:BD}}>—</span>}
               </div>
@@ -2185,7 +2227,7 @@ export default function App() {
                 <div style={{fontSize:9,fontFamily:BD,color:C.gr2,marginTop:1}}>{p.sku}</div>
               </div>
               <span style={{fontSize:9,fontFamily:BD,color:p.col==="Acetato"?"#7a5c3a":C.gr2,background:p.col==="Acetato"?"#e8d5c0":C.bg,padding:"2px 6px",borderRadius:10,flexShrink:0}}>{p.col}</span>
-              <span style={{fontSize:14,fontWeight:700,fontFamily:BD,color:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,minWidth:32,textAlign:"center",flexShrink:0}}>{p.stock}</span>
+              <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:p.stock<5?C.rd+"12":"transparent",padding:p.stock===0?"3px 8px":"0 4px",borderRadius:10,minWidth:32,textAlign:"center",flexShrink:0}}>{p.stock===0?t("agotado"):p.stock}</span>
             </div>
           ))}
         </div>
