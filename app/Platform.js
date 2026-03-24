@@ -623,7 +623,7 @@ const PRODUCTS_INIT = [
 ];
 
 const ORDERS_INIT = [
-  {id:"#MN-2611",client:"Le Bruit des Vagues",dist:"MPM Diffusion",date:"13/03/2026",items:50,total:850.26,comm:127.54,status:"partial",pay:"pending",shippingCost:0,track:"131DAFC1021215124R",carrier:"Zeleris",trackUrl:"",clientNotes:"Envío 1: 35 uds entregado (Factura M2026003). Envío 2: 15 uds pendiente 1ª semana abril. Pago: 50% a 15 días (04/04) + 50% a 45 días (04/05).",
+  {id:"#MN-0001",client:"Le Bruit des Vagues",dist:"MPM Diffusion",date:"13/03/2026",items:50,total:850.26,comm:127.54,status:"partial",pay:"pending",shippingCost:0,track:"131DAFC1021215124R",carrier:"Zeleris",trackUrl:"",clientNotes:"Envío 1: 35 uds entregado (Factura M2026003). Envío 2: 15 uds pendiente 1ª semana abril. Pago: 50% a 15 días (04/04) + 50% a 45 días (04/05).",
     lines:[
       {model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",qty:2,price:17.01,qtyReceived:0},
       {model:"GARDNER",color:"Amber Doré",sku:"MN-GRDN-ADR",qty:2,price:17.01,qtyReceived:2},
@@ -673,7 +673,7 @@ const TASKS_INIT = [
   {id:3,title:"Contactar nuevas ópticas Berlín",desc:"Lista de 10 ópticas potenciales",priority:"moyenne",area:"commercial",status:"aFaire",date:"23/03/2026"},
   {id:4,title:"Actualizar stock Acetato",desc:"Verificar unidades físicas vs sistema",priority:"moyenne",area:"produits",status:"enCours",date:"21/03/2026"},
   {id:5,title:"Enviar credenciales a Minuë Colombia",desc:"Email con acceso B2B portal",priority:"haute",area:"clientsArea",status:"fait",date:"23/03/2026"},
-  {id:6,title:"Configurar envío DHL Le Bruit des Vagues",desc:"Pedido #2611 parcial",priority:"basse",area:"logistique",status:"aFaire",date:"22/03/2026"},
+  {id:6,title:"Configurar envío DHL Le Bruit des Vagues",desc:"Pedido #MN-0001 parcial",priority:"basse",area:"logistique",status:"aFaire",date:"22/03/2026"},
 ];
 
 const FAQ_INIT = [
@@ -807,13 +807,13 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls && cls.length > 0) { setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
+        if (cls) { if (cls.length > 0) setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
-        if (ords && ords.length > 0) {
+        if (ords) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
           const linesByOrder = {};
-          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection}); });
-          setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
+          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection,qtyReceived:l.qty_received||0}); });
+          if (ords.length > 0) setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
         }
         const {data:prms} = await supabase.from("promos").select("*");
         if (prms && prms.length > 0) setPromos(prms.map(dbToPromo));
@@ -823,7 +823,7 @@ export default function App() {
         if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
         if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
-        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) { console.log('DB error:', e); } } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) { console.log('DB error:', e); } } }
+        if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) {} } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) {} } }
         if (user) { const {data:fvs} = await supabase.from("user_favorites").select("product_id").eq("user_email",user.email); if (fvs) setFavs(fvs.map(f => f.product_id)); }
         const {data:pks} = await supabase.from("packaging").select("*").order("sort_order",{ascending:true});
         if (pks && pks.length > 0) setPackItems(pks.map(r => ({id:r.id,type:r.type,name:{fr:r.name_fr||"",es:r.name_es||"",en:r.name_en||""},desc:{fr:r.desc_fr||"",es:r.desc_es||"",en:r.desc_en||""},imageUrl:r.image_url||"",on:r.active!==false})));
@@ -832,7 +832,7 @@ export default function App() {
       setLoading(false);
     };
     load();
-  }, [dbReady]);
+  }, [dbReady, user?.email]);
 
   const getNextOrderNumber = async () => { if (!dbReady) return "#MN-" + String(orders.length + 1).padStart(4, "0"); try { const {data} = await supabase.from("orders").select("order_number").order("created_at",{ascending:false}).limit(1); if (data && data.length > 0) { const num = parseInt(data[0].order_number.replace(/\D/g, "")) || 0; return "#MN-" + String(num + 1).padStart(4, "0"); } return "#MN-0001"; } catch(e) { return "#MN-" + String(orders.length + 1).padStart(4, "0"); } };
 
@@ -903,7 +903,7 @@ export default function App() {
 
   /* Distributor clients */
   const distCo = user ? (user.co||"") : "";
-  const isMyChannel = (ch) => { if (!ch || !distCo) return false; const a = ch.toLowerCase(); const b = distCo.toLowerCase(); return a === b || b.includes(a) || a.includes(b.replace(/ showroom$/i,"").trim()); };
+  const isMyChannel = (ch) => { if (!ch || !distCo) return false; const a = ch.toLowerCase().trim(); const b = distCo.toLowerCase().trim(); const bClean = b.replace(/ showroom$/i,"").replace(/ diffusion$/i,"").trim(); const aClean = a.replace(/ showroom$/i,"").replace(/ diffusion$/i,"").trim(); return a === b || aClean === bClean || b.includes(aClean) || a.includes(bClean); };
   const distClients = clients.filter(c => isMyChannel(c.channel));
   const distLabel = distCo.replace(/ Showroom$/i,"").trim() || "Direct";
 
@@ -912,6 +912,7 @@ export default function App() {
   const distSales = distOrders.reduce((s, o) => s + o.total, 0);
   const distComm = distOrders.reduce((s, o) => s + o.comm, 0);
   const distPaid = distOrders.filter(o => o.pay === "paid").reduce((s, o) => s + o.comm, 0);
+  const distInvoiced = distOrders.filter(o => o.pay === "invoiced").reduce((s, o) => s + o.comm, 0);
 
   /* newOrd modal calculations */
   const edLines = ed.lines || [];
@@ -1076,7 +1077,7 @@ export default function App() {
       {/* TOP BAR */}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px min(16px, 3vw)",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:"min(50px, 12vw)",borderRadius:4}} />
+          <img src={LOGO} alt="Minuë" style={{height:"min(65px, 16vw)",borderRadius:4}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -1095,8 +1096,8 @@ export default function App() {
                  ...promos.filter(p => p.on && (p.visible||[]).includes("client")).slice(0,2).map(p => ({type:"promo",text:"🎁 "+p.name,go:"c-promo"}))];
             const count = notifs.length;
             return <>
-              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:24,height:24,borderRadius:12,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <button onClick={() => setNotifOpen(!notifOpen)} style={{width:32,height:32,borderRadius:16,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                 {count > 0 && <span style={{position:"absolute",top:-2,right:-4,width:16,height:16,borderRadius:8,background:"#e74c3c",fontSize:9,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
               </button>
               {notifOpen && <div style={{position:"fixed",top:48,right:12,width:"min(340px, 85vw)",maxHeight:"60vh",background:C.wh,borderRadius:8,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.15)",zIndex:200,overflow:"hidden"}} onClick={e => e.stopPropagation()}>
@@ -2824,7 +2825,7 @@ export default function App() {
             {renderKPI(t("ventesTot"), fmt(distSales)+" €")}
             {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn)}
             {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn)}
-            {renderKPI(t("aPercevoir"), fmt(distComm-distPaid)+" €", C.yl)}
+            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn)}
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:14}}>
             <div>
