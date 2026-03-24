@@ -277,6 +277,12 @@ const T = {
   alerteStock:{fr:"Alerte stock",es:"Alerta stock",en:"Stock alert"},
   notifTitre:{fr:"Mises à jour",es:"Novedades de pedidos",en:"Order updates"},
   notifStatus:{fr:"Votre commande %s est passée à",es:"Tu pedido %s ha cambiado a",en:"Your order %s changed to"},
+  datosPersonales:{fr:"Données personnelles",es:"Datos personales",en:"Personal info"},
+  dirEnvio:{fr:"Adresse de livraison",es:"Dirección de envío",en:"Shipping address"},
+  dirFacturacion:{fr:"Données de facturation",es:"Datos de facturación",en:"Billing info"},
+  direccion:{fr:"Adresse",es:"Dirección",en:"Address"},
+  fichaCliente:{fr:"Fiche client",es:"Ficha del cliente",en:"Client file"},
+  condiciones:{fr:"Conditions commerciales",es:"Condiciones comerciales",en:"Commercial terms"},
   confirmarEliminar:{fr:"Confirmer la suppression ?",es:"¿Confirmar eliminación?",en:"Confirm deletion?"},
   reduirQty:{fr:"Réduire qté",es:"Reducir uds",en:"Reduce qty"},
   tareas:{fr:"Tâches",es:"Tareas",en:"Tasks"},
@@ -578,7 +584,7 @@ export default function App() {
   const dbReady = !!supabase;
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
   const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
-  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0});
+  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[]});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
   const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
@@ -593,7 +599,10 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls && cls.length > 0) setClients(cls.map(dbToClient));
+        if (cls && cls.length > 0) {
+          setClients(cls.map(dbToClient));
+          if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); }
+        }
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
         if (ords && ords.length > 0) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
@@ -621,7 +630,7 @@ export default function App() {
   const dbSaveOrder = async (order, lines) => {
     if (!dbReady) return;
     try {
-      const {data, error} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
+      const {data} = await supabase.from("orders").insert({order_number:order.id,client_name:order.client,distributor:order.dist,status:order.status,payment:order.pay,shipping_cost:order.shippingCost||0,carrier:order.carrier||"",track_number:order.track||"",track_url:order.trackUrl||"",notes_internal:order.notes||"",notes_client:order.clientNotes||"",total:order.total,items_count:order.items,commission:order.comm}).select().single();
       if (data && lines) { await supabase.from("order_lines").insert(lines.map(l => ({order_id:data.id,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
     } catch(e) { console.log("DB save order:", e); }
   };
@@ -648,7 +657,7 @@ export default function App() {
   const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
   const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
   const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
-  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -718,7 +727,7 @@ export default function App() {
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
       comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
-      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: "", lines
+      status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", clientNotes: "", lines
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
@@ -977,30 +986,97 @@ export default function App() {
 
           {/* EDIT CLIENT */}
           {modal === "editCl" && <>
-            <div style={{fontSize:15,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:4}}>{ed.name}</div>
-            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.contact} - {ed.city}, {ed.country}</div>
-            <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16}}>
-              <div style={{display:"flex",gap:8,marginBottom:12}}>
-                <button onClick={() => setEd(p => ({...p, customPrice: 0}))} style={{flex:1,padding:10,background:ed.customPrice===0?C.dk:C.wh,color:ed.customPrice===0?C.bg:C.dk,border:"1px solid "+(ed.customPrice===0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("tarifAuto")}</button>
-                <button onClick={() => setEd(p => ({...p, customPrice: p.customPrice || 17.90}))} style={{flex:1,padding:10,background:ed.customPrice>0?C.dk:C.wh,color:ed.customPrice>0?C.bg:C.dk,border:"1px solid "+(ed.customPrice>0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("prixFixe")}</button>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:4,flexWrap:"wrap"}}>
+              <span style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:600}}>{ed.name}</span>
+              <Badge l={ed.status==="vip"?"VIP":ed.status==="prospect"?t("prospect"):t("actif")} c={ed.status==="vip"?C.yl:ed.status==="prospect"?C.gr2:C.gn} />
+            </div>
+            <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{ed.contact} · {ed.city}, {ed.country} · {ed.channel}</div>
+            <div style={{display:"flex",gap:4,marginBottom:16,borderBottom:"1px solid "+C.ln}}>
+              {[["info",t("fichaCliente")],["cond",t("condiciones")]].map(([v,l]) => (
+                <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 16px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"info")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"info")===v?600:400,color:(ed._tab||"info")===v?C.dk:C.gr}}>{l}</button>
+              ))}
+            </div>
+
+            {(ed._tab||"info") === "info" && <>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("datosPersonales")}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
+                  {[[t("boutique"),"name"],[t("contact"),"contact"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"],[t("ville"),"city"],[t("pays"),"country"]].map(([l,k]) => (
+                    <div key={k} style={{marginBottom:8}}>
+                      <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <input value={ed[k]||""} onChange={e => setEd(p => ({...p,[k]:e.target.value}))} style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
+                    </div>
+                  ))}
+                </div>
               </div>
-              {ed.customPrice > 0
-                ? <><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")}</div><input type="number" step="0.10" value={ed.customPrice} onChange={e => setEd(p => ({...p, customPrice: parseFloat(e.target.value) || 0}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} /></>
-                : <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("prixAutoDesc")}</div>
-              }
-            </div>
-            <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <div><div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("prontoPago")}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("prontoDesc")}</div></div>
-              <button onClick={() => setEd(p => ({...p, earlyPay: !p.earlyPay}))} style={{width:44,height:24,borderRadius:12,background:ed.earlyPay?C.gn:C.ln,border:"none",cursor:"pointer",position:"relative"}}>
-                <div style={{width:18,height:18,borderRadius:9,background:C.wh,position:"absolute",top:3,left:ed.earlyPay?23:3,transition:"left 0.2s"}} />
-              </button>
-            </div>
-            <div style={{marginBottom:14}}>
-              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesComm")}</div>
-              <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
-            </div>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("dirEnvio")}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
+                  {[[t("direccion"),"shippingAddress"],[t("ville"),"shippingCity"],[t("codePostal"),"shippingPostal"],[t("pays"),"shippingCountry"]].map(([l,k]) => (
+                    <div key={k} style={{marginBottom:8}}>
+                      <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:12,fontFamily:BD,color:C.dk,padding:"7px 0"}}>{ed[k] || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("dirFacturacion")}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
+                  {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("codePostal"),"postalCode"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
+                    <div key={k} style={{marginBottom:8}}>
+                      <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:12,fontFamily:BD,color:C.dk,padding:"7px 0"}}>{ed[k] || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,marginBottom:12}}>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("donneesBancaires")}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
+                  {[[t("titulaire"),"bankHolder"],[t("iban"),"iban"],[t("bic"),"bic"]].map(([l,k]) => (
+                    <div key={k} style={{marginBottom:8}}>
+                      <div style={{fontSize:9,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:12,fontFamily:BD,color:C.dk,padding:"7px 0"}}>{ed[k] || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Status</div>
+                <div style={{display:"flex",gap:6}}>
+                  {[["prospect",t("prospect")],["actif",t("actif")],["vip","VIP"]].map(([v,l]) => (
+                    <button key={v} onClick={() => setEd(p => ({...p, status:v}))} style={{padding:"5px 12px",background:ed.status===v?C.dk:"transparent",color:ed.status===v?C.bg:C.gr,border:"1px solid "+(ed.status===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{l}</button>
+                  ))}
+                </div>
+              </div>
+            </>}
+
+            {(ed._tab||"info") === "cond" && <>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16}}>
+                <div style={{display:"flex",gap:8,marginBottom:12}}>
+                  <button onClick={() => setEd(p => ({...p, customPrice: 0}))} style={{flex:1,padding:10,background:ed.customPrice===0?C.dk:C.wh,color:ed.customPrice===0?C.bg:C.dk,border:"1px solid "+(ed.customPrice===0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("tarifAuto")}</button>
+                  <button onClick={() => setEd(p => ({...p, customPrice: p.customPrice || 17.90}))} style={{flex:1,padding:10,background:ed.customPrice>0?C.dk:C.wh,color:ed.customPrice>0?C.bg:C.dk,border:"1px solid "+(ed.customPrice>0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("prixFixe")}</button>
+                </div>
+                {ed.customPrice > 0
+                  ? <><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")}</div><input type="number" step="0.10" value={ed.customPrice} onChange={e => setEd(p => ({...p, customPrice: parseFloat(e.target.value) || 0}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} /></>
+                  : <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("prixAutoDesc")}</div>
+                }
+              </div>
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div><div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("prontoPago")}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("prontoDesc")}</div></div>
+                <button onClick={() => setEd(p => ({...p, earlyPay: !p.earlyPay}))} style={{width:44,height:24,borderRadius:12,background:ed.earlyPay?C.gn:C.ln,border:"none",cursor:"pointer",position:"relative"}}>
+                  <div style={{width:18,height:18,borderRadius:9,background:C.wh,position:"absolute",top:3,left:ed.earlyPay?23:3,transition:"left 0.2s"}} />
+                </button>
+              </div>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesComm")}</div>
+                <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+            </>}
+
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, customPrice: ed.customPrice, earlyPay: ed.earlyPay, notes: ed.notes} : c)); dbUpdateClient(ed); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
+              <Btn onClick={() => { setClients(p => p.map(c => c.id === ed.id ? {...c, ...ed, _tab:undefined} : c)); setModal(null); }} style={{flex:1}}>{t("enregistrerCond")}</Btn>
               <Btn ghost onClick={() => { if(confirm(t("confirmarEliminar"))){ setClients(p => p.filter(c => c.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>✕</Btn>
             </div>
           </>}
@@ -1963,11 +2039,35 @@ export default function App() {
       </Sec>}
 
       {view === "c-account" && <Sec title={t("monCompte")}>
-        <div style={{maxWidth:600}}>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"20px 22px",marginBottom:16}}>
-            <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:14}}>{t("donneesEntreprise")}</div>
+        <div style={{maxWidth:640}}>
+          {/* PERSONAL */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("adresse"),"address"],[t("ville"),"city"],[t("codePostal"),"postalCode"],[t("pays"),"country"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.name}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.email}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.co || "—"}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.phone || "—"}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* SHIPPING */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("dirEnvio")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              {[[t("direccion"),"shippingAddress"],[t("ville"),"shippingCity"],[t("codePostal"),"shippingPostal"],[t("pays"),"shippingCountry"]].map(([l,k]) => (
                 <div key={k} style={{marginBottom:12}}>
                   <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
                   <input value={accountData[k]||""} onChange={e => { setAccountData(p => ({...p,[k]:e.target.value})); setAccountSaved(false); }} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
@@ -1975,8 +2075,23 @@ export default function App() {
               ))}
             </div>
           </div>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"20px 22px",marginBottom:16}}>
-            <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:14}}>{t("donneesBancaires")}</div>
+
+          {/* BILLING */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("dirFacturacion")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("ville"),"city"],[t("codePostal"),"postalCode"],[t("pays"),"country"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
+                <div key={k} style={{marginBottom:12}}>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{l}</div>
+                  <input value={accountData[k]||""} onChange={e => { setAccountData(p => ({...p,[k]:e.target.value})); setAccountSaved(false); }} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* BANK */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("donneesBancaires")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
               {[[t("titulaire"),"bankHolder"],[t("iban"),"iban"],[t("bic"),"bic"]].map(([l,k]) => (
                 <div key={k} style={{marginBottom:12}}>
@@ -1986,6 +2101,7 @@ export default function App() {
               ))}
             </div>
           </div>
+
           <div style={{display:"flex",alignItems:"center",gap:12}}>
             <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
