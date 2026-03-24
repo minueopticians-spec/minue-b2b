@@ -1716,10 +1716,11 @@ export default function App() {
           {modal === "viewOrd" && (() => {
             const canEdit = role === "distributor" && ed.status === "confirmed";
             const isPartial = ed.status === "partial";
-            const shippedQty = isPartial && ed.lines ? ed.lines.reduce((s,l) => s + (l.qtyReceived||0), 0) : 0;
+            const hasQtyData = isPartial && ed.lines && ed.lines.some(l => (l.qtyReceived||0) > 0);
+            const shippedQty = hasQtyData ? ed.lines.reduce((s,l) => s + (l.qtyReceived||0), 0) : 0;
             const pendingQty = isPartial ? ed.items - shippedQty : 0;
-            const shippedLines = isPartial && ed.lines ? ed.lines.filter(l => (l.qtyReceived||0) > 0) : [];
-            const pendingLines = isPartial && ed.lines ? ed.lines.filter(l => (l.qtyReceived||0) < l.qty) : [];
+            const shippedLines = hasQtyData ? ed.lines.filter(l => (l.qtyReceived||0) > 0) : [];
+            const pendingLines = hasQtyData ? ed.lines.filter(l => (l.qtyReceived||0) < l.qty) : [];
             return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
@@ -1729,8 +1730,8 @@ export default function App() {
             <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:canEdit?8:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
             {canEdit && <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gn,fontWeight:500}}>✏️ {t("cmdNonConfirmee")}</div>}
 
-            {/* PARTIAL PROGRESS */}
-            {isPartial && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
+            {/* PARTIAL PROGRESS - only with qtyReceived data */}
+            {isPartial && hasQtyData && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("envioPartial")}</span>
                 <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{shippedQty} / {ed.items} {t("unites")}</span>
@@ -1750,8 +1751,14 @@ export default function App() {
               </div>
             </div>}
 
-            {/* SHIPPED ITEMS (partial) */}
-            {isPartial && shippedLines.length > 0 && <>
+            {/* PARTIAL without qtyReceived data - show badge */}
+            {isPartial && !hasQtyData && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
+              <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:4}}>{t("envioPartial")}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{ed.clientNotes || ed.notes || ""}</div>
+            </div>}
+
+            {/* SHIPPED ITEMS (partial with data) */}
+            {isPartial && hasQtyData && shippedLines.length > 0 && <>
               <div style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:700,marginBottom:6}}>✓ {t("enviado")} — {shippedQty} {t("unites")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.gn+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
                 {shippedLines.map((l, i) => (
@@ -1766,8 +1773,8 @@ export default function App() {
               </div>
             </>}
 
-            {/* PENDING ITEMS (partial) */}
-            {isPartial && pendingLines.length > 0 && <>
+            {/* PENDING ITEMS (partial with data) */}
+            {isPartial && hasQtyData && pendingLines.length > 0 && <>
               <div style={{fontSize:11,fontFamily:BD,color:C.yl,fontWeight:700,marginBottom:6}}>⏳ {t("pendienteEnvio")} — {pendingQty} {t("unites")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.yl+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
                 {pendingLines.map((l, i) => { const pend = l.qty - (l.qtyReceived||0); return (
@@ -1782,8 +1789,8 @@ export default function App() {
               </div>
             </>}
 
-            {/* NORMAL LINES (non-partial) */}
-            {!isPartial && ed.lines && ed.lines.length > 0 && <>
+            {/* NORMAL LINES (non-partial OR partial without qty data) */}
+            {(!isPartial || (isPartial && !hasQtyData)) && ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
                 {ed.lines.map((l, i) => (
@@ -1809,8 +1816,8 @@ export default function App() {
               </div>
             </>}
 
-            {/* TOTAL (partial) */}
-            {isPartial && <div style={{display:"flex",justifyContent:"space-between",padding:"10px 14px",background:C.bg,borderRadius:4,fontFamily:BD,fontSize:12,fontWeight:600,marginBottom:14}}>
+            {/* TOTAL (partial with qty data) */}
+            {isPartial && hasQtyData && <div style={{display:"flex",justifyContent:"space-between",padding:"10px 14px",background:C.bg,borderRadius:4,fontFamily:BD,fontSize:12,fontWeight:600,marginBottom:14}}>
               <span>{ed.items} {t("unites")}</span>
               <span>{fmt(ed.total)} €</span>
             </div>}
