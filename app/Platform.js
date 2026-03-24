@@ -632,7 +632,15 @@ export default function App() {
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { 
+    const {data, error} = await supabase.from("users").insert({email:u.email,password_hash:u.pw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false?true:false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).select().single();
+    if (error) { console.log("USER INSERT ERROR:", error); return; }
+    if (data && (u.role === "client" || u.role === "distributor")) {
+      const {error:clErr} = await supabase.from("clients").insert({user_id:data.id, name:u.name, contact:u.name, city:u.city||null, country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:u.co||null, phone:u.phone||null, company_email:u.email});
+      if (clErr) console.log("CLIENT AUTO-CREATE ERROR:", clErr);
+      else setClients(p => [...p, {id:Date.now(), userId:data.id, name:u.name, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]);
+    }
+  } catch(e) { console.log('DB error:', e); } };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
@@ -1367,7 +1375,7 @@ export default function App() {
             </div>
             <div style={{display:"flex",gap:8}}>
               <Btn onClick={() => { setUsers(p => p.map(u => u.email === ed.origEmail ? {...u, name:ed.name, co:ed.co, pw:ed.pw, commRate:ed.commRate, active:ed.active!==false, phone:ed.phone, city:ed.city, country:ed.country, notes:ed.notes} : u)); dbUpdateUser(ed); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
-              <Btn ghost onClick={() => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("userActif")}</Btn>
+              <Btn ghost onClick={async () => { const tu={...ed, active:!(ed.active!==false)}; setUsers(p => p.map(u => u.email === tu.origEmail ? {...u, active: tu.active} : u)); dbUpdateUser(tu); if (tu.active && (tu.role === "client" || tu.role === "distributor") && !clients.find(c => c.name === tu.name)) { const {data:usr} = await supabase.from("users").select("id").eq("email",tu.origEmail||tu.email).single(); if (usr) { const {error} = await supabase.from("clients").insert({user_id:usr.id, name:tu.name, contact:tu.name, city:tu.city||null, country:tu.country||"FR", channel:tu.role==="distributor"?"Agent Sud":"Direct", status:"prospect", company_name:tu.co||null, phone:tu.phone||null, company_email:tu.email||tu.origEmail}); if (!error) setClients(p => [...p, {id:Date.now(), userId:usr.id, name:tu.name, contact:tu.name, city:tu.city||"", country:tu.country||"FR", channel:tu.role==="distributor"?"Agent Sud":"Direct", customPrice:0, earlyPay:false, status:"prospect", notes:"", orders:0, total:0}]); } } setModal(null); }} style={{flex:0}}>{ed.active !== false ? t("desactiver") : t("activerCompte")}</Btn>
             </div>
           </>}
 
