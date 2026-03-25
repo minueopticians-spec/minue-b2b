@@ -314,6 +314,7 @@ const T = {
   packEtui:{fr:"Étuis",es:"Fundas",en:"Cases"},
   packDisplay:{fr:"Présentoirs",es:"Expositores",en:"Displays"},
   packMerch:{fr:"Merchandising",es:"Merchandising",en:"Merchandising"},
+  employe:{fr:"Équipe",es:"Equipo",en:"Team"},
   fondFiltrer:{fr:"Filtrer",es:"Filtrar",en:"Filter"},
   couleurs:{fr:"couleurs",es:"colores",en:"colors"},
   voirModele:{fr:"Voir le modèle",es:"Ver modelo",en:"View model"},
@@ -962,7 +963,7 @@ export default function App() {
     if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
     setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
     setLang(found.lang || "fr");
-    setView(found.role === "admin" ? "a-stats" : found.role === "distributor" ? "d-dash" : "c-home");
+    setView(found.role === "admin" ? "a-stats" : found.role === "employee" ? "e-dash" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
   const doRegister = () => {
@@ -1069,11 +1070,13 @@ export default function App() {
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    : role === "employee"
+    ? [["e-dash","dashboard"],["a-ord","commandes"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-account","monCompte"]]
     : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
-    const rc = role==="admin"?"#e8a87c":role==="distributor"?"#87ceeb":"#c4956a";
+    const rc = role==="admin"?"#e8a87c":role==="employee"?"#a8c8e8":role==="distributor"?"#87ceeb":"#c4956a";
     return (
     <nav style={{background:darkMode?"#141c1a":CL.dk,position:"sticky",top:0,zIndex:100}}>
       {/* TOP BAR */}
@@ -1093,6 +1096,10 @@ export default function App() {
           {(() => {
             const notifs = role === "admin"
               ? [...users.filter(u => u.active === false && u.role !== "admin").map(u => ({type:"access",text:u.name+" — "+t("solliciterAcces"),go:"a-users"})),
+                 ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title,go:"a-tasks"})),
+                 ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado"),go:"a-stock"}))]
+              : role === "employee"
+              ? [...orders.filter(o => o.status === "confirmed" || o.status === "preparing").slice(0,5).map(o => ({type:"order",text:o.id+" "+o.client+" — "+SL[o.status],go:"a-ord"})),
                  ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({type:"task",text:"⚠ "+tk.title,go:"a-tasks"})),
                  ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({type:"stock",text:p.model+" "+p.color+" — "+t("agotado"),go:"a-stock"}))]
               : role === "distributor"
@@ -1256,7 +1263,7 @@ export default function App() {
   };
 
   const renderOrderRow = (o, i, showComm, showDist) => (
-    <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 14px",borderBottom:"1px solid "+C.bg2,background:C.wh,flexWrap:"wrap",cursor:"pointer"}} onClick={() => { if (role === "admin") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o}); }}}>
+    <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 14px",borderBottom:"1px solid "+C.bg2,background:C.wh,flexWrap:"wrap",cursor:"pointer"}} onClick={() => { if (role === "admin" || role === "employee") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o}); }}}>
       <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{o.id}</span>
       <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:"1 1 80px",minWidth:60}}>{o.client}</span>
       <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{o.date}</span>
@@ -1847,7 +1854,7 @@ export default function App() {
             <div style={{marginBottom:14}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("roleLabel")}</div>
               <div style={{display:"flex",gap:8}}>
-                {[["client",t("client"),"🏪",C.gn],["distributor",t("distributeur")+" / Showroom","🤝",C.bl]].map(([v,l,icon,col]) => (
+                {[["client",t("client"),"🏪",C.gn],["distributor",t("distributeur")+" / Showroom","🤝",C.bl],["employee",t("employe")+" Minuë","👤","#a8c8e8"]].map(([v,l,icon,col]) => (
                   <button key={v} onClick={() => setEd(p => ({...p, role:v, commRate:v==="distributor"?15:0}))} style={{flex:1,padding:"12px 14px",background:ed.role===v?col+"12":"transparent",border:"2px solid "+(ed.role===v?col:C.ln),borderRadius:8,cursor:"pointer",textAlign:"left"}}>
                     <div style={{fontSize:18,marginBottom:4}}>{icon}</div>
                     <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:ed.role===v?col:C.gr}}>{l}</div>
@@ -2189,7 +2196,7 @@ export default function App() {
               </div>
             </div>
             <div style={{display:"flex",gap:4,margin:"12px 0",borderBottom:"1px solid "+C.ln,overflowX:"auto"}}>
-              {[["resume",t("resumeClient")],["clients",t("clients")],["orders",t("commandes")],["liquid",t("liquidaciones")],["notes",t("notesDistrib")]].map(([v,l]) => (
+              {[["resume",t("resumeClient")],["clients",t("clients")],["orders",t("commandes")],...(role==="admin"?[["liquid",t("liquidaciones")]]:[]),["notes",t("notesDistrib")]].map(([v,l]) => (
                 <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 14px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"resume")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"resume")===v?600:400,color:(ed._tab||"resume")===v?C.dk:C.gr,whiteSpace:"nowrap"}}>{l}</button>
               ))}
             </div>
@@ -2199,9 +2206,9 @@ export default function App() {
                 {renderKPI(t("clients"), String(ed._dClients.length))}
                 {renderKPI(t("commandes"), String(ed._dOrders.length))}
                 {renderKPI(t("ventesTotal"), fmt(ed._dSales)+" €", C.gn)}
-                {renderKPI(t("commGeneree"), fmt(ed._dComm)+" €", C.bl)}
-                {renderKPI(t("commPayee"), fmt(ed._dPaid)+" €", C.gn)}
-                {renderKPI(t("commDue"), fmt(ed._dComm - ed._dPaid)+" €", ed._dComm - ed._dPaid > 0 ? C.yl : C.gn)}
+                {role === "admin" && renderKPI(t("commGeneree"), fmt(ed._dComm)+" €", C.bl)}
+                {role === "admin" && renderKPI(t("commPayee"), fmt(ed._dPaid)+" €", C.gn)}
+                {role === "admin" && renderKPI(t("commDue"), fmt(ed._dComm - ed._dPaid)+" €", ed._dComm - ed._dPaid > 0 ? C.yl : C.gn)}
               </div>
               <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("dernieresCmd")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",maxHeight:200,overflowY:"auto"}}>
@@ -2436,7 +2443,7 @@ export default function App() {
           <div style={{padding:"20px 20px 16px",background:darkMode?"#1e2d29":CL.dk,color:"#f8efe6"}}>
             <div style={{fontSize:18,fontFamily:DP,fontWeight:500}}>{user.name}</div>
             <div style={{fontSize:11,fontFamily:BD,opacity:0.6,marginTop:2}}>{user.email}</div>
-            <div style={{marginTop:8,display:"flex",gap:6,alignItems:"center"}}><Badge l={role==="admin"?"Admin":role==="distributor"?t("distributeur"):t("client")} c={role==="admin"?"#96a5a1":role==="distributor"?C.bl:C.gn} />{role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#fdf6e3,#f5ecd8)",padding:"3px 10px",borderRadius:4,letterSpacing:2,border:"1px solid #d4a03050"}}>★ VIP</span>}</div>
+            <div style={{marginTop:8,display:"flex",gap:6,alignItems:"center"}}><Badge l={role==="admin"?"Admin":role==="employee"?t("employe"):role==="distributor"?t("distributeur"):t("client")} c={role==="admin"?"#96a5a1":role==="employee"?"#a8c8e8":role==="distributor"?C.bl:C.gn} />{role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#fdf6e3,#f5ecd8)",padding:"3px 10px",borderRadius:4,letterSpacing:2,border:"1px solid #d4a03050"}}>★ VIP</span>}</div>
           </div>
           <div style={{padding:"14px 20px"}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 12px"}}>
@@ -3059,6 +3066,33 @@ export default function App() {
         </div>
       </Sec>}
 
+      {/* EMPLOYEE ACCOUNT */}
+      {view === "e-account" && <Sec title={t("monCompte")}>
+        <div style={{maxWidth:640}}>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px"}}>
+            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.name}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.email}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.co || "Minuë"}</div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("roleLabel")}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:"#a8c8e8",padding:"9px 0",fontWeight:600}}>{t("employe")}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Sec>}
+
       {view === "d-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
@@ -3112,7 +3146,7 @@ export default function App() {
       </Sec>}
 
       {/* ADMIN VIEWS */}
-      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn></div>}>
+      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn>{role === "admin" && <Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn>}</div>}>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
           {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -3321,7 +3355,7 @@ export default function App() {
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
           {users.filter(u => u.role !== "admin" && (userFilter === "all" ? true : userFilter === "pending" ? u.active === false : u.role === userFilter)).map((u, i) => (
             <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",opacity:u.active===false?0.5:1}} onClick={() => { setModal("editUser"); setEd({...u, origEmail: u.email}); }}>
-              <Badge l={u.role === "distributor" ? t("distributeur") : t("client")} c={u.role === "distributor" ? C.bl : C.gn} />
+              <Badge l={u.role === "distributor" ? t("distributeur") : u.role === "employee" ? t("employe") : t("client")} c={u.role === "distributor" ? C.bl : u.role === "employee" ? "#a8c8e8" : C.gn} />
               <div style={{flex:1,minWidth:0}}>
                 <div style={{display:"flex",alignItems:"baseline",gap:6}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{u.name}</span>
@@ -3346,6 +3380,49 @@ export default function App() {
               <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{u.email}</span>
             </div>
           ))}
+        </div>
+      </Sec>}
+
+      {/* EMPLOYEE DASHBOARD */}
+      {view === "e-dash" && <Sec title={t("tableauBord")}>
+        <div style={{padding:"min(24px, 4vw) 0"}}>
+          <div style={{fontSize:"min(22px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:16,color:C.dk}}>{t("bienvenida")}, {user.name} ✦</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:20}}>
+            {renderKPI(t("totalCmd"), String(orders.length))}
+            {renderKPI(t("aExpedier"), String(orders.filter(o => o.status === "confirmed" || o.status === "preparing").length), C.yl)}
+            {renderKPI(t("clients"), String(clients.length))}
+            {renderKPI(t("produits"), String(products.length))}
+          </div>
+          {orders.filter(o => o.status === "confirmed" || o.status === "preparing").length > 0 && <>
+            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("cmdEnAttente")}</div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",marginBottom:16}}>
+              {orders.filter(o => o.status === "confirmed" || o.status === "preparing").slice(0,5).map((o,i) => renderOrderRow(o, i, false, true))}
+            </div>
+          </>}
+          {products.filter(p => p.stock < 5).length > 0 && <>
+            <div style={{fontSize:12,fontFamily:BD,color:C.rd,fontWeight:700,marginBottom:8}}>{t("stockBas")} ({products.filter(p => p.stock < 5).length})</div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",marginBottom:16}}>
+              {products.filter(p => p.stock < 5).slice(0,8).map((p,i) => (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                  <span style={{fontWeight:600,color:C.dk,flex:1}}>{p.model} {p.color}</span>
+                  <span style={{fontSize:11,color:C.gr}}>{p.col}</span>
+                  <span style={{fontWeight:700,color:p.stock===0?C.rd:C.yl}}>{p.stock}</span>
+                </div>
+              ))}
+            </div>
+          </>}
+          {tasks.filter(t => t.status !== "fait").length > 0 && <>
+            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("tareas")} ({tasks.filter(tk => tk.status !== "fait").length})</div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              {tasks.filter(tk => tk.status !== "fait").slice(0,5).map((tk,i) => (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                  <span style={{fontWeight:600,color:C.dk,flex:1}}>{tk.title}</span>
+                  <Badge l={tk.priority === "haute" ? "!" : tk.priority === "moyenne" ? "·" : "—"} c={tk.priority === "haute" ? C.rd : tk.priority === "moyenne" ? C.yl : C.gr} />
+                  {tk.dueDate && <span style={{fontSize:10,color:C.gr}}>{tk.dueDate}</span>}
+                </div>
+              ))}
+            </div>
+          </>}
         </div>
       </Sec>}
 
@@ -3577,9 +3654,9 @@ export default function App() {
       </Sec>}
 
       {/* FAQ VIEWS */}
-      {(view === "c-help" || view === "d-help" || view === "a-faq") && <Sec title={t("faq")} sub={t("faqSub")} right={role === "admin" ? <Btn small onClick={() => { setModal("newFaq"); setEd({q:{fr:"",es:"",en:""},a:{fr:"",es:"",en:""},on:true}); }}>{t("nouvelleFaq")}</Btn> : null}>
+      {(view === "c-help" || view === "d-help" || view === "a-faq") && <Sec title={t("faq")} sub={t("faqSub")} right={(role === "admin" || role === "employee") ? <Btn small onClick={() => { setModal("newFaq"); setEd({q:{fr:"",es:"",en:""},a:{fr:"",es:"",en:""},on:true}); }}>{t("nouvelleFaq")}</Btn> : null}>
         <div style={{maxWidth:700}}>
-          {faqs.filter(f => role === "admin" ? true : f.on).map((f, i) => (
+          {faqs.filter(f => (role === "admin" || role === "employee") ? true : f.on).map((f, i) => (
             <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:8,opacity:f.on?1:0.4,overflow:"hidden"}}>
               <button onClick={() => setHelpExpanded(helpExpanded === f.id ? null : f.id)} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"14px 18px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
                 <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600,flex:1,paddingRight:8}}>{(f.q && f.q[lang]) || f.q?.fr || ""}</span>
@@ -3587,11 +3664,11 @@ export default function App() {
               </button>
               {helpExpanded === f.id && <div style={{padding:"0 18px 16px",fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.7}}>
                 {(f.a && f.a[lang]) || f.a?.fr || ""}
-                {role === "admin" && <div style={{marginTop:10}}><Btn small ghost onClick={() => { setModal("editFaq"); setEd({...f}); }}>{t("editer")}</Btn></div>}
+                {(role === "admin" || role === "employee") && <div style={{marginTop:10}}><Btn small ghost onClick={() => { setModal("editFaq"); setEd({...f}); }}>{t("editer")}</Btn></div>}
               </div>}
             </div>
           ))}
-          {faqs.filter(f => role === "admin" ? true : f.on).length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:30}}>—</div>}
+          {faqs.filter(f => (role === "admin" || role === "employee") ? true : f.on).length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:30}}>—</div>}
         </div>
       </Sec>}
 
