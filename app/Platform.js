@@ -834,6 +834,9 @@ export default function App() {
   const [cartNotes, setCartNotes] = useState("");
   const [favs, setFavs] = useState([]);
   const dbToggleFav = async (productId) => { if (!dbReady || !user) return; try { const isFav = favs.includes(productId); if (isFav) { await supabase.from("user_favorites").delete().eq("user_email", user.email).eq("product_id", productId); } else { await supabase.from("user_favorites").insert({user_email: user.email, product_id: productId}); } } catch(e) { console.log("Fav error:", e); } };
+  const dbAddDefective = async (d) => { if (!dbReady) return; try { const {data} = await supabase.from("defective_products").insert({model:d.model,color:d.color,sku:d.sku,quantity:d.quantity||1,description:d.description||"",status:"pending",created_by:user?.name||""}).select().single(); if (data) setDefectives(p => [data, ...p]); } catch(e) { console.log("Defective error:", e); } };
+  const dbUpdateDefective = async (d) => { if (!dbReady) return; try { await supabase.from("defective_products").update({quantity:d.quantity,description:d.description,status:d.status}).eq("id",d.id); setDefectives(p => p.map(x => x.id === d.id ? {...x,...d} : x)); } catch(e) { console.log("Defective error:", e); } };
+  const dbUpdatePackInv = async (itemType, qty, note) => { if (!dbReady) return; try { await supabase.from("packaging_inventory").update({quantity:qty,updated_at:new Date().toISOString(),updated_by:user?.name||""}).eq("item_type",itemType); await supabase.from("packaging_log").insert({item_type:itemType,change:qty-packStock[itemType],note:note||"",created_by:user?.name||""}); setPackStock(p => ({...p,[itemType]:qty})); } catch(e) { console.log("Pack inv error:", e); } };
   const [favFilter, setFavFilter] = useState(false);
   const [privateNotes, setPrivateNotes] = useState({});
   const [packItems, setPackItems] = useState([
@@ -851,7 +854,8 @@ export default function App() {
   const [prepChecks, setPrepChecks] = useState({});
   const [expandedPrep, setExpandedPrep] = useState(null);
   const [ordSubTab, setOrdSubTab] = useState("list");
-  const [packStock, setPackStock] = useState({fundasVerde:80,fundasLila:80,fundasBlue:80,fundasCrema:80,gamuzasChampagne:100,gamuzasGris:100,cajitasGafa:150,cajasEnvio:40,cintaMinue:20});
+  const [packStock, setPackStock] = useState({fundas:0,gamuzas:0,cajasEnvio:0,cajitasGafa:0,tarjetasTecnicas:0,expositores:0});
+  const [defectives, setDefectives] = useState([]);
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
@@ -899,6 +903,10 @@ export default function App() {
         const {data:pks} = await supabase.from("packaging").select("*").order("sort_order",{ascending:true});
         if (pks && pks.length > 0) setPackItems(pks.map(r => ({id:r.id,type:r.type,name:{fr:r.name_fr||"",es:r.name_es||"",en:r.name_en||""},desc:{fr:r.desc_fr||"",es:r.desc_es||"",en:r.desc_en||""},imageUrl:r.image_url||"",on:r.active!==false})));
         if (user) { const {data:pns} = await supabase.from("private_notes").select("*").eq("author_email",user.email); if (pns) { const notesMap = {}; pns.forEach(n => { notesMap[n.client_id] = n.content; }); setPrivateNotes(notesMap); } }
+        const {data:defs} = await supabase.from("defective_products").select("*").order("created_at",{ascending:false});
+        if (defs) setDefectives(defs);
+        const {data:pinv} = await supabase.from("packaging_inventory").select("*");
+        if (pinv && pinv.length > 0) { const ps = {}; pinv.forEach(p => { ps[p.item_type] = p.quantity; }); setPackStock(prev => ({...prev,...ps})); }
       } catch(e) { console.log("DB load fallback:", e); }
       setLoading(false);
     };
@@ -1360,8 +1368,8 @@ export default function App() {
     exportCSV("minue_pedidos_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
   };
 
-  const renderKPI = (label, value, accent) => (
-    <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 14px"}}>
+  const renderKPI = (label, value, accent, onClick) => (
+    <div onClick={onClick} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 14px",...(onClick?{cursor:"pointer"}:{})}}>
       <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{label}</div>
       <div style={{fontSize:"min(24px, 5.5vw)",fontWeight:600,fontFamily:BD,color:accent||C.dk,lineHeight:1.1}}>{value}</div>
     </div>
@@ -2226,6 +2234,44 @@ export default function App() {
           </>}
 
           {/* NEW FAQ */}
+          {modal === "newDefect" && <>
+            <div style={{fontSize:14,fontFamily:DP,color:C.dk,fontWeight:600,marginBottom:14}}>{t("reportarDefecto")}</div>
+            <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>Selecciona el diseño</div>
+            {!ed.model ? <>
+              <input placeholder={t("rechercher")+"..."} value={ed._search||""} onChange={e => setEd(p => ({...p, _search:e.target.value}))} style={{width:"100%",padding:"9px 12px",border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",marginBottom:8}} />
+              <div style={{maxHeight:250,overflowY:"auto",border:"1px solid "+C.ln,borderRadius:4,background:C.wh}}>
+                {products.filter(p => !ed._search || (p.model+" "+p.color).toLowerCase().includes((ed._search||"").toLowerCase())).slice(0,30).map((p,i) => (
+                  <div key={i} onClick={() => setEd(prev => ({...prev, model:p.model, color:p.color, sku:p.sku, _search:""}))} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}} onMouseEnter={e => e.currentTarget.style.background=C.bg} onMouseLeave={e => e.currentTarget.style.background=""}>
+                    <span style={{fontWeight:600,color:C.dk}}>{p.model}</span>
+                    <span style={{color:C.gr}}>{p.color}</span>
+                    <span style={{fontSize:9,color:C.gr,marginLeft:"auto"}}>{p.sku} · {p.col}</span>
+                  </div>
+                ))}
+              </div>
+            </> : <>
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:C.bg,borderRadius:6,marginBottom:12}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{ed.model} {ed.color}</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{ed.sku}</div>
+                </div>
+                <button onClick={() => setEd(p => ({...p, model:"", color:"", sku:""}))} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:12,fontFamily:BD}}>✕ Cambiar</button>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Cantidad defectuosa</div>
+                <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                  <button onClick={() => setEd(p => ({...p, quantity:Math.max(1,p.quantity-1)}))} style={{width:30,height:30,background:C.bg,border:"1px solid "+C.ln,borderRadius:4,cursor:"pointer",fontSize:14,color:C.dk}}>-</button>
+                  <span style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.dk,minWidth:30,textAlign:"center"}}>{ed.quantity}</span>
+                  <button onClick={() => setEd(p => ({...p, quantity:p.quantity+1}))} style={{width:30,height:30,background:C.bg,border:"1px solid "+C.ln,borderRadius:4,cursor:"pointer",fontSize:14,color:C.dk}}>+</button>
+                </div>
+              </div>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("descripcionDefecto")}</div>
+                <textarea value={ed.description||""} onChange={e => setEd(p => ({...p, description:e.target.value}))} rows={3} placeholder="Ej: Patilla torcida, lente rayada, color desigual..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+              <Btn onClick={async () => { if (!ed.model) return; await dbAddDefective(ed); setModal(null); }}>{t("reportarDefecto")}</Btn>
+            </>}
+          </>}
+
           {modal === "newFaq" && <>
             {["fr","es","en"].map(l => (
               <div key={l} style={{marginBottom:12}}>
@@ -3632,11 +3678,11 @@ export default function App() {
           <div style={{fontSize:"min(22px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:4,color:C.dk}}>{t("bienvenida")}, {user.name} ✦</div>
           <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{t("employe")} Minuë</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:8,marginBottom:20}}>
-            {renderKPI(t("aExpedier"), String(orders.filter(o => o.status === "confirmed" || o.status === "preparing").length), C.yl)}
-            {renderKPI(t("misTareas"), String(tasks.filter(tk => tk.status !== "fait" && (tk.assignee === user.name || tk.assignee === user.email)).length), C.bl)}
-            {renderKPI(t("leads"), String(tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait").length), "#8e44ad")}
-            {renderKPI(t("defectuosos"), String(tasks.filter(tk => tk.area === "defectos" && tk.status !== "fait").length), C.rd)}
-            {renderKPI(t("sinStock"), String(products.filter(p => p.stock === 0).length), C.rd)}
+            {renderKPI(t("aExpedier"), String(orders.filter(o => o.status === "confirmed" || o.status === "preparing").length), C.yl, () => { setOrdSubTab("prep"); setView("a-ord"); })}
+            {renderKPI(t("misTareas"), String(tasks.filter(tk => tk.status !== "fait" && (tk.assignee === user.name || tk.assignee === user.email)).length), C.bl, () => setView("a-tasks"))}
+            {renderKPI(t("leads"), String(tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait").length), "#8e44ad", () => setView("e-comercial"))}
+            {renderKPI(t("defectuosos"), String(defectives.filter(d => d.status !== "resolved").length), C.rd, () => setView("e-almacen"))}
+            {renderKPI(t("sinStock"), String(products.filter(p => p.stock === 0).length), C.rd, () => setView("a-stock"))}
           </div>
         </div>
 
@@ -3707,37 +3753,66 @@ export default function App() {
         <Sec title={t("almacen")} sub={t("almacenSub")}>
           {/* PACKAGING INVENTORY */}
           <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("packagingInventario")}</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:8,marginBottom:20}}>
-            {[["fundasVerde",t("fundasVerde"),"🟢"],["fundasLila",t("fundasLila"),"🟣"],["fundasBlue",t("fundasBlue"),"🔵"],["fundasCrema",t("fundasCrema"),"🟡"],["gamuzasChampagne",t("gamuzasChampagne"),"✨"],["gamuzasGris",t("gamuzasGris"),"🩶"],["cajitasGafa",t("cajitasGafa"),"🕶"],["cajasEnvio",t("cajasEnvio"),"📦"],["cintaMinue",t("cintaMinue"),"🎀"]].map(([k,label,icon]) => (
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8,marginBottom:20}}>
+            {[["fundas",t("fundasStock"),"🕶"],["gamuzas",t("gamuzasStock"),"🧤"],["cajasEnvio",t("cajasEnvio"),"📦"],["cajitasGafa",t("cajitasGafa"),"🎁"],["tarjetasTecnicas",t("tarjetasTecnicas"),"📋"],["expositores",t("expositor"),"🗄"]].map(([k,label,icon]) => (
               <div key={k} style={{background:C.wh,border:"1px solid "+(packStock[k]<20?C.rd+"50":packStock[k]<50?C.yl+"50":C.ln),borderRadius:8,padding:"14px",textAlign:"center"}}>
                 <div style={{fontSize:18,marginBottom:4}}>{icon}</div>
-                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:packStock[k]<20?C.rd:packStock[k]<50?C.yl:C.gn}}>{packStock[k]}</div>
+                <div style={{fontSize:22,fontFamily:BD,fontWeight:700,color:packStock[k]<20?C.rd:packStock[k]<50?C.yl:C.gn}}>{packStock[k]}</div>
                 <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{label}</div>
-                {role !== "client" && <div style={{display:"flex",gap:4,marginTop:8,justifyContent:"center"}}>
-                  <button onClick={() => setPackStock(p => ({...p,[k]:Math.max(0,p[k]-10)}))} style={{width:24,height:24,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:12,color:C.dk}}>-</button>
-                  <button onClick={() => setPackStock(p => ({...p,[k]:p[k]+10}))} style={{width:24,height:24,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:12,color:C.dk}}>+</button>
-                </div>}
+                <div style={{display:"flex",gap:4,marginTop:8,justifyContent:"center"}}>
+                  <button onClick={() => { const nq = Math.max(0,packStock[k]-1); dbUpdatePackInv(k, nq, "-1"); }} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:13,color:C.dk}}>-</button>
+                  <input type="number" value={packStock[k]} onChange={e => { const nq = parseInt(e.target.value)||0; dbUpdatePackInv(k, nq, "Manual"); }} style={{width:44,textAlign:"center",border:"1px solid "+C.ln,borderRadius:3,fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,background:C.bg}} />
+                  <button onClick={() => { const nq = packStock[k]+1; dbUpdatePackInv(k, nq, "+1"); }} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:13,color:C.dk}}>+</button>
+                </div>
               </div>
             ))}
           </div>
         </Sec>
 
         {/* PRODUCTOS DEFECTUOSOS */}
-        <Sec title={t("defectuosos")} sub={t("defectuososSub")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"haute",area:"defectos",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("reportarDefecto")}</Btn>}>
+        <Sec title={t("defectuosos")+" ("+defectives.filter(d => d.status !== "resolved").length+")"} sub={t("defectuososSub")} right={<Btn small onClick={() => { setModal("newDefect"); setEd({model:"",color:"",sku:"",quantity:1,description:""}); }}>{t("reportarDefecto")}</Btn>}>
           {(() => {
-            const defects = tasks.filter(tk => tk.area === "defectos");
-            if (defects.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>✓ Sin defectos reportados</div>;
-            return defects.map((tk, i) => (
-              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:C.wh,border:"1px solid "+(tk.status==="fait"?C.gn+"30":C.rd+"30"),borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
-                <span style={{fontSize:14}}>{tk.status === "fait" ? "✓" : "⚠"}</span>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
-                  {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:1}}>{tk.desc.substring(0,80)}</div>}
+            const grouped = {};
+            defectives.filter(d => d.status !== "resolved").forEach(d => {
+              const key = d.model+"|"+d.color;
+              if (!grouped[key]) grouped[key] = {model:d.model,color:d.color,sku:d.sku,total:0,items:[]};
+              grouped[key].total += d.quantity;
+              grouped[key].items.push(d);
+            });
+            const entries = Object.values(grouped).sort((a,b) => b.total - a.total);
+            if (entries.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>✓ Sin defectos pendientes</div>;
+            return entries.map((g, i) => (
+              <div key={i} style={{background:C.wh,border:"1px solid "+C.rd+"30",borderRadius:8,marginBottom:8,overflow:"hidden"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px"}}>
+                  <span style={{fontSize:16}}>⚠</span>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{g.model} {g.color}</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{g.sku}</div>
+                  </div>
+                  <div style={{background:C.rd+"15",borderRadius:20,padding:"4px 12px"}}>
+                    <span style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.rd}}>{g.total}</span>
+                    <span style={{fontSize:9,fontFamily:BD,color:C.rd,marginLeft:3}}>uds</span>
+                  </div>
                 </div>
-                <Badge l={tk.status === "fait" ? t("resolu") : t("enAttente")} c={tk.status === "fait" ? C.gn : C.rd} />
+                {g.items.map((d, j) => (
+                  <div key={j} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px 6px 42px",borderTop:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
+                    <span style={{color:C.gr,flex:1}}>{d.description || "Sin descripción"}</span>
+                    <span style={{color:C.gr}}>x{d.quantity}</span>
+                    <span style={{fontSize:9,color:C.gr}}>{d.created_by} · {d.created_at ? new Date(d.created_at).toLocaleDateString("es") : ""}</span>
+                    <button onClick={() => dbUpdateDefective({...d, status:"resolved"})} style={{background:"none",border:"none",color:C.gn,cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600}}>✓ Resolver</button>
+                  </div>
+                ))}
               </div>
             ));
           })()}
+          {defectives.filter(d => d.status === "resolved").length > 0 && <>
+            <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:14,marginBottom:6}}>{t("resolu")} ({defectives.filter(d => d.status === "resolved").length})</div>
+            {defectives.filter(d => d.status === "resolved").slice(0,5).map((d, i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 14px",fontSize:11,fontFamily:BD,color:C.gr,opacity:0.5}}>
+                <span style={{color:C.gn}}>✓</span> {d.model} {d.color} x{d.quantity}
+              </div>
+            ))}
+          </>}
         </Sec>
       </>}
 
