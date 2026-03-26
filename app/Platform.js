@@ -1063,86 +1063,113 @@ export default function App() {
     setRegSent(true);
   };
 
-  if (!user && loading) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg}}><img src={LOGO} alt="Minue" style={{width:80,height:80,objectFit:"contain",borderRadius:12,marginBottom:12,opacity:0.7}} /><div style={{fontSize:12,fontFamily:BD,color:C.gr}}>Chargement...</div></div>); }
+  if (!user && loading) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:11,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
   if (!user) {
+    const inputStyle = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid #f8efe625",background:"transparent",fontFamily:BD,fontSize:13,color:"#f8efe6",boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
+    const inputStyleLight = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid "+CL.dk+"18",background:"transparent",fontFamily:BD,fontSize:13,color:CL.dk,boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
+    const labelStyle = {fontSize:9,color:"#f8efe650",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
+    const labelStyleLight = {fontSize:9,color:CL.dk+"50",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
     return (
-      <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,fontFamily:DP}}>
-        <img src={LOGO} alt="Minuë" style={{width:"min(120px, 30vw)",height:"min(120px, 30vw)",objectFit:"contain",borderRadius:16,marginBottom:8}} />
-        <div style={{letterSpacing:4,fontSize:13,color:C.gr,marginBottom:12,fontFamily:BD}}>Eyewear · B2B Portal</div>
-        <div style={{display:"flex",gap:4,marginBottom:36}}>
-          {["fr","es","en"].map(l => (
-            <button key={l} onClick={() => setLang(l)} style={{background:lang===l?C.dk:"transparent",color:lang===l?C.bg:C.gr,border:"1px solid "+(lang===l?C.dk:C.ln),cursor:"pointer",fontSize:12,padding:"5px 10px",borderRadius:3,fontFamily:BD}}>{FLAGS[l]}</button>
-          ))}
+      <div style={{minHeight:"100vh",background:CL.dk,position:"relative",overflow:"hidden"}}>
+        {/* DECORATIVE LINES */}
+        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,pointerEvents:"none",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:"20%",width:1,height:"100%",background:"linear-gradient(to bottom, transparent, #f8efe608, transparent)"}} />
+          <div style={{position:"absolute",top:0,left:"80%",width:1,height:"100%",background:"linear-gradient(to bottom, transparent, #f8efe608, transparent)"}} />
+          <div style={{position:"absolute",top:"30%",left:0,width:"100%",height:1,background:"linear-gradient(to right, transparent, #f8efe606, transparent)"}} />
         </div>
 
         {regSent ? (
-          <div style={{background:C.wh,borderRadius:6,padding:"34px 38px",width:"min(390px, 88vw)",border:"1px solid "+C.ln,textAlign:"center"}}>
-            <div style={{fontSize:28,marginBottom:12}}>✓</div>
-            <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:600,marginBottom:8}}>{t("demandeEnvoyee")}</div>
-            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:12,fontFamily:BD,color:C.gn,background:"none",border:"none",cursor:"pointer",marginTop:12}}>{t("retourLogin")}</button>
+          /* SUCCESS STATE */
+          <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",zIndex:1}}>
+            <div style={{width:80,height:80,borderRadius:40,border:"1px solid #f8efe620",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:30}}>
+              <span style={{fontSize:28,color:"#f8efe6"}}>✓</span>
+            </div>
+            <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,marginBottom:12,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}!</div>
+            <div style={{fontSize:12,fontFamily:BD,color:"#f8efe650",lineHeight:1.8,maxWidth:320,textAlign:"center",marginBottom:30}}>{t("demandeEnvoyee").split("!")[1] || "We will review your request and activate your account shortly."}</div>
+            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:11,fontFamily:BD,color:"#f8efe6",background:"transparent",border:"1px solid #f8efe630",cursor:"pointer",padding:"12px 32px",borderRadius:24,letterSpacing:2,transition:"all 0.3s"}} onMouseEnter={e => {e.target.style.background="#f8efe610";e.target.style.borderColor="#f8efe650"}} onMouseLeave={e => {e.target.style.background="transparent";e.target.style.borderColor="#f8efe630"}}>{t("retourLogin")}</button>
           </div>
         ) : !registerMode ? (
-          <div style={{background:C.wh,borderRadius:6,padding:"34px 38px",width:"min(390px, 88vw)",border:"1px solid "+C.ln}}>
-            <div style={{marginBottom:16}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:5,fontWeight:500}}>{t("email")}</div>
-              <input type="email" value={loginEmail} onChange={e => { setLoginEmail(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="you@store.com" style={{width:"100%",padding:"11px 12px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+          /* LOGIN */
+          <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
+            <div style={{textAlign:"center",marginBottom:50}}>
+              <img src={LOGO} alt="Minuë" style={{width:"min(80px, 20vw)",height:"min(80px, 20vw)",objectFit:"contain",borderRadius:10,marginBottom:20,opacity:0.9}} />
+              <div style={{fontSize:"min(36px, 9vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,letterSpacing:3}}>Minuë</div>
+              <div style={{fontSize:10,fontFamily:BD,color:"#f8efe640",letterSpacing:4,textTransform:"uppercase",marginTop:6}}>B2B Platform</div>
             </div>
-            <div style={{marginBottom:20}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:5,fontWeight:500}}>{t("motDePasse")}</div>
-              <input type="password" value={loginPw} onChange={e => { setLoginPw(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="********" style={{width:"100%",padding:"11px 12px",border:"1px solid "+(loginErr?C.rd:C.ln),borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-              {loginErr && <div style={{fontSize:11,color:C.rd,fontFamily:BD,marginTop:6}}>{loginErr}</div>}
+            <div style={{width:"min(360px, 85vw)"}}>
+              <div style={{marginBottom:24}}>
+                <div style={labelStyle}>{t("email")}</div>
+                <input type="email" value={loginEmail} onChange={e => { setLoginEmail(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="you@store.com" style={inputStyle} onFocus={e => e.target.style.borderBottomColor="#f8efe660"} onBlur={e => e.target.style.borderBottomColor="#f8efe625"} />
+              </div>
+              <div style={{marginBottom:36}}>
+                <div style={labelStyle}>{t("motDePasse")}</div>
+                <input type="password" value={loginPw} onChange={e => { setLoginPw(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="••••••••" style={{...inputStyle,borderBottomColor:loginErr?"#e74c3c60":"#f8efe625"}} onFocus={e => e.target.style.borderBottomColor="#f8efe660"} onBlur={e => {if(!loginErr) e.target.style.borderBottomColor="#f8efe625"}} />
+                {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginTop:10,letterSpacing:0.3}}>{loginErr}</div>}
+              </div>
+              <button onClick={doLogin} style={{width:"100%",padding:"16px 0",background:"#f8efe6",color:CL.dk,border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:500,cursor:"pointer",letterSpacing:2,textTransform:"uppercase",transition:"all 0.3s"}} onMouseEnter={e => e.target.style.opacity="0.9"} onMouseLeave={e => e.target.style.opacity="1"}>{t("connexion")}</button>
+              <div style={{textAlign:"center",marginTop:36}}>
+                <div style={{width:40,height:1,background:"#f8efe615",margin:"0 auto 20px"}} />
+                <button onClick={() => { setRegisterMode(true); setLoginErr(""); }} style={{fontSize:11,fontFamily:BD,color:"#f8efe640",background:"none",border:"none",cursor:"pointer",letterSpacing:1,transition:"color 0.3s"}} onMouseEnter={e => e.target.style.color="#f8efe680"} onMouseLeave={e => e.target.style.color="#f8efe640"}>{t("solliciterAcces")}</button>
+              </div>
             </div>
-            <Btn onClick={doLogin} style={{width:"100%",padding:"13px 0",fontSize:13}}>{t("connexion")}</Btn>
-            <div style={{textAlign:"center",marginTop:16}}>
-              <button onClick={() => { setRegisterMode(true); setLoginErr(""); }} style={{fontSize:11,fontFamily:BD,color:C.gn,background:"none",border:"none",cursor:"pointer",fontWeight:500}}>{t("solliciterAcces")}</button>
+            <div style={{display:"flex",gap:8,marginTop:40}}>
+              {["fr","es","en"].map(l => (
+                <button key={l} onClick={() => setLang(l)} style={{width:36,height:36,borderRadius:18,background:lang===l?"#f8efe615":"transparent",color:"#f8efe6",border:lang===l?"1px solid #f8efe630":"1px solid transparent",cursor:"pointer",fontSize:14,fontFamily:BD,transition:"all 0.3s"}}>{FLAGS[l]}</button>
+              ))}
             </div>
           </div>
         ) : (
-          <div style={{background:C.wh,borderRadius:6,padding:"28px 34px",width:"min(420px, 90vw)",border:"1px solid "+C.ln}}>
-            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:4}}>{t("solliciterAcces").split("?")[1]||t("solliciterAcces")}</div>
-            <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:18}}>{t("bienvenidaSub")}</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")} *</div>
-                <input value={regData.name} onChange={e => setRegData(p => ({...p, name:e.target.value}))} placeholder="Marie Dupont" style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+          /* REGISTER */
+          <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px min(30px, 5vw)",position:"relative",zIndex:1}}>
+            <div style={{width:"100%",maxWidth:520,background:CL.bg,borderRadius:16,padding:"min(50px, 8vw) min(40px, 6vw)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
+              <div style={{textAlign:"center",marginBottom:36}}>
+                <div style={{fontSize:10,fontFamily:BD,color:CL.dk+"40",letterSpacing:4,textTransform:"uppercase",marginBottom:10}}>Minuë B2B</div>
+                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300}}>{t("solliciterAcces")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",marginTop:8,lineHeight:1.6}}>Complete the form to request access to our wholesale platform.</div>
               </div>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")} *</div>
-                <input value={regData.co} onChange={e => setRegData(p => ({...p, co:e.target.value}))} placeholder="Optique Paris" style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
+                <div style={{marginBottom:20}}>
+                  <div style={labelStyleLight}>{t("contact")} *</div>
+                  <input value={regData.name} onChange={e => setRegData(p => ({...p, name:e.target.value}))} placeholder="Marie Dupont" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
+                <div style={{marginBottom:20}}>
+                  <div style={labelStyleLight}>{t("entreprise")} *</div>
+                  <input value={regData.co} onChange={e => setRegData(p => ({...p, co:e.target.value}))} placeholder="Optique Paris" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
               </div>
-            </div>
-            <div style={{marginBottom:10}}>
-              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")} *</div>
-              <input type="email" value={regData.email} onChange={e => setRegData(p => ({...p, email:e.target.value}))} placeholder="contact@store.com" style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("motDePasse")} *</div>
-                <input type="password" value={regData.pw} onChange={e => setRegData(p => ({...p, pw:e.target.value}))} placeholder="min. 6" style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{marginBottom:20}}>
+                <div style={labelStyleLight}>{t("email")} *</div>
+                <input type="email" value={regData.email} onChange={e => setRegData(p => ({...p, email:e.target.value}))} placeholder="contact@store.com" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
               </div>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("confirmerPw")} *</div>
-                <input type="password" value={regData.pw2} onChange={e => setRegData(p => ({...p, pw2:e.target.value}))} placeholder="min. 6" style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
+                <div style={{marginBottom:20}}>
+                  <div style={labelStyleLight}>{t("motDePasse")} *</div>
+                  <input type="password" value={regData.pw} onChange={e => setRegData(p => ({...p, pw:e.target.value}))} placeholder="min. 8" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
+                <div style={{marginBottom:20}}>
+                  <div style={labelStyleLight}>{t("confirmerPw")} *</div>
+                  <input type="password" value={regData.pw2} onChange={e => setRegData(p => ({...p, pw2:e.target.value}))} placeholder="min. 8" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
               </div>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("ville")}</div>
-                <input value={regData.city} onChange={e => setRegData(p => ({...p, city:e.target.value}))} style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 14px"}}>
+                <div style={{marginBottom:24}}>
+                  <div style={labelStyleLight}>{t("ville")}</div>
+                  <input value={regData.city} onChange={e => setRegData(p => ({...p, city:e.target.value}))} placeholder="Paris" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
+                <div style={{marginBottom:24}}>
+                  <div style={labelStyleLight}>{t("pays")}</div>
+                  <input value={regData.country} onChange={e => setRegData(p => ({...p, country:e.target.value}))} placeholder="FR" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
+                <div style={{marginBottom:24}}>
+                  <div style={labelStyleLight}>{t("telephone")}</div>
+                  <input value={regData.phone} onChange={e => setRegData(p => ({...p, phone:e.target.value}))} placeholder="+33..." style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                </div>
               </div>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pays")}</div>
-                <input value={regData.country} onChange={e => setRegData(p => ({...p, country:e.target.value}))} placeholder="FR, ES..." style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginBottom:14,padding:"10px 14px",background:"#e74c3c08",borderRadius:6}}>{loginErr}</div>}
+              <button onClick={doRegister} style={{width:"100%",padding:"16px 0",background:CL.dk,color:"#f8efe6",border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:500,cursor:"pointer",letterSpacing:2,textTransform:"uppercase",transition:"opacity 0.3s"}} onMouseEnter={e => e.target.style.opacity="0.85"} onMouseLeave={e => e.target.style.opacity="1"}>{t("envoyerDemande")}</button>
+              <div style={{textAlign:"center",marginTop:20}}>
+                <button onClick={() => { setRegisterMode(false); setLoginErr(""); }} style={{fontSize:11,fontFamily:BD,color:CL.dk+"50",background:"none",border:"none",cursor:"pointer",letterSpacing:1,transition:"color 0.3s"}} onMouseEnter={e => e.target.style.color=CL.dk} onMouseLeave={e => e.target.style.color=CL.dk+"50"}>← {t("retourLogin")}</button>
               </div>
-              <div style={{marginBottom:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div>
-                <input value={regData.phone} onChange={e => setRegData(p => ({...p, phone:e.target.value}))} placeholder="+33..." style={{width:"100%",padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-              </div>
-            </div>
-            {loginErr && <div style={{fontSize:11,color:C.rd,fontFamily:BD,marginBottom:8}}>{loginErr}</div>}
-            <Btn onClick={doRegister} style={{width:"100%",padding:"12px 0",fontSize:13}}>{t("envoyerDemande")}</Btn>
-            <div style={{textAlign:"center",marginTop:12}}>
-              <button onClick={() => { setRegisterMode(false); setLoginErr(""); }} style={{fontSize:11,fontFamily:BD,color:C.gr,background:"none",border:"none",cursor:"pointer"}}>{t("retourLogin")}</button>
             </div>
           </div>
         )}
