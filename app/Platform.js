@@ -315,6 +315,28 @@ const T = {
   packDisplay:{fr:"Présentoirs",es:"Expositores",en:"Displays"},
   packMerch:{fr:"Merchandising",es:"Merchandising",en:"Merchandising"},
   employe:{fr:"Équipe",es:"Equipo",en:"Team"},
+  cmdEnAttente:{fr:"Commandes en attente",es:"Pedidos pendientes",en:"Pending orders"},
+  aExpedier:{fr:"À expédier",es:"Por enviar",en:"To ship"},
+  totalCmd:{fr:"Total commandes",es:"Total pedidos",en:"Total orders"},
+  preparacion:{fr:"Préparation",es:"Preparación",en:"Preparation"},
+  preparacionSub:{fr:"Commandes à préparer",es:"Pedidos por preparar",en:"Orders to prepare"},
+  packingList:{fr:"Liste d'emballage",es:"Lista de empaque",en:"Packing list"},
+  gamuza:{fr:"Chiffon microfibre",es:"Gamuza",en:"Microfiber cloth"},
+  expositor:{fr:"Présentoir",es:"Expositor",en:"Display stand"},
+  cajita:{fr:"Boîte",es:"Cajita",en:"Box"},
+  funda:{fr:"Étui",es:"Funda",en:"Case"},
+  albaran:{fr:"Bon de livraison",es:"Albarán",en:"Delivery note"},
+  marcadoListo:{fr:"Marqué comme prêt",es:"Marcado como listo",en:"Marked as ready"},
+  defectuosos:{fr:"Produits défectueux",es:"Productos defectuosos",en:"Defective products"},
+  defectuososSub:{fr:"Rapport pour fournisseur",es:"Reporte para proveedor",en:"Supplier report"},
+  reportarDefecto:{fr:"Signaler un défaut",es:"Reportar defecto",en:"Report defect"},
+  descripcionDefecto:{fr:"Description du défaut",es:"Descripción del defecto",en:"Defect description"},
+  pendienteProveedor:{fr:"En attente fournisseur",es:"Pendiente proveedor",en:"Pending from supplier"},
+  pendienteProveedorSub:{fr:"Produits commandés au fournisseur",es:"Productos pedidos al proveedor",en:"Products ordered from supplier"},
+  fechaPrevista:{fr:"Date prévue",es:"Fecha prevista",en:"Expected date"},
+  misResumen:{fr:"Mon résumé",es:"Mi resumen",en:"My summary"},
+  misTareas:{fr:"Mes tâches",es:"Mis tareas",en:"My tasks"},
+  todosLosEquipos:{fr:"Toute l'équipe",es:"Todo el equipo",en:"All team"},
   fondFiltrer:{fr:"Filtrer",es:"Filtrar",en:"Filter"},
   couleurs:{fr:"couleurs",es:"colores",en:"colors"},
   voirModele:{fr:"Voir le modèle",es:"Ver modelo",en:"View model"},
@@ -356,6 +378,42 @@ const T = {
   produits:{fr:"Produits",es:"Productos",en:"Products"},
   clientsArea:{fr:"Clients",es:"Clientes",en:"Clients"},
   logistique:{fr:"Logistique",es:"Logística",en:"Logistics"},
+  defectos:{fr:"Défauts",es:"Defectos",en:"Defects"},
+  proveedor:{fr:"Fournisseur",es:"Proveedor",en:"Supplier"},
+  resolu:{fr:"Résolu",es:"Resuelto",en:"Resolved"},
+  comercialSub:{fr:"Prospection et suivi clients",es:"Prospección y seguimiento de clientes",en:"Client prospecting and follow-up"},
+  pipeline:{fr:"Pipeline",es:"Pipeline",en:"Pipeline"},
+  leads:{fr:"Prospects",es:"Leads",en:"Leads"},
+  aRecuperar:{fr:"À récupérer",es:"A recuperar",en:"To recover"},
+  aRecuperarSub:{fr:"Clients sans commande récente",es:"Clientes sin pedido reciente",en:"Clients without recent orders"},
+  nuevoLead:{fr:"Nouveau prospect",es:"Nuevo lead",en:"New lead"},
+  contactado:{fr:"Contacté",es:"Contactado",en:"Contacted"},
+  enNegociacion:{fr:"En négociation",es:"En negociación",en:"In negotiation"},
+  ganado:{fr:"Gagné",es:"Ganado",en:"Won"},
+  perdido:{fr:"Perdu",es:"Perdido",en:"Lost"},
+  proximaAccion:{fr:"Prochaine action",es:"Próxima acción",en:"Next action"},
+  ultimoContacto:{fr:"Dernier contact",es:"Último contacto",en:"Last contact"},
+  seguimiento:{fr:"Suivi commercial",es:"Seguimiento comercial",en:"Commercial follow-up"},
+  sinPedidos:{fr:"Sans commandes",es:"Sin pedidos",en:"No orders"},
+  clienteAntiguo:{fr:"Client ancien",es:"Cliente antiguo",en:"Former client"},
+  oportunidad:{fr:"Opportunité",es:"Oportunidad",en:"Opportunity"},
+  almacen:{fr:"Entrepôt",es:"Almacén",en:"Warehouse"},
+  almacenSub:{fr:"Inventaire et contrôle qualité",es:"Inventario y control de calidad",en:"Inventory and quality control"},
+  logistica:{fr:"Logistique",es:"Logística",en:"Logistics"},
+  logisticaSub:{fr:"Expéditions et réceptions",es:"Envíos y recepciones",en:"Shipments and receptions"},
+  packagingInventario:{fr:"Stock packaging",es:"Inventario packaging",en:"Packaging inventory"},
+  fundasStock:{fr:"Étuis",es:"Fundas",en:"Cases"},
+  gamuzasStock:{fr:"Chiffons",es:"Gamuzas",en:"Cloths"},
+  cajasEnvio:{fr:"Cartons d'envoi",es:"Cajas de envío",en:"Shipping boxes"},
+  cajitasGafa:{fr:"Boîtes lunettes",es:"Cajitas gafa",en:"Glasses boxes"},
+  tarjetasTecnicas:{fr:"Fiches techniques",es:"Tarjetas técnicas",en:"Technical cards"},
+  mercanciaPendiente:{fr:"Marchandise en attente",es:"Mercancía pendiente",en:"Pending goods"},
+  reporteStock:{fr:"Rapport de stock",es:"Reporte de stock",en:"Stock report"},
+  enStock:{fr:"En stock",es:"En stock",en:"In stock"},
+  sinStock:{fr:"Rupture",es:"Sin stock",en:"Out of stock"},
+  stockAlerta:{fr:"Alerte",es:"Alerta",en:"Alert"},
+  actualizacion:{fr:"Mise à jour",es:"Actualización",en:"Update"},
+  anadirNota:{fr:"Ajouter une note",es:"Añadir nota",en:"Add note"},
   admin:{fr:"Admin",es:"Admin",en:"Admin"},
   fait:{fr:"Fait",es:"Hecho",en:"Done"},
   enCours:{fr:"En cours",es:"En curso",en:"In progress"},
@@ -784,6 +842,10 @@ export default function App() {
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
+  const [prepChecks, setPrepChecks] = useState({});
+  const [expandedPrep, setExpandedPrep] = useState(null);
+  const [ordSubTab, setOrdSubTab] = useState("list");
+  const [packStock, setPackStock] = useState({fundas:200,gamuzas:200,cajasEnvio:50,cajitasGafa:200,tarjetasTecnicas:300});
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
@@ -1071,8 +1133,8 @@ export default function App() {
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
-    ? [["e-dash","dashboard"],["a-ord","commandes"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-ord","commandes"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
+    ? [["e-dash","dashboard"],["a-ord","commandes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-account","monCompte"]]
+    : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const renderNav = () => {
@@ -2353,7 +2415,7 @@ export default function App() {
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("area")}</div>
                 <select value={ed.area||"commercial"} onChange={e => setEd(p => ({...p, area:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  {["commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
+                  {["commercial","finances","marketing","produits","clientsArea","logistique","defectos","proveedor","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
                 </select>
               </div>
               <div style={{marginBottom:12}}>
@@ -2396,7 +2458,7 @@ export default function App() {
               <div style={{marginBottom:12}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("area")}</div>
                 <select value={ed.area||"commercial"} onChange={e => setEd(p => ({...p, area:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  {["commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
+                  {["commercial","finances","marketing","produits","clientsArea","logistique","defectos","proveedor","admin"].map(a => <option key={a} value={a}>{t(a)}</option>)}
                 </select>
               </div>
               <div style={{marginBottom:12}}>
@@ -3066,6 +3128,115 @@ export default function App() {
         </div>
       </Sec>}
 
+      {/* COMERCIAL / CRM */}
+      {view === "e-comercial" && <>
+        <Sec title={t("commercial")} sub={t("comercialSub")}>
+          {/* PIPELINE KPIs */}
+          {(() => {
+            const comTasks = tasks.filter(tk => tk.area === "commercial");
+            const nuevo = comTasks.filter(tk => tk.status === "aFaire");
+            const contactado = comTasks.filter(tk => tk.status === "enCours");
+            const negociacion = comTasks.filter(tk => tk.priority === "haute" && tk.status === "enCours");
+            const ganados = comTasks.filter(tk => tk.status === "fait");
+            return <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
+              <div style={{background:"#3498db10",border:"1px solid #3498db30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#3498db"}}>{nuevo.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
+              </div>
+              <div style={{background:"#f39c1210",border:"1px solid #f39c1230",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#f39c12"}}>{contactado.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
+              </div>
+              <div style={{background:"#8e44ad10",border:"1px solid #8e44ad30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#8e44ad"}}>{negociacion.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
+              </div>
+              <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:C.gn}}>{ganados.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
+              </div>
+            </div>;
+          })()}
+        </Sec>
+
+        {/* SEGUIMIENTO COMERCIAL - Leads activos */}
+        <Sec title={t("seguimiento")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("nuevoLead")}</Btn>}>
+          {(() => {
+            const leads = tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait");
+            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin leads activos — crea uno para empezar</div>;
+            return leads.map((tk, i) => {
+              const stColor = tk.status === "aFaire" ? "#3498db" : tk.priority === "haute" ? "#8e44ad" : "#f39c12";
+              const stLabel = tk.status === "aFaire" ? t("nuevoLead") : tk.priority === "haute" ? t("enNegociacion") : t("contactado");
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:8,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                  <div style={{width:10,height:10,borderRadius:5,background:stColor,flexShrink:0}} />
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
+                    {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2,lineHeight:1.4}}>{tk.desc.substring(0,100)}{tk.desc.length>100?"...":""}</div>}
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <Badge l={stLabel} c={stColor} />
+                    {tk.dueDate && <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
+                  </div>
+                </div>
+              );
+            });
+          })()}
+        </Sec>
+
+        {/* CLIENTES A RECUPERAR */}
+        <Sec title={t("aRecuperar")} sub={t("aRecuperarSub")}>
+          {(() => {
+            const clientsWithOrders = {};
+            orders.forEach(o => { if (!clientsWithOrders[o.client] || new Date(o.date.split("/").reverse().join("-")) > new Date(clientsWithOrders[o.client])) clientsWithOrders[o.client] = o.date; });
+            const inactive = clients.filter(c => {
+              const lastOrder = clientsWithOrders[c.name];
+              if (!lastOrder) return c.status === "active" || c.status === "prospect";
+              return false;
+            });
+            const withOldOrders = clients.filter(c => {
+              const lastOrder = clientsWithOrders[c.name];
+              if (!lastOrder) return false;
+              return true;
+            }).filter(c => {
+              const total = orders.filter(o => o.client === c.name).reduce((s,o) => s+o.total, 0);
+              return orders.filter(o => o.client === c.name).length <= 1 && total < 500;
+            });
+            const toRecover = [...inactive, ...withOldOrders].slice(0, 10);
+            if (toRecover.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Todos los clientes están activos</div>;
+            return toRecover.map((c, i) => {
+              const cOrds = orders.filter(o => o.client === c.name);
+              const lastDate = cOrds.length > 0 ? cOrds[0].date : "—";
+              const cTotal = cOrds.reduce((s,o) => s+o.total, 0);
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6}}>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{c.name}</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{c.contact} · {c.city} · {c.channel}</div>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{fontSize:11,fontFamily:BD,color:cOrds.length===0?C.rd:C.yl,fontWeight:600}}>{cOrds.length === 0 ? t("sinPedidos") : cOrds.length+" cmd · "+fmt(cTotal)+" €"}</div>
+                    {cOrds.length > 0 && <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("ultimoContacto")}: {lastDate}</div>}
+                  </div>
+                  <Btn small ghost onClick={() => { setModal("newTask"); setEd({title:t("seguimiento")+": "+c.name,desc:c.contact+" · "+(c.companyEmail||c.phone||"")+" · "+c.city,priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("seguimiento")}</Btn>
+                </div>
+              );
+            });
+          })()}
+        </Sec>
+
+        {/* HISTORIAL GANADOS */}
+        {tasks.filter(tk => tk.area === "commercial" && tk.status === "fait").length > 0 && <Sec title={t("ganado")}>
+          {tasks.filter(tk => tk.area === "commercial" && tk.status === "fait").slice(0,5).map((tk, i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",background:C.gn+"05",border:"1px solid "+C.gn+"20",borderRadius:6,marginBottom:4,fontSize:12,fontFamily:BD}}>
+              <span style={{color:C.gn}}>✓</span>
+              <span style={{flex:1,color:C.dk}}>{tk.title}</span>
+              <span style={{fontSize:10,color:C.gr}}>{tk.date}</span>
+            </div>
+          ))}
+        </Sec>}
+      </>}
+
       {/* EMPLOYEE ACCOUNT */}
       {view === "e-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
@@ -3147,6 +3318,12 @@ export default function App() {
 
       {/* ADMIN VIEWS */}
       {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn>{role === "admin" && <Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn>}</div>}>
+        {role === "team" && <div style={{display:"flex",gap:4,marginBottom:14,borderBottom:"1px solid "+C.ln}}>
+          {[["list",t("commandes")],["prep",t("preparacion")]].map(([v,l]) => (
+            <button key={v} onClick={() => setOrdSubTab(v)} style={{padding:"8px 16px",background:"none",border:"none",borderBottom:"2px solid "+(ordSubTab===v?C.dk:"transparent"),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:ordSubTab===v?600:400,color:ordSubTab===v?C.dk:C.gr}}>{l}{v==="prep" && orders.filter(o => o.status==="confirmed"||o.status==="preparing").length > 0 ? " ("+orders.filter(o => o.status==="confirmed"||o.status==="preparing").length+")" : ""}</button>
+          ))}
+        </div>}
+        {(role !== "team" || ordSubTab === "list") && <>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
           {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -3159,6 +3336,66 @@ export default function App() {
           <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).length} / {orders.length}</span>
         </div>
         <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter)).map((o, i) => renderOrderRow(o, orders.indexOf(o), true, true))}</div>
+        </>}
+        {role === "team" && ordSubTab === "prep" && <>
+          {(() => {
+            const prepOrders = orders.filter(o => o.status === "confirmed" || o.status === "preparing");
+            if (prepOrders.length === 0) return <div style={{textAlign:"center",padding:40,fontSize:12,fontFamily:BD,color:C.gr2}}>✓ {t("aucuneCmd")}</div>;
+            return prepOrders.map((o, oi) => {
+              const isOpen = expandedPrep === o.id;
+              const checks = prepChecks[o.id] || {};
+              const totalItems = (o.lines||[]).reduce((s,l) => s+l.qty, 0);
+              const packList = ["gamuza","cajita","funda","albaran"];
+              const needsExpositor = totalItems >= 10;
+              const allPack = needsExpositor ? [...packList, "expositor"] : packList;
+              const totalChecks = (o.lines||[]).length + allPack.length;
+              const doneChecks = Object.values(checks).filter(Boolean).length;
+              const pct = totalChecks > 0 ? Math.round(doneChecks / totalChecks * 100) : 0;
+              return (
+                <div key={o.id} style={{background:C.wh,border:"1px solid "+(pct===100?C.gn+"50":C.ln),borderRadius:8,marginBottom:10,overflow:"hidden"}}>
+                  <div onClick={() => setExpandedPrep(isOpen ? null : o.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",cursor:"pointer"}}>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",gap:8,alignItems:"center"}}><span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk}}>{o.id}</span><Badge l={SL[o.status]} c={SC[o.status]} /></div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{o.client} · {o.items} uds · {o.date} · {o.dist}</div>
+                    </div>
+                    <div style={{textAlign:"right",minWidth:60}}>
+                      <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:pct===100?C.gn:C.dk}}>{pct}%</div>
+                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{doneChecks}/{totalChecks}</div>
+                    </div>
+                    <span style={{fontSize:12,color:C.gr}}>{isOpen ? "▲" : "▼"}</span>
+                  </div>
+                  {pct > 0 && <div style={{height:3,background:C.bg2}}><div style={{height:3,background:pct===100?C.gn:C.yl,width:pct+"%"}} /></div>}
+                  {isOpen && <div style={{padding:"0 16px 16px"}}>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:6,marginTop:8}}>{t("detailArt")}</div>
+                    {(o.lines||[]).map((l, li) => {
+                      const ck = "l_"+li;
+                      return (
+                        <label key={li} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}}>
+                          <input type="checkbox" checked={!!checks[ck]} onChange={() => setPrepChecks(p => ({...p, [o.id]:{...(p[o.id]||{}), [ck]:!checks[ck]}}))} style={{accentColor:C.gn,width:16,height:16,flexShrink:0}} />
+                          <span style={{flex:1,color:checks[ck]?C.gr:C.dk,textDecoration:checks[ck]?"line-through":"none"}}>{l.model} {l.color}</span>
+                          <span style={{fontWeight:600,color:checks[ck]?C.gr:C.dk}}>x{l.qty}</span>
+                        </label>
+                      );
+                    })}
+                    <div style={{fontSize:10,fontFamily:BD,color:C.dk,fontWeight:700,marginTop:14,marginBottom:6}}>{t("packingList")}</div>
+                    {allPack.map(pk => {
+                      const ck = "pk_"+pk;
+                      const labels = {gamuza:t("gamuza")+" (x"+totalItems+")",cajita:t("cajita")+" (x"+totalItems+")",funda:t("funda")+" (x"+totalItems+")",albaran:t("albaran"),expositor:t("expositor")};
+                      return (
+                        <label key={pk} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}}>
+                          <input type="checkbox" checked={!!checks[ck]} onChange={() => setPrepChecks(p => ({...p, [o.id]:{...(p[o.id]||{}), [ck]:!checks[ck]}}))} style={{accentColor:C.bl,width:16,height:16,flexShrink:0}} />
+                          <span style={{color:checks[ck]?C.gr:C.dk,textDecoration:checks[ck]?"line-through":"none"}}>{labels[pk]||pk}</span>
+                          <span style={{fontSize:9,fontFamily:BD,color:C.bl,background:C.bl+"10",padding:"1px 6px",borderRadius:3}}>📦</span>
+                        </label>
+                      );
+                    })}
+                    {pct === 100 && <div style={{marginTop:12,padding:"10px 14px",background:C.gn+"10",borderRadius:6,border:"1px solid "+C.gn+"30",fontSize:11,fontFamily:BD,color:C.gn,fontWeight:600,textAlign:"center"}}>✓ {t("marcadoListo")}</div>}
+                  </div>}
+                </div>
+              );
+            });
+          })()}
+        </>}
       </Sec>}
 
       {view === "a-cl" && <Sec title={t("clients")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn></div>}>
@@ -3301,7 +3538,7 @@ export default function App() {
 
       {view === "a-tasks" && <Sec title={t("gestionTareas")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire"}); }}>{t("nouvelleTache")}</Btn>}>
         <div style={{display:"flex",gap:4,marginBottom:14,flexWrap:"wrap"}}>
-          {["all","commercial","finances","marketing","produits","clientsArea","logistique","admin"].map(a => (
+          {["all","commercial","finances","marketing","produits","clientsArea","logistique","defectos","proveedor","admin"].map(a => (
             <button key={a} onClick={() => setTaskFilter(a)} style={{padding:"5px 12px",background:taskFilter===a?C.dk:"transparent",color:taskFilter===a?C.bg:C.gr,border:"1px solid "+(taskFilter===a?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3}}>{a==="all"?t("toutesAreas"):t(a)}</button>
           ))}
         </div>
@@ -3309,7 +3546,7 @@ export default function App() {
           {["aFaire","enCours","fait"].map(st => {
             const prioOrder = {haute:0,moyenne:1,basse:2};
             const prioColor = {haute:C.rd,moyenne:C.yl,basse:C.gn};
-            const areaColor = {commercial:"#2980b9",finances:"#27ae60",marketing:"#8e44ad",produits:"#d35400",clientsArea:"#16a085",logistique:"#2c3e50",admin:"#7f8c8d"};
+            const areaColor = {commercial:"#2980b9",finances:"#27ae60",marketing:"#8e44ad",produits:"#d35400",clientsArea:"#16a085",logistique:"#2c3e50",defectos:"#e74c3c",proveedor:"#f39c12",admin:"#7f8c8d"};
             const filtered = tasks.filter(tk => tk.status === st && (taskFilter === "all" || tk.area === taskFilter)).sort((a,b) => (prioOrder[a.priority]||1) - (prioOrder[b.priority]||1));
             return (
               <div key={st}>
@@ -3383,48 +3620,234 @@ export default function App() {
         </div>
       </Sec>}
 
-      {/* EMPLOYEE DASHBOARD */}
-      {view === "e-dash" && <Sec title={t("tableauBord")}>
-        <div style={{padding:"min(24px, 4vw) 0"}}>
-          <div style={{fontSize:"min(22px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:16,color:C.dk}}>{t("bienvenida")}, {user.name} ✦</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:20}}>
-            {renderKPI(t("totalCmd"), String(orders.length))}
+      {/* TEAM DASHBOARD */}
+      {view === "e-dash" && <>
+        <div style={{padding:"min(24px, 4vw) min(16px, 3vw) 0"}}>
+          <div style={{fontSize:"min(22px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:4,color:C.dk}}>{t("bienvenida")}, {user.name} ✦</div>
+          <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{t("employe")} Minuë</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:8,marginBottom:20}}>
             {renderKPI(t("aExpedier"), String(orders.filter(o => o.status === "confirmed" || o.status === "preparing").length), C.yl)}
-            {renderKPI(t("clients"), String(clients.length))}
-            {renderKPI(t("produits"), String(products.length))}
+            {renderKPI(t("misTareas"), String(tasks.filter(tk => tk.status !== "fait" && (tk.assignee === user.name || tk.assignee === user.email)).length), C.bl)}
+            {renderKPI(t("leads"), String(tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait").length), "#8e44ad")}
+            {renderKPI(t("defectuosos"), String(tasks.filter(tk => tk.area === "defectos" && tk.status !== "fait").length), C.rd)}
+            {renderKPI(t("sinStock"), String(products.filter(p => p.stock === 0).length), C.rd)}
           </div>
-          {orders.filter(o => o.status === "confirmed" || o.status === "preparing").length > 0 && <>
-            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("cmdEnAttente")}</div>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",marginBottom:16}}>
-              {orders.filter(o => o.status === "confirmed" || o.status === "preparing").slice(0,5).map((o,i) => renderOrderRow(o, i, false, true))}
-            </div>
-          </>}
-          {products.filter(p => p.stock < 5).length > 0 && <>
-            <div style={{fontSize:12,fontFamily:BD,color:C.rd,fontWeight:700,marginBottom:8}}>{t("stockBas")} ({products.filter(p => p.stock < 5).length})</div>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",marginBottom:16}}>
-              {products.filter(p => p.stock < 5).slice(0,8).map((p,i) => (
-                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
-                  <span style={{fontWeight:600,color:C.dk,flex:1}}>{p.model} {p.color}</span>
-                  <span style={{fontSize:11,color:C.gr}}>{p.col}</span>
-                  <span style={{fontWeight:700,color:p.stock===0?C.rd:C.yl}}>{p.stock}</span>
-                </div>
-              ))}
-            </div>
-          </>}
-          {tasks.filter(t => t.status !== "fait").length > 0 && <>
-            <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("tareas")} ({tasks.filter(tk => tk.status !== "fait").length})</div>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-              {tasks.filter(tk => tk.status !== "fait").slice(0,5).map((tk,i) => (
-                <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
-                  <span style={{fontWeight:600,color:C.dk,flex:1}}>{tk.title}</span>
-                  <Badge l={tk.priority === "haute" ? "!" : tk.priority === "moyenne" ? "·" : "—"} c={tk.priority === "haute" ? C.rd : tk.priority === "moyenne" ? C.yl : C.gr} />
-                  {tk.dueDate && <span style={{fontSize:10,color:C.gr}}>{tk.dueDate}</span>}
-                </div>
-              ))}
-            </div>
-          </>}
         </div>
-      </Sec>}
+
+        {/* PEDIDOS POR ENVIAR */}
+        {orders.filter(o => o.status === "confirmed" || o.status === "preparing").length > 0 && <Sec title={t("aExpedier")+" ("+orders.filter(o => o.status === "confirmed" || o.status === "preparing").length+")"}>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+            {orders.filter(o => o.status === "confirmed" || o.status === "preparing").slice(0,5).map((o,i) => renderOrderRow(o, i, false, true))}
+          </div>
+          <Btn ghost onClick={() => { setOrdSubTab("prep"); setView("a-ord"); }} style={{marginTop:8,width:"100%"}}>{t("preparacion")} →</Btn>
+        </Sec>}
+
+        {/* MIS TAREAS */}
+        {(() => { const my = tasks.filter(tk => tk.status !== "fait" && (tk.assignee === user.name || tk.assignee === user.email)); return my.length > 0 ? <Sec title={t("misTareas")+" ("+my.length+")"}>
+          {my.slice(0,5).map((tk,i) => (
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+              <span style={{width:8,height:8,borderRadius:4,background:tk.priority==="haute"?C.rd:tk.priority==="moyenne"?C.yl:C.gr,flexShrink:0}} />
+              <span style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,flex:1}}>{tk.title}</span>
+              <Badge l={tk.area==="commercial"?t("commercial"):tk.area==="defectos"?t("defectuosos"):tk.area==="proveedor"?t("proveedor"):t(tk.area)} c={tk.area==="commercial"?"#8e44ad":tk.area==="defectos"?C.rd:tk.area==="proveedor"?C.yl:C.bl} />
+            </div>
+          ))}
+        </Sec> : null; })()}
+
+        {/* REPORTE STOCK */}
+        <Sec title={t("reporteStock")}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:12}}>
+            <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
+              <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.gn}}>{products.filter(p => p.stock >= 10).length}</div>
+              <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("enStock")}</div>
+            </div>
+            <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
+              <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.yl}}>{products.filter(p => p.stock > 0 && p.stock < 10).length}</div>
+              <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("stockAlerta")}</div>
+            </div>
+            <div style={{background:C.rd+"10",border:"1px solid "+C.rd+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
+              <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.rd}}>{products.filter(p => p.stock === 0).length}</div>
+              <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("sinStock")}</div>
+            </div>
+          </div>
+          {products.filter(p => p.stock < 5).length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+            {products.filter(p => p.stock < 5).slice(0,8).map((p,i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                <span style={{width:8,height:8,borderRadius:4,background:p.stock===0?C.rd:C.yl,flexShrink:0}} />
+                <span style={{fontWeight:600,color:C.dk,flex:1}}>{p.model} {p.color}</span>
+                <span style={{fontSize:10,color:C.gr}}>{p.col}</span>
+                <span style={{fontWeight:700,color:p.stock===0?C.rd:C.yl}}>{p.stock}</span>
+              </div>
+            ))}
+          </div>}
+        </Sec>
+
+        {/* RESUMEN LOGISTICA */}
+        <Sec title={t("logistica")}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px",cursor:"pointer"}} onClick={() => setView("e-logistica")}>
+              <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.yl}}>{orders.filter(o => o.status === "confirmed" || o.status === "preparing").length}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("aExpedier")}</div>
+            </div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px",cursor:"pointer"}} onClick={() => setView("e-logistica")}>
+              <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.bl}}>{tasks.filter(tk => tk.area === "proveedor" && tk.status !== "fait").length}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("mercanciaPendiente")}</div>
+            </div>
+          </div>
+        </Sec>
+      </>}
+
+      {/* ═══ ALMACÉN (admin + team) ═══ */}
+      {(view === "a-almacen" || view === "e-almacen") && <>
+        <Sec title={t("almacen")} sub={t("almacenSub")}>
+          {/* PACKAGING INVENTORY */}
+          <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("packagingInventario")}</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:8,marginBottom:20}}>
+            {[["fundas",t("fundasStock"),"🕶"],["gamuzas",t("gamuzasStock"),"🧤"],["cajasEnvio",t("cajasEnvio"),"📦"],["cajitasGafa",t("cajitasGafa"),"🎁"],["tarjetasTecnicas",t("tarjetasTecnicas"),"📋"]].map(([k,label,icon]) => (
+              <div key={k} style={{background:C.wh,border:"1px solid "+(packStock[k]<20?C.rd+"50":packStock[k]<50?C.yl+"50":C.ln),borderRadius:8,padding:"14px",textAlign:"center"}}>
+                <div style={{fontSize:18,marginBottom:4}}>{icon}</div>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:packStock[k]<20?C.rd:packStock[k]<50?C.yl:C.gn}}>{packStock[k]}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{label}</div>
+                {role !== "client" && <div style={{display:"flex",gap:4,marginTop:8,justifyContent:"center"}}>
+                  <button onClick={() => setPackStock(p => ({...p,[k]:Math.max(0,p[k]-10)}))} style={{width:24,height:24,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:12,color:C.dk}}>-</button>
+                  <button onClick={() => setPackStock(p => ({...p,[k]:p[k]+10}))} style={{width:24,height:24,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:12,color:C.dk}}>+</button>
+                </div>}
+              </div>
+            ))}
+          </div>
+        </Sec>
+
+        {/* PRODUCTOS DEFECTUOSOS */}
+        <Sec title={t("defectuosos")} sub={t("defectuososSub")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"haute",area:"defectos",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("reportarDefecto")}</Btn>}>
+          {(() => {
+            const defects = tasks.filter(tk => tk.area === "defectos");
+            if (defects.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>✓ Sin defectos reportados</div>;
+            return defects.map((tk, i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:C.wh,border:"1px solid "+(tk.status==="fait"?C.gn+"30":C.rd+"30"),borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                <span style={{fontSize:14}}>{tk.status === "fait" ? "✓" : "⚠"}</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
+                  {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:1}}>{tk.desc.substring(0,80)}</div>}
+                </div>
+                <Badge l={tk.status === "fait" ? t("resolu") : t("enAttente")} c={tk.status === "fait" ? C.gn : C.rd} />
+              </div>
+            ));
+          })()}
+        </Sec>
+      </>}
+
+      {/* ═══ LOGÍSTICA (admin + team) ═══ */}
+      {(view === "a-logistica" || view === "e-logistica") && <>
+        {/* PEDIDOS POR ENVIAR */}
+        <Sec title={t("aExpedier")} sub={orders.filter(o => o.status === "confirmed" || o.status === "preparing").length+" "+t("commandes")}>
+          {(() => {
+            const toShip = orders.filter(o => o.status === "confirmed" || o.status === "preparing");
+            if (toShip.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>✓ {t("aucuneCmd")}</div>;
+            return <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              {toShip.map((o,i) => renderOrderRow(o, orders.indexOf(o), role==="admin", true))}
+            </div>;
+          })()}
+        </Sec>
+
+        {/* ENVÍOS EN TRÁNSITO */}
+        <Sec title={t("expedie")} sub={orders.filter(o => o.status === "shipped" || o.status === "partial").length+" "+t("commandes")}>
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+            {orders.filter(o => o.status === "shipped" || o.status === "partial").map((o,i) => renderOrderRow(o, orders.indexOf(o), role==="admin", true))}
+            {orders.filter(o => o.status === "shipped" || o.status === "partial").length === 0 && <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>—</div>}
+          </div>
+        </Sec>
+
+        {/* MERCANCÍA PENDIENTE PROVEEDOR */}
+        <Sec title={t("mercanciaPendiente")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"proveedor",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("nouveau")}</Btn>}>
+          {(() => {
+            const provTasks = tasks.filter(tk => tk.area === "proveedor");
+            if (provTasks.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin pedidos pendientes de proveedor</div>;
+            return provTasks.map((tk, i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                <span style={{fontSize:14}}>{tk.status === "fait" ? "📦" : "🚚"}</span>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
+                  {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:1}}>{tk.desc.substring(0,80)}</div>}
+                </div>
+                {tk.dueDate && <span style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"10",padding:"2px 8px",borderRadius:3}}>{t("fechaPrevista")}: {tk.dueDate}</span>}
+                <Badge l={tk.status === "fait" ? t("livre") : t("enAttente")} c={tk.status === "fait" ? C.gn : C.yl} />
+              </div>
+            ));
+          })()}
+        </Sec>
+      </>}
+
+      {/* ═══ COMERCIAL ADMIN ═══ */}
+      {view === "a-comercial" && <>
+        <Sec title={t("commercial")} sub={t("comercialSub")}>
+          {(() => {
+            const comTasks = tasks.filter(tk => tk.area === "commercial");
+            const nuevo = comTasks.filter(tk => tk.status === "aFaire");
+            const contactado = comTasks.filter(tk => tk.status === "enCours" && tk.priority !== "haute");
+            const negociacion = comTasks.filter(tk => tk.status === "enCours" && tk.priority === "haute");
+            const ganados = comTasks.filter(tk => tk.status === "fait");
+            return <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
+              <div style={{background:"#3498db10",border:"1px solid #3498db30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#3498db"}}>{nuevo.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
+              </div>
+              <div style={{background:"#f39c1210",border:"1px solid #f39c1230",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#f39c12"}}>{contactado.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
+              </div>
+              <div style={{background:"#8e44ad10",border:"1px solid #8e44ad30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#8e44ad"}}>{negociacion.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
+              </div>
+              <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
+                <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:C.gn}}>{ganados.length}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
+              </div>
+            </div>;
+          })()}
+        </Sec>
+        <Sec title={t("seguimiento")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:""}); }}>{t("nuevoLead")}</Btn>}>
+          {(() => {
+            const leads = tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait");
+            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin leads — crea uno</div>;
+            return leads.map((tk, i) => {
+              const stColor = tk.status === "aFaire" ? "#3498db" : tk.priority === "haute" ? "#8e44ad" : "#f39c12";
+              const stLabel = tk.status === "aFaire" ? t("nuevoLead") : tk.priority === "haute" ? t("enNegociacion") : t("contactado");
+              return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:8,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
+                  <div style={{width:10,height:10,borderRadius:5,background:stColor,flexShrink:0}} />
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
+                    {tk.desc && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2,lineHeight:1.4}}>{tk.desc.substring(0,120)}</div>}
+                    {tk.assignee && <div style={{fontSize:9,fontFamily:BD,color:C.bl,marginTop:3}}>→ {tk.assignee}</div>}
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <Badge l={stLabel} c={stColor} />
+                    {tk.dueDate && <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
+                  </div>
+                </div>
+              );
+            });
+          })()}
+        </Sec>
+        <Sec title={t("aRecuperar")} sub={t("aRecuperarSub")}>
+          {(() => {
+            const withOrders = {};
+            orders.forEach(o => { withOrders[o.client] = true; });
+            const noOrders = clients.filter(c => !withOrders[c.name] && (c.status === "active" || c.status === "prospect"));
+            if (noOrders.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Todos los clientes tienen pedidos</div>;
+            return noOrders.slice(0,10).map((c,i) => (
+              <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6}}>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{c.name}</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{c.contact} · {c.city} · {c.channel}</div>
+                </div>
+                <Badge l={t("sinPedidos")} c={C.rd} />
+                <Btn small ghost onClick={() => { setModal("newTask"); setEd({title:t("seguimiento")+": "+c.name,desc:c.contact+" · "+(c.companyEmail||c.phone||""),priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:""}); }}>{t("seguimiento")}</Btn>
+              </div>
+            ));
+          })()}
+        </Sec>
+      </>}
 
       {view === "a-stats" && <Sec title={t("tableauBord")}>
         {users.filter(u => u.active === false && u.role !== "admin").length > 0 && (
