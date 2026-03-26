@@ -251,15 +251,15 @@ const T = {
   recoPour:{fr:"Sélection pour vous",es:"Seleccionados para ti",en:"Selected for you"},
   dernieresNouv:{fr:"Actualités",es:"Novedades",en:"What's new"},
   promosActives:{fr:"Offres en cours",es:"Ofertas activas",en:"Active offers"},
-  solliciterAcces:{fr:"Nouveau client ? Demander l'accès",es:"¿Nuevo cliente? Solicitar acceso",en:"New client? Request access"},
+  solliciterAcces:{fr:"Demander l'accès",es:"Solicitar acceso",en:"Request access"},
   retourLogin:{fr:"← Retour à la connexion",es:"← Volver al inicio de sesión",en:"← Back to login"},
-  envoyerDemande:{fr:"Envoyer la demande",es:"Enviar solicitud",en:"Submit request"},
-  demandeEnvoyee:{fr:"Demande envoyée ! Nous vous contacterons quand votre compte sera activé.",es:"¡Solicitud enviada! Te contactaremos cuando tu cuenta esté activada.",en:"Request sent! We'll contact you when your account is activated."},
+  envoyerDemande:{fr:"Envoyer",es:"Enviar",en:"Submit"},
+  demandeEnvoyee:{fr:"Demande reçue!Notre équipe reviendra vers vous sous 24h.",es:"Solicitud recibida!Nuestro equipo te contactará en menos de 24h.",en:"Request received!Our team will get back to you within 24h."},
   pwNoMatch:{fr:"Les mots de passe ne correspondent pas",es:"Las contraseñas no coinciden",en:"Passwords don't match"},
   confirmerPw:{fr:"Confirmer mot de passe",es:"Confirmar contraseña",en:"Confirm password"},
   webInstagram:{fr:"Site web / Instagram",es:"Web / Instagram",en:"Website / Instagram"},
-  messageSolicitud:{fr:"Parlez-nous de votre boutique",es:"Cuéntanos sobre tu tienda",en:"Tell us about your store"},
-  solicitudSub:{fr:"Complétez le formulaire pour demander l'accès à notre plateforme wholesale.",es:"Completa el formulario para solicitar acceso a nuestra plataforma wholesale.",en:"Complete the form to request access to our wholesale platform."},
+  messageSolicitud:{fr:"Un mot sur votre boutique",es:"Cuéntanos sobre tu tienda",en:"A word about your store"},
+  solicitudSub:{fr:"Plateforme wholesale exclusive pour retailers sélectionnés.",es:"Plataforma wholesale exclusiva para retailers seleccionados.",en:"Exclusive wholesale platform for selected retailers."},
   pendientes:{fr:"En attente",es:"Pendientes",en:"Pending"},
   solicitudes:{fr:"demandes d'accès",es:"solicitudes de acceso",en:"access requests"},
   activerCompte:{fr:"Activer le compte",es:"Activar cuenta",en:"Activate account"},
@@ -1083,12 +1083,11 @@ export default function App() {
         {regSent ? (
           /* SUCCESS STATE */
           <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",zIndex:1}}>
-            <div style={{width:80,height:80,borderRadius:40,border:"1px solid #f8efe620",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:30}}>
-              <span style={{fontSize:28,color:"#f8efe6"}}>✓</span>
-            </div>
-            <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,marginBottom:12,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}!</div>
-            <div style={{fontSize:12,fontFamily:BD,color:"#f8efe650",lineHeight:1.8,maxWidth:320,textAlign:"center",marginBottom:30}}>{t("demandeEnvoyee").split("!")[1] || "We will review your request and activate your account shortly."}</div>
-            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:11,fontFamily:BD,color:"#f8efe6",background:"transparent",border:"1px solid #f8efe630",cursor:"pointer",padding:"12px 32px",borderRadius:24,letterSpacing:2,transition:"all 0.3s"}} onMouseEnter={e => {e.target.style.background="#f8efe610";e.target.style.borderColor="#f8efe650"}} onMouseLeave={e => {e.target.style.background="transparent";e.target.style.borderColor="#f8efe630"}}>{t("retourLogin")}</button>
+            <div style={{width:1,height:60,background:"#f8efe615",marginBottom:24}} />
+            <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,fontStyle:"italic",marginBottom:16,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}</div>
+            <div style={{width:30,height:1,background:"#f8efe618",marginBottom:16}} />
+            <div style={{fontSize:12,fontFamily:BD,color:"#f8efe645",lineHeight:1.8,maxWidth:280,textAlign:"center",marginBottom:36,letterSpacing:0.3}}>{t("demandeEnvoyee").split("!")[1]}</div>
+            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:10,fontFamily:BD,color:"#f8efe6",background:"transparent",border:"1px solid #f8efe625",cursor:"pointer",padding:"12px 36px",borderRadius:2,letterSpacing:3,textTransform:"uppercase",transition:"all 0.3s"}} onMouseEnter={e => {e.target.style.background="#f8efe610";e.target.style.borderColor="#f8efe640"}} onMouseLeave={e => {e.target.style.background="transparent";e.target.style.borderColor="#f8efe625"}}>{t("retourLogin")}</button>
           </div>
         ) : !registerMode ? (
           /* LOGIN */
@@ -1126,9 +1125,9 @@ export default function App() {
           <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px min(30px, 5vw)",position:"relative",zIndex:1}}>
             <div style={{width:"100%",maxWidth:520,background:CL.bg,borderRadius:16,padding:"min(50px, 8vw) min(40px, 6vw)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
               <div style={{textAlign:"center",marginBottom:36}}>
-                <div style={{fontSize:10,fontFamily:BD,color:CL.dk+"40",letterSpacing:4,textTransform:"uppercase",marginBottom:10}}>Minuë B2B</div>
-                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300}}>{t("solliciterAcces")}</div>
-                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",marginTop:8,lineHeight:1.6}}>{t("solicitudSub")}</div>
+                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300,fontStyle:"italic"}}>Enter Minuë world</div>
+                <div style={{width:30,height:1,background:CL.dk+"18",margin:"14px auto"}} />
+                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",lineHeight:1.6}}>{t("solicitudSub")}</div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
                 <div style={{marginBottom:20}}>
