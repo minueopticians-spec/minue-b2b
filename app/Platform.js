@@ -1092,9 +1092,10 @@ export default function App() {
           /* LOGIN */
           <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
             <div style={{textAlign:"center",marginBottom:50}}>
-              <img src={LOGO} alt="Minuë" style={{width:"min(80px, 20vw)",height:"min(80px, 20vw)",objectFit:"contain",borderRadius:10,marginBottom:20,opacity:0.9}} />
-              <div style={{fontSize:"min(36px, 9vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,letterSpacing:3}}>Minuë</div>
-              <div style={{fontSize:10,fontFamily:BD,color:"#f8efe640",letterSpacing:4,textTransform:"uppercase",marginTop:6}}>B2B Platform</div>
+              <img src={LOGO} alt="Minuë" style={{width:"min(90px, 22vw)",height:"min(90px, 22vw)",objectFit:"contain",borderRadius:10,marginBottom:24,opacity:0.9}} />
+              <div style={{width:40,height:1,background:"#f8efe618",margin:"0 auto 20px"}} />
+              <div style={{fontSize:"min(13px, 3.5vw)",fontFamily:DP,color:"#f8efe640",fontStyle:"italic",lineHeight:1.8,letterSpacing:0.5}}>Your private wholesale space</div>
+              <div style={{fontSize:10,fontFamily:BD,color:"#f8efe625",letterSpacing:4,textTransform:"uppercase",marginTop:10}}>B2B Platform</div>
             </div>
             <div style={{width:"min(360px, 85vw)"}}>
               <div style={{marginBottom:24}}>
