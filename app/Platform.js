@@ -403,10 +403,16 @@ const T = {
   logisticaSub:{fr:"Expéditions et réceptions",es:"Envíos y recepciones",en:"Shipments and receptions"},
   packagingInventario:{fr:"Stock packaging",es:"Inventario packaging",en:"Packaging inventory"},
   fundasStock:{fr:"Étuis",es:"Fundas",en:"Cases"},
-  gamuzasStock:{fr:"Chiffons",es:"Gamuzas",en:"Cloths"},
+  fundasVerde:{fr:"Étui Vert Pistache",es:"Funda Verde Pistacho",en:"Pistachio Green Case"},
+  fundasLila:{fr:"Étui Lilas Pastel",es:"Funda Lila Pastel",en:"Pastel Lilac Case"},
+  fundasBlue:{fr:"Étui Baby Blue",es:"Funda Baby Blue",en:"Baby Blue Case"},
+  fundasCrema:{fr:"Étui Crème",es:"Funda Crema",en:"Cream Case"},
+  gamuzasStock:{fr:"Chiffons microfibre",es:"Gamuzas",en:"Microfiber cloths"},
+  gamuzasChampagne:{fr:"Microfibre Champagne",es:"Gamuza Champagne",en:"Champagne Cloth"},
+  gamuzasGris:{fr:"Microfibre Gris Perle",es:"Gamuza Gris Perla",en:"Pearl Grey Cloth"},
   cajasEnvio:{fr:"Cartons d'envoi",es:"Cajas de envío",en:"Shipping boxes"},
   cajitasGafa:{fr:"Boîtes lunettes",es:"Cajitas gafa",en:"Glasses boxes"},
-  tarjetasTecnicas:{fr:"Fiches techniques",es:"Tarjetas técnicas",en:"Technical cards"},
+  cintaMinue:{fr:"Ruban adhésif Minuë",es:"Cinta adhesiva Minuë",en:"Minuë adhesive tape"},
   mercanciaPendiente:{fr:"Marchandise en attente",es:"Mercancía pendiente",en:"Pending goods"},
   reporteStock:{fr:"Rapport de stock",es:"Reporte de stock",en:"Stock report"},
   enStock:{fr:"En stock",es:"En stock",en:"In stock"},
@@ -845,7 +851,7 @@ export default function App() {
   const [prepChecks, setPrepChecks] = useState({});
   const [expandedPrep, setExpandedPrep] = useState(null);
   const [ordSubTab, setOrdSubTab] = useState("list");
-  const [packStock, setPackStock] = useState({fundas:200,gamuzas:200,cajasEnvio:50,cajitasGafa:200,tarjetasTecnicas:300});
+  const [packStock, setPackStock] = useState({fundasVerde:80,fundasLila:80,fundasBlue:80,fundasCrema:80,gamuzasChampagne:100,gamuzasGris:100,cajitasGafa:150,cajasEnvio:40,cintaMinue:20});
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
@@ -3345,7 +3351,7 @@ export default function App() {
               const isOpen = expandedPrep === o.id;
               const checks = prepChecks[o.id] || {};
               const totalItems = (o.lines||[]).reduce((s,l) => s+l.qty, 0);
-              const packList = ["gamuza","cajita","funda","albaran"];
+              const packList = ["funda","gamuza","cajita","cintaMinue","albaran"];
               const needsExpositor = totalItems >= 10;
               const allPack = needsExpositor ? [...packList, "expositor"] : packList;
               const totalChecks = (o.lines||[]).length + allPack.length;
@@ -3380,7 +3386,7 @@ export default function App() {
                     <div style={{fontSize:10,fontFamily:BD,color:C.dk,fontWeight:700,marginTop:14,marginBottom:6}}>{t("packingList")}</div>
                     {allPack.map(pk => {
                       const ck = "pk_"+pk;
-                      const labels = {gamuza:t("gamuza")+" (x"+totalItems+")",cajita:t("cajita")+" (x"+totalItems+")",funda:t("funda")+" (x"+totalItems+")",albaran:t("albaran"),expositor:t("expositor")};
+                      const labels = {funda:t("funda")+" (x"+totalItems+")",gamuza:t("gamuza")+" (x"+totalItems+")",cajita:t("cajita")+" (x"+totalItems+")",cintaMinue:t("cintaMinue"),albaran:t("albaran"),expositor:t("expositor")};
                       return (
                         <label key={pk} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}}>
                           <input type="checkbox" checked={!!checks[ck]} onChange={() => setPrepChecks(p => ({...p, [o.id]:{...(p[o.id]||{}), [ck]:!checks[ck]}}))} style={{accentColor:C.bl,width:16,height:16,flexShrink:0}} />
@@ -3702,7 +3708,7 @@ export default function App() {
           {/* PACKAGING INVENTORY */}
           <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>{t("packagingInventario")}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:8,marginBottom:20}}>
-            {[["fundas",t("fundasStock"),"🕶"],["gamuzas",t("gamuzasStock"),"🧤"],["cajasEnvio",t("cajasEnvio"),"📦"],["cajitasGafa",t("cajitasGafa"),"🎁"],["tarjetasTecnicas",t("tarjetasTecnicas"),"📋"]].map(([k,label,icon]) => (
+            {[["fundasVerde",t("fundasVerde"),"🟢"],["fundasLila",t("fundasLila"),"🟣"],["fundasBlue",t("fundasBlue"),"🔵"],["fundasCrema",t("fundasCrema"),"🟡"],["gamuzasChampagne",t("gamuzasChampagne"),"✨"],["gamuzasGris",t("gamuzasGris"),"🩶"],["cajitasGafa",t("cajitasGafa"),"🕶"],["cajasEnvio",t("cajasEnvio"),"📦"],["cintaMinue",t("cintaMinue"),"🎀"]].map(([k,label,icon]) => (
               <div key={k} style={{background:C.wh,border:"1px solid "+(packStock[k]<20?C.rd+"50":packStock[k]<50?C.yl+"50":C.ln),borderRadius:8,padding:"14px",textAlign:"center"}}>
                 <div style={{fontSize:18,marginBottom:4}}>{icon}</div>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:packStock[k]<20?C.rd:packStock[k]<50?C.yl:C.gn}}>{packStock[k]}</div>
