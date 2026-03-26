@@ -257,6 +257,9 @@ const T = {
   demandeEnvoyee:{fr:"Demande envoyée ! Nous vous contacterons quand votre compte sera activé.",es:"¡Solicitud enviada! Te contactaremos cuando tu cuenta esté activada.",en:"Request sent! We'll contact you when your account is activated."},
   pwNoMatch:{fr:"Les mots de passe ne correspondent pas",es:"Las contraseñas no coinciden",en:"Passwords don't match"},
   confirmerPw:{fr:"Confirmer mot de passe",es:"Confirmar contraseña",en:"Confirm password"},
+  webInstagram:{fr:"Site web / Instagram",es:"Web / Instagram",en:"Website / Instagram"},
+  messageSolicitud:{fr:"Parlez-nous de votre boutique",es:"Cuéntanos sobre tu tienda",en:"Tell us about your store"},
+  solicitudSub:{fr:"Complétez le formulaire pour demander l'accès à notre plateforme wholesale.",es:"Completa el formulario para solicitar acceso a nuestra plataforma wholesale.",en:"Complete the form to request access to our wholesale platform."},
   pendientes:{fr:"En attente",es:"Pendientes",en:"Pending"},
   solicitudes:{fr:"demandes d'accès",es:"solicitudes de acceso",en:"access requests"},
   activerCompte:{fr:"Activer le compte",es:"Activar cuenta",en:"Activate account"},
@@ -819,7 +822,7 @@ export default function App() {
   const [loginPw, setLoginPw] = useState("");
   const [loginErr, setLoginErr] = useState("");
   const [registerMode, setRegisterMode] = useState(false);
-  const [regData, setRegData] = useState({name:"",co:"",email:"",pw:"",pw2:"",city:"",country:"",phone:""});
+  const [regData, setRegData] = useState({name:"",co:"",email:"",city:"",country:"",phone:"",web:"",message:""});
   const [regSent, setRegSent] = useState(false);
   const [orders, setOrders] = useState(ORDERS_INIT);
   const [clients, setClients] = useState(CLIENTS_INIT);
@@ -1053,11 +1056,10 @@ export default function App() {
   };
 
   const doRegister = () => {
-    if (!regData.name || !regData.email || !regData.pw) { setLoginErr(t("errLogin")); return; }
-    if (regData.pw.length < 8) { setLoginErr("Min. 8 caractères"); return; }
-    if (regData.pw !== regData.pw2) { setLoginErr(t("pwNoMatch")); return; }
+    if (!regData.name || !regData.email || !regData.co) { setLoginErr(t("errLogin")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
-    const nu = {email:regData.email, pw:regData.pw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso"};
+    const tempPw = "pending_" + Date.now();
+    const nu = {email:regData.email, pw:tempPw, role:"client", name:regData.name, co:regData.co, lang, commRate:0, active:false, phone:regData.phone, city:regData.city, country:regData.country, notes:"Solicitud de acceso\nWeb/IG: "+(regData.web||"—")+"\n"+(regData.message||"")};
     setUsers(p => [...p, nu]); dbSaveUser(nu);
     setLoginErr("");
     setRegSent(true);
@@ -1092,7 +1094,7 @@ export default function App() {
           /* LOGIN */
           <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
             <div style={{textAlign:"center",marginBottom:50}}>
-              <img src={LOGO} alt="Minuë" style={{width:"min(90px, 22vw)",height:"min(90px, 22vw)",objectFit:"contain",borderRadius:10,marginBottom:24,opacity:0.9}} />
+              <img src={LOGO} alt="Minuë" style={{width:"min(100px, 25vw)",height:"min(100px, 25vw)",objectFit:"contain",borderRadius:10,marginBottom:24,marginTop:20,opacity:0.9}} />
               <div style={{width:40,height:1,background:"#f8efe618",margin:"0 auto 20px"}} />
               <div style={{fontSize:"min(13px, 3.5vw)",fontFamily:DP,color:"#f8efe640",fontStyle:"italic",lineHeight:1.8,letterSpacing:0.5}}>Your private wholesale space</div>
               <div style={{fontSize:10,fontFamily:BD,color:"#f8efe625",letterSpacing:4,textTransform:"uppercase",marginTop:10}}>B2B Platform</div>
@@ -1126,7 +1128,7 @@ export default function App() {
               <div style={{textAlign:"center",marginBottom:36}}>
                 <div style={{fontSize:10,fontFamily:BD,color:CL.dk+"40",letterSpacing:4,textTransform:"uppercase",marginBottom:10}}>Minuë B2B</div>
                 <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300}}>{t("solliciterAcces")}</div>
-                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",marginTop:8,lineHeight:1.6}}>Complete the form to request access to our wholesale platform.</div>
+                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",marginTop:8,lineHeight:1.6}}>{t("solicitudSub")}</div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
                 <div style={{marginBottom:20}}>
@@ -1138,33 +1140,33 @@ export default function App() {
                   <input value={regData.co} onChange={e => setRegData(p => ({...p, co:e.target.value}))} placeholder="Optique Paris" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
               </div>
-              <div style={{marginBottom:20}}>
-                <div style={labelStyleLight}>{t("email")} *</div>
-                <input type="email" value={regData.email} onChange={e => setRegData(p => ({...p, email:e.target.value}))} placeholder="contact@store.com" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
-              </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
                 <div style={{marginBottom:20}}>
-                  <div style={labelStyleLight}>{t("motDePasse")} *</div>
-                  <input type="password" value={regData.pw} onChange={e => setRegData(p => ({...p, pw:e.target.value}))} placeholder="min. 8" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                  <div style={labelStyleLight}>{t("email")} *</div>
+                  <input type="email" value={regData.email} onChange={e => setRegData(p => ({...p, email:e.target.value}))} placeholder="contact@store.com" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
                 <div style={{marginBottom:20}}>
-                  <div style={labelStyleLight}>{t("confirmerPw")} *</div>
-                  <input type="password" value={regData.pw2} onChange={e => setRegData(p => ({...p, pw2:e.target.value}))} placeholder="min. 8" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                  <div style={labelStyleLight}>{t("telephone")}</div>
+                  <input value={regData.phone} onChange={e => setRegData(p => ({...p, phone:e.target.value}))} placeholder="+33 6 12 34 56 78" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 14px"}}>
-                <div style={{marginBottom:24}}>
+                <div style={{marginBottom:20}}>
                   <div style={labelStyleLight}>{t("ville")}</div>
                   <input value={regData.city} onChange={e => setRegData(p => ({...p, city:e.target.value}))} placeholder="Paris" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
-                <div style={{marginBottom:24}}>
+                <div style={{marginBottom:20}}>
                   <div style={labelStyleLight}>{t("pays")}</div>
                   <input value={regData.country} onChange={e => setRegData(p => ({...p, country:e.target.value}))} placeholder="FR" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
-                <div style={{marginBottom:24}}>
-                  <div style={labelStyleLight}>{t("telephone")}</div>
-                  <input value={regData.phone} onChange={e => setRegData(p => ({...p, phone:e.target.value}))} placeholder="+33..." style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                <div style={{marginBottom:20}}>
+                  <div style={labelStyleLight}>{t("webInstagram")}</div>
+                  <input value={regData.web} onChange={e => setRegData(p => ({...p, web:e.target.value}))} placeholder="@store or url" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
+              </div>
+              <div style={{marginBottom:24}}>
+                <div style={labelStyleLight}>{t("messageSolicitud")}</div>
+                <textarea value={regData.message} onChange={e => setRegData(p => ({...p, message:e.target.value}))} rows={3} placeholder={lang==="fr"?"Type de boutique, marques distribuées, etc.":lang==="es"?"Tipo de tienda, marcas que distribuyes, etc.":"Store type, brands you carry, etc."} style={{...inputStyleLight,border:"none",borderBottom:"1px solid "+CL.dk+"18",resize:"vertical",fontFamily:BD,padding:"10px 0"}} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
               </div>
               {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginBottom:14,padding:"10px 14px",background:"#e74c3c08",borderRadius:6}}>{loginErr}</div>}
               <button onClick={doRegister} style={{width:"100%",padding:"16px 0",background:CL.dk,color:"#f8efe6",border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:500,cursor:"pointer",letterSpacing:2,textTransform:"uppercase",transition:"opacity 0.3s"}} onMouseEnter={e => e.target.style.opacity="0.85"} onMouseLeave={e => e.target.style.opacity="1"}>{t("envoyerDemande")}</button>
