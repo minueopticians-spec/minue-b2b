@@ -586,6 +586,16 @@ const PRODUCTS_INIT = [
   {id:52,model:"COOPER II",color:"Tiger",sku:"MN-COP2-TGR",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:53,model:"COOPER II",color:"Sierra",sku:"MN-COP2-SRA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
   {id:178,model:"COOPER II",color:"Moonlight",sku:"MN-COP2-MLT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0},
+  {id:179,model:"CHASTAIN",color:"Rouge Light",sku:"MN-CHST-RLT",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:180,model:"CHASTAIN",color:"Noir Violet",sku:"MN-CHST-NVL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:181,model:"CHASTAIN",color:"Carey",sku:"MN-CHST-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:182,model:"CHASTAIN",color:"Olive",sku:"MN-CHST-OLV",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:183,model:"BACALL",color:"Carey",sku:"MN-BCLL-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:184,model:"SEBERG",color:"Amber",sku:"MN-SBRG-AMB",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:185,model:"HART",color:"Havana",sku:"MN-HART-HVN",col:"Essential",cat:"Essential",stock:10,fixedPrice:0},
+  {id:186,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0},
+  {id:187,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0},
+  {id:188,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0},
   /* ── ICONS ── */
   /* GUGU */
   {id:100,model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"]},
