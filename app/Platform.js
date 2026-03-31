@@ -251,15 +251,15 @@ const T = {
   recoPour:{fr:"Sélection pour vous",es:"Seleccionados para ti",en:"Selected for you"},
   dernieresNouv:{fr:"Actualités",es:"Novedades",en:"What's new"},
   promosActives:{fr:"Offres en cours",es:"Ofertas activas",en:"Active offers"},
-  solliciterAcces:{fr:"Nouveau client ? Demander l'accès",es:"¿Nuevo cliente? Solicitar acceso",en:"New client? Request access"},
+  solliciterAcces:{fr:"Demander l'accès",es:"Solicitar acceso",en:"Request access"},
   retourLogin:{fr:"← Retour à la connexion",es:"← Volver al inicio de sesión",en:"← Back to login"},
-  envoyerDemande:{fr:"Envoyer la demande",es:"Enviar solicitud",en:"Submit request"},
-  demandeEnvoyee:{fr:"Demande envoyée ! Nous vous contacterons quand votre compte sera activé.",es:"¡Solicitud enviada! Te contactaremos cuando tu cuenta esté activada.",en:"Request sent! We'll contact you when your account is activated."},
+  envoyerDemande:{fr:"Envoyer",es:"Enviar",en:"Submit"},
+  demandeEnvoyee:{fr:"Demande reçue!Notre équipe reviendra vers vous sous 24h.",es:"Solicitud recibida!Nuestro equipo te contactará en menos de 24h.",en:"Request received!Our team will get back to you within 24h."},
   pwNoMatch:{fr:"Les mots de passe ne correspondent pas",es:"Las contraseñas no coinciden",en:"Passwords don't match"},
   confirmerPw:{fr:"Confirmer mot de passe",es:"Confirmar contraseña",en:"Confirm password"},
   webInstagram:{fr:"Site web / Instagram",es:"Web / Instagram",en:"Website / Instagram"},
-  messageSolicitud:{fr:"Parlez-nous de votre boutique",es:"Cuéntanos sobre tu tienda",en:"Tell us about your store"},
-  solicitudSub:{fr:"Complétez le formulaire pour demander l'accès à notre plateforme wholesale.",es:"Completa el formulario para solicitar acceso a nuestra plataforma wholesale.",en:"Complete the form to request access to our wholesale platform."},
+  messageSolicitud:{fr:"Un mot sur votre boutique",es:"Cuéntanos sobre tu tienda",en:"A word about your store"},
+  solicitudSub:{fr:"Plateforme wholesale exclusive pour retailers sélectionnés.",es:"Plataforma wholesale exclusiva para retailers seleccionados.",en:"Exclusive wholesale platform for selected retailers."},
   pendientes:{fr:"En attente",es:"Pendientes",en:"Pending"},
   solicitudes:{fr:"demandes d'accès",es:"solicitudes de acceso",en:"access requests"},
   activerCompte:{fr:"Activer le compte",es:"Activar cuenta",en:"Activate account"},
@@ -867,6 +867,7 @@ export default function App() {
   const [prepChecks, setPrepChecks] = useState({});
   const [expandedPrep, setExpandedPrep] = useState(null);
   const [ordSubTab, setOrdSubTab] = useState("list");
+  const [moreOpen, setMoreOpen] = useState(false);
   const [packStock, setPackStock] = useState({fundas:0,gamuzas:0,cajasEnvio:0,cajitasGafa:0,tarjetasTecnicas:0,expositores:0});
   const [defectives, setDefectives] = useState([]);
   const [shapeFilter, setShapeFilter] = useState("all");
@@ -1083,12 +1084,11 @@ export default function App() {
         {regSent ? (
           /* SUCCESS STATE */
           <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",zIndex:1}}>
-            <div style={{width:80,height:80,borderRadius:40,border:"1px solid #f8efe620",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:30}}>
-              <span style={{fontSize:28,color:"#f8efe6"}}>✓</span>
-            </div>
-            <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,marginBottom:12,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}!</div>
-            <div style={{fontSize:12,fontFamily:BD,color:"#f8efe650",lineHeight:1.8,maxWidth:320,textAlign:"center",marginBottom:30}}>{t("demandeEnvoyee").split("!")[1] || "We will review your request and activate your account shortly."}</div>
-            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:11,fontFamily:BD,color:"#f8efe6",background:"transparent",border:"1px solid #f8efe630",cursor:"pointer",padding:"12px 32px",borderRadius:24,letterSpacing:2,transition:"all 0.3s"}} onMouseEnter={e => {e.target.style.background="#f8efe610";e.target.style.borderColor="#f8efe650"}} onMouseLeave={e => {e.target.style.background="transparent";e.target.style.borderColor="#f8efe630"}}>{t("retourLogin")}</button>
+            <div style={{width:1,height:60,background:"#f8efe615",marginBottom:24}} />
+            <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,fontStyle:"italic",marginBottom:16,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}</div>
+            <div style={{width:30,height:1,background:"#f8efe618",marginBottom:16}} />
+            <div style={{fontSize:12,fontFamily:BD,color:"#f8efe645",lineHeight:1.8,maxWidth:280,textAlign:"center",marginBottom:36,letterSpacing:0.3}}>{t("demandeEnvoyee").split("!")[1]}</div>
+            <button onClick={() => { setRegSent(false); setRegisterMode(false); }} style={{fontSize:10,fontFamily:BD,color:"#f8efe6",background:"transparent",border:"1px solid #f8efe625",cursor:"pointer",padding:"12px 36px",borderRadius:2,letterSpacing:3,textTransform:"uppercase",transition:"all 0.3s"}} onMouseEnter={e => {e.target.style.background="#f8efe610";e.target.style.borderColor="#f8efe640"}} onMouseLeave={e => {e.target.style.background="transparent";e.target.style.borderColor="#f8efe625"}}>{t("retourLogin")}</button>
           </div>
         ) : !registerMode ? (
           /* LOGIN */
@@ -1126,9 +1126,9 @@ export default function App() {
           <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px min(30px, 5vw)",position:"relative",zIndex:1}}>
             <div style={{width:"100%",maxWidth:520,background:CL.bg,borderRadius:16,padding:"min(50px, 8vw) min(40px, 6vw)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
               <div style={{textAlign:"center",marginBottom:36}}>
-                <div style={{fontSize:10,fontFamily:BD,color:CL.dk+"40",letterSpacing:4,textTransform:"uppercase",marginBottom:10}}>Minuë B2B</div>
-                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300}}>{t("solliciterAcces")}</div>
-                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",marginTop:8,lineHeight:1.6}}>{t("solicitudSub")}</div>
+                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300,fontStyle:"italic"}}>Enter Minuë world</div>
+                <div style={{width:30,height:1,background:CL.dk+"18",margin:"14px auto"}} />
+                <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",lineHeight:1.6}}>{t("solicitudSub")}</div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 20px"}}>
                 <div style={{marginBottom:20}}>
@@ -1191,24 +1191,32 @@ export default function App() {
     : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"};
+  const bottomItems = role === "client"
+    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
+    : role === "distributor"
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-ord","commandes"],["d-cl","clients"]]
+    : role === "team"
+    ? [["e-dash","dashboard"],["a-ord","commandes"],["e-comercial","commercial"],["e-almacen","almacen"]]
+    : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"]];
+  const moreItems = navItems.filter(([v]) => !bottomItems.find(([bv]) => bv === v));
+  const NavIcon = ({d, size=20, color="currentColor"}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+
   const renderNav = () => {
     const rc = role==="admin"?"#e8a87c":role==="team"?"#a8c8e8":role==="distributor"?"#87ceeb":"#c4956a";
-    return (
+    return (<>
+    {/* TOP BAR — slim */}
     <nav style={{background:darkMode?"#141c1a":CL.dk,position:"sticky",top:0,zIndex:100}}>
-      {/* TOP BAR */}
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"6px min(16px, 3vw)",borderBottom:"1px solid rgba(248,239,230,0.06)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer",minWidth:0}} onClick={() => setView(navItems[0][0])}>
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center"}}>
-            <img src={LOGO} alt="Minuë" style={{height:"min(88px, 22vw)",borderRadius:4}} />
-            <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"rgba(248,239,230,0.5)",background:"rgba(248,239,230,0.08)",padding:"2px 8px",borderRadius:3,marginTop:4,letterSpacing:2,textTransform:"uppercase"}}>Beta</span>
-          </div>
-          <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3,whiteSpace:"nowrap"}}>{t(role==="distributor"?"distributeur":role)}</span>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px min(16px, 3vw)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={() => setView(navItems[0][0])}>
+          <img src={LOGO} alt="Minuë" style={{height:"min(36px, 10vw)",borderRadius:3}} />
+          <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
           {["fr","es","en"].map(l => (
-            <button key={l} onClick={() => setLang(l)} style={{width:24,height:24,borderRadius:12,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:10,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
+            <button key={l} onClick={() => setLang(l)} style={{width:22,height:22,borderRadius:11,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:9,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
           ))}
-          <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
+          <div style={{width:1,height:12,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {(() => {
             const notifs = role === "admin"
               ? [...users.filter(u => u.active === false && u.role !== "admin").map(u => ({type:"access",text:u.name+" — "+t("solliciterAcces"),go:"a-users"})),
@@ -1234,9 +1242,9 @@ export default function App() {
                   <button onClick={() => setNotifOpen(false)} style={{background:"none",border:"none",cursor:"pointer",fontSize:16,color:C.gr}}>✕</button>
                 </div>
                 <div style={{overflowY:"auto",maxHeight:"calc(60vh - 50px)"}}>
-                  {notifs.length === 0 && <div style={{padding:30,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>✓ {t("aucuneCmd")}</div>}
+                  {notifs.length === 0 && <div style={{padding:30,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>✓</div>}
                   {notifs.map((n,i) => (
-                    <div key={i} onClick={() => { setView(n.go); setNotifOpen(false); }} style={{padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:8,cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e => e.currentTarget.style.background=C.bg} onMouseLeave={e => e.currentTarget.style.background="transparent"}>
+                    <div key={i} onClick={() => { setView(n.go); setNotifOpen(false); }} style={{padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onMouseEnter={e => e.currentTarget.style.background=C.bg} onMouseLeave={e => e.currentTarget.style.background="transparent"}>
                       <span style={{width:6,height:6,borderRadius:3,background:n.type==="access"?"#f39c12":n.type==="task"?C.rd:n.type==="stock"?C.yl:C.gn,flexShrink:0}} />
                       <span>{n.text}</span>
                     </div>
@@ -1245,30 +1253,65 @@ export default function App() {
               </div>}
             </>;
           })()}
-          <div style={{width:1,height:14,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:8,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 7px",borderRadius:4,letterSpacing:1.5,border:"1px solid #d4a03040"}}>VIP</span>}
-          <div onClick={() => setProfileOpen(!profileOpen)} style={{width:26,height:26,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer",position:"relative"}}>{user.name[0]}</div>
-          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
+          <div onClick={() => setProfileOpen(!profileOpen)} style={{width:26,height:26,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer"}}>{user.name[0]}</div>
+          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) {} }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
       </div>
-      {/* TABS */}
-      <div style={{display:"flex",padding:"0 8px",overflowX:"auto",WebkitOverflowScrolling:"touch",msOverflowStyle:"none",scrollbarWidth:"none"}}>
-        {navItems.map(([v, k]) => {
+    </nav>
+
+    {/* BOTTOM BAR — Instagram style */}
+    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:150,background:darkMode?"#141c1a":CL.dk,borderTop:"1px solid rgba(248,239,230,0.08)",paddingBottom:"env(safe-area-inset-bottom, 0px)"}}>
+      <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",padding:"6px 0 8px"}}>
+        {bottomItems.map(([v, k]) => {
           const on = view === v;
           const isCart = k === "panier" && cartCount > 0;
+          const iconPath = navIcons[k] || navIcons.commandes;
           return (
-            <button key={v} onClick={() => setView(v)} style={{position:"relative",background:"none",border:"none",padding:"8px min(12px, 2.5vw)",cursor:"pointer",fontSize:"min(13px, 3.2vw)",fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
-              {t(k)}
-              {isCart && <span style={{background:C.gn,color:"#fff",fontSize:8,fontWeight:700,padding:"1px 5px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
-              {on && <div style={{position:"absolute",bottom:0,left:12,right:12,height:2,background:rc,borderRadius:1}} />}
+            <button key={v} onClick={() => { setView(v); setMoreOpen(false); }} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"4px 8px",position:"relative",minWidth:0}}>
+              <div style={{position:"relative"}}>
+                <NavIcon d={iconPath} size={22} color={on?"#f8efe6":"rgba(248,239,230,0.35)"} />
+                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+              </div>
+              <span style={{fontSize:9,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.35)",letterSpacing:0.3}}>{t(k)}</span>
+              {on && <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:20,height:2,background:rc,borderRadius:1}} />}
+            </button>
+          );
+        })}
+        {/* MORE button */}
+        <button onClick={() => setMoreOpen(!moreOpen)} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"4px 8px",position:"relative"}}>
+          <div style={{display:"flex",flexDirection:"column",gap:3,alignItems:"center",height:22,justifyContent:"center"}}>
+            <div style={{width:4,height:4,borderRadius:2,background:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)"}} />
+            <div style={{width:4,height:4,borderRadius:2,background:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)"}} />
+            <div style={{width:4,height:4,borderRadius:2,background:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)"}} />
+          </div>
+          <span style={{fontSize:9,fontFamily:BD,fontWeight:moreOpen?600:400,color:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)",letterSpacing:0.3}}>+</span>
+        </button>
+      </div>
+    </div>
+
+    {/* MORE DRAWER */}
+    {moreOpen && <div style={{position:"fixed",bottom:62,left:0,right:0,zIndex:140,background:darkMode?"#1a2422":"rgba(24,51,47,0.97)",borderTop:"1px solid rgba(248,239,230,0.08)",maxHeight:"60vh",overflowY:"auto",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
+      <div style={{padding:"16px 12px 20px",display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:4}}>
+        {moreItems.map(([v, k]) => {
+          const on = view === v;
+          const iconPath = navIcons[k] || navIcons.commandes;
+          const isCart = k === "panier" && cartCount > 0;
+          return (
+            <button key={v} onClick={() => { setView(v); setMoreOpen(false); }} style={{background:on?"rgba(248,239,230,0.08)":"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 4px",borderRadius:8}}>
+              <div style={{position:"relative"}}>
+                <NavIcon d={iconPath} size={20} color={on?"#f8efe6":"rgba(248,239,230,0.4)"} />
+                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+              </div>
+              <span style={{fontSize:9,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
             </button>
           );
         })}
       </div>
-    </nav>
-    );
+    </div>}
+    </>);
   };
 
 
@@ -2585,11 +2628,12 @@ export default function App() {
 
   /* ═══ MAIN RENDER ═══ */
   return (
-    <div style={{minHeight:"100vh",background:C.bg,fontFamily:BD}}>
+    <div style={{minHeight:"100vh",background:C.bg,fontFamily:BD,paddingBottom:70}}>
       {renderNav()}
 
       {/* NOTIF OVERLAY */}
       {notifOpen && <div style={{position:"fixed",inset:0,zIndex:190}} onClick={() => setNotifOpen(false)} />}
+      {moreOpen && <div style={{position:"fixed",inset:0,zIndex:130}} onClick={() => setMoreOpen(false)} />}
 
       {/* PROFILE POPUP */}
       {profileOpen && <div style={{position:"fixed",inset:0,zIndex:180}} onClick={() => setProfileOpen(false)}>
@@ -4217,7 +4261,7 @@ export default function App() {
       </Sec>}
 
       {/* FLOATING CART BUTTON - hide on cart page */}
-      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:20,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
+      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:76,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
         <span style={{fontSize:18}}>🛒</span>
         <span>{cartCount}</span>
         <span style={{fontSize:10,fontWeight:400,opacity:0.7}}>{fmt(finalTotal)} €</span>
