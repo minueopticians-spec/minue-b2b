@@ -423,6 +423,10 @@ const T = {
   stockAlerta:{fr:"Alerte",es:"Alerta",en:"Alert"},
   actualizacion:{fr:"Mise à jour",es:"Actualización",en:"Update"},
   anadirNota:{fr:"Ajouter une note",es:"Añadir nota",en:"Add note"},
+  cargandoClientes:{fr:"Chargement clients...",es:"Cargando clientes...",en:"Loading clients..."},
+  sinLeads:{fr:"Aucun prospect — créez-en un",es:"Sin leads — crea uno",en:"No leads — create one"},
+  sinPedidosProveedor:{fr:"Aucune commande en attente du fournisseur",es:"Sin pedidos pendientes de proveedor",en:"No pending supplier orders"},
+  todosClientesPedidos:{fr:"Tous les clients ont des commandes",es:"Todos los clientes tienen pedidos",en:"All clients have orders"},
   admin:{fr:"Admin",es:"Admin",en:"Admin"},
   fait:{fr:"Fait",es:"Hecho",en:"Done"},
   enCours:{fr:"En cours",es:"En curso",en:"In progress"},
@@ -2663,7 +2667,7 @@ export default function App() {
               </div>}
             </div>
             <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
-              {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
+              {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="team"?"e-account":role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
               <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
             </div>
           </div>
@@ -3163,7 +3167,7 @@ export default function App() {
           {distClients.length > 0 ? <select value={cartCl} onChange={e => setCartCl(e.target.value)} style={{flex:1,padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk}}>
             <option value="">{t("choisir")}</option>
             {distClients.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-          </select> : <span style={{flex:1,fontSize:11,fontFamily:BD,color:C.gr2,fontStyle:"italic"}}>Chargement clients...</span>}
+          </select> : <span style={{flex:1,fontSize:11,fontFamily:BD,color:C.gr2,fontStyle:"italic"}}>{t("cargandoClientes")}</span>}
         </div>
         {cartEntries.length === 0
           ? <div style={{textAlign:"center",padding:40,fontFamily:BD,color:C.gr}}><p>{t("panierVide")}</p><Btn onClick={() => setView("d-cat")}>{t("voirCat")}</Btn></div>
@@ -3207,11 +3211,11 @@ export default function App() {
 
       {view === "d-ord" && <Sec title={t("mesCmd")}>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
+          {[["all",t("tous")],["confirmed",t("confirme")],["preparing",t("enPrepa")],["shipped",t("expedie")],["delivered",t("livre")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           <span style={{width:1,height:16,background:C.ln,margin:"0 2px"}} />
-          {[["all",t("tous")],["pending",t("pending")],["paid",t("paid")]].map(([v,l]) => (
+          {[["all",t("tous")],["pending",t("enAttente")],["paid",t("paye")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdPayFilter(v)} style={{padding:"5px 12px",background:ordPayFilter===v?C.bl:"transparent",color:ordPayFilter===v?"#fff":C.gr,border:"1px solid "+(ordPayFilter===v?C.bl:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
         </div>
@@ -3299,7 +3303,7 @@ export default function App() {
         <Sec title={t("seguimiento")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("nuevoLead")}</Btn>}>
           {(() => {
             const leads = tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait");
-            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin leads activos — crea uno para empezar</div>;
+            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinLeads")}</div>;
             return leads.map((tk, i) => {
               const stColor = tk.status === "aFaire" ? "#3498db" : tk.priority === "haute" ? "#8e44ad" : "#f39c12";
               const stLabel = tk.status === "aFaire" ? t("nuevoLead") : tk.priority === "haute" ? t("enNegociacion") : t("contactado");
@@ -3461,11 +3465,11 @@ export default function App() {
         </div>}
         {(role !== "team" || ordSubTab === "list") && <>
         <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all",t("tous")],["confirmed",t("confirmed")],["preparing",t("preparing")],["shipped",t("shipped")],["delivered",t("delivered")]].map(([v,l]) => (
+          {[["all",t("tous")],["confirmed",t("confirme")],["preparing",t("enPrepa")],["shipped",t("expedie")],["delivered",t("livre")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdStatusFilter(v)} style={{padding:"5px 12px",background:ordStatusFilter===v?C.dk:"transparent",color:ordStatusFilter===v?C.bg:C.gr,border:"1px solid "+(ordStatusFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           <span style={{width:1,height:16,background:C.ln,margin:"0 2px"}} />
-          {[["all",t("tous")],["pending",t("pending")],["invoiced",t("invoiced")],["paid",t("paid")]].map(([v,l]) => (
+          {[["all",t("tous")],["pending",t("enAttente")],["invoiced",t("facture")],["paid",t("paye")]].map(([v,l]) => (
             <button key={v} onClick={() => setOrdPayFilter(v)} style={{padding:"5px 12px",background:ordPayFilter===v?C.bl:"transparent",color:ordPayFilter===v?"#fff":C.gr,border:"1px solid "+(ordPayFilter===v?C.bl:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           <span style={{flex:1}} />
@@ -3925,7 +3929,7 @@ export default function App() {
         <Sec title={t("mercanciaPendiente")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"proveedor",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("nouveau")}</Btn>}>
           {(() => {
             const provTasks = tasks.filter(tk => tk.area === "proveedor");
-            if (provTasks.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin pedidos pendientes de proveedor</div>;
+            if (provTasks.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinPedidosProveedor")}</div>;
             return provTasks.map((tk, i) => (
               <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6,cursor:"pointer"}} onClick={() => { setModal("editTask"); setEd({...tk}); }}>
                 <span style={{fontSize:14}}>{tk.status === "fait" ? "📦" : "🚚"}</span>
@@ -3973,7 +3977,7 @@ export default function App() {
         <Sec title={t("seguimiento")} right={<Btn small onClick={() => { setModal("newTask"); setEd({title:"",desc:"",priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:""}); }}>{t("nuevoLead")}</Btn>}>
           {(() => {
             const leads = tasks.filter(tk => tk.area === "commercial" && tk.status !== "fait");
-            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>Sin leads — crea uno</div>;
+            if (leads.length === 0) return <div style={{textAlign:"center",padding:30,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinLeads")}</div>;
             return leads.map((tk, i) => {
               const stColor = tk.status === "aFaire" ? "#3498db" : tk.priority === "haute" ? "#8e44ad" : "#f39c12";
               const stLabel = tk.status === "aFaire" ? t("nuevoLead") : tk.priority === "haute" ? t("enNegociacion") : t("contactado");
@@ -3999,7 +4003,7 @@ export default function App() {
             const withOrders = {};
             orders.forEach(o => { withOrders[o.client] = true; });
             const noOrders = clients.filter(c => !withOrders[c.name] && (c.status === "active" || c.status === "prospect"));
-            if (noOrders.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Todos los clientes tienen pedidos</div>;
+            if (noOrders.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("todosClientesPedidos")}</div>;
             return noOrders.slice(0,10).map((c,i) => (
               <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:C.wh,border:"1px solid "+C.ln,borderRadius:6,marginBottom:6}}>
                 <div style={{flex:1}}>
@@ -4261,7 +4265,7 @@ export default function App() {
       </Sec>}
 
       {/* FLOATING CART BUTTON - hide on cart page */}
-      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:76,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:150,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
+      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:76,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:160,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
         <span style={{fontSize:18}}>🛒</span>
         <span>{cartCount}</span>
         <span style={{fontSize:10,fontWeight:400,opacity:0.7}}>{fmt(finalTotal)} €</span>
