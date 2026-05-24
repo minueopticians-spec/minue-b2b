@@ -1054,32 +1054,48 @@ export default function App() {
     setHydrated(true);
   }, []);
   const [cart, setCart] = useState({});
-  // Persist cart per user, expires after 7 days
+  const [cartHydrated, setCartHydrated] = useState(false);
+  // Load cart from localStorage AFTER user is hydrated. Single-fire per user.
   useEffect(() => {
-    if (!user?.email) return;
+    if (!hydrated || !user?.email) { setCartHydrated(false); return; }
+    let loaded = false;
     try {
       const saved = localStorage.getItem("minue_cart_"+user.email);
       if (saved) {
         const parsed = JSON.parse(saved);
-        const ageDays = (Date.now() - (parsed.savedAt||0)) / (1000*60*60*24);
-        if (ageDays < 7 && parsed.cart && Object.keys(parsed.cart).length > 0) {
-          setCart(parsed.cart);
+        const ageDays = (Date.now() - (parsed?.savedAt||0)) / (1000*60*60*24);
+        if (ageDays < 7 && parsed && parsed.cart && typeof parsed.cart === "object" && !Array.isArray(parsed.cart)) {
+          // Sanitize: only keep entries that are positive integers
+          const clean = {};
+          Object.entries(parsed.cart).forEach(([k,v]) => {
+            const qty = parseInt(v);
+            if (k && Number.isFinite(qty) && qty > 0) clean[k] = qty;
+          });
+          if (Object.keys(clean).length > 0) {
+            setCart(clean);
+            loaded = true;
+          }
         } else if (ageDays >= 7) {
           localStorage.removeItem("minue_cart_"+user.email);
         }
       }
-    } catch(e) {}
-  }, [user?.email]);
+    } catch(e) {
+      try { localStorage.removeItem("minue_cart_"+user.email); } catch(_) {}
+    }
+    // Mark hydrated AFTER setCart (one tick later via setTimeout 0)
+    setTimeout(() => setCartHydrated(true), 0);
+  }, [hydrated, user?.email]);
+  // Save cart to localStorage. Only after cartHydrated to avoid wiping saved data on first mount.
   useEffect(() => {
-    if (!user?.email) return;
+    if (!hydrated || !cartHydrated || !user?.email) return;
     try {
-      if (Object.keys(cart).length > 0) {
+      if (cart && typeof cart === "object" && Object.keys(cart).length > 0) {
         localStorage.setItem("minue_cart_"+user.email, JSON.stringify({cart, savedAt: Date.now()}));
       } else {
         localStorage.removeItem("minue_cart_"+user.email);
       }
     } catch(e) {}
-  }, [cart, user?.email]);
+  }, [cart, cartHydrated, hydrated, user?.email]);
   const [cartCl, setCartCl] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPw, setLoginPw] = useState("");
@@ -1139,6 +1155,11 @@ export default function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [clientSearch, setClientSearch] = useState("");
   const [clientFilter, setClientFilter] = useState("all");
+  const [clientChannelFilter, setClientChannelFilter] = useState("all");
+  const [clientSortBy, setClientSortBy] = useState("recent");
+  const [clientViewMode, setClientViewMode] = useState("cards");
+  const [clientCountryFilter, setClientCountryFilter] = useState("all");
+  const [selectedDistChannel, setSelectedDistChannel] = useState(null);
   const [ordStatusFilter, setOrdStatusFilter] = useState("all");
   const [ordPayFilter, setOrdPayFilter] = useState("all");
   const [stockSearch, setStockSearch] = useState("");
@@ -1364,7 +1385,7 @@ export default function App() {
   const PC = {pending:C.yl,invoiced:C.bl,paid:C.gn};
 
   /* Cart calculations — Essential uses tiers, Acetato uses fixedPrice */
-  const cartEntries = Object.entries(cart).filter(([,q]) => q > 0);
+  const cartEntries = Object.entries(cart).filter(([id,q]) => q > 0 && products.find(x => String(x.id) === String(id)));
   const cartCount = cartEntries.reduce((s,[,q]) => s + q, 0);
   const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col !== "Acetato"; });
   const acetatoEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Acetato"; });
@@ -1432,9 +1453,10 @@ export default function App() {
   const doOrder = () => {
     const lines = cartEntries.map(([id, q]) => {
       const p = products.find(x => String(x.id) === String(id));
+      if (!p) return null;
       const price = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice;
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
-    });
+    }).filter(Boolean);
     const fundaNames = {fundaCrema:"Crema",fundaPistacho:"Pistacho",fundaBabyBlue:"Baby Blue",fundaYellowAmalfi:"Amalfi",fundaNaranja:"Naranja"};
     const fundaArr = Array.isArray(fundaPref) ? fundaPref : (fundaPref ? [fundaPref] : []);
     const fundaNote = fundaArr.length > 0 ? "Fundas: "+fundaArr.map(f => fundaNames[f]||f).join(", ") : "";
@@ -4423,7 +4445,7 @@ export default function App() {
               {customPrice > 0 && <div style={{background:"#f0f6fa",border:"1px solid "+C.bl+"30",borderRadius:6,padding:"10px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.bl,fontWeight:500}}>{t("prixFixeClient")}: {fmt(customPrice)} €/{t("unites")}</div>}
               {customPrice === 0 && renderTierBar()}
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
-              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
+              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); if (!p) return null; const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
                   <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -5515,7 +5537,7 @@ export default function App() {
               {customPrice > 0 && <div style={{background:"#f0f6fa",border:"1px solid "+C.bl+"30",borderRadius:6,padding:"10px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.bl,fontWeight:500}}>{t("prixFixeClient")}: {fmt(customPrice)} €/{t("unites")}</div>}
               {customPrice === 0 && renderTierBar()}
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
-              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
+              {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); if (!p) return null; const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
                   <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -5937,35 +5959,313 @@ export default function App() {
         </>}
       </Sec>}
 
-      {view === "a-cl" && <Sec title={t("clients")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn></div>}>
-        <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all",t("tous")],["active",t("actif")],["prospect",t("prospect")],["vip","VIP"]].map(([v,l]) => (
-            <button key={v} onClick={() => setClientFilter(v)} style={{padding:"5px 12px",background:clientFilter===v?C.dk:"transparent",color:clientFilter===v?C.bg:C.gr,border:"1px solid "+(clientFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
-          ))}
-          <span style={{flex:1}} />
-          <input placeholder={t("rechercherClient")} value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{padding:"6px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(180px, 35vw)"}} />
-        </div>
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {clients.filter(c => (clientFilter === "all" || c.status === clientFilter) && (!clientSearch || c.name.toLowerCase().includes(clientSearch.toLowerCase()) || (c.city||"").toLowerCase().includes(clientSearch.toLowerCase()) || (c.country||"").toLowerCase().includes(clientSearch.toLowerCase()))).map((c, i) => {
-            const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
-            return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c}); }}>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
-                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{c.city}{c.postalCode ? " "+c.postalCode : ""}</span>
-                </div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:1}}>{flags[c.country]||"🌍"} {c.country||"—"} · {c.channel}</div>
+      {view === "a-cl" && (() => {
+        const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",GB:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽",AT:"🇦🇹",GR:"🇬🇷",IE:"🇮🇪",DK:"🇩🇰",SE:"🇸🇪",NO:"🇳🇴",FI:"🇫🇮",JP:"🇯🇵",AU:"🇦🇺",CA:"🇨🇦"};
+        // Compute stats per client from orders
+        const clientStats = {};
+        clients.forEach(c => { clientStats[c.name] = {total:0, orders:0, lastDate:null, lastTs:0}; });
+        orders.forEach(o => {
+          if (clientStats[o.client]) {
+            clientStats[o.client].total += o.total||0;
+            clientStats[o.client].orders += 1;
+            // Parse date — orders use fr-FR format dd/mm/yyyy
+            const parts = (o.date||"").split("/");
+            let ts = 0;
+            if (parts.length === 3) ts = new Date(parts[2]+"-"+parts[1].padStart(2,"0")+"-"+parts[0].padStart(2,"0")).getTime();
+            if (ts > clientStats[o.client].lastTs) {
+              clientStats[o.client].lastTs = ts;
+              clientStats[o.client].lastDate = o.date;
+            }
+          }
+        });
+        const now = Date.now();
+        const daysSince = ts => ts ? Math.floor((now - ts) / 86400000) : null;
+
+        // Distributor names (real distributor users)
+        const distributorList = users.filter(u => u.role === "distributor").map(u => (u.co||u.name||"").trim()).filter(Boolean);
+
+        // Helper: which canal bucket
+        const channelBucket = (c) => {
+          const ch = (c.channel||"").toLowerCase().trim();
+          if (ch === "faire") return "faire";
+          if (ch === "direct" || ch === "directo" || !ch) return "direct";
+          // distributor match
+          const matchedDist = distributorList.find(d => ch.includes(d.toLowerCase()) || d.toLowerCase().includes(ch));
+          return matchedDist ? "dist:"+matchedDist : "other";
+        };
+
+        // KPIs
+        const totalC = clients.length;
+        const activeC = clients.filter(c => clientStats[c.name]?.orders > 0).length;
+        const vipC = clients.filter(c => c.status === "vip").length;
+        const prospectC = clients.filter(c => c.status === "prospect").length;
+        const inactiveC = clients.filter(c => {
+          const s = clientStats[c.name];
+          if (!s || s.orders === 0) return false;
+          const d = daysSince(s.lastTs);
+          return d !== null && d > 90;
+        }).length;
+        const faireC = clients.filter(c => channelBucket(c) === "faire").length;
+        const totalRevenue = Object.values(clientStats).reduce((s,x) => s+x.total, 0);
+
+        // Top 5 by total
+        const topClients = [...clients].sort((a,b) => (clientStats[b.name]?.total||0) - (clientStats[a.name]?.total||0)).slice(0,5);
+
+        // Country distribution
+        const byCountry = {};
+        clients.forEach(c => { const co = c.country||"—"; byCountry[co] = (byCountry[co]||0)+1; });
+        const countriesSorted = Object.entries(byCountry).sort((a,b) => b[1]-a[1]).slice(0,6);
+        const maxCountry = countriesSorted[0]?.[1]||1;
+
+        // Alerts: VIP/active clients inactive 60+ days
+        const sleepingVips = clients.filter(c => {
+          const s = clientStats[c.name];
+          if (!s || s.orders === 0) return false;
+          if (c.status !== "vip" && c.status !== "active" && c.customPrice === 0) return false;
+          const d = daysSince(s.lastTs);
+          return d !== null && d > 60 && d < 365;
+        }).slice(0,5);
+
+        // Filter + sort
+        let filtered = clients.filter(c => {
+          // status
+          if (clientFilter !== "all") {
+            if (clientFilter === "vip" && c.status !== "vip") return false;
+            if (clientFilter === "prospect" && c.status !== "prospect") return false;
+            if (clientFilter === "active" && (clientStats[c.name]?.orders||0) === 0) return false;
+            if (clientFilter === "inactive") {
+              const s = clientStats[c.name];
+              if (!s || s.orders === 0) return false;
+              const d = daysSince(s.lastTs);
+              if (!(d !== null && d > 90)) return false;
+            }
+          }
+          // channel
+          const bucket = channelBucket(c);
+          if (clientChannelFilter === "direct" && bucket !== "direct") return false;
+          if (clientChannelFilter === "faire" && bucket !== "faire") return false;
+          if (clientChannelFilter === "distributor" && !bucket.startsWith("dist:")) return false;
+          if (selectedDistChannel && bucket !== "dist:"+selectedDistChannel) return false;
+          // country
+          if (clientCountryFilter !== "all" && c.country !== clientCountryFilter) return false;
+          // search
+          if (clientSearch) {
+            const s = clientSearch.toLowerCase();
+            if (!(c.name||"").toLowerCase().includes(s) && !(c.city||"").toLowerCase().includes(s) && !(c.country||"").toLowerCase().includes(s) && !(c.companyEmail||"").toLowerCase().includes(s)) return false;
+          }
+          return true;
+        });
+        // Sort
+        filtered.sort((a,b) => {
+          const sa = clientStats[a.name]||{total:0,lastTs:0};
+          const sb = clientStats[b.name]||{total:0,lastTs:0};
+          if (clientSortBy === "total") return sb.total - sa.total;
+          if (clientSortBy === "alphabetical") return (a.name||"").localeCompare(b.name||"");
+          if (clientSortBy === "lastOrder") return sb.lastTs - sa.lastTs;
+          return (b.id||0) - (a.id||0); // recent (default)
+        });
+
+        // All countries for filter
+        const allCountries = [...new Set(clients.map(c => c.country).filter(Boolean))].sort();
+
+        return <>
+        <Sec title={t("clients")} sub={totalC+" "+t("clients")+" · "+fmt(totalRevenue)+" € total"} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>+ {t("nouveau")}</Btn></div>}>
+
+          {/* KPI CARDS */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:8,marginBottom:14}}>
+            {[
+              ["all","Todos",totalC,C.dk,"👥"],
+              ["active","Activos",activeC,C.gn,"✓"],
+              ["vip","VIP",vipC,"#d4a030","⭐"],
+              ["prospect","Prospectos",prospectC,C.bl,"🌱"],
+              ["inactive","Inactivos",inactiveC,"#888","💤"]
+            ].map(([f,l,v,col,icon]) =>
+              <button key={f} onClick={() => setClientFilter(f)} style={{background:clientFilter===f?col+"15":C.wh,border:"1.5px solid "+(clientFilter===f?col:C.ln),borderRadius:8,padding:"12px 10px",textAlign:"center",cursor:"pointer",transition:"all 0.15s"}}>
+                <div style={{fontSize:18,marginBottom:2}}>{icon}</div>
+                <div style={{fontSize:22,fontWeight:400,fontFamily:DP,color:col,lineHeight:1.1}}>{v}</div>
+                <div style={{fontSize:9,color:col+"90",fontFamily:BD,letterSpacing:1,fontWeight:600,marginTop:2}}>{l.toUpperCase()}</div>
+              </button>
+            )}
+          </div>
+
+          {/* COUNTRY DISTRIBUTION + ALERTS */}
+          {(countriesSorted.length > 0 || sleepingVips.length > 0) && <div style={{display:"grid",gridTemplateColumns:sleepingVips.length>0?"1.5fr 1fr":"1fr",gap:10,marginBottom:14}}>
+            {countriesSorted.length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 14px"}}>
+              <div style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:8,letterSpacing:0.5}}>🌍 DISTRIBUCIÓN POR PAÍS</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {countriesSorted.map(([co,n]) => <button key={co} onClick={() => setClientCountryFilter(clientCountryFilter===co?"all":co)} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0",background:"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left"}}>
+                  <span style={{fontSize:14,width:24}}>{flags[co]||"🌍"}</span>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.gr,minWidth:30}}>{co}</span>
+                  <div style={{flex:1,height:8,background:C.bg,borderRadius:4,overflow:"hidden"}}>
+                    <div style={{height:"100%",width:(n/maxCountry*100)+"%",background:clientCountryFilter===co?C.bl:C.dk,borderRadius:4,transition:"width 0.3s"}} />
+                  </div>
+                  <span style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,minWidth:25,textAlign:"right"}}>{n}</span>
+                </button>)}
               </div>
-              {c.customPrice > 0 ? <Badge l={fmt(c.customPrice)+" €"} c={C.bl} /> : null}
-              {c.earlyPay && <Badge l="-3%" c={C.gn} />}
-              <Badge l={c.status==="vip"?"VIP":c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="vip"?C.yl:c.status==="prospect"?C.gr2:C.gn} />
+            </div>}
+            {sleepingVips.length > 0 && <div style={{background:"#fff8e6",border:"1px solid #f0a020"+"40",borderRadius:8,padding:"12px 14px"}}>
+              <div style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#c47a00",marginBottom:8,letterSpacing:0.5}}>⚠️ CLIENTES DORMIDOS (+60d)</div>
+              <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                {sleepingVips.map(c => { const s = clientStats[c.name]; const d = daysSince(s.lastTs); return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{padding:"6px 8px",background:C.wh,borderRadius:4,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+                  <span style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</span>
+                  <span style={{fontSize:9,fontFamily:BD,color:"#c47a00",fontWeight:700,background:"#f0a020"+"20",padding:"2px 6px",borderRadius:3}}>{d}d</span>
+                </div>; })}
+              </div>
+            </div>}
+          </div>}
+
+          {/* TOP 5 CLIENTS */}
+          {topClients.filter(c => clientStats[c.name]?.total > 0).length > 0 && <div style={{background:"linear-gradient(135deg,"+C.dk+"04,"+C.gn+"06)",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"12px 14px",marginBottom:14}}>
+            <div style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:10,letterSpacing:0.5}}>🏆 TOP CLIENTES POR FACTURACIÓN</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8}}>
+              {topClients.filter(c => clientStats[c.name]?.total > 0).map((c,i) => { const s = clientStats[c.name]; return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"10px 12px",cursor:"pointer",position:"relative"}}>
+                <div style={{position:"absolute",top:-6,left:-6,width:22,height:22,borderRadius:11,background:i===0?"#d4a030":i===1?"#aaa":i===2?"#c08552":C.dk,color:"#fff",fontSize:10,fontWeight:700,fontFamily:BD,display:"flex",alignItems:"center",justifyContent:"center"}}>{i+1}</div>
+                <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginBottom:6}}>{flags[c.country]||"🌍"} {c.city||"—"}</div>
+                <div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(s.total)} €</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr2,marginTop:2}}>{s.orders} pedidos</div>
+              </div>; })}
             </div>
-            );
-          })}
-          {clients.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:20,textAlign:"center"}}>—</div>}
-        </div>
-      </Sec>}
+          </div>}
+
+          {/* CHANNEL TABS */}
+          <div style={{display:"flex",gap:4,marginBottom:12,flexWrap:"wrap",borderBottom:"1px solid "+C.ln,paddingBottom:8}}>
+            {[
+              ["all","Todos los canales",null],
+              ["direct","🌐 Directos",clients.filter(c=>channelBucket(c)==="direct").length],
+              ["distributor","🤝 Distribuidores",clients.filter(c=>channelBucket(c).startsWith("dist:")).length],
+              ["faire","Faire",faireC]
+            ].map(([v,l,count]) =>
+              <button key={v} onClick={() => { setClientChannelFilter(v); setSelectedDistChannel(null); }} style={{padding:"6px 14px",background:clientChannelFilter===v?C.dk:"transparent",color:clientChannelFilter===v?C.bg:C.gr,border:"1px solid "+(clientChannelFilter===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20,display:"inline-flex",alignItems:"center",gap:6}}>
+                {v === "faire" && <span style={{width:14,height:14,borderRadius:7,background:clientChannelFilter===v?"#fff":"#000",color:clientChannelFilter===v?"#000":"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:8,fontWeight:700,fontFamily:BD}}>F</span>}
+                {l}
+                {count !== null && <span style={{fontSize:9,opacity:0.7,fontWeight:500}}>({count})</span>}
+              </button>
+            )}
+          </div>
+
+          {/* DISTRIBUTOR SUB-TABS */}
+          {clientChannelFilter === "distributor" && distributorList.length > 0 && <div style={{display:"flex",gap:4,marginBottom:12,flexWrap:"wrap",padding:"8px 12px",background:C.bl+"05",borderRadius:6}}>
+            <span style={{fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.5,alignSelf:"center",marginRight:6}}>POR DISTRIBUIDOR:</span>
+            <button onClick={() => setSelectedDistChannel(null)} style={{padding:"4px 10px",background:!selectedDistChannel?C.bl:"transparent",color:!selectedDistChannel?"#fff":C.bl,border:"1px solid "+C.bl,cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,borderRadius:3}}>Todos</button>
+            {distributorList.map(d => { const cnt = clients.filter(c => channelBucket(c) === "dist:"+d).length; return <button key={d} onClick={() => setSelectedDistChannel(d)} style={{padding:"4px 10px",background:selectedDistChannel===d?C.bl:"transparent",color:selectedDistChannel===d?"#fff":C.bl,border:"1px solid "+C.bl,cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,borderRadius:3,display:"inline-flex",alignItems:"center",gap:5}}>{d} <span style={{fontSize:9,opacity:0.7}}>({cnt})</span></button>; })}
+          </div>}
+
+          {/* SEARCH + SORT + VIEW MODE + COUNTRY */}
+          <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}>
+            <input placeholder={"🔍 "+t("rechercherClient")} value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{padding:"7px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(220px, 40vw)"}} />
+            <select value={clientSortBy} onChange={e => setClientSortBy(e.target.value)} style={{padding:"7px 10px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,cursor:"pointer"}}>
+              <option value="recent">↻ Recientes</option>
+              <option value="total">💰 Más facturación</option>
+              <option value="alphabetical">🔤 A-Z</option>
+              <option value="lastOrder">📅 Último pedido</option>
+            </select>
+            {allCountries.length > 1 && <select value={clientCountryFilter} onChange={e => setClientCountryFilter(e.target.value)} style={{padding:"7px 10px",border:"1px solid "+(clientCountryFilter!=="all"?C.bl:C.ln),borderRadius:3,fontFamily:BD,fontSize:11,background:clientCountryFilter!=="all"?C.bl+"10":C.wh,color:C.dk,cursor:"pointer"}}>
+              <option value="all">🌍 Todos los países</option>
+              {allCountries.map(co => <option key={co} value={co}>{flags[co]||"🌍"} {co}</option>)}
+            </select>}
+            <span style={{flex:1}} />
+            <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{filtered.length} / {totalC}</span>
+            <div style={{display:"flex",border:"1px solid "+C.ln,borderRadius:3,overflow:"hidden"}}>
+              <button onClick={() => setClientViewMode("cards")} title="Tarjetas" style={{padding:"6px 10px",background:clientViewMode==="cards"?C.dk:"transparent",color:clientViewMode==="cards"?C.bg:C.gr,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD}}>▦</button>
+              <button onClick={() => setClientViewMode("table")} title="Tabla" style={{padding:"6px 10px",background:clientViewMode==="table"?C.dk:"transparent",color:clientViewMode==="table"?C.bg:C.gr,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD}}>≡</button>
+            </div>
+          </div>
+
+          {/* CARDS VIEW */}
+          {clientViewMode === "cards" && <>
+            {filtered.length === 0 ? <div style={{textAlign:"center",padding:40,fontSize:12,fontFamily:BD,color:C.gr2}}>—</div> :
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(260px,100%),1fr))",gap:10}}>
+              {filtered.map(c => {
+                const s = clientStats[c.name]||{total:0,orders:0,lastDate:null,lastTs:0};
+                const d = daysSince(s.lastTs);
+                const bucket = channelBucket(c);
+                const isFaire = bucket === "faire";
+                const isDist = bucket.startsWith("dist:");
+                const distName = isDist ? bucket.substring(5) : null;
+                const statusCol = c.status === "vip" ? "#d4a030" : c.status === "prospect" ? C.bl : s.orders > 0 ? C.gn : C.gr2;
+                const sleeping = s.orders > 0 && d !== null && d > 60;
+                return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{background:C.wh,border:"1.5px solid "+(c.status==="vip"?"#d4a03040":isFaire?"#00000020":isDist?C.bl+"20":C.ln),borderRadius:8,padding:"14px",cursor:"pointer",position:"relative",transition:"all 0.15s",display:"flex",flexDirection:"column",gap:8}}>
+                  {sleeping && <div style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,fontWeight:700,background:"#fff8e6",color:"#c47a00",padding:"2px 7px",borderRadius:3,border:"1px solid #f0a02040"}}>💤 {d}d</div>}
+                  <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                    <div style={{width:40,height:40,borderRadius:20,background:statusCol+"20",color:statusCol,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:700,fontFamily:BD,flexShrink:0}}>{(c.name||"?")[0]?.toUpperCase()}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2,display:"flex",alignItems:"center",gap:4}}>
+                        <span style={{fontSize:11}}>{flags[c.country]||"🌍"}</span>
+                        <span>{c.city||"—"}</span>
+                        {c.country && <span>· {c.country}</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
+                    {c.status === "vip" && <span style={{fontSize:8,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 6px",borderRadius:3,letterSpacing:1,border:"1px solid #d4a03040"}}>⭐ VIP</span>}
+                    {c.status === "prospect" && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌱 PROSPECTO</span>}
+                    {isFaire && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:"#000",padding:"2px 6px",borderRadius:3,letterSpacing:0.5,display:"inline-flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:5,background:"#fff",color:"#000",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:7,fontWeight:700}}>F</span> FAIRE</span>}
+                    {isDist && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.3}}>🤝 {distName.toUpperCase()}</span>}
+                    {bucket === "direct" && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:C.gn,background:C.gn+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌐 DIRECTO</span>}
+                    {c.customPrice > 0 && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:C.dk,background:C.bg,padding:"2px 6px",borderRadius:3}}>{fmt(c.customPrice)} €</span>}
+                    {c.earlyPay && <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:CL.gn,background:CL.gn+"15",padding:"2px 6px",borderRadius:3}}>-3%</span>}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:4,paddingTop:8,borderTop:"1px solid "+C.bg2}}>
+                    <div style={{textAlign:"left"}}>
+                      <div style={{fontSize:8,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>TOTAL</div>
+                      <div style={{fontSize:12,fontFamily:DP,color:s.total>0?CL.gn:C.gr,fontWeight:600,lineHeight:1.1}}>{s.total>0?fmt(s.total)+" €":"—"}</div>
+                    </div>
+                    <div style={{textAlign:"center",borderLeft:"1px solid "+C.bg2,borderRight:"1px solid "+C.bg2}}>
+                      <div style={{fontSize:8,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>PEDIDOS</div>
+                      <div style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600,lineHeight:1.1}}>{s.orders||"—"}</div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:8,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>ÚLTIMO</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:sleeping?"#c47a00":C.dk,fontWeight:600,lineHeight:1.1}}>{s.lastDate ? (d===0?"hoy":d===1?"1d":d<30?d+"d":d<365?Math.floor(d/30)+"m":"+1a") : "—"}</div>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:4,marginTop:4,paddingTop:6,borderTop:"1px dashed "+C.bg2}}>
+                    {c.companyEmail && <button onClick={(e) => { e.stopPropagation(); window.location.href="mailto:"+c.companyEmail; }} title={c.companyEmail} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:9,fontFamily:BD,color:C.gr,fontWeight:600}}>✉ Email</button>}
+                    {c.phone && <button onClick={(e) => { e.stopPropagation(); window.location.href="tel:"+c.phone; }} title={c.phone} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:9,fontFamily:BD,color:C.gr,fontWeight:600}}>📞 Tel</button>}
+                    {s.orders > 0 && <button onClick={(e) => { e.stopPropagation(); setOrdChannelFilter("all"); setClientSearch(c.name); setView("a-ord"); }} title="Ver pedidos" style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:9,fontFamily:BD,color:C.gr,fontWeight:600}}>🛒 {s.orders}</button>}
+                  </div>
+                </div>;
+              })}
+            </div>}
+          </>}
+
+          {/* TABLE VIEW */}
+          {clientViewMode === "table" && <>
+            {filtered.length === 0 ? <div style={{textAlign:"center",padding:40,fontSize:12,fontFamily:BD,color:C.gr2}}>—</div> :
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:9,fontFamily:BD,color:C.gr,fontWeight:700,letterSpacing:0.5,textTransform:"uppercase"}}>
+                <span style={{flex:"1 1 180px",minWidth:120}}>Cliente</span>
+                <span style={{width:90,display:"none","@media (min-width: 700px)":{display:"inline"}}}>Canal</span>
+                <span style={{width:80,textAlign:"right"}}>Total</span>
+                <span style={{width:50,textAlign:"center"}}>Ped.</span>
+                <span style={{width:60,textAlign:"right"}}>Últ.</span>
+              </div>
+              {filtered.map((c,i) => {
+                const s = clientStats[c.name]||{total:0,orders:0,lastDate:null,lastTs:0};
+                const d = daysSince(s.lastTs);
+                const bucket = channelBucket(c);
+                const sleeping = s.orders > 0 && d !== null && d > 60;
+                return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh,cursor:"pointer"}}>
+                  <div style={{flex:"1 1 180px",minWidth:120,display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:12}}>{flags[c.country]||"🌍"}</span>
+                    <div style={{minWidth:0,flex:1}}>
+                      <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}{c.status==="vip" && <span style={{marginLeft:6,fontSize:8,fontWeight:800,color:"#d4a030"}}>⭐VIP</span>}</div>
+                      <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:1}}>{c.city||"—"}{c.country?" · "+c.country:""}</div>
+                    </div>
+                  </div>
+                  <span style={{width:90,fontSize:9,fontFamily:BD,color:bucket==="faire"?"#000":bucket.startsWith("dist:")?C.bl:bucket==="direct"?C.gn:C.gr2,fontWeight:600}}>{bucket==="faire"?"FAIRE":bucket.startsWith("dist:")?bucket.substring(5):bucket==="direct"?"DIRECTO":(c.channel||"—")}</span>
+                  <span style={{width:80,fontSize:11,fontFamily:DP,fontWeight:600,color:s.total>0?CL.gn:C.gr,textAlign:"right"}}>{s.total>0?fmt(s.total)+" €":"—"}</span>
+                  <span style={{width:50,fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600,textAlign:"center"}}>{s.orders||"—"}</span>
+                  <span style={{width:60,fontSize:9,fontFamily:BD,color:sleeping?"#c47a00":C.gr,textAlign:"right",fontWeight:sleeping?700:500}}>{s.lastDate ? (d===0?"hoy":d===1?"1d":d<30?d+"d":d<365?Math.floor(d/30)+"m":"+1a") : "—"}</span>
+                </div>;
+              })}
+            </div>}
+          </>}
+        </Sec>
+        </>;
+      })()}
 
       {/* ADMIN DISTRIBUTORS */}
       {view === "a-dist" && <Sec title={t("distributeurs")} right={role==="admin" && <Btn small onClick={() => { setModal("newDist"); setEd({name:"",co:"",email:"",pw:"",phone:"",city:"",country:"",commRate:"15",lang:"fr",vatId:"",address:"",iban:"",bic:""}); }}>+ {t("distributeur")}</Btn>}>
