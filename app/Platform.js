@@ -1022,13 +1022,64 @@ export default function App() {
     });
   };
   C = darkMode ? CD : CL;
-  const [user, setUser] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); if (Date.now() - sess.ts > 86400000) { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); return null; } return sess.user; } return null; } catch(e) { return null; } });
-  const [loading, setLoading] = useState(() => { try { return typeof window !== "undefined" && !!localStorage.getItem("minue_session"); } catch(e) { return false; } });
-  const [lang, _setLang] = useState(() => { try { const s = typeof window !== "undefined" && localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); return sess.user?.lang || "fr"; } const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2); return bl === "es" ? "es" : bl === "en" ? "en" : bl === "it" ? "it" : "fr"; } catch(e) { return "fr"; } });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [lang, _setLang] = useState("fr");
   const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); sess.user.lang = l; localStorage.setItem("minue_session", JSON.stringify(sess)); } } catch(e) { console.log('DB error:', e); } };
-  const [view, _setView] = useState(() => { try { return typeof window !== "undefined" && localStorage.getItem("minue_view") || "c-cat"; } catch(e) { return "c-cat"; } });
+  const [view, _setView] = useState("c-cat");
   const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
+  const [hydrated, setHydrated] = useState(false);
+  // Hydrate from localStorage AFTER mount (avoids SSR mismatch)
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("minue_session");
+      if (s) {
+        const sess = JSON.parse(s);
+        if (Date.now() - sess.ts > 86400000) {
+          localStorage.removeItem("minue_session");
+          localStorage.removeItem("minue_view");
+          setLoading(false);
+        } else {
+          setUser(sess.user);
+          _setLang(sess.user?.lang || "fr");
+        }
+      } else {
+        const bl = typeof navigator !== "undefined" && navigator.language?.substring(0,2);
+        _setLang(bl === "es" ? "es" : bl === "en" ? "en" : bl === "it" ? "it" : "fr");
+        setLoading(false);
+      }
+      const v = localStorage.getItem("minue_view");
+      if (v) _setView(v);
+    } catch(e) { setLoading(false); }
+    setHydrated(true);
+  }, []);
   const [cart, setCart] = useState({});
+  // Persist cart per user, expires after 7 days
+  useEffect(() => {
+    if (!user?.email) return;
+    try {
+      const saved = localStorage.getItem("minue_cart_"+user.email);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        const ageDays = (Date.now() - (parsed.savedAt||0)) / (1000*60*60*24);
+        if (ageDays < 7 && parsed.cart && Object.keys(parsed.cart).length > 0) {
+          setCart(parsed.cart);
+        } else if (ageDays >= 7) {
+          localStorage.removeItem("minue_cart_"+user.email);
+        }
+      }
+    } catch(e) {}
+  }, [user?.email]);
+  useEffect(() => {
+    if (!user?.email) return;
+    try {
+      if (Object.keys(cart).length > 0) {
+        localStorage.setItem("minue_cart_"+user.email, JSON.stringify({cart, savedAt: Date.now()}));
+      } else {
+        localStorage.removeItem("minue_cart_"+user.email);
+      }
+    } catch(e) {}
+  }, [cart, user?.email]);
   const [cartCl, setCartCl] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPw, setLoginPw] = useState("");
@@ -1147,7 +1198,7 @@ export default function App() {
 
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
-  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
+  const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||"",active:r.active!==false});
   const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,priceEssential:Number(r.price_essential)||0,priceIcons:Number(r.price_icons)||0,priceAcetato:Number(r.price_acetato)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false});
@@ -1174,7 +1225,7 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls) { if (cls.length > 0) setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
+        if (cls) { if (cls.length > 0) setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.co && c.name.toLowerCase() === user.co.toLowerCase()) || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase()) || (c.company_email && user.email && c.company_email.toLowerCase() === user.email.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
         if (ords) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
@@ -1252,11 +1303,33 @@ export default function App() {
     } catch(e) { console.log("DB update order:", e); }
   };
 
-  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||""}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||"",active:prod.active!==false}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({name:c.name,contact:c.contact,city:c.city,country:c.country,phone:c.phone||null,company_email:c.companyEmail||null,company_name:c.companyName||null,tax_id:c.taxId||null,address:c.address||null,postal_code:c.postalCode||null,bank_holder:c.bankHolder||null,iban:c.iban||null,bic:c.bic||null,shipping_address:c.shippingAddress||null,shipping_city:c.shippingCity||null,shipping_postal:c.shippingPostal||null,shipping_country:c.shippingCountry||null,custom_price:c.customPrice||0,price_essential:c.priceEssential||0,price_icons:c.priceIcons||0,price_acetato:c.priceAcetato||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes,channel:c.channel}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateClient = async (c) => {
+    if (!dbReady) return;
+    const fields = {name:c.name,contact:c.contact,city:c.city,country:c.country,phone:c.phone||null,company_email:c.companyEmail||null,company_name:c.companyName||null,tax_id:c.taxId||null,address:c.address||null,postal_code:c.postalCode||null,bank_holder:c.bankHolder||null,iban:c.iban||null,bic:c.bic||null,shipping_address:c.shippingAddress||null,shipping_city:c.shippingCity||null,shipping_postal:c.shippingPostal||null,shipping_country:c.shippingCountry||null,custom_price:c.customPrice||0,price_essential:c.priceEssential||0,price_icons:c.priceIcons||0,price_acetato:c.priceAcetato||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes,channel:c.channel};
+    try {
+      // Try update with the id we have
+      const {data, error} = await supabase.from("clients").update(fields).eq("id", c.id).select();
+      if (error) { console.log("Update client error:", error); return; }
+      if (data && data.length > 0) return; // OK, updated
+      // Update affected 0 rows → id is stale. Find real id by name/email and retry.
+      const {data:found} = await supabase.from("clients").select("id").or("name.ilike."+JSON.stringify(c.name||"")+",company_email.ilike."+JSON.stringify(c.companyEmail||"___no_match___")).limit(1);
+      if (found && found.length > 0) {
+        const realId = found[0].id;
+        await supabase.from("clients").update(fields).eq("id", realId);
+        // Update local state with the real id
+        setClients(p => p.map(x => x.id === c.id ? {...x, id: realId} : x));
+        console.log("Client id recovered:", c.id, "→", realId);
+      } else {
+        // Not found by name/email either → insert it
+        const {data:ins} = await supabase.from("clients").insert(fields).select().single();
+        if (ins?.id) { setClients(p => p.map(x => x.id === c.id ? {...x, id: ins.id} : x)); console.log("Client inserted on update-fallback:", ins.id); }
+      }
+    } catch(e) { console.log('DB error:', e); }
+  };
   const dbSavePromo = async (p) => { if (!dbReady) return null; try { const {data,error} = await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr||"",condition_es:p.cond?.es||"",condition_en:p.cond?.en||"",condition_it:p.cond?.it||"",visible_to:p.visible||[],active:p.on!==false,target_clients:p.targetClients||[]}).select().single(); if (error) { console.log('Promo insert error:', error); return null; } return data?.id; } catch(e) { console.log('DB error:', e); return null; } };
   const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr||"",condition_es:p.cond?.es||"",condition_en:p.cond?.en||"",condition_it:p.cond?.it||"",visible_to:p.visible||[],active:p.on!==false,target_clients:p.targetClients||[]}).eq("id",p.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) { console.log('DB error:', e); } };
@@ -1395,7 +1468,7 @@ export default function App() {
     setView(found.role === "admin" ? "a-stats" : found.role === "team" ? "e-dash" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
-  const doRegister = () => {
+  const doRegister = async () => {
     if (!regData.name || !regData.email || !regData.co) { setLoginErr(t("errLogin")); return; }
     if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
     const tempPw = "pending_" + Date.now();
@@ -1406,12 +1479,12 @@ export default function App() {
     // Auto-create client entry linked to distributor
     const newClient = {id:Date.now(), name:regData.co, contact:regData.name, city:regData.city||"", country:regData.country||"FR", channel, customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", notes:refNote, orders:0, total:0, phone:regData.phone||"", companyEmail:regData.email};
     setClients(p => [...p, newClient]);
-    if (dbReady) { try { supabase.from("clients").insert({name:newClient.name, contact:newClient.contact, city:newClient.city, country:newClient.country, channel:newClient.channel, status:"prospect", phone:newClient.phone, company_email:newClient.companyEmail}); } catch(e){} }
+    if (dbReady) { try { const {data} = await supabase.from("clients").insert({name:newClient.name, contact:newClient.contact, city:newClient.city, country:newClient.country, channel:newClient.channel, status:"prospect", phone:newClient.phone, company_email:newClient.companyEmail, notes:newClient.notes}).select().single(); if (data?.id) setClients(p => p.map(c => c.id === newClient.id ? {...c, id: data.id} : c)); } catch(e){ console.log("DB error:", e); } }
     setLoginErr("");
     setRegSent(true);
   };
 
-  if (!user && loading) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:11,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
+  if (!hydrated || (!user && loading)) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:11,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
   if (!user) {
     const inputStyle = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid #f8efe625",background:"transparent",fontFamily:BD,fontSize:13,color:"#f8efe6",boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
     const inputStyleLight = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid "+CL.dk+"18",background:"transparent",fontFamily:BD,fontSize:13,color:CL.dk,boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
@@ -1799,7 +1872,7 @@ export default function App() {
 
   /* ═══ MODEL CATALOG GRID ═══ */
   const renderModelCatalog = () => {
-    const filtered = products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase())));
+    const filtered = products.filter(p => (role === "admin" || role === "team" || p.active !== false) && (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase())));
     const modelGroups = {};
     filtered.forEach(p => {
       if (!modelGroups[p.model]) modelGroups[p.model] = {model:p.model, col:p.col, colors:[], tags:new Set()};
@@ -2160,10 +2233,14 @@ export default function App() {
           })()}
 
           {modal === "editSt" && <>
-            {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden"}}>
-              <img src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6}} />
+            {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden",position:"relative"}}>
+              <img src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6,opacity:ed.active===false?0.4:1}} />
+              {ed.active === false && <div style={{position:"absolute",top:8,right:8,background:"#666",color:"#fff",padding:"3px 10px",borderRadius:3,fontSize:9,fontFamily:BD,fontWeight:700,letterSpacing:1}}>OCULTO</div>}
             </div>}
-            <div style={{fontSize:15,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:16}}>{ed.model} - {ed.color}</div>
+            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
+              <div style={{fontSize:15,fontFamily:DP,color:C.dk,fontWeight:500}}>{ed.model} - {ed.color}</div>
+              {ed.active === false && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:"#666",background:"#66666615",padding:"3px 10px",borderRadius:3,letterSpacing:1}}>OCULTO PARA TIENDAS</span>}
+            </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,textAlign:"center"}}>
                 <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("stockActuel")}</div>
@@ -2201,7 +2278,19 @@ export default function App() {
                 ); })}
               </div>
             </div>
-            <Btn onClick={() => { setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[], shape: ed.shape||"", colorFamily: ed.colorFamily||""} : pr)); dbUpdateProduct({...ed, stock: parseInt(ed.stock)||0}); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
+
+            {/* VISIBILITY TOGGLE */}
+            <div style={{marginBottom:16,padding:"12px 14px",background:ed.active===false?"#fafafa":C.bg,border:"1px solid "+(ed.active===false?"#66666640":C.ln),borderRadius:6}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
+                <div style={{flex:1,minWidth:200}}>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:3}}>👁 Visibilidad para tiendas y distribuidores</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,lineHeight:1.4}}>{ed.active===false ? "Producto OCULTO — no aparece en el catálogo de clientes ni distribuidores. Sigue visible solo para admin/equipo." : "Producto ACTIVO — visible en el catálogo de todos los clientes y distribuidores."}</div>
+                </div>
+                <button onClick={() => setEd(p => ({...p, active: p.active === false}))} style={{padding:"8px 16px",background:ed.active===false?"#666":C.gn,color:"#fff",border:"none",borderRadius:4,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>{ed.active===false ? "↻ Activar" : "⊘ Ocultar"}</button>
+              </div>
+            </div>
+
+            <Btn onClick={() => { const newActive = ed.active !== false; setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[], shape: ed.shape||"", colorFamily: ed.colorFamily||"", active: newActive} : pr)); dbUpdateProduct({...ed, stock: parseInt(ed.stock)||0, active: newActive}); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
           </>}
 
           {/* SUPPLIER ORDER - editable */}
@@ -2435,10 +2524,11 @@ export default function App() {
                   // Create client if new
                   let clientName = ed.client;
                   if (ed._newClient && ed._newClientName) {
-                    const newCl = {id:Date.now(), name:ed._newClientName, contact:ed._newClientContact||"", city:ed._newClientCity||"", country:ed._newClientCountry||"FR", channel:ed.dist||"Direct", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", notes:"Creado al hacer pedido", orders:0, total:0, phone:ed._newClientPhone||"", companyEmail:ed._newClientEmail||""};
+                    const tempId = Date.now();
+                    const newCl = {id:tempId, name:ed._newClientName, contact:ed._newClientContact||"", city:ed._newClientCity||"", country:ed._newClientCountry||"FR", channel:ed.dist||"Direct", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", notes:"Creado al hacer pedido", orders:0, total:0, phone:ed._newClientPhone||"", companyEmail:ed._newClientEmail||""};
                     setClients(p => [...p, newCl]);
                     clientName = newCl.name;
-                    if (dbReady) { try { await supabase.from("clients").insert({name:newCl.name, contact:newCl.contact, city:newCl.city, country:newCl.country, channel:newCl.channel, status:"prospect", phone:newCl.phone, company_email:newCl.companyEmail}); } catch(e){} }
+                    if (dbReady) { try { const {data} = await supabase.from("clients").insert({name:newCl.name, contact:newCl.contact, city:newCl.city, country:newCl.country, channel:newCl.channel, status:"prospect", phone:newCl.phone, company_email:newCl.companyEmail}).select().single(); if(data?.id) setClients(p => p.map(c => c.id === tempId ? {...c, id: data.id} : c)); } catch(e){ console.log("DB error:", e); } }
                   }
                   const lns = edLines.map(l => ({...l, price: l.col === "Acetato" ? 27.90 : edUp}));
                   const orderId = "#MN-"+String(orders.length+1).padStart(4,"0");
@@ -2590,10 +2680,11 @@ export default function App() {
               let clientName = ed.client;
               const existing = clients.find(c => c.name.toLowerCase() === ed.client.toLowerCase());
               if (!existing) {
-                const newCl = {id:Date.now(), name:ed.client, contact:"", city:ed.faireCity||"", country:ed.faireCountry||"", channel:"Faire", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"faire-only", notes:"Cliente Faire — no tiene acceso a plataforma", orders:0, total:0, phone:"", companyEmail:""};
+                const tempId = Date.now();
+                const newCl = {id:tempId, name:ed.client, contact:"", city:ed.faireCity||"", country:ed.faireCountry||"", channel:"Faire", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"faire-only", notes:"Cliente Faire — no tiene acceso a plataforma", orders:0, total:0, phone:"", companyEmail:""};
                 setClients(p => [...p, newCl]);
                 clientName = newCl.name;
-                if (dbReady) { try { await supabase.from("clients").insert({name:newCl.name, city:newCl.city, country:newCl.country, channel:"Faire", status:"faire-only", notes:newCl.notes}); } catch(e){} }
+                if (dbReady) { try { const {data} = await supabase.from("clients").insert({name:newCl.name, city:newCl.city, country:newCl.country, channel:"Faire", status:"faire-only", notes:newCl.notes}).select().single(); if(data?.id) setClients(p => p.map(c => c.id === tempId ? {...c, id: data.id} : c)); } catch(e){ console.log("DB error:", e); } }
               }
               const orderId = "#MN-"+String(orders.length+1).padStart(4,"0");
               // Per-line price proportionally on the after-promo amount
@@ -4137,7 +4228,7 @@ export default function App() {
           {/* TOP VENTAS MARCA */}
           <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>🔥 {t("topVentas")}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:24}}>
-            {(() => { const sold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { sold[l.model+"|"+l.color] = (sold[l.model+"|"+l.color]||0) + (l.qty||0); })); const topSkus = Object.entries(sold).sort((a,b) => b[1]-a[1]).slice(0,8).map(([k,qty]) => ({k,qty})); const topProds = topSkus.map(({k,qty}) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c); return p ? {p,qty} : null; }).filter(Boolean); const display = topProds.length > 0 ? topProds : products.filter(p => (p.tags||[]).includes("top")).slice(0,8).map(p => ({p,qty:0})); return display.map(({p,qty},i) => (
+            {(() => { const sold = {}; orders.forEach(o => (o.lines||[]).forEach(l => { sold[l.model+"|"+l.color] = (sold[l.model+"|"+l.color]||0) + (l.qty||0); })); const topSkus = Object.entries(sold).sort((a,b) => b[1]-a[1]).slice(0,8).map(([k,qty]) => ({k,qty})); const topProds = topSkus.map(({k,qty}) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c && (role==="admin"||role==="team"||x.active!==false)); return p ? {p,qty} : null; }).filter(Boolean); const display = topProds.length > 0 ? topProds : products.filter(p => (p.tags||[]).includes("top") && (role==="admin"||role==="team"||p.active!==false)).slice(0,8).map(p => ({p,qty:0})); return display.map(({p,qty},i) => (
               <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
                 <div style={{position:"absolute",top:6,left:6,width:22,height:22,borderRadius:11,background:C.dk,color:C.bg,fontSize:10,fontWeight:700,fontFamily:BD,display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}>{i+1}</div>
                 <div style={{height:120,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
@@ -4172,7 +4263,7 @@ export default function App() {
           </> : null; })()}
 
           {/* RECOMMENDATIONS FROM ADMIN */}
-          {(() => { const myRecs = recommendations[user.email]||[]; const recProds = myRecs.map(id => products.find(p => p.id === id)).filter(Boolean); return recProds.length > 0 ? <>
+          {(() => { const myRecs = recommendations[user.email]||[]; const recProds = myRecs.map(id => products.find(p => p.id === id)).filter(p => p && p.active !== false); return recProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
               <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>✨ {t("diseñosRecomendados")}</div>
               <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>Seleccionado para ti por Minuë</span>
@@ -4232,7 +4323,7 @@ export default function App() {
           </div>; })()}
 
           {/* COMPRAR DE NUEVO - quick reorder with direct add to cart */}
-          {(() => { const myOrders = orders.filter(o => (o.client === user.co || o.client === user.name) && o.dist !== "Faire"); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; if(!mySold[k]) mySold[k] = {qty:0, lastDate:o.date}; mySold[k].qty += (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1].qty-a[1].qty).slice(0,6); const myTopProds = myTop.map(([k,d]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c); return p ? {p,qty:d.qty,lastDate:d.lastDate} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
+          {(() => { const myOrders = orders.filter(o => (o.client === user.co || o.client === user.name) && o.dist !== "Faire"); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; if(!mySold[k]) mySold[k] = {qty:0, lastDate:o.date}; mySold[k].qty += (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1].qty-a[1].qty).slice(0,6); const myTopProds = myTop.map(([k,d]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c && x.active !== false); return p ? {p,qty:d.qty,lastDate:d.lastDate} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
               <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>🔄 Comprar de nuevo</div>
               <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>Tus modelos más pedidos</span>
@@ -4390,16 +4481,37 @@ export default function App() {
                   <button onClick={() => setShippingAddr("saved")} style={{padding:"8px 14px",background:shippingAddr==="saved"?C.dk:C.wh,color:shippingAddr==="saved"?C.bg:C.dk,border:"2px solid "+(shippingAddr==="saved"?C.dk:C.ln),borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:shippingAddr==="saved"?700:500}}>{t("miDireccion")}</button>
                   <button onClick={() => setShippingAddr("new")} style={{padding:"8px 14px",background:shippingAddr==="new"?C.dk:C.wh,color:shippingAddr==="new"?C.bg:C.dk,border:"2px solid "+(shippingAddr==="new"?C.dk:C.ln),borderRadius:6,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:shippingAddr==="new"?700:500}}>{t("nuevaDireccion")}</button>
                 </div>
-                {shippingAddr === "saved" && activeClient && <div style={{padding:"10px 12px",background:C.bg,borderRadius:6,fontSize:11,fontFamily:BD,color:C.dk,lineHeight:1.5}}>
-                  <div style={{fontWeight:600}}>{activeClient.name||user.co}</div>
-                  <div style={{color:C.gr}}>{activeClient.city||"—"}, {activeClient.country||"—"}</div>
-                </div>}
-                {shippingAddr === "new" && <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                  <input value={newShipAddr.street} onChange={e => setNewShipAddr(p => ({...p, street:e.target.value}))} placeholder={t("calleNum")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
-                  <input value={newShipAddr.zip} onChange={e => setNewShipAddr(p => ({...p, zip:e.target.value}))} placeholder={t("codigoPostal")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-                  <input value={newShipAddr.city} onChange={e => setNewShipAddr(p => ({...p, city:e.target.value}))} placeholder={t("ciudadInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-                  <input value={newShipAddr.country} onChange={e => setNewShipAddr(p => ({...p, country:e.target.value}))} placeholder={t("paisInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
-                </div>}
+                {shippingAddr === "saved" && (() => {
+                  const ac = activeClient;
+                  if (!ac) return <div style={{padding:"12px 14px",background:"#fff8e6",border:"1px solid #f0a02050",borderRadius:6,fontSize:11,fontFamily:BD,color:"#c47a00"}}>⚠ {t("sinDireccionGuardada")||"Aún no tienes una dirección guardada. Ve a tu perfil para añadirla, o elige \"Nueva dirección\"."}</div>;
+                  const shStreet = ac.shippingAddress || ac.address || "";
+                  const shCity = ac.shippingCity || ac.city || "";
+                  const shPostal = ac.shippingPostal || ac.postalCode || "";
+                  const shCountry = ac.shippingCountry || ac.country || "";
+                  const hasFullAddress = shStreet && shCity;
+                  if (!hasFullAddress) return <div style={{padding:"12px 14px",background:"#fff8e6",border:"1px solid #f0a02050",borderRadius:6,fontSize:11,fontFamily:BD,color:"#c47a00",lineHeight:1.5}}>⚠ Tu dirección guardada está incompleta ({[shStreet,shPostal,shCity,shCountry].filter(Boolean).join(", ")||"vacía"}).<br/>Ve a <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,textDecoration:"underline",cursor:"pointer",padding:0,fontFamily:BD,fontSize:11,fontWeight:600}}>tu perfil</button> para completarla, o usa "Nueva dirección".</div>;
+                  return <div style={{padding:"12px 14px",background:C.bg,border:"1px solid "+C.ln,borderRadius:6,fontSize:11,fontFamily:BD,color:C.dk,lineHeight:1.6}}>
+                    <div style={{fontWeight:700,color:C.dk,marginBottom:4,fontSize:12}}>{ac.companyName||ac.name||user.co}</div>
+                    {ac.contact && <div style={{color:C.gr2,fontSize:10}}>A/A: {ac.contact}</div>}
+                    <div style={{color:C.dk,marginTop:4}}>{shStreet}</div>
+                    <div style={{color:C.dk}}>{shPostal} {shCity}</div>
+                    <div style={{color:C.gr}}>{shCountry}</div>
+                    {ac.phone && <div style={{color:C.gr,fontSize:10,marginTop:4}}>📞 {ac.phone}</div>}
+                    <div style={{marginTop:8,paddingTop:8,borderTop:"1px solid "+C.ln}}>
+                      <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,padding:0,textDecoration:"underline"}}>✎ Editar mi dirección guardada</button>
+                    </div>
+                  </div>;
+                })()}
+                {shippingAddr === "new" && <>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8}}>💡 Esta dirección se usará solo para este pedido. No reemplaza la guardada en tu perfil.</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                    <input value={newShipAddr.street} onChange={e => setNewShipAddr(p => ({...p, street:e.target.value}))} placeholder={t("calleNum")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
+                    <input value={newShipAddr.zip} onChange={e => setNewShipAddr(p => ({...p, zip:e.target.value}))} placeholder={t("codigoPostal")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                    <input value={newShipAddr.city} onChange={e => setNewShipAddr(p => ({...p, city:e.target.value}))} placeholder={t("ciudadInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                    <input value={newShipAddr.country} onChange={e => setNewShipAddr(p => ({...p, country:e.target.value}))} placeholder={t("paisInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
+                  </div>
+                  {activeClient && (activeClient.shippingAddress || activeClient.address) && <button onClick={() => { const ac = activeClient; setNewShipAddr({street:ac.shippingAddress||ac.address||"",zip:ac.shippingPostal||ac.postalCode||"",city:ac.shippingCity||ac.city||"",country:ac.shippingCountry||ac.country||""}); }} style={{marginTop:8,padding:"6px 12px",background:"transparent",border:"1px dashed "+C.ln,borderRadius:4,fontSize:10,fontFamily:BD,color:C.gr,cursor:"pointer"}}>↩ Copiar desde mi dirección guardada</button>}
+                </>}
               </div>
 
               {/* PREFERRED DELIVERY DATE */}
@@ -5058,8 +5170,8 @@ export default function App() {
 
       {(view === "c-selection" || view === "d-selection") && <Sec title={t("selectionPrivee")} sub={t("selectionSub")}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
-          {products.filter(p => (p.tags||[]).includes("privee")).map(p => renderCard(p))}
-          {products.filter(p => (p.tags||[]).includes("privee")).length === 0 && <div style={{gridColumn:"1/-1",textAlign:"center",padding:40}}>
+          {products.filter(p => (p.tags||[]).includes("privee") && (role==="admin"||role==="team"||p.active!==false)).map(p => renderCard(p))}
+          {products.filter(p => (p.tags||[]).includes("privee") && (role==="admin"||role==="team"||p.active!==false)).length === 0 && <div style={{gridColumn:"1/-1",textAlign:"center",padding:40}}>
             <div style={{fontSize:20,fontFamily:DP,color:C.dk,marginBottom:8}}>{t("selectionPrivee")}</div>
             <div style={{fontSize:12,fontFamily:BD,color:C.gr}}>Bientôt disponible · Próximamente · Coming soon</div>
           </div>}
@@ -5956,6 +6068,7 @@ export default function App() {
             {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) =>
               <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 12px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
             )}
+            {products.filter(p => p.active === false).length > 0 && <button onClick={() => setStockFilter(stockFilter==="hidden"?"all":"hidden")} style={{padding:"5px 12px",background:stockFilter==="hidden"?"#666":"transparent",color:stockFilter==="hidden"?"#fff":"#666",border:"1px solid #666",cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,borderRadius:3}}>⊘ Ocultos ({products.filter(p => p.active === false).length})</button>}
             <span style={{flex:1}} />
             <button onClick={() => { setStockShowAll(!stockShowAll); setStockFilter("all"); }} style={{padding:"5px 14px",background:stockShowAll?C.dk:C.bl+"12",color:stockShowAll?C.bg:C.bl,border:"1px solid "+(stockShowAll?C.dk:C.bl+"30"),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,borderRadius:3}}>{stockShowAll?"✕ Solo problemas":"📦 Ver todo"}</button>
           </div>
@@ -5988,19 +6101,19 @@ export default function App() {
           {/* FILTERED VIEW (when clicking KPI cards) */}
           {!stockShowAll && (stockSearch || stockFilter!=="all") && <>
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:filteredProducts).sort((a,b)=>a.stock-b.stock).map((p,i) => {
+              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:stockFilter==="hidden"?products.filter(p => p.active === false):filteredProducts).sort((a,b)=>a.stock-b.stock).map((p,i) => {
                 const sold=velocity[p.sku]||0;
-                return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
-                  <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.active===false?"#fafafa":p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer",opacity:p.active===false?0.6:1}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
+                  <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0,position:"relative"}}>
+                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",opacity:p.active===false?0.5:1}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
-                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
+                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span>{p.active===false && <span style={{fontSize:8,marginLeft:6,padding:"1px 5px",background:"#66666625",color:"#666",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>OCULTO</span>}<div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
                   <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
                   <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
                   <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:35,textAlign:"center"}}>{p.stock===0?"AGT":p.stock}</span>
                 </div>;
               })}
-              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:filteredProducts).length===0 && <div style={{padding:20,textAlign:"center",fontSize:12,color:C.gr}}>—</div>}
+              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:stockFilter==="hidden"?products.filter(p => p.active === false):filteredProducts).length===0 && <div style={{padding:20,textAlign:"center",fontSize:12,color:C.gr}}>—</div>}
             </div>
           </>}
 
@@ -6201,7 +6314,21 @@ export default function App() {
               {u.notes && <span style={{fontSize:9,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:10}}>📝</span>}
               {u.commRate > 0 && <span style={{fontSize:10,fontFamily:BD,color:C.yl}}>{u.commRate}%</span>}
               {u.role === "client" && (clientEntry ? <button onClick={(e) => { e.stopPropagation(); setModal("editClient"); setEd({...clientEntry, _tab:"resume"}); }} style={{padding:"4px 10px",background:C.gn+"15",color:C.gn,border:"1px solid "+C.gn+"30",borderRadius:4,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>👤 Ver perfil</button>
-                : <button onClick={(e) => { e.stopPropagation(); const newClient = {id:Date.now(), name:u.co, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.channel||"Direct", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", notes:u.notes||"", orders:0, total:0, phone:u.phone||"", companyEmail:u.email}; setClients(p => [...p, newClient]); if(dbReady) { try { supabase.from("clients").insert({name:newClient.name, contact:newClient.contact, city:newClient.city, country:newClient.country, channel:newClient.channel, status:"prospect", phone:newClient.phone, company_email:newClient.companyEmail}); } catch(e){} } setTimeout(() => { setModal("editClient"); setEd({...newClient, _tab:"resume"}); }, 100); }} style={{padding:"4px 10px",background:"#f0a02015",color:"#c47a00",border:"1px solid #f0a02030",borderRadius:4,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ Crear cliente</button>)}
+                : <button onClick={async (e) => {
+                  e.stopPropagation();
+                  const tempId = Date.now();
+                  const newClient = {id:tempId, name:u.co, contact:u.name, city:u.city||"", country:u.country||"FR", channel:u.channel||"Direct", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", notes:u.notes||"", orders:0, total:0, phone:u.phone||"", companyEmail:u.email};
+                  setClients(p => [...p, newClient]);
+                  let realId = tempId;
+                  if(dbReady) {
+                    try {
+                      const {data, error} = await supabase.from("clients").insert({name:newClient.name, contact:newClient.contact, city:newClient.city, country:newClient.country, channel:newClient.channel, status:"prospect", phone:newClient.phone, company_email:newClient.companyEmail}).select().single();
+                      if (error) console.log("Client insert error:", error);
+                      if (data?.id) { realId = data.id; setClients(p => p.map(c => c.id === tempId ? {...c, id: data.id} : c)); }
+                    } catch(e){ console.log("DB error:", e); }
+                  }
+                  setTimeout(() => { setModal("editClient"); setEd({...newClient, id:realId, _tab:"resume"}); }, 100);
+                }} style={{padding:"4px 10px",background:"#f0a02015",color:"#c47a00",border:"1px solid #f0a02030",borderRadius:4,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ Crear cliente</button>)}
               <Badge l={u.active !== false ? t("userActif") : t("userInactif")} c={u.active !== false ? C.gn : C.rd} />
             </div>
           );})}
