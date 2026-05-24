@@ -204,6 +204,17 @@ const T = {
   fechaPreferente:{fr:"Date de livraison préférée",es:"Fecha preferente de entrega",en:"Preferred delivery date",it:"Data di consegna preferita"},
   fechaPreferenteDesc:{fr:"Si vous avez une préférence, indiquez-nous quand vous souhaitez recevoir la commande",es:"Si tienes una preferencia, indicanos cuándo te gustaría recibir el pedido",en:"If you have a preference, tell us when you want to receive the order",it:"Se hai una preferenza, dicci quando vorresti ricevere l'ordine"},
   envioMinimoInfo:{fr:"⏱ Délai de livraison minimum 3-5 jours ouvrables (peut varier en saison de forte demande)",es:"⏱ Envío mínimo 3-5 días laborables (puede variar en temporada de alta demanda)",en:"⏱ Minimum shipping 3-5 business days (may vary in peak season)",it:"⏱ Spedizione minima 3-5 giorni lavorativi (può variare nelle stagioni di alta domanda)"},
+  insightsTitle:{fr:"Le saviez-vous ?",es:"¿Sabías que...?",en:"Did you know?",it:"Lo sapevi?"},
+  gestionInsights:{fr:"Gérer les insights",es:"Gestionar insights",en:"Manage insights",it:"Gestisci insights"},
+  nuevoInsight:{fr:"Nouvel insight",es:"Nuevo insight",en:"New insight",it:"Nuovo insight"},
+  iconoLabel:{fr:"Icône",es:"Icono",en:"Icon",it:"Icona"},
+  tituloLabel:{fr:"Titre",es:"Título",en:"Title",it:"Titolo"},
+  textoLabel:{fr:"Texte",es:"Texto",en:"Text",it:"Testo"},
+  activoLabel:{fr:"Actif",es:"Activo",en:"Active",it:"Attivo"},
+  precioPorColeccion:{fr:"Prix par collection",es:"Precio por colección",en:"Price by collection",it:"Prezzo per collezione"},
+  precioPorColeccionDesc:{fr:"Définissez un prix unitaire spécifique pour chaque collection. Laissez à 0 pour appliquer les tarifs par volume standards.",es:"Define un precio unitario específico por colección. Deja en 0 para aplicar las tarifas por volumen estándar.",en:"Set a specific unit price per collection. Leave at 0 to apply standard volume tiers.",it:"Definisci un prezzo unitario specifico per ogni collezione. Lascia a 0 per applicare le tariffe a volume standard."},
+  precioGlobalAlerta:{fr:"⚠ Prix global activé — il remplace les prix par collection",es:"⚠ Precio global activado — sustituye los precios por colección",en:"⚠ Global price active — overrides per-collection prices",it:"⚠ Prezzo globale attivato — sostituisce i prezzi per collezione"},
+  oTarifaEstandar:{fr:"(ou tarif standard)",es:"(o tarifa estándar)",en:"(or standard tariff)",it:"(o tariffa standard)"},
   opcional:{fr:"facultatif",es:"opcional",en:"optional",it:"facoltativo"},
   notasPara:{fr:"📝 Notes pour Minuë",es:"📝 Notas para Minuë",en:"📝 Notes for Minuë",it:"📝 Note per Minuë"},
   notasPlaceholder:{fr:"Toute indication particulière sur la commande...",es:"Cualquier indicación especial sobre el pedido...",en:"Any special indication about the order...",it:"Qualsiasi indicazione speciale sull'ordine..."},
@@ -880,6 +891,12 @@ const PROMOS_INIT = [
   {id:3,name:"SS26 Launch",disc:0,type:"gift",cond:{fr:"2 paires offertes",es:"2 pares gratis",en:"2 free pairs",it:"2 paia omaggio"},on:false,visible:["client","distributor"]},
 ];
 
+const INSIGHTS_INIT = [
+  {id:1,icon:"📊",title:{fr:"Marge sectorielle élevée",es:"Margen de categoría alto",en:"High category margin",it:"Margine di categoria elevato"},text:{fr:"Les lunettes de soleil ont une marge moyenne de 60-70% en boutique multimarque (Euromonitor 2024).",es:"Las gafas de sol tienen un margen medio del 60-70% en boutique multimarca (Euromonitor 2024).",en:"Sunglasses have an average 60-70% margin in multi-brand boutiques (Euromonitor 2024).",it:"Gli occhiali da sole hanno un margine medio del 60-70% in boutique multimarca (Euromonitor 2024)."},on:true},
+  {id:2,icon:"☀️",title:{fr:"Saison qui démarre",es:"Temporada que arranca",en:"Season starting now",it:"Stagione che inizia"},text:{fr:"La saison des lunettes de soleil démarre en mars. 70% des ventes se concentrent de mars à août.",es:"La temporada de gafas de sol arranca en marzo. El 70% de las ventas se concentra de marzo a agosto.",en:"Sunglasses season starts in March. 70% of sales happen March to August.",it:"La stagione degli occhiali da sole inizia a marzo. Il 70% delle vendite avviene da marzo ad agosto."},on:true},
+  {id:3,icon:"💎",title:{fr:"Ticket moyen plus élevé",es:"Ticket medio más alto",en:"Higher average ticket",it:"Ticket medio più alto"},text:{fr:"Un client qui achète des lunettes de soleil dépense 35% de plus dans le panier complet (Statista 2024).",es:"Un cliente que compra gafas de sol gasta un 35% más en el ticket completo (Statista 2024).",en:"A customer buying sunglasses spends 35% more on total basket (Statista 2024).",it:"Un cliente che acquista occhiali da sole spende il 35% in più sul carrello totale (Statista 2024)."},on:false},
+];
+
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -935,6 +952,7 @@ export default function App() {
   const [users, setUsers] = useState(USERS_INIT);
   const [promos, setPromos] = useState(PROMOS_INIT);
   const [news, setNews] = useState(NEWS_INIT);
+  const [insights, setInsights] = useState(INSIGHTS_INIT);
   const [accountData, setAccountData] = useState({});
   const [accountSaved, setAccountSaved] = useState(false);
   const [faqs, setFaqs] = useState(FAQ_INIT);
@@ -1003,7 +1021,7 @@ export default function App() {
   const dbReady = !!supabase;
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||""});
   const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
-  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
+  const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,priceEssential:Number(r.price_essential)||0,priceIcons:Number(r.price_icons)||0,priceAcetato:Number(r.price_acetato)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||""},visible:r.visible_to||[],on:r.active!==false});
   const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
@@ -1093,7 +1111,7 @@ export default function App() {
   const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").update({custom_price:c.customPrice||0,price_essential:c.priceEssential||0,price_icons:c.priceIcons||0,price_acetato:c.priceAcetato||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes}).eq("id",c.id); } catch(e) { console.log('DB error:', e); } };
   const dbSavePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr,condition_es:p.cond?.es,condition_en:p.cond?.en,visible_to:p.visible,active:p.on!==false}).eq("id",p.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) { console.log('DB error:', e); } };
@@ -1132,15 +1150,25 @@ export default function App() {
   const cartCount = cartEntries.reduce((s,[,q]) => s + q, 0);
   const essentialEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col !== "Acetato"; });
   const acetatoEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Acetato"; });
+  const iconsEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Icons"; });
+  const essentialOnlyEntries = cartEntries.filter(([id]) => { const p = products.find(x => String(x.id) === String(id)); return p && p.col === "Essential"; });
   const essentialCount = essentialEntries.reduce((s,[,q]) => s + q, 0);
   const acetatoCount = acetatoEntries.reduce((s,[,q]) => s + q, 0);
+  const iconsCount = iconsEntries.reduce((s,[,q]) => s + q, 0);
+  const essentialOnlyCount = essentialOnlyEntries.reduce((s,[,q]) => s + q, 0);
   const activeClientName = user && user.role === "client" ? user.co : cartCl;
   const activeClient = clients.find(c => c.name === activeClientName);
   const customPrice = activeClient ? activeClient.customPrice || 0 : 0;
+  const priceEssential = activeClient ? (Number(activeClient.priceEssential)||0) : 0;
+  const priceIcons = activeClient ? (Number(activeClient.priceIcons)||0) : 0;
+  const priceAcetato = activeClient ? (Number(activeClient.priceAcetato)||0) : 0;
   const earlyPay = activeClient ? activeClient.earlyPay : false;
-  const essentialUnitPrice = getPrice(essentialCount || 1, customPrice);
-  const essentialTotal = essentialCount * essentialUnitPrice;
-  const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); return s + (p ? p.fixedPrice : ACETATO_PRICE) * q; }, 0);
+  // Essential pricing: legacy customPrice OR priceEssential OR volume tier
+  const essentialUnitPrice = customPrice > 0 ? customPrice : (priceEssential > 0 ? priceEssential : getPrice(essentialOnlyCount || 1, 0));
+  // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same as essential)
+  const iconsUnitPrice = customPrice > 0 ? customPrice : (priceIcons > 0 ? priceIcons : getPrice(iconsCount || 1, 0));
+  const essentialTotal = essentialOnlyCount * essentialUnitPrice + iconsCount * iconsUnitPrice;
+  const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); const priceForAcetato = customPrice > 0 ? customPrice : (priceAcetato > 0 ? priceAcetato : (p ? p.fixedPrice : ACETATO_PRICE)); return s + priceForAcetato * q; }, 0);
   const cartTotal = essentialTotal + acetatoTotal;
   const earlyPaySaving = earlyPay ? cartTotal * 0.03 : 0;
   const finalTotal = cartTotal - earlyPaySaving;
@@ -1796,10 +1824,35 @@ export default function App() {
                   <button onClick={() => setEd(p => ({...p, customPrice: p.customPrice || 19.90}))} style={{flex:1,padding:10,background:ed.customPrice>0?C.dk:C.wh,color:ed.customPrice>0?C.bg:C.dk,border:"1px solid "+(ed.customPrice>0?C.dk:C.ln),borderRadius:4,fontSize:11,fontFamily:BD,cursor:"pointer",fontWeight:500}}>{t("prixFixe")}</button>
                 </div>
                 {ed.customPrice > 0
-                  ? <><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")}</div><input type="number" step="0.10" value={ed.customPrice} onChange={e => setEd(p => ({...p, customPrice: parseFloat(e.target.value) || 0}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} /></>
+                  ? <>
+                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")} <span style={{fontSize:9,color:C.gr2}}>{t("oTarifaEstandar")}</span></div>
+                    <input type="number" step="0.10" value={ed.customPrice} onChange={e => setEd(p => ({...p, customPrice: parseFloat(e.target.value) || 0}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} />
+                    <div style={{fontSize:10,fontFamily:BD,color:"#c47a00",background:"#fff8e6",border:"1px solid #f0a02030",padding:"6px 10px",borderRadius:4,marginTop:8}}>{t("precioGlobalAlerta")}</div>
+                  </>
                   : <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("prixAutoDesc")}</div>
                 }
               </div>
+
+              {/* PER-COLLECTION PRICES (only when no global custom price) */}
+              <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16,opacity:ed.customPrice>0?0.45:1}}>
+                <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:4}}>💰 {t("precioPorColeccion")}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:14,lineHeight:1.5}}>{t("precioPorColeccionDesc")}</div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10}}>
+                  <div>
+                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>Essential <span style={{color:C.gr2}}>€/ud</span></div>
+                    <input type="number" step="0.10" disabled={ed.customPrice>0} value={ed.priceEssential||""} onChange={e => setEd(p => ({...p, priceEssential: parseFloat(e.target.value) || 0}))} placeholder="0.00" style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} />
+                  </div>
+                  <div>
+                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>Icons <span style={{color:C.gr2}}>€/ud</span></div>
+                    <input type="number" step="0.10" disabled={ed.customPrice>0} value={ed.priceIcons||""} onChange={e => setEd(p => ({...p, priceIcons: parseFloat(e.target.value) || 0}))} placeholder="0.00" style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} />
+                  </div>
+                  <div>
+                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>Acetato <span style={{color:C.gr2}}>€/ud</span></div>
+                    <input type="number" step="0.10" disabled={ed.customPrice>0} value={ed.priceAcetato||""} onChange={e => setEd(p => ({...p, priceAcetato: parseFloat(e.target.value) || 0}))} placeholder="0.00" style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} />
+                  </div>
+                </div>
+              </div>
+
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:16,marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div><div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{t("prontoPago")}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("prontoDesc")}</div></div>
                 <button onClick={() => setEd(p => ({...p, earlyPay: !p.earlyPay}))} style={{width:44,height:24,borderRadius:12,background:ed.earlyPay?C.gn:C.ln,border:"none",cursor:"pointer",position:"relative"}}>
@@ -2768,6 +2821,57 @@ export default function App() {
             </div>
           </>}
 
+          {/* NEW INSIGHT */}
+          {modal === "newInsight" && <>
+            <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>💡 {t("nuevoInsight")}</div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("iconoLabel")} (emoji)</div>
+              <input value={ed.icon||"📊"} onChange={e => setEd(p => ({...p, icon:e.target.value}))} maxLength={4} style={{width:80,padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:18,background:C.bg,color:C.dk,boxSizing:"border-box",textAlign:"center"}} />
+            </div>
+            {["es","fr","en","it"].map(l => <div key={l}>
+              <div style={{marginBottom:10}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("tituloLabel")} ({l.toUpperCase()})</div>
+                <input value={(ed.title&&ed.title[l])||""} onChange={e => setEd(p => ({...p, title:{...(p.title||{}), [l]:e.target.value}}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("textoLabel")} ({l.toUpperCase()})</div>
+                <textarea value={(ed.text&&ed.text[l])||""} onChange={e => setEd(p => ({...p, text:{...(p.text||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+            </div>)}
+            <label style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,cursor:"pointer"}}>
+              <input type="checkbox" checked={ed.on!==false} onChange={e => setEd(p => ({...p, on:e.target.checked}))} />
+              <span style={{fontSize:11,fontFamily:BD,color:C.dk}}>{t("activoLabel")}</span>
+            </label>
+            <Btn onClick={() => { const np = {...ed, id: Date.now()}; setInsights(p => [...p, np]); setModal(null); }} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+          </>}
+
+          {/* EDIT INSIGHT */}
+          {modal === "editInsight" && <>
+            <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:14}}>💡 Editar insight</div>
+            <div style={{marginBottom:12}}>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("iconoLabel")} (emoji)</div>
+              <input value={ed.icon||""} onChange={e => setEd(p => ({...p, icon:e.target.value}))} maxLength={4} style={{width:80,padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:18,background:C.bg,color:C.dk,boxSizing:"border-box",textAlign:"center"}} />
+            </div>
+            {["es","fr","en","it"].map(l => <div key={l}>
+              <div style={{marginBottom:10}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("tituloLabel")} ({l.toUpperCase()})</div>
+                <input value={(ed.title&&ed.title[l])||""} onChange={e => setEd(p => ({...p, title:{...(p.title||{}), [l]:e.target.value}}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("textoLabel")} ({l.toUpperCase()})</div>
+                <textarea value={(ed.text&&ed.text[l])||""} onChange={e => setEd(p => ({...p, text:{...(p.text||{}), [l]:e.target.value}}))} rows={2} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+            </div>)}
+            <label style={{display:"flex",alignItems:"center",gap:8,marginBottom:14,cursor:"pointer"}}>
+              <input type="checkbox" checked={ed.on!==false} onChange={e => setEd(p => ({...p, on:e.target.checked}))} />
+              <span style={{fontSize:11,fontFamily:BD,color:C.dk}}>{t("activoLabel")}</span>
+            </label>
+            <div style={{display:"flex",gap:8}}>
+              <Btn onClick={() => { setInsights(p => p.map(i => i.id === ed.id ? {...ed} : i)); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn ghost onClick={() => { if(confirm("¿Eliminar este insight?")) { setInsights(p => p.filter(i => i.id !== ed.id)); setModal(null); }}} style={{color:C.rd,borderColor:C.rd}}>Eliminar</Btn>
+            </div>
+          </>}
+
           {/* VIEW INVOICE */}
           {modal === "viewInv" && <>
             <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"20px",marginBottom:16}}>
@@ -3386,6 +3490,20 @@ export default function App() {
             </div>
           </> : null; })()}
 
+          {/* MARKET INSIGHTS - rotating motivational stats */}
+          {(() => { const activeInsights = (insights||[]).filter(i => i.on); if (activeInsights.length === 0) return null; return <div style={{marginBottom:24}}>
+            <div style={{fontSize:14,fontFamily:DP,color:C.dk,fontWeight:500,marginBottom:12}}>💡 {t("insightsTitle")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12}}>
+              {activeInsights.map(ins => <div key={ins.id} style={{background:"linear-gradient(135deg,"+CL.dk+"05,"+CL.gn+"08)",border:"1px solid "+CL.gn+"25",borderRadius:10,padding:"16px 18px",display:"flex",gap:12,alignItems:"flex-start"}}>
+                <div style={{fontSize:30,flexShrink:0,lineHeight:1}}>{ins.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:11,fontFamily:BD,color:CL.gn,letterSpacing:0.5,fontWeight:700,marginBottom:4,textTransform:"uppercase"}}>{(ins.title&&ins.title[lang])||ins.title?.es||""}</div>
+                  <div style={{fontSize:12,fontFamily:BD,color:C.dk,lineHeight:1.5}}>{(ins.text&&ins.text[lang])||ins.text?.es||""}</div>
+                </div>
+              </div>)}
+            </div>
+          </div>; })()}
+
           {/* COMPRAR DE NUEVO - quick reorder with direct add to cart */}
           {(() => { const myOrders = orders.filter(o => (o.client === user.co || o.client === user.name)); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; if(!mySold[k]) mySold[k] = {qty:0, lastDate:o.date}; mySold[k].qty += (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1].qty-a[1].qty).slice(0,6); const myTopProds = myTop.map(([k,d]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c); return p ? {p,qty:d.qty,lastDate:d.lastDate} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
@@ -3632,7 +3750,30 @@ export default function App() {
             <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("precioEspecialDesc")}</div>
           </div>
         </div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,opacity:customPrice>0?0.55:1}}>
+        {customPrice === 0 && (priceEssential > 0 || priceIcons > 0 || priceAcetato > 0) && <div style={{background:"linear-gradient(135deg,"+CL.dk+"08,"+CL.gn+"10)",border:"2px solid "+CL.gn+"40",borderRadius:10,padding:"18px 22px",marginBottom:20}}>
+          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
+            <div style={{fontSize:30}}>⭐</div>
+            <div>
+              <div style={{fontSize:11,fontFamily:BD,color:CL.gn,letterSpacing:1.5,fontWeight:700}}>{t("precioEspecial").toUpperCase()}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{t("precioEspecialDesc")}</div>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:10}}>
+            {priceEssential > 0 && <div style={{background:C.wh,borderRadius:8,padding:"12px 14px",border:"1px solid "+CL.gn+"20"}}>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>Essential</div>
+              <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:CL.gn}}>{fmt(priceEssential)} €<span style={{fontSize:11,color:C.gr,fontWeight:400,marginLeft:4}}>/ud</span></div>
+            </div>}
+            {priceIcons > 0 && <div style={{background:C.wh,borderRadius:8,padding:"12px 14px",border:"1px solid "+CL.gn+"20"}}>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>Icons</div>
+              <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:CL.gn}}>{fmt(priceIcons)} €<span style={{fontSize:11,color:C.gr,fontWeight:400,marginLeft:4}}>/ud</span></div>
+            </div>}
+            {priceAcetato > 0 && <div style={{background:C.wh,borderRadius:8,padding:"12px 14px",border:"1px solid "+CL.gn+"20"}}>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>Acetato</div>
+              <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:CL.gn}}>{fmt(priceAcetato)} €<span style={{fontSize:11,color:C.gr,fontWeight:400,marginLeft:4}}>/ud</span></div>
+            </div>}
+          </div>
+        </div>}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,opacity:(customPrice>0||priceEssential>0||priceIcons>0)?0.55:1}}>
           {TIERS.map((tier, i) => { const isA = cartCount >= tier.min && cartCount <= tier.max && customPrice === 0; return (
             <div key={i} style={{background:C.wh,border:"2px solid "+(isA?C.gn:C.ln),borderRadius:6,padding:18,position:"relative"}}>
               {isA && <div style={{position:"absolute",top:-10,right:12,background:C.gn,color:C.bg,fontSize:9,fontFamily:BD,padding:"2px 8px",borderRadius:3,fontWeight:600}}>{t("votreTarif")}</div>}
@@ -4814,6 +4955,29 @@ export default function App() {
               <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{(n.content&&n.content[lang])||n.content?.fr||""}</div>
             </div>
           ))}
+        </div>
+
+        {/* INSIGHTS MOTIVADORES */}
+        <div style={{marginTop:32}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+            <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:500}}>💡 {t("gestionInsights")}</div>
+            <Btn small onClick={() => { setModal("newInsight"); setEd({icon:"📊",title:{fr:"",es:"",en:"",it:""},text:{fr:"",es:"",en:"",it:""},on:true}); }}>{t("nuevoInsight")}</Btn>
+          </div>
+          <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:12}}>Frases motivadoras con datos de mercado que aparecen en el dashboard de clientes y distribuidores</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {insights.map((ins,i) => (
+              <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"14px 18px",cursor:"pointer",opacity:ins.on?1:0.5,display:"flex",gap:12,alignItems:"flex-start"}} onClick={() => { setModal("editInsight"); setEd({...ins}); }}>
+                <div style={{fontSize:26,flexShrink:0,lineHeight:1}}>{ins.icon}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                    <span style={{fontSize:13,fontWeight:600,fontFamily:BD,color:C.dk}}>{(ins.title&&ins.title[lang])||ins.title?.es||""}</span>
+                    <Badge l={ins.on?t("active"):t("inactive")} c={ins.on?C.gn:C.gr} />
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{(ins.text&&ins.text[lang])||ins.text?.es||""}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </Sec>}
 
