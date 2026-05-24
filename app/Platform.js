@@ -949,11 +949,7 @@ const NEWS_INIT = [
   {id:3,title:{fr:"Exposition optique Paris",es:"Feria óptica París",en:"Paris optical fair",it:"Paris optical fair"},content:{fr:"Retrouvez Minuë au Salon SILMO du 20 au 23 septembre 2026.",es:"Encuentra Minuë en el salón SILMO del 20 al 23 de septiembre 2026.",en:"Find Minuë at SILMO fair from Sep 20-23, 2026.",it:"Find Minuë at SILMO fair from Sep 20-23, 2026."},date:"20/03/2026",pinned:false,on:true,url:"https://silmoparis.com"},
 ];
 
-const PROMOS_INIT = [
-  {id:1,name:"Geste bienvenue",disc:5,type:"percent",cond:{fr:"1re commande",es:"1er pedido",en:"1st order",it:"1st order"},on:true,visible:["client","distributor"]},
-  {id:2,name:"Volume 50+",disc:8,type:"percent",cond:{fr:"\u226550 unit\u00e9s",es:"\u226550 unidades",en:"\u226550 units",it:"\u226550 units"},on:true,visible:["client","distributor"]},
-  {id:3,name:"SS26 Launch",disc:0,type:"gift",cond:{fr:"2 paires offertes",es:"2 pares gratis",en:"2 free pairs",it:"2 paia omaggio"},on:false,visible:["client","distributor"]},
-];
+const PROMOS_INIT = [];
 
 const INSIGHTS_INIT = [
   {id:1,icon:"📊",title:{fr:"Marge sectorielle élevée",es:"Margen de categoría alto",en:"High category margin",it:"Margine di categoria elevato"},text:{fr:"Les lunettes de soleil ont une marge moyenne de 60-70% en boutique multimarque (Euromonitor 2024).",es:"Las gafas de sol tienen un margen medio del 60-70% en boutique multimarca (Euromonitor 2024).",en:"Sunglasses have an average 60-70% margin in multi-brand boutiques (Euromonitor 2024).",it:"Gli occhiali da sole hanno un margine medio del 60-70% in boutique multimarca (Euromonitor 2024)."},on:true},
@@ -1195,11 +1191,11 @@ export default function App() {
           }
         }
         const {data:prms} = await supabase.from("promos").select("*");
-        if (prms && prms.length > 0) setPromos(prms.map(dbToPromo));
+        if (prms) setPromos(prms.map(dbToPromo));
         const {data:nws} = await supabase.from("news").select("*").order("created_at",{ascending:false});
-        if (nws && nws.length > 0) setNews(nws.map(dbToNews));
+        if (nws) setNews(nws.map(dbToNews));
         const {data:fqs} = await supabase.from("faqs").select("*");
-        if (fqs && fqs.length > 0) setFaqs(fqs.map(dbToFaq));
+        if (fqs) setFaqs(fqs.map(dbToFaq));
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
         if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
         if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) {} } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) {} } }
@@ -6475,7 +6471,134 @@ export default function App() {
         </Sec>
 
         {/* PRODUCTOS DEFECTUOSOS */}
-        <Sec title={t("defectuosos")+" ("+defectives.filter(d => d.status !== "resolved").length+")"} sub={t("defectuososSub")} right={<Btn small onClick={() => { setModal("newDefect"); setEd({model:"",color:"",sku:"",quantity:1,description:""}); }}>{t("reportarDefecto")}</Btn>}>
+        <Sec title={t("defectuosos")+" ("+defectives.filter(d => d.status !== "resolved").length+")"} sub={t("defectuososSub")} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{defectives.filter(d => d.status !== "resolved").length > 0 && <>
+          <Btn small ghost onClick={() => {
+            const pending = defectives.filter(d => d.status !== "resolved");
+            const grouped = {};
+            pending.forEach(d => {
+              const key = d.model+"|"+d.color;
+              if (!grouped[key]) grouped[key] = {model:d.model, color:d.color, sku:d.sku, total:0, items:[]};
+              grouped[key].total += d.quantity;
+              grouped[key].items.push(d);
+            });
+            const entries = Object.values(grouped).sort((a,b) => b.total - a.total);
+            const totalUnits = entries.reduce((s,e) => s+e.total, 0);
+            const reportNum = "DEF-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*9999)).padStart(4,"0");
+            const today = new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${reportNum} — Defective Products Report — Minuë Opticians</title><style>
+              @page { margin: 1.8cm; size: A4; }
+              body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #18332f; line-height: 1.5; padding: 0; }
+              .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #18332f; padding-bottom: 18px; margin-bottom: 28px; }
+              .brand { font-family: Georgia, serif; font-size: 32px; font-weight: 400; letter-spacing: 1px; color: #18332f; margin-bottom: 2px; }
+              .brand-sub { font-size: 10px; color: #888; letter-spacing: 3px; text-transform: uppercase; }
+              .doc-title { text-align: right; }
+              .doc-num { font-size: 22px; font-family: Georgia, serif; color: #18332f; font-weight: 400; }
+              .doc-date { font-size: 11px; color: #888; margin-top: 4px; }
+              .badge { display: inline-block; padding: 4px 12px; border-radius: 3px; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; margin-top: 8px; background: #e74c3c; color: white; }
+              h1 { font-family: Georgia, serif; font-size: 22px; font-weight: 400; color: #18332f; margin: 24px 0 6px; }
+              .intro { background: #fafafa; border-left: 3px solid #18332f; padding: 14px 18px; margin-bottom: 24px; font-size: 12px; line-height: 1.7; color: #444; }
+              .summary { display: flex; gap: 12px; margin-bottom: 24px; }
+              .summary-card { flex: 1; background: #f8efe6; padding: 14px 16px; border-radius: 8px; text-align: center; }
+              .summary-num { font-size: 28px; font-family: Georgia, serif; font-weight: 400; color: #18332f; line-height: 1; }
+              .summary-label { font-size: 9px; color: #888; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
+              table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px; }
+              th { background: #18332f; color: #f8efe6; padding: 11px 12px; text-align: left; font-weight: 500; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+              th.center, td.center { text-align: center; }
+              td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: top; }
+              tr.group-header td { background: #f8efe6; font-weight: 600; padding: 12px 14px; }
+              tr.group-header .model { font-size: 13px; color: #18332f; }
+              tr.group-header .sku { font-size: 9px; color: #888; font-weight: 400; }
+              tr.group-header .units { float: right; background: #e74c3c; color: white; padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+              .detail { font-size: 10px; color: #666; padding-left: 14px; }
+              .footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid #ddd; font-size: 9px; color: #888; line-height: 1.8; }
+              .request { background: #fff8e6; border: 1px solid #f0a020; padding: 14px 16px; border-radius: 6px; margin-top: 20px; font-size: 11px; line-height: 1.7; }
+              .request strong { color: #c4502a; }
+              @media print { .no-print { display: none; } }
+            </style></head><body>
+              <div class="header">
+                <div>
+                  <div class="brand">Minuë</div>
+                  <div class="brand-sub">Opticians · Wholesale Eyewear</div>
+                </div>
+                <div class="doc-title">
+                  <div class="doc-num">${reportNum}</div>
+                  <div class="doc-date">${today}</div>
+                  <div class="badge">DEFECTIVE PRODUCTS</div>
+                </div>
+              </div>
+
+              <h1>Defective Products Report</h1>
+              <div class="intro">
+                <strong>To: Supplier</strong><br>
+                This report contains all defective items detected at our warehouse since the last quality review. We kindly request your assistance in addressing the issues described below.
+              </div>
+
+              <div class="summary">
+                <div class="summary-card">
+                  <div class="summary-num">${entries.length}</div>
+                  <div class="summary-label">Distinct Models</div>
+                </div>
+                <div class="summary-card">
+                  <div class="summary-num">${totalUnits}</div>
+                  <div class="summary-label">Total Defective Units</div>
+                </div>
+                <div class="summary-card">
+                  <div class="summary-num">${pending.length}</div>
+                  <div class="summary-label">Defect Reports</div>
+                </div>
+              </div>
+
+              <table>
+                <thead><tr><th>Product Detail</th><th class="center">Qty</th><th>Date Reported</th></tr></thead>
+                <tbody>
+                  ${entries.map(g => {
+                    let rows = `<tr class="group-header"><td colspan="3"><span class="units">${g.total} units</span><span class="model">${g.model} — ${g.color}</span><br><span class="sku">SKU: ${g.sku || "—"}</span></td></tr>`;
+                    g.items.forEach(d => {
+                      const desc = d.description || "(No description provided)";
+                      const date = d.created_at ? new Date(d.created_at).toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"}) : "—";
+                      rows += `<tr><td class="detail">${desc}</td><td class="center">${d.quantity}</td><td>${date}</td></tr>`;
+                    });
+                    return rows;
+                  }).join("")}
+                </tbody>
+              </table>
+
+              <div class="request">
+                <strong>Action Requested:</strong><br>
+                Please review the defective items listed above and confirm one of the following options:<br>
+                1. <strong>Replacement</strong> — send replacement units at no cost in the next shipment.<br>
+                2. <strong>Credit Note</strong> — issue a credit note for the affected items.<br>
+                3. <strong>Other</strong> — please specify your proposed resolution.<br><br>
+                We appreciate your prompt response within <strong>14 business days</strong> from the date of this report.
+              </div>
+
+              <div class="footer">
+                <strong>Minuë Opticians</strong> · Alejandro Carrasco Díaz · NIF: ES77843808D<br>
+                C/ Gutiérrez de Alba 2, 41010 Sevilla, Spain<br>
+                Email: hola@minueopticians.com · www.minueopticians.com<br><br>
+                Report generated on ${today} from b2b.minueopticians.com. This document is for the exclusive use of the addressed supplier and contains commercially sensitive information.
+              </div>
+            </body></html>`;
+            const w = window.open("","_blank");
+            w.document.write(html);
+            w.document.close();
+            setTimeout(() => w.print(), 500);
+          }}>📄 Export PDF (EN)</Btn>
+          <Btn small ghost onClick={() => {
+            const pending = defectives.filter(d => d.status !== "resolved");
+            const headers = ["Model","Color","SKU","Quantity","Description","Date Reported","Reported By"];
+            const rows = pending.map(d => [
+              d.model||"",
+              d.color||"",
+              d.sku||"",
+              d.quantity||0,
+              (d.description||"").replace(/"/g,'""').replace(/\n/g,' '),
+              d.created_at ? new Date(d.created_at).toLocaleDateString("en-GB") : "",
+              d.created_by||""
+            ]);
+            exportCSV("minue_defective_products_"+new Date().toISOString().slice(0,10)+".csv", headers, rows);
+          }}>📊 Export CSV</Btn>
+        </>}<Btn small onClick={() => { setModal("newDefect"); setEd({model:"",color:"",sku:"",quantity:1,description:""}); }}>{t("reportarDefecto")}</Btn></div>}>
           {(() => {
             const grouped = {};
             defectives.filter(d => d.status !== "resolved").forEach(d => {
