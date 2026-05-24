@@ -149,6 +149,25 @@ const T = {
   accesDemo:{fr:"Comptes de démo",es:"Cuentas de demo",en:"Demo accounts",it:"Account demo"},
   utilisateurs:{fr:"Utilisateurs",es:"Usuarios",en:"Users",it:"Utenti"},
   gestionUsers:{fr:"Gestion des utilisateurs",es:"Gestión de usuarios",en:"User management",it:"Gestione utenti"},
+  empleados:{fr:"Employés",es:"Empleados",en:"Employees",it:"Dipendenti"},
+  fichaje:{fr:"Pointage",es:"Fichaje",en:"Clock in/out",it:"Timbratura"},
+  ficharEntrada:{fr:"Pointer l'entrée",es:"Fichar entrada",en:"Clock in",it:"Timbra entrata"},
+  ficharSalida:{fr:"Pointer la sortie",es:"Fichar salida",en:"Clock out",it:"Timbra uscita"},
+  fichado:{fr:"Pointé",es:"Fichado",en:"Clocked in",it:"Timbrato"},
+  noFichado:{fr:"Non pointé",es:"Sin fichar",en:"Not clocked in",it:"Non timbrato"},
+  horasHoy:{fr:"Heures aujourd'hui",es:"Horas hoy",en:"Hours today",it:"Ore oggi"},
+  horasSemana:{fr:"Heures cette semaine",es:"Horas esta semana",en:"Hours this week",it:"Ore questa settimana"},
+  horasMes:{fr:"Heures ce mois",es:"Horas este mes",en:"Hours this month",it:"Ore questo mese"},
+  totalHoras:{fr:"Total heures",es:"Total horas",en:"Total hours",it:"Totale ore"},
+  fueraDeRango:{fr:"Vous êtes trop loin du bureau",es:"Estás fuera del rango de la oficina",en:"You are too far from the office",it:"Sei troppo lontano dall'ufficio"},
+  distanciaActual:{fr:"Distance actuelle",es:"Distancia actual",en:"Current distance",it:"Distanza attuale"},
+  ubicacionNoDisponible:{fr:"Localisation non disponible",es:"Ubicación no disponible",en:"Location not available",it:"Posizione non disponibile"},
+  historialFichajes:{fr:"Historique pointages",es:"Historial fichajes",en:"Clock history",it:"Storico timbrature"},
+  entrada:{fr:"Entrée",es:"Entrada",en:"In",it:"Entrata"},
+  salida:{fr:"Sortie",es:"Salida",en:"Out",it:"Uscita"},
+  sinFichajes:{fr:"Aucun pointage",es:"Sin fichajes",en:"No records",it:"Nessuna timbratura"},
+  diasTrabajados:{fr:"Jours travaillés",es:"Días trabajados",en:"Days worked",it:"Giorni lavorati"},
+  mediaHoras:{fr:"Moyenne heures/jour",es:"Media horas/día",en:"Avg hours/day",it:"Media ore/giorno"},
   nouvelUser:{fr:"+ Utilisateur",es:"+ Usuario",en:"+ User",it:"+ Utente"},
   nouveauUser:{fr:"Nouvel utilisateur",es:"Nuevo usuario",en:"New user",it:"Nuovo utente"},
   editUser:{fr:"Modifier l'utilisateur",es:"Editar usuario",en:"Edit user",it:"Modifica utente"},
@@ -479,230 +498,230 @@ const getPrice = (q, cp) => cp > 0 ? cp : getTier(q).price;
 const PRODUCTS_INIT = [
   /* ── ESSENTIAL (PVC) ── */
   /* BAKER */
-  {id:1,model:"BAKER",color:"Tea",sku:"MN-BAKR-TEA",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,tags:["top","rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/170.png?v=1774603519"},
-  {id:2,model:"BAKER",color:"Cloud",sku:"MN-BAKR-CLD",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/169.png?v=1774291293"},
-  {id:3,model:"BAKER",color:"Black",sku:"MN-BAKR-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/167.png?v=1774291528"},
-  {id:4,model:"BAKER",color:"Mint",sku:"MN-BAKR-MNT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/168.png?v=1774295626"},
+  {id:1,model:"BAKER",color:"Tea",sku:"MN-BAKR-TEA",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,tags:["top","rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/170.png"},
+  {id:2,model:"BAKER",color:"Cloud",sku:"MN-BAKR-CLD",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/169.png"},
+  {id:3,model:"BAKER",color:"Black",sku:"MN-BAKR-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/167.png"},
+  {id:4,model:"BAKER",color:"Mint",sku:"MN-BAKR-MNT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/168.png"},
   /* VITTI */
-  {id:5,model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/acaxasx.png?v=1774603477"},
-  {id:6,model:"VITTI",color:"Velvet",sku:"MN-VTTI-VLV",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/201.png?v=1774600749"},
-  {id:7,model:"VITTI",color:"Brown",sku:"MN-VTTI-BRN",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/acaxasx.png?v=1774603477"},
-  {id:8,model:"VITTI",color:"Caramel",sku:"MN-VTTI-CRM",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/202.png?v=1774600702"},
+  {id:5,model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/acaxasx.png"},
+  {id:6,model:"VITTI",color:"Velvet",sku:"MN-VTTI-VLV",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/201.png"},
+  {id:7,model:"VITTI",color:"Brown",sku:"MN-VTTI-BRN",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/acaxasx.png"},
+  {id:8,model:"VITTI",color:"Caramel",sku:"MN-VTTI-CRM",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/202.png"},
   /* BERGMAN */
-  {id:9,model:"BERGMAN",color:"Brown Carey",sku:"MN-BRGM-BCR",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/162.png?v=1779218224"},
-  {id:10,model:"BERGMAN",color:"Brown",sku:"MN-BRGM-BRN",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/159.png?v=1774601089"},
-  {id:11,model:"BERGMAN",color:"Black",sku:"MN-BRGM-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/BERGMANBLACK.png?v=1614440066"},
-  {id:12,model:"BERGMAN",color:"Carey",sku:"MN-BRGM-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/162.png?v=1779218224"},
+  {id:9,model:"BERGMAN",color:"Brown Carey",sku:"MN-BRGM-BCR",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/162.png"},
+  {id:10,model:"BERGMAN",color:"Brown",sku:"MN-BRGM-BRN",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/159.png"},
+  {id:11,model:"BERGMAN",color:"Black",sku:"MN-BRGM-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/BERGMANBLACK.png"},
+  {id:12,model:"BERGMAN",color:"Carey",sku:"MN-BRGM-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/162.png"},
   /* TURA */
-  {id:13,model:"TURA",color:"Guiza",sku:"MN-TURA-GZA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/63.png?v=1779348911"},
-  {id:14,model:"TURA",color:"Carey",sku:"MN-TURA-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/65.png?v=1779348851"},
-  {id:15,model:"TURA",color:"Coffee",sku:"MN-TURA-COF",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/67.png?v=1777464553"},
-  {id:16,model:"TURA",color:"Velvet",sku:"MN-TURA-VLV",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/69.png?v=1777464614"},
+  {id:13,model:"TURA",color:"Guiza",sku:"MN-TURA-GZA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/63.png"},
+  {id:14,model:"TURA",color:"Carey",sku:"MN-TURA-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/65.png"},
+  {id:15,model:"TURA",color:"Coffee",sku:"MN-TURA-COF",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/67.png"},
+  {id:16,model:"TURA",color:"Velvet",sku:"MN-TURA-VLV",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/69.png"},
   /* CARDINALE */
-  {id:17,model:"CARDINALE",color:"Carey",sku:"MN-CARD-CRY",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,tags:["top"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/6w4rw.png?v=1774603411"},
-  {id:18,model:"CARDINALE",color:"Apple",sku:"MN-CARD-APL",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/gtwed.png?v=1774603368"},
-  {id:19,model:"CARDINALE",color:"Tea",sku:"MN-CARD-TEA",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/164.png?v=1777464756"},
-  {id:20,model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/6w4rw.png?v=1774603411"},
+  {id:17,model:"CARDINALE",color:"Carey",sku:"MN-CARD-CRY",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,tags:["top"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/6w4rw.png"},
+  {id:18,model:"CARDINALE",color:"Apple",sku:"MN-CARD-APL",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/gtwed.png"},
+  {id:19,model:"CARDINALE",color:"Tea",sku:"MN-CARD-TEA",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/164.png"},
+  {id:20,model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/6w4rw.png"},
   /* GARDNER */
-  {id:21,model:"GARDNER",color:"Black",sku:"MN-GRDN-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png?v=1772742904"},
-  {id:22,model:"GARDNER",color:"Amber Dor\u00e9",sku:"MN-GRDN-ADR",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png?v=1772742904"},
-  {id:23,model:"GARDNER",color:"Carey",sku:"MN-GRDN-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png?v=1772742904"},
+  {id:21,model:"GARDNER",color:"Black",sku:"MN-GRDN-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png"},
+  {id:22,model:"GARDNER",color:"Amber Dor\u00e9",sku:"MN-GRDN-ADR",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png"},
+  {id:23,model:"GARDNER",color:"Carey",sku:"MN-GRDN-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/60.png"},
   /* HART */
-  {id:24,model:"HART",color:"Sunset",sku:"MN-HART-SNS",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,tags:["new"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/24651be0773ae9139225c10bff875975.png?v=1748258404"},
-  {id:25,model:"HART",color:"Black",sku:"MN-HART-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/20.png?v=1743513155"},
-  {id:26,model:"HART",color:"Carey",sku:"MN-HART-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:""},
-  {id:27,model:"HART",color:"Honey",sku:"MN-HART-HNY",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/Captura_de_pantalla_2025-05-26_a_las_12.54.08.png?v=1748258050"},
+  {id:24,model:"HART",color:"Sunset",sku:"MN-HART-SNS",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,tags:["new"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/24651be0773ae9139225c10bff875975.png"},
+  {id:25,model:"HART",color:"Black",sku:"MN-HART-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/20.png"},
+  {id:26,model:"HART",color:"Carey",sku:"MN-HART-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/20.png"},
+  {id:27,model:"HART",color:"Honey",sku:"MN-HART-HNY",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/Captura_de_pantalla_2025-05-26_a_las_12.54.08.png"},
   /* DENEUVE */
-  {id:28,model:"DENEUVE",color:"Tea",sku:"MN-DNVE-TEA",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/4.png?v=1744128401"},
-  {id:29,model:"DENEUVE",color:"Apple",sku:"MN-DNVE-APL",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/3.png?v=1744128438"},
-  {id:50,model:"DENEUVE",color:"Carey",sku:"MN-DNVE-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/5.png?v=1744128725"},
+  {id:28,model:"DENEUVE",color:"Tea",sku:"MN-DNVE-TEA",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/4.png"},
+  {id:29,model:"DENEUVE",color:"Apple",sku:"MN-DNVE-APL",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/3.png"},
+  {id:50,model:"DENEUVE",color:"Carey",sku:"MN-DNVE-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/5.png"},
   /* TOTTER */
-  {id:51,model:"TOTTER",color:"Leaf",sku:"MN-TTTR-LEF",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5627.jpg?v=1736961409"},
-  {id:52,model:"TOTTER",color:"Black",sku:"MN-TTTR-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5628_f2009249-e482-469c-bfe6-1aa130f6b96e.jpg?v=1736961200"},
-  {id:53,model:"TOTTER",color:"Carey",sku:"MN-TTTR-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5629.jpg?v=1736960651"},
+  {id:51,model:"TOTTER",color:"Leaf",sku:"MN-TTTR-LEF",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5627.jpg"},
+  {id:52,model:"TOTTER",color:"Black",sku:"MN-TTTR-BLK",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5628_f2009249-e482-469c-bfe6-1aa130f6b96e.jpg"},
+  {id:53,model:"TOTTER",color:"Carey",sku:"MN-TTTR-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5629.jpg"},
   /* RAINER */
-  {id:54,model:"RAINER",color:"Caramel",sku:"MN-RNRR-CRM",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/9.png?v=1743513072"},
-  {id:55,model:"RAINER",color:"Mandarine",sku:"MN-RNRR-MND",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/8.png?v=1743513032"},
-  {id:56,model:"RAINER",color:"Carey",sku:"MN-RNRR-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/10.png?v=1743512982"},
+  {id:54,model:"RAINER",color:"Caramel",sku:"MN-RNRR-CRM",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/9.png"},
+  {id:55,model:"RAINER",color:"Mandarine",sku:"MN-RNRR-MND",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/8.png"},
+  {id:56,model:"RAINER",color:"Carey",sku:"MN-RNRR-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/10.png"},
   /* ARIELLE */
-  {id:57,model:"ARIELLE",color:"Velvet",sku:"MN-AREL-VLV",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/55.png?v=1751627447"},
-  {id:58,model:"ARIELLE",color:"Carey",sku:"MN-AREL-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/54.png?v=1751627499"},
-  {id:59,model:"ARIELLE",color:"Dusty",sku:"MN-AREL-DSY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/53.png?v=1751627601"},
-  {id:60,model:"ARIELLE",color:"Pale Sandstone",sku:"MN-AREL-PLS",col:"Essential",cat:"Essential",stock:8,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/56.png?v=1751627379"},
+  {id:57,model:"ARIELLE",color:"Velvet",sku:"MN-AREL-VLV",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/55.png"},
+  {id:58,model:"ARIELLE",color:"Carey",sku:"MN-AREL-CRY",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/54.png"},
+  {id:59,model:"ARIELLE",color:"Dusty",sku:"MN-AREL-DSY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/53.png"},
+  {id:60,model:"ARIELLE",color:"Pale Sandstone",sku:"MN-AREL-PLS",col:"Essential",cat:"Essential",stock:8,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/56.png"},
   /* DOVER */
-  {id:61,model:"DOVER",color:"Hunter Blend",sku:"MN-DOVR-HBL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,tags:["rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/47.png?v=1751628002"},
-  {id:62,model:"DOVER",color:"Tea",sku:"MN-DOVR-TEA",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/48.png?v=1751627962"},
-  {id:63,model:"DOVER",color:"Shadow",sku:"MN-DOVR-SHD",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/49.png?v=1751627902"},
+  {id:61,model:"DOVER",color:"Hunter Blend",sku:"MN-DOVR-HBL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,tags:["rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/47.png"},
+  {id:62,model:"DOVER",color:"Tea",sku:"MN-DOVR-TEA",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/48.png"},
+  {id:63,model:"DOVER",color:"Shadow",sku:"MN-DOVR-SHD",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/49.png"},
   /* HAZEL */
-  {id:64,model:"HAZEL",color:"Noir",sku:"MN-HAZL-NOR",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/52.png?v=1751627673"},
-  {id:65,model:"HAZEL",color:"Carey",sku:"MN-HAZL-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/51.png?v=1751627760"},
-  {id:66,model:"HAZEL",color:"Petal",sku:"MN-HAZL-PTL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/50.png?v=1751627819"},
+  {id:64,model:"HAZEL",color:"Noir",sku:"MN-HAZL-NOR",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/52.png"},
+  {id:65,model:"HAZEL",color:"Carey",sku:"MN-HAZL-CRY",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/51.png"},
+  {id:66,model:"HAZEL",color:"Petal",sku:"MN-HAZL-PTL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/50.png"},
   /* COLETTE */
-  {id:67,model:"COLETTE",color:"Cocoa",sku:"MN-COLT-COC",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/44.png?v=1751628144"},
-  {id:68,model:"COLETTE",color:"Jungle",sku:"MN-COLT-JNG",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/118.png?v=1772012007"},
-  {id:69,model:"COLETTE",color:"Burnt",sku:"MN-COLT-BRN",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/46.png?v=1751628051"},
+  {id:67,model:"COLETTE",color:"Cocoa",sku:"MN-COLT-COC",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/44.png"},
+  {id:68,model:"COLETTE",color:"Jungle",sku:"MN-COLT-JNG",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/118.png"},
+  {id:69,model:"COLETTE",color:"Burnt",sku:"MN-COLT-BRN",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/46.png"},
   /* HEDY */
-  {id:70,model:"HEDY",color:"Guiza",sku:"MN-HEDY-GZA",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/37.png?v=1751628560"},
-  {id:71,model:"HEDY",color:"Matcha",sku:"MN-HEDY-MTC",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/38.png?v=1751628463"},
-  {id:72,model:"HEDY",color:"Jara",sku:"MN-HEDY-JRA",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/39.png?v=1751628423"},
+  {id:70,model:"HEDY",color:"Guiza",sku:"MN-HEDY-GZA",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/37.png"},
+  {id:71,model:"HEDY",color:"Matcha",sku:"MN-HEDY-MTC",col:"Essential",cat:"Essential",stock:18,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/38.png"},
+  {id:72,model:"HEDY",color:"Jara",sku:"MN-HEDY-JRA",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/39.png"},
   /* BOLDEN */
-  {id:73,model:"BOLDEN",color:"Ebony",sku:"MN-BLDN-EBN",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png?v=1772012212"},
-  {id:74,model:"BOLDEN",color:"Bruma",sku:"MN-BLDN-BRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/194.png?v=1772012134"},
-  {id:75,model:"BOLDEN",color:"Oliva",sku:"MN-BLDN-OLV",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/MINUE_12.png?v=1772012080"},
-  {id:175,model:"BOLDEN",color:"Wine",sku:"MN-BLDN-WNE",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/43.png?v=1772012212"},
-  {id:76,model:"BOLDEN",color:"Nude",sku:"MN-BLDN-NDE",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/MINUE_11.png?v=1772011954"},
+  {id:73,model:"BOLDEN",color:"Ebony",sku:"MN-BLDN-EBN",col:"Essential",cat:"Essential",stock:20,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png"},
+  {id:74,model:"BOLDEN",color:"Bruma",sku:"MN-BLDN-BRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/194.png"},
+  {id:75,model:"BOLDEN",color:"Oliva",sku:"MN-BLDN-OLV",col:"Essential",cat:"Essential",stock:14,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/MINUE_12.png"},
+  {id:175,model:"BOLDEN",color:"Wine",sku:"MN-BLDN-WNE",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/43.png"},
+  {id:76,model:"BOLDEN",color:"Nude",sku:"MN-BLDN-NDE",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/MINUE_11.png"},
   /* NOVA */
-  {id:77,model:"NOVA",color:"Black",sku:"MN-NOVA-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png?v=1772012212"},
-  {id:78,model:"NOVA",color:"Jade",sku:"MN-NOVA-JDE",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:""},
-  {id:79,model:"NOVA",color:"Ruby",sku:"MN-NOVA-RBY",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:""},
+  {id:77,model:"NOVA",color:"Black",sku:"MN-NOVA-BLK",col:"Essential",cat:"Essential",stock:22,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png"},
+  {id:78,model:"NOVA",color:"Jade",sku:"MN-NOVA-JDE",col:"Essential",cat:"Essential",stock:16,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png"},
+  {id:79,model:"NOVA",color:"Ruby",sku:"MN-NOVA-RBY",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/193.png"},
 
   /* ── ACETATO ── */
   /* SIENNA */
-  {id:30,model:"SIENNA",color:"Sepia",sku:"MN-SIEN-SPA",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/29.png?v=1748683236"},
-  {id:31,model:"SIENNA",color:"Bold",sku:"MN-SIEN-BLD",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/33_3c040278-f06c-433f-af83-8c28b46300bb.png?v=1748683158"},
+  {id:30,model:"SIENNA",color:"Sepia",sku:"MN-SIEN-SPA",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/29.png"},
+  {id:31,model:"SIENNA",color:"Bold",sku:"MN-SIEN-BLD",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/33_3c040278-f06c-433f-af83-8c28b46300bb.png"},
   /* ASTOR */
-  {id:32,model:"ASTOR",color:"Green",sku:"MN-ASTR-GRN",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/31.png?v=1748682300"},
-  {id:33,model:"ASTOR",color:"Bronze",sku:"MN-ASTR-BRZ",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/27.png?v=1748682187"},
+  {id:32,model:"ASTOR",color:"Green",sku:"MN-ASTR-GRN",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/31.png"},
+  {id:33,model:"ASTOR",color:"Bronze",sku:"MN-ASTR-BRZ",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/27.png"},
   /* ARDEN */
-  {id:34,model:"ARDEN",color:"Cocoa",sku:"MN-ARDN-COC",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/98.png?v=1772021745"},
-  {id:35,model:"ARDEN",color:"Champagne",sku:"MN-ARDN-CHP",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,tags:["top","new"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/120.png?v=1772015223"},
-  {id:36,model:"ARDEN",color:"Carey",sku:"MN-ARDN-CRY",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/121.png?v=1772021430"},
+  {id:34,model:"ARDEN",color:"Cocoa",sku:"MN-ARDN-COC",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/98.png"},
+  {id:35,model:"ARDEN",color:"Champagne",sku:"MN-ARDN-CHP",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,tags:["top","new"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/120.png"},
+  {id:36,model:"ARDEN",color:"Carey",sku:"MN-ARDN-CRY",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/121.png"},
   /* BARDOT */
-  {id:37,model:"BARDOT",color:"Carey",sku:"MN-BRDT-CRY",col:"Acetato",cat:"Acetato",stock:14,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/33.png?v=1748682550"},
+  {id:37,model:"BARDOT",color:"Carey",sku:"MN-BRDT-CRY",col:"Acetato",cat:"Acetato",stock:14,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/33.png"},
   /* JUNO */
-  {id:38,model:"JUNO",color:"Shade",sku:"MN-JUNO-SHD",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/28.png?v=1748683295"},
+  {id:38,model:"JUNO",color:"Shade",sku:"MN-JUNO-SHD",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/28.png"},
   /* NOVAK */
-  {id:39,model:"NOVAK",color:"Carey",sku:"MN-NOVK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,tags:["new","rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/91.png?v=1772021599"},
-  {id:40,model:"NOVAK",color:"Mocha",sku:"MN-NOVK-MCH",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/92.png?v=1772021879"},
+  {id:39,model:"NOVAK",color:"Carey",sku:"MN-NOVK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,tags:["new","rec"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/91.png"},
+  {id:40,model:"NOVAK",color:"Mocha",sku:"MN-NOVK-MCH",col:"Acetato",cat:"Acetato",stock:8,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/92.png"},
   /* IVY */
-  {id:41,model:"IVY",color:"Felline",sku:"MN-IVY-FLN",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/113.png?v=1772021505"},
+  {id:41,model:"IVY",color:"Felline",sku:"MN-IVY-FLN",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/113.png"},
   /* LEIHGT */
-  {id:42,model:"LEIHGT",color:"Chalk",sku:"MN-LHGT-CHK",col:"Acetato",cat:"Acetato",stock:6,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/112.png?v=1772021467"},
+  {id:42,model:"LEIHGT",color:"Chalk",sku:"MN-LHGT-CHK",col:"Acetato",cat:"Acetato",stock:6,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/112.png"},
   /* HAYEK */
-  {id:43,model:"HAYEK",color:"Carey",sku:"MN-HAYK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/85.png?v=1772022052"},
-  {id:44,model:"HAYEK",color:"Olive",sku:"MN-HAYK-OLV",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/86.png?v=1772022124"},
-  {id:45,model:"JUNO",color:"Sienna",sku:"MN-JUNO-SNA",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/28.png?v=1748683295"},
+  {id:43,model:"HAYEK",color:"Carey",sku:"MN-HAYK-CRY",col:"Acetato",cat:"Acetato",stock:12,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/85.png"},
+  {id:44,model:"HAYEK",color:"Olive",sku:"MN-HAYK-OLV",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/86.png"},
+  {id:45,model:"JUNO",color:"Sienna",sku:"MN-JUNO-SNA",col:"Acetato",cat:"Acetato",stock:10,fixedPrice:ACETATO_PRICE,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/28.png"},
   /* BLYTH */
-  {id:46,model:"BLYTH",color:"Greenwave",sku:"MN-BLTH-GRW",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/11.png?v=1744128541"},
-  {id:47,model:"BLYTH",color:"Carey",sku:"MN-BLTH-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/12.png?v=1744128572"},
+  {id:46,model:"BLYTH",color:"Greenwave",sku:"MN-BLTH-GRW",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/11.png"},
+  {id:47,model:"BLYTH",color:"Carey",sku:"MN-BLTH-CRY",col:"Essential",cat:"Essential",stock:15,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/12.png"},
   /* COOPER II */
-  {id:48,model:"COOPER II",color:"Caramel",sku:"MN-COP2-CRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5615.jpg?v=1727864700"},
-  {id:49,model:"COOPER II",color:"Buttercup",sku:"MN-COP2-BTC",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5622.jpg?v=1727865608"},
-  {id:50,model:"COOPER II",color:"Havana",sku:"MN-COP2-HVN",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5618.jpg?v=1727865289"},
-  {id:51,model:"COOPER II",color:"Grass",sku:"MN-COP2-GRS",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5620.jpg?v=1727866566"},
-  {id:52,model:"COOPER II",color:"Tiger",sku:"MN-COP2-TGR",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5617.jpg?v=1727865424"},
-  {id:53,model:"COOPER II",color:"Sierra",sku:"MN-COP2-SRA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5616.jpg?v=1727864221"},
-  {id:178,model:"COOPER II",color:"Moonlight",sku:"MN-COP2-MLT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5619.jpg?v=1727864082"},
-  {id:179,model:"CHASTAIN",color:"Rouge Light",sku:"MN-CHST-RLT",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/sa.png?v=1774601149"},
-  {id:180,model:"CHASTAIN",color:"Noir Violet",sku:"MN-CHST-NVL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/sadascas.png?v=1774601247"},
-  {id:181,model:"CHASTAIN",color:"Carey",sku:"MN-CHST-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/jjiasda.png?v=1774601210"},
-  {id:182,model:"CHASTAIN",color:"Olive",sku:"MN-CHST-OLV",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/saxaa.png?v=1774600965"},
-  {id:183,model:"BACALL",color:"Carey",sku:"MN-BCLL-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5600.jpg?v=1733274825"},
-  {id:184,model:"SEBERG",color:"Amber",sku:"MN-SBRG-AMB",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/15.png?v=1743513249"},
-  {id:185,model:"HART",color:"Havana",sku:"MN-HART-HVN",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/20.png?v=1743513155"},
-  {id:186,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg?v=1706549002"},
-  {id:187,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8114.jpg?v=1706549393"},
-  {id:188,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4503.jpg?v=1706549185"},
+  {id:48,model:"COOPER II",color:"Caramel",sku:"MN-COP2-CRM",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5615.jpg"},
+  {id:49,model:"COOPER II",color:"Buttercup",sku:"MN-COP2-BTC",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5622.jpg"},
+  {id:50,model:"COOPER II",color:"Havana",sku:"MN-COP2-HVN",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5618.jpg"},
+  {id:51,model:"COOPER II",color:"Grass",sku:"MN-COP2-GRS",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5620.jpg"},
+  {id:52,model:"COOPER II",color:"Tiger",sku:"MN-COP2-TGR",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5617.jpg"},
+  {id:53,model:"COOPER II",color:"Sierra",sku:"MN-COP2-SRA",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5616.jpg"},
+  {id:178,model:"COOPER II",color:"Moonlight",sku:"MN-COP2-MLT",col:"Essential",cat:"Essential",stock:12,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5619.jpg"},
+  {id:179,model:"CHASTAIN",color:"Rouge Light",sku:"MN-CHST-RLT",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/sa.png"},
+  {id:180,model:"CHASTAIN",color:"Noir Violet",sku:"MN-CHST-NVL",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/sadascas.png"},
+  {id:181,model:"CHASTAIN",color:"Carey",sku:"MN-CHST-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/jjiasda.png"},
+  {id:182,model:"CHASTAIN",color:"Olive",sku:"MN-CHST-OLV",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/saxaa.png"},
+  {id:183,model:"BACALL",color:"Carey",sku:"MN-BCLL-CRY",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5600.jpg"},
+  {id:184,model:"SEBERG",color:"Amber",sku:"MN-SBRG-AMB",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/15.png"},
+  {id:185,model:"HART",color:"Havana",sku:"MN-HART-HVN",col:"Essential",cat:"Essential",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/20.png"},
+  {id:186,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg"},
+  {id:187,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8114.jpg"},
+  {id:188,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4503.jpg"},
   /* ── ICONS ── */
   /* GUGU */
-  {id:100,model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/GUGUGOLDGREENMINUEWEB.png?v=1624405247"},
+  {id:100,model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/GUGUGOLDGREENMINUEWEB.png"},
   /* MOORE */
-  {id:101,model:"MOORE",color:"Kaffa",sku:"MN-MOOR-KFA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MOORECAREY.png?v=1624407820"},
-  {id:102,model:"MOORE",color:"Black",sku:"MN-MOOR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MOOREBLACK.png?v=1624407810"},
+  {id:101,model:"MOORE",color:"Kaffa",sku:"MN-MOOR-KFA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MOORECAREY.png"},
+  {id:102,model:"MOORE",color:"Black",sku:"MN-MOOR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MOOREBLACK.png"},
   /* CLEO */
-  {id:103,model:"CLEO",color:"Tea",sku:"MN-CLEO-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2571_3f836e1a-078b-4f97-8b6e-0e6d0dbc30d7.jpg?v=1719409791"},
-  {id:104,model:"CLEO",color:"Black",sku:"MN-CLEO-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2568_0cdea3e3-91be-451b-97a0-301f495895da.jpg?v=1719409751"},
+  {id:103,model:"CLEO",color:"Tea",sku:"MN-CLEO-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2571_3f836e1a-078b-4f97-8b6e-0e6d0dbc30d7.jpg"},
+  {id:104,model:"CLEO",color:"Black",sku:"MN-CLEO-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2568_0cdea3e3-91be-451b-97a0-301f495895da.jpg"},
   /* GRANT */
-  {id:105,model:"GRANT",color:"Black",sku:"MN-GRNT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5614.jpg?v=1736962061"},
-  {id:106,model:"GRANT",color:"Carey",sku:"MN-GRNT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5612.jpg?v=1731610444"},
-  {id:107,model:"GRANT",color:"Caramel",sku:"MN-GRNT-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5613.jpg?v=1727865943"},
+  {id:105,model:"GRANT",color:"Black",sku:"MN-GRNT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5614.jpg"},
+  {id:106,model:"GRANT",color:"Carey",sku:"MN-GRNT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5612.jpg"},
+  {id:107,model:"GRANT",color:"Caramel",sku:"MN-GRNT-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5613.jpg"},
   /* BERRY */
-  {id:108,model:"BERRY",color:"Navy",sku:"MN-BRRY-NVY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0256.jpg?v=1719409561"},
-  {id:109,model:"BERRY",color:"Carbon",sku:"MN-BRRY-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0241.jpg?v=1719409633"},
-  {id:110,model:"BERRY",color:"Carey Brown",sku:"MN-BRRY-CBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3770.jpg?v=1719409523"},
-  {id:111,model:"BERRY",color:"Tea",sku:"MN-BRRY-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0263.jpg?v=1719409656"},
+  {id:108,model:"BERRY",color:"Navy",sku:"MN-BRRY-NVY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0256.jpg"},
+  {id:109,model:"BERRY",color:"Carbon",sku:"MN-BRRY-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0241.jpg"},
+  {id:110,model:"BERRY",color:"Carey Brown",sku:"MN-BRRY-CBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3770.jpg"},
+  {id:111,model:"BERRY",color:"Tea",sku:"MN-BRRY-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0263.jpg"},
   /* STONE */
-  {id:112,model:"STONE",color:"Black",sku:"MN-STON-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0231.jpg?v=1706549246"},
-  {id:113,model:"STONE",color:"Tea",sku:"MN-STON-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0217.jpg?v=1706549258"},
+  {id:112,model:"STONE",color:"Black",sku:"MN-STON-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0231.jpg"},
+  {id:113,model:"STONE",color:"Tea",sku:"MN-STON-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0217.jpg"},
   /* FOSTER */
-  {id:114,model:"FOSTER",color:"Gold-Black",sku:"MN-FSTR-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0248.jpg?v=1719409781"},
-  {id:115,model:"FOSTER",color:"Carbon",sku:"MN-FSTR-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0250.jpg?v=1719409737"},
-  {id:116,model:"FOSTER",color:"Gold-Brown",sku:"MN-FSTR-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0246.jpg?v=1719409768"},
+  {id:114,model:"FOSTER",color:"Gold-Black",sku:"MN-FSTR-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0248.jpg"},
+  {id:115,model:"FOSTER",color:"Carbon",sku:"MN-FSTR-CRB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0250.jpg"},
+  {id:116,model:"FOSTER",color:"Gold-Brown",sku:"MN-FSTR-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0246.jpg"},
   /* ROBERTS */
-  {id:117,model:"ROBERTS",color:"Carrot",sku:"MN-RBRT-CRT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2547.jpg?v=1706644733"},
-  {id:118,model:"ROBERTS",color:"Peanut",sku:"MN-RBRT-PNT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2546.jpg?v=1706644964"},
-  {id:119,model:"ROBERTS",color:"Jasper",sku:"MN-RBRT-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2549.jpg?v=1706644639"},
-  {id:120,model:"ROBERTS",color:"Black",sku:"MN-RBRT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3768.jpg?v=1719408867"},
-  {id:121,model:"ROBERTS",color:"Green Carey",sku:"MN-RBRT-GCR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3774.jpg?v=1719409189"},
-  {id:122,model:"ROBERTS",color:"Carey",sku:"MN-RBRT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2548.jpg?v=1706644921"},
+  {id:117,model:"ROBERTS",color:"Carrot",sku:"MN-RBRT-CRT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2547.jpg"},
+  {id:118,model:"ROBERTS",color:"Peanut",sku:"MN-RBRT-PNT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2546.jpg"},
+  {id:119,model:"ROBERTS",color:"Jasper",sku:"MN-RBRT-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2549.jpg"},
+  {id:120,model:"ROBERTS",color:"Black",sku:"MN-RBRT-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3768.jpg"},
+  {id:121,model:"ROBERTS",color:"Green Carey",sku:"MN-RBRT-GCR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3774.jpg"},
+  {id:122,model:"ROBERTS",color:"Carey",sku:"MN-RBRT-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2548.jpg"},
   /* THURMAN */
-  {id:123,model:"THURMAN",color:"Black",sku:"MN-THRM-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2553.jpg?v=1706546573"},
-  {id:124,model:"THURMAN",color:"Carey",sku:"MN-THRM-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2556.jpg?v=1706545324"},
-  {id:125,model:"THURMAN",color:"Ember",sku:"MN-THRM-EMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5592.jpg?v=1733275246"},
-  {id:126,model:"THURMAN",color:"Caramel",sku:"MN-THRM-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5625.jpg?v=1727867103"},
-  {id:127,model:"THURMAN",color:"Cloud",sku:"MN-THRM-CLD",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3764.jpg?v=1719407557"},
+  {id:123,model:"THURMAN",color:"Black",sku:"MN-THRM-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2553.jpg"},
+  {id:124,model:"THURMAN",color:"Carey",sku:"MN-THRM-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_2556.jpg"},
+  {id:125,model:"THURMAN",color:"Ember",sku:"MN-THRM-EMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5592.jpg"},
+  {id:126,model:"THURMAN",color:"Caramel",sku:"MN-THRM-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5625.jpg"},
+  {id:127,model:"THURMAN",color:"Cloud",sku:"MN-THRM-CLD",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3764.jpg"},
   /* MACLAINE */
-  {id:128,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4503.jpg?v=1706549185"},
-  {id:129,model:"MACLAINE",color:"Black",sku:"MN-MCLN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4504.jpg?v=1706549200"},
+  {id:128,model:"MACLAINE",color:"Tea",sku:"MN-MCLN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4503.jpg"},
+  {id:129,model:"MACLAINE",color:"Black",sku:"MN-MCLN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4504.jpg"},
   /* LAWRENCE */
-  {id:130,model:"LAWRENCE",color:"Guiza",sku:"MN-LWRC-GZA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/image_b5a853c2-8868-432d-b7a6-df3510f4be8c.webp?v=1706548881"},
-  {id:131,model:"LAWRENCE",color:"Caramel",sku:"MN-LWRC-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4508.jpg?v=1706548928"},
-  {id:132,model:"LAWRENCE",color:"Carey",sku:"MN-LWRC-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0211.jpg?v=1706548914"},
-  {id:133,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg?v=1706549002"},
-  {id:134,model:"LAWRENCE",color:"Velvet",sku:"MN-LWRC-VLV",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5843.jpg?v=1706548901"},
-  {id:135,model:"LAWRENCE",color:"Black",sku:"MN-LWRC-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg?v=1706549002"},
+  {id:130,model:"LAWRENCE",color:"Guiza",sku:"MN-LWRC-GZA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/image_b5a853c2-8868-432d-b7a6-df3510f4be8c.webp"},
+  {id:131,model:"LAWRENCE",color:"Caramel",sku:"MN-LWRC-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4508.jpg"},
+  {id:132,model:"LAWRENCE",color:"Carey",sku:"MN-LWRC-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0211.jpg"},
+  {id:133,model:"LAWRENCE",color:"Bay",sku:"MN-LWRC-BAY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg"},
+  {id:134,model:"LAWRENCE",color:"Velvet",sku:"MN-LWRC-VLV",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5843.jpg"},
+  {id:135,model:"LAWRENCE",color:"Black",sku:"MN-LWRC-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4505.jpg"},
   /* MIRREN */
-  {id:136,model:"MIRREN",color:"Black",sku:"MN-MRRN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4511.jpg?v=1706549157"},
-  {id:137,model:"MIRREN",color:"Carey",sku:"MN-MRRN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0212.jpg?v=1706549139"},
-  {id:138,model:"MIRREN",color:"Tea",sku:"MN-MRRN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4510.jpg?v=1706549169"},
+  {id:136,model:"MIRREN",color:"Black",sku:"MN-MRRN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4511.jpg"},
+  {id:137,model:"MIRREN",color:"Carey",sku:"MN-MRRN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0212.jpg"},
+  {id:138,model:"MIRREN",color:"Tea",sku:"MN-MRRN-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4510.jpg"},
   /* LANE */
-  {id:139,model:"LANE",color:"Black",sku:"MN-LANE-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5628.jpg?v=1733275142"},
-  {id:140,model:"LANE",color:"Lightblue",sku:"MN-LANE-LBL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3766.jpg?v=1719407312"},
-  {id:141,model:"LANE",color:"Opal",sku:"MN-LANE-OPL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3776.jpg?v=1719406353"},
-  {id:142,model:"LANE",color:"Tea",sku:"MN-LANE-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3771.jpg?v=1719408184"},
-  {id:143,model:"LANE",color:"Ambar",sku:"MN-LANE-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3765.jpg?v=1719079483"},
-  {id:144,model:"LANE",color:"Carey",sku:"MN-LANE-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3767_d9fd096e-b787-435c-9c15-18dd34ea86ce.jpg?v=1719407062"},
-  {id:145,model:"LANE",color:"Grass",sku:"MN-LANE-GRS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3769.jpg?v=1719407499"},
+  {id:139,model:"LANE",color:"Black",sku:"MN-LANE-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5628.jpg"},
+  {id:140,model:"LANE",color:"Lightblue",sku:"MN-LANE-LBL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3766.jpg"},
+  {id:141,model:"LANE",color:"Opal",sku:"MN-LANE-OPL",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3776.jpg"},
+  {id:142,model:"LANE",color:"Tea",sku:"MN-LANE-TEA",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3771.jpg"},
+  {id:143,model:"LANE",color:"Ambar",sku:"MN-LANE-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3765.jpg"},
+  {id:144,model:"LANE",color:"Carey",sku:"MN-LANE-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3767_d9fd096e-b787-435c-9c15-18dd34ea86ce.jpg"},
+  {id:145,model:"LANE",color:"Grass",sku:"MN-LANE-GRS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3769.jpg"},
   /* HARLOW */
-  {id:146,model:"HARLOW",color:"Gold-Green",sku:"MN-HRLW-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Myproject-1_4.png?v=1719410015"},
-  {id:147,model:"HARLOW",color:"Gold-Brown",sku:"MN-HRLW-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0251.jpg?v=1719410010"},
-  {id:148,model:"HARLOW",color:"Gold-Black",sku:"MN-HRLW-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Myproject-1.png?v=1719410002"},
+  {id:146,model:"HARLOW",color:"Gold-Green",sku:"MN-HRLW-GGR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Myproject-1_4.png"},
+  {id:147,model:"HARLOW",color:"Gold-Brown",sku:"MN-HRLW-GBR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0251.jpg"},
+  {id:148,model:"HARLOW",color:"Gold-Black",sku:"MN-HRLW-GBK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Myproject-1.png"},
   /* MAKEY */
-  {id:149,model:"MAKEY",color:"Carey",sku:"MN-MAKY-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MAKEYCAREYWEB.png?v=1706644291"},
-  {id:150,model:"MAKEY",color:"Black Cherry",sku:"MN-MAKY-BCH",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/M3RB.png?v=1597346675"},
-  {id:151,model:"MAKEY",color:"Black",sku:"MN-MAKY-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MAKEYBLACKWEB.png?v=1706644271"},
-  {id:152,model:"MAKEY",color:"Snow",sku:"MN-MAKY-SNW",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MBLNEGW.png?v=1624407752"},
+  {id:149,model:"MAKEY",color:"Carey",sku:"MN-MAKY-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MAKEYCAREYWEB.png"},
+  {id:150,model:"MAKEY",color:"Black Cherry",sku:"MN-MAKY-BCH",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/M3RB.png"},
+  {id:151,model:"MAKEY",color:"Black",sku:"MN-MAKY-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MAKEYBLACKWEB.png"},
+  {id:152,model:"MAKEY",color:"Snow",sku:"MN-MAKY-SNW",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/MBLNEGW.png"},
   /* LOREN */
-  {id:153,model:"LOREN",color:"Toffee",sku:"MN-LORN-TFE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4650.jpg?v=1706549405"},
-  {id:154,model:"LOREN",color:"Cream",sku:"MN-LORN-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5838.jpg?v=1706549370"},
-  {id:155,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8114.jpg?v=1706549393"},
-  {id:156,model:"LOREN",color:"Carey",sku:"MN-LORN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4647.jpg?v=1706549382"},
+  {id:153,model:"LOREN",color:"Toffee",sku:"MN-LORN-TFE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4650.jpg"},
+  {id:154,model:"LOREN",color:"Cream",sku:"MN-LORN-CRM",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5838.jpg"},
+  {id:155,model:"LOREN",color:"Black",sku:"MN-LORN-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8114.jpg"},
+  {id:156,model:"LOREN",color:"Carey",sku:"MN-LORN-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4647.jpg"},
   /* CARROL */
-  {id:157,model:"CARROL",color:"Rowan",sku:"MN-CRRL-RWN",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0258.jpg?v=1719409687"},
-  {id:158,model:"CARROL",color:"Cedar",sku:"MN-CRRL-CDR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0254.jpg?v=1719409677"},
+  {id:157,model:"CARROL",color:"Rowan",sku:"MN-CRRL-RWN",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0258.jpg"},
+  {id:158,model:"CARROL",color:"Cedar",sku:"MN-CRRL-CDR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0254.jpg"},
   /* ARETHA */
-  {id:159,model:"ARETHA",color:"Rosse",sku:"MN-ARTH-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8147.jpg?v=1719409647"},
-  {id:160,model:"ARETHA",color:"Carey",sku:"MN-ARTH-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8156.jpg?v=1719409618"},
-  {id:161,model:"ARETHA",color:"Black",sku:"MN-ARTH-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8160.jpg?v=1719409571"},
+  {id:159,model:"ARETHA",color:"Rosse",sku:"MN-ARTH-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8147.jpg"},
+  {id:160,model:"ARETHA",color:"Carey",sku:"MN-ARTH-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8156.jpg"},
+  {id:161,model:"ARETHA",color:"Black",sku:"MN-ARTH-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_8160.jpg"},
   /* KARINA */
-  {id:162,model:"KARINA",color:"Copo",sku:"MN-KRNA-CPO",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0235.jpg?v=1706549356"},
-  {id:163,model:"KARINA",color:"Jade",sku:"MN-KRNA-JDE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Minueoptician210222-010.jpg?v=1706549314"},
-  {id:164,model:"KARINA",color:"Black",sku:"MN-KRNA-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4507.jpg?v=1706549340"},
-  {id:165,model:"KARINA",color:"Ruby",sku:"MN-KRNA-RBY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Minueoptician210222-011.jpg?v=1706549326"},
+  {id:162,model:"KARINA",color:"Copo",sku:"MN-KRNA-CPO",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0235.jpg"},
+  {id:163,model:"KARINA",color:"Jade",sku:"MN-KRNA-JDE",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Minueoptician210222-010.jpg"},
+  {id:164,model:"KARINA",color:"Black",sku:"MN-KRNA-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4507.jpg"},
+  {id:165,model:"KARINA",color:"Ruby",sku:"MN-KRNA-RBY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/Minueoptician210222-011.jpg"},
   /* ZIYI */
-  {id:166,model:"ZIYI",color:"Mandarine",sku:"MN-ZIYI-MND",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5842.jpg?v=1706546893"},
-  {id:167,model:"ZIYI",color:"Rosse",sku:"MN-ZIYI-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0220.jpg?v=1706546913"},
-  {id:168,model:"ZIYI",color:"Jasper",sku:"MN-ZIYI-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5844.jpg?v=1706546883"},
-  {id:169,model:"ZIYI",color:"Agate",sku:"MN-ZIYI-AGT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5839.jpg?v=1706546840"},
-  {id:170,model:"ZIYI",color:"Amber",sku:"MN-ZIYI-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5840.jpg?v=1706546872"},
+  {id:166,model:"ZIYI",color:"Mandarine",sku:"MN-ZIYI-MND",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5842.jpg"},
+  {id:167,model:"ZIYI",color:"Rosse",sku:"MN-ZIYI-RSS",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_0220.jpg"},
+  {id:168,model:"ZIYI",color:"Jasper",sku:"MN-ZIYI-JSP",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5844.jpg"},
+  {id:169,model:"ZIYI",color:"Agate",sku:"MN-ZIYI-AGT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5839.jpg"},
+  {id:170,model:"ZIYI",color:"Amber",sku:"MN-ZIYI-AMB",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5840.jpg"},
   /* LAMARR */
-  {id:171,model:"LAMARR",color:"Carbon Mate",sku:"MN-LMRR-CMT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4646.jpg?v=1706549430"},
-  {id:172,model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4639.jpg?v=1706549463"},
-  {id:173,model:"LAMARR",color:"Carey",sku:"MN-LMRR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4649.jpg?v=1706549452"},
-  {id:174,model:"LAMARR",color:"Dark",sku:"MN-LMRR-DRK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3772.jpg?v=1719409330"},
+  {id:171,model:"LAMARR",color:"Carbon Mate",sku:"MN-LMRR-CMT",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4646.jpg"},
+  {id:172,model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4639.jpg"},
+  {id:173,model:"LAMARR",color:"Carey",sku:"MN-LMRR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/products/IMG_4649.jpg"},
+  {id:174,model:"LAMARR",color:"Dark",sku:"MN-LMRR-DRK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_3772.jpg"},
   /* KERR */
-  {id:176,model:"KERR",color:"Black",sku:"MN-KERR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5635.jpg?v=1738668123"},
-  {id:177,model:"KERR",color:"Carey",sku:"MN-KERR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5634.jpg?v=1738667845"}
+  {id:176,model:"KERR",color:"Black",sku:"MN-KERR-BLK",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5635.jpg"},
+  {id:177,model:"KERR",color:"Carey",sku:"MN-KERR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5634.jpg"}
 ];
 
 const ORDERS_INIT = [
@@ -838,6 +857,12 @@ export default function App() {
   const [accountSaved, setAccountSaved] = useState(false);
   const [faqs, setFaqs] = useState(FAQ_INIT);
   const [tasks, setTasks] = useState(TASKS_INIT);
+  const [timeclock, setTimeclock] = useState([]);
+  const [clockStatus, setClockStatus] = useState(null);
+  const [geoError, setGeoError] = useState("");
+  const OFFICE_LAT = 37.39926;
+  const OFFICE_LNG = -5.98668;
+  const MAX_DISTANCE = 20;
   const [taskFilter, setTaskFilter] = useState("all");
   const [helpOpen, setHelpOpen] = useState(false);
   const [helpExpanded, setHelpExpanded] = useState(null);
@@ -848,6 +873,9 @@ export default function App() {
   const [ordStatusFilter, setOrdStatusFilter] = useState("all");
   const [ordPayFilter, setOrdPayFilter] = useState("all");
   const [stockSearch, setStockSearch] = useState("");
+  const [stockFilter, setStockFilter] = useState("all");
+  const [stockShowAll, setStockShowAll] = useState(false);
+  const [expandedModels, setExpandedModels] = useState({});
   const [cartNotes, setCartNotes] = useState("");
   const [favs, setFavs] = useState([]);
   const dbToggleFav = async (productId) => { if (!dbReady || !user) return; try { const isFav = favs.includes(productId); if (isFav) { await supabase.from("user_favorites").delete().eq("user_email", user.email).eq("product_id", productId); } else { await supabase.from("user_favorites").insert({user_email: user.email, product_id: productId}); } } catch(e) { console.log("Fav error:", e); } };
@@ -877,6 +905,8 @@ export default function App() {
   const [shapeFilter, setShapeFilter] = useState("all");
   const [colorFilter, setColorFilter] = useState("all");
   const [filterPanel, setFilterPanel] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [userFilter, setUserFilter] = useState("all");
   const [cardQtys, setCardQtys] = useState({});
   const [ed, setEd] = useState({});
@@ -896,7 +926,17 @@ export default function App() {
     const load = async () => {
       try {
         const {data:prods} = await supabase.from("products").select("*").eq("active",true);
-        if (prods && prods.length > 0) setProducts(prods.map(dbToProduct));
+        if (prods && prods.length > 0) {
+          const localProducts = products;
+          setProducts(prods.map(r => {
+            const dbProd = dbToProduct(r);
+            if (!dbProd.imageUrl) {
+              const local = localProducts.find(lp => lp.sku === dbProd.sku || (lp.model === dbProd.model && lp.color === dbProd.color));
+              if (local && local.imageUrl) dbProd.imageUrl = local.imageUrl;
+            }
+            return dbProd;
+          }));
+        }
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
@@ -925,6 +965,8 @@ export default function App() {
         if (defs) setDefectives(defs);
         const {data:pinv} = await supabase.from("packaging_inventory").select("*");
         if (pinv && pinv.length > 0) { const ps = {}; pinv.forEach(p => { ps[p.item_type] = p.quantity; }); setPackStock(prev => ({...prev,...ps})); }
+        const {data:tcs} = await supabase.from("timeclock").select("*").order("timestamp",{ascending:false});
+        if (tcs) { setTimeclock(tcs); if (user) { const last = tcs.find(d => d.user_email === user.email); setClockStatus(last?.type === "in" ? "in" : "out"); } }
       } catch(e) { console.log("DB load fallback:", e); }
       setLoading(false);
     };
@@ -968,6 +1010,13 @@ export default function App() {
   const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
   const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
   const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
+
+  /* ═══ TIMECLOCK FUNCTIONS ═══ */
+  const getDistance = (lat1, lon1, lat2, lon2) => { const R=6371000;const dLat=(lat2-lat1)*Math.PI/180;const dLon=(lon2-lon1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)); };
+  const dbSaveTimeclock = async (entry) => { if (!dbReady) return; try { await supabase.from("timeclock").insert({user_email:entry.email,type:entry.type,latitude:entry.lat,longitude:entry.lng,distance_m:entry.distance,timestamp:new Date().toISOString()}); } catch(e) { console.log("DB timeclock:", e); } };
+  const loadTimeclock = async () => { if (!dbReady) return; try { const {data} = await supabase.from("timeclock").select("*").order("timestamp",{ascending:false}); if (data) { setTimeclock(data); const last = data.find(d => d.user_email === user?.email); setClockStatus(last?.type === "in" ? "in" : "out"); } } catch(e) { console.log("TC load:", e); } };
+  const doTimeclock = (type) => { setGeoError(""); if (!navigator.geolocation) { setGeoError(t("ubicacionNoDisponible")); return; } navigator.geolocation.getCurrentPosition(pos => { const dist = getDistance(pos.coords.latitude, pos.coords.longitude, OFFICE_LAT, OFFICE_LNG); if (dist > MAX_DISTANCE) { setGeoError(t("fueraDeRango") + " (" + Math.round(dist) + "m)"); return; } const entry = {email:user.email,type,lat:pos.coords.latitude,lng:pos.coords.longitude,distance:Math.round(dist)}; dbSaveTimeclock(entry); setTimeclock(p => [{...entry,timestamp:new Date().toISOString(),user_email:user.email},...p]); setClockStatus(type); setGeoError(""); }, err => { setGeoError(t("ubicacionNoDisponible") + " ("+err.message+")"); }, {enableHighAccuracy:true,timeout:10000}); };
+  const getHours = (records, email, startDate, endDate) => { const recs = records.filter(r => r.user_email === email && new Date(r.timestamp) >= startDate && new Date(r.timestamp) <= endDate).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp)); let total = 0; for (let i = 0; i < recs.length - 1; i += 2) { if (recs[i].type === "in" && recs[i+1]?.type === "out") { total += (new Date(recs[i+1].timestamp) - new Date(recs[i].timestamp)) / 3600000; } } return total; };
 
   /* i18n helper */
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
@@ -1191,11 +1240,11 @@ export default function App() {
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
-    ? [["e-dash","dashboard"],["a-ord","commandes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-faq","faq"]];
+    ? [["e-dash","dashboard"],["a-ord","commandes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
+    : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
-  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"};
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2"};
   const bottomItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
     : role === "distributor"
@@ -1425,6 +1474,58 @@ export default function App() {
     );
   };
 
+  /* ═══ MODEL CATALOG GRID ═══ */
+  const renderModelCatalog = () => {
+    const filtered = products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase())));
+    const modelGroups = {};
+    filtered.forEach(p => {
+      if (!modelGroups[p.model]) modelGroups[p.model] = {model:p.model, col:p.col, colors:[], tags:new Set()};
+      modelGroups[p.model].colors.push(p);
+      (p.tags||[]).forEach(t => modelGroups[p.model].tags.add(t));
+    });
+    const models = Object.values(modelGroups);
+    const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
+    return <>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:12}}>
+        {models.map(mg => {
+          const mainColor = mg.colors.find(c => c.imageUrl) || mg.colors[0];
+          const isAcetato = mg.col === "Acetato";
+          const totalInCart = mg.colors.reduce((s,c) => s + (cart[c.id]||0), 0);
+          const minStock = Math.min(...mg.colors.map(c => c.stock));
+          return <div key={mg.model} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",cursor:"pointer",transition:"box-shadow 0.2s"}} onClick={() => { setSelectedModel(mg); setSelectedColorIdx(0); setModal("viewModel"); }}
+            onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 16px rgba(24,51,47,0.12)"}
+            onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
+            <div style={{height:"min(180px, 42vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+              {mainColor.imageUrl ? <img src={mainColor.imageUrl} alt={mg.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:32,color:C.ln,fontFamily:DP}}>MINUË</span>}
+              <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{mg.col}</span>
+              {[...mg.tags].filter(tg => tagConf[tg]).length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
+                {[...mg.tags].map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase"}}>{tagConf[tg].l}</span> : null)}
+              </div>}
+              {totalInCart > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{totalInCart}</span>}
+            </div>
+            <div style={{padding:"12px 14px",background:darkMode?C.bg2:"#faf6f1"}}>
+              <div style={{fontSize:15,fontWeight:500,fontFamily:DP,color:C.dk}}>{mg.model}</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
+                <span style={{fontSize:11,color:C.gr,fontFamily:BD}}>{mg.colors.length} {t("couleurs")}</span>
+                <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>
+                  {isAcetato ? fmt(mg.colors[0]?.fixedPrice||27.90) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €
+                </span>
+              </div>
+              {/* Color dots preview */}
+              <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>
+                {mg.colors.slice(0,6).map((c,i) => <div key={i} style={{width:20,height:20,borderRadius:10,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                  {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <div style={{width:"100%",height:"100%",background:C.bg}} />}
+                </div>)}
+                {mg.colors.length > 6 && <span style={{fontSize:9,fontFamily:BD,color:C.gr,display:"flex",alignItems:"center"}}>+{mg.colors.length-6}</span>}
+              </div>
+            </div>
+          </div>;
+        })}
+      </div>
+      {models.length === 0 && <div style={{textAlign:"center",padding:40,fontFamily:BD,color:C.gr}}>{t("noResults")}</div>}
+    </>;
+  };
+
   const renderOrderRow = (o, i, showComm, showDist) => (
     <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"11px 14px",borderBottom:"1px solid "+C.bg2,background:C.wh,flexWrap:"wrap",cursor:"pointer"}} onClick={() => { if (role === "admin" || role === "team") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o}); }}}>
       <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{o.id}</span>
@@ -1635,6 +1736,72 @@ export default function App() {
           </>}
 
           {/* EDIT STOCK */}
+          {/* MODEL DETAIL MODAL */}
+          {modal === "viewModel" && selectedModel && (() => {
+            const mg = selectedModel;
+            const colors = mg.colors;
+            const sel = colors[selectedColorIdx] || colors[0];
+            const isAcetato = mg.col === "Acetato";
+            const displayPrice = isAcetato ? (sel.fixedPrice||27.90) : (customPrice > 0 ? customPrice : essentialUnitPrice);
+            return <>
+              <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+                {/* LEFT: Image */}
+                <div style={{flex:"1 1 260px",minWidth:200}}>
+                  <div style={{height:260,background:C.wh,borderRadius:6,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:10}}>
+                    {sel.imageUrl ? <img src={sel.imageUrl} alt={sel.model+" "+sel.color} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:40,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                  </div>
+                  {/* Color thumbnails */}
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    {colors.map((c,i) => <div key={i} onClick={() => setSelectedColorIdx(i)} style={{width:48,height:48,borderRadius:6,border:selectedColorIdx===i?"2px solid "+C.dk:"1px solid "+C.ln,overflow:"hidden",cursor:"pointer",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",transition:"border 0.2s"}}>
+                      {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} /> : <span style={{fontSize:6,color:C.gr,fontFamily:BD}}>—</span>}
+                    </div>)}
+                  </div>
+                </div>
+                {/* RIGHT: Info + colors */}
+                <div style={{flex:"1 1 240px",minWidth:200}}>
+                  <div style={{fontSize:9,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"3px 10px",borderRadius:10,display:"inline-block",marginBottom:8,fontWeight:500}}>{mg.col}</div>
+                  <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:C.dk,marginBottom:2}}>{mg.model}</div>
+                  <div style={{fontSize:13,fontFamily:BD,color:C.gr,marginBottom:4}}>{sel.color}</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginBottom:12}}>{sel.sku}</div>
+                  <div style={{display:"flex",gap:16,marginBottom:16}}>
+                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>Wholesale</div><div style={{fontSize:20,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</div></div>
+                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>PVP</div><div style={{fontSize:16,fontWeight:400,fontFamily:BD,color:C.gr}}>{isAcetato?"70":"45-50"} €</div></div>
+                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>Stock</div><div style={{fontSize:16,fontWeight:600,fontFamily:BD,color:sel.stock===0?C.rd:sel.stock<5?C.yl:C.gn}}>{sel.stock}</div></div>
+                  </div>
+                  {/* Color list with add to cart */}
+                  <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:8}}>{mg.colors.length} {t("couleurs")} :</div>
+                  <div style={{maxHeight:200,overflowY:"auto"}}>
+                    {colors.map((c,i) => {
+                      const cq = getCardQty(c.id);
+                      const inCart = cart[c.id]>0;
+                      return <div key={c.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:6,marginBottom:4,background:selectedColorIdx===i?C.dk+"08":inCart?C.gn+"08":"transparent",border:"1px solid "+(selectedColorIdx===i?C.dk+"20":inCart?C.gn+"20":"transparent"),cursor:"pointer"}} onClick={() => setSelectedColorIdx(i)}>
+                        <div style={{width:32,height:32,borderRadius:4,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0,background:C.wh}}>
+                          {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                        </div>
+                        <div style={{flex:1}}>
+                          <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:selectedColorIdx===i?600:400}}>{c.color}</div>
+                          <div style={{fontSize:9,fontFamily:BD,color:c.stock===0?C.rd:c.stock<5?C.yl:C.gr}}>Stock: {c.stock}{inCart?" · 🛒 x"+cart[c.id]:""}</div>
+                        </div>
+                        <div style={{display:"flex",alignItems:"center",gap:2,flexShrink:0}}>
+                          <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:3,overflow:"hidden"}}>
+                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, cq-1); }} style={{width:24,height:26,background:C.bg,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk}}>-</button>
+                            <span style={{minWidth:22,textAlign:"center",fontSize:11,fontFamily:BD,fontWeight:600}}>{cq}</span>
+                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, cq+1); }} style={{width:24,height:26,background:C.bg,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk}}>+</button>
+                          </div>
+                          <button onClick={e => { e.stopPropagation(); addToCart(c.id, cq); }} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",fontSize:9,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>+🛒</button>
+                        </div>
+                      </div>;
+                    })}
+                  </div>
+                  {role !== "admin" && <button onClick={() => { const isFav = favs.includes(sel.id); setFavs(f => isFav?f.filter(x=>x!==sel.id):[...f,sel.id]); dbToggleFav(sel.id); }} style={{marginTop:12,padding:"8px 16px",background:"transparent",border:"1px solid "+(favs.includes(sel.id)?"#6b4c3b":C.ln),borderRadius:4,fontSize:10,fontFamily:BD,color:favs.includes(sel.id)?"#6b4c3b":C.gr,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill={favs.includes(sel.id)?"#6b4c3b":"none"} stroke={favs.includes(sel.id)?"#6b4c3b":"#999"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    {favs.includes(sel.id)?t("retirerFav"):t("ajouterFav")}
+                  </button>}
+                </div>
+              </div>
+            </>;
+          })()}
+
           {modal === "editSt" && <>
             {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden"}}>
               <img src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6}} />
@@ -1678,6 +1845,42 @@ export default function App() {
               </div>
             </div>
             <Btn onClick={() => { setProducts(p => p.map(pr => pr.id === ed.id ? {...pr, stock: parseInt(ed.stock)||0, tags: ed.tags||[], shape: ed.shape||"", colorFamily: ed.colorFamily||""} : pr)); dbUpdateProduct({...ed, stock: parseInt(ed.stock)||0}); setModal(null); }} style={{width:"100%"}}>{t("mettreAJour")}</Btn>
+          </>}
+
+          {/* SUPPLIER ORDER - editable */}
+          {modal === "supplierOrder" && <>
+            <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:4}}>📋 Pedido proveedor</div>
+            <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>Ajusta las cantidades antes de exportar · {(ed.lines||[]).filter(l => l._order > 0).length} productos · {(ed.lines||[]).reduce((s,l) => s+(l._order||0), 0)} uds total</div>
+            <div style={{maxHeight:"55vh",overflowY:"auto",border:"1px solid "+C.ln,borderRadius:6,background:C.wh}}>
+              {/* Header */}
+              <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 10px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:9,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.5,position:"sticky",top:0,zIndex:1}}>
+                <span style={{width:32}}></span>
+                <span style={{flex:1}}>PRODUCTO</span>
+                <span style={{width:40,textAlign:"center"}}>STOCK</span>
+                <span style={{width:40,textAlign:"center"}}>VEND.</span>
+                <span style={{width:40,textAlign:"center"}}>SUG.</span>
+                <span style={{width:56,textAlign:"center"}}>PEDIR</span>
+              </div>
+              {(ed.lines||[]).map((l,i) => <div key={l.sku} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid "+C.bg2,background:l._order>0?(l.stock===0?C.rd+"06":C.bl+"04"):"transparent"}}>
+                <div style={{width:32,height:32,borderRadius:3,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                  {l.imageUrl ? <img src={l.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{l.model} </span>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{l.color}</span>
+                  <div style={{fontSize:8,fontFamily:BD,color:C.gr2}}>{l.sku}</div>
+                </div>
+                <span style={{width:40,textAlign:"center",fontSize:11,fontFamily:BD,color:l.stock===0?C.rd:l.stock<5?C.yl:C.dk,fontWeight:600}}>{l.stock}</span>
+                <span style={{width:40,textAlign:"center",fontSize:10,fontFamily:BD,color:C.bl}}>{l._sold}</span>
+                <span style={{width:40,textAlign:"center",fontSize:10,fontFamily:BD,color:C.gr}}>{l._sug}</span>
+                <input type="number" min="0" value={l._order||0} onChange={e => { const val = parseInt(e.target.value)||0; setEd(p => ({...p, lines:p.lines.map((ll,j) => j===i?{...ll,_order:val}:ll)})); }} style={{width:56,padding:"4px 2px",border:"1px solid "+(l._order>0?C.bl+"50":C.ln),borderRadius:3,fontFamily:BD,fontSize:12,fontWeight:600,background:l._order>0?C.bl+"08":C.wh,color:C.dk,textAlign:"center",boxSizing:"border-box"}} />
+              </div>)}
+            </div>
+            <div style={{display:"flex",gap:10,marginTop:14}}>
+              <button onClick={() => setEd(p => ({...p, lines:p.lines.map(l => ({...l,_order:l._sug}))}))} style={{flex:1,padding:"10px 0",background:C.bg,border:"1px solid "+C.ln,borderRadius:4,fontSize:10,fontFamily:BD,color:C.dk,cursor:"pointer",fontWeight:500}}>↺ Resetear sugeridos</button>
+              <button onClick={() => setEd(p => ({...p, lines:p.lines.map(l => ({...l,_order:0}))}))} style={{padding:"10px 14px",background:C.bg,border:"1px solid "+C.ln,borderRadius:4,fontSize:10,fontFamily:BD,color:C.gr,cursor:"pointer"}}>Limpiar</button>
+            </div>
+            <Btn onClick={() => { const toOrder = (ed.lines||[]).filter(l => l._order > 0); if(toOrder.length===0) return; const csv = "SKU;Modelo;Color;Coleccion;Stock actual;Vendidos;Cantidad pedida\n" + toOrder.map(l => [l.sku,l.model,l.color,l.col,l.stock,l._sold,l._order].join(";")).join("\n"); const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"}); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href=url; a.download="pedido_proveedor_"+new Date().toISOString().slice(0,10)+".csv"; a.click(); setModal(null); }} style={{width:"100%",marginTop:8}}>📥 Descargar CSV ({(ed.lines||[]).filter(l => l._order > 0).length} productos · {(ed.lines||[]).reduce((s,l) => s+(l._order||0), 0)} uds)</Btn>
           </>}
 
           {/* NEW PRODUCT */}
@@ -2390,14 +2593,15 @@ export default function App() {
           {/* VIEW DISTRIBUTOR */}
           {modal === "viewDist" && <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:4}}>
-              <div style={{width:36,height:36,borderRadius:18,background:C.bl+"20",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,fontFamily:BD,color:C.bl}}>{ed.name[0]}</div>
-              <div>
+              <div style={{width:36,height:36,borderRadius:18,background:C.bl+"20",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,fontFamily:BD,color:C.bl}}>{ed.name?.[0]||"?"}</div>
+              <div style={{flex:1}}>
                 <div style={{fontSize:16,fontFamily:DP,color:C.dk,fontWeight:600}}>{ed.co || ed.name}</div>
-                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{ed.name} · {ed.email} · {ed.commRate||15}%</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{ed.name} · {ed.email} · {ed.commRate||15}%{ed.city?" · "+ed.city:""}{ed.country?" ("+ed.country+")":""}</div>
               </div>
+              {role==="admin" && <button onClick={() => setEd(p => ({...p, _tab:"edit"}))} style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"12",border:"1px solid "+C.bl+"30",borderRadius:4,padding:"6px 12px",cursor:"pointer",fontWeight:500}}>{t("editer")}</button>}
             </div>
             <div style={{display:"flex",gap:4,margin:"12px 0",borderBottom:"1px solid "+C.ln,overflowX:"auto"}}>
-              {[["resume",t("resumeClient")],["clients",t("clients")],["orders",t("commandes")],...(role==="admin"?[["liquid",t("liquidaciones")]]:[]),["notes",t("notesDistrib")]].map(([v,l]) => (
+              {[["resume",t("resumeClient")],["clients",t("clients")],["orders",t("commandes")],...(role==="admin"?[["liquid",t("liquidaciones")],["edit",t("editer")]]:[]),["notes",t("notesDistrib")]].map(([v,l]) => (
                 <button key={v} onClick={() => setEd(p => ({...p, _tab:v}))} style={{padding:"8px 14px",background:"none",border:"none",borderBottom:"2px solid "+((ed._tab||"resume")===v?C.dk:"transparent"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:(ed._tab||"resume")===v?600:400,color:(ed._tab||"resume")===v?C.dk:C.gr,whiteSpace:"nowrap"}}>{l}</button>
               ))}
             </div>
@@ -2472,9 +2676,53 @@ export default function App() {
               <textarea value={ed.distNotes||""} onChange={e => setEd(p => ({...p, distNotes:e.target.value}))} rows={6} placeholder="..." style={{width:"100%",padding:12,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",lineHeight:1.6}} />
               <Btn onClick={() => { setPrivateNotes(p => ({...p, ["dist_"+ed.email]:ed.distNotes})); if(user) dbSavePrivateNote(user.email, "dist_"+ed.email, ed.distNotes||""); setModal(null); }} style={{width:"100%",marginTop:8}}>{t("enregistrer")}</Btn>
             </>}
+
+            {ed._tab === "edit" && <>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 14px"}}>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")}</div><input value={ed.name||""} onChange={e => setEd(p => ({...p, name:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")}</div><input value={ed.co||""} onChange={e => setEd(p => ({...p, co:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")}</div><input value={ed.email||""} disabled style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg+"80",color:C.gr,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div><input value={ed.phone||""} onChange={e => setEd(p => ({...p, phone:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("ville")}</div><input value={ed.city||""} onChange={e => setEd(p => ({...p, city:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pays")}</div><input value={ed.country||""} onChange={e => setEd(p => ({...p, country:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commission")} %</div><input type="number" value={ed.commRate||""} onChange={e => setEd(p => ({...p, commRate:Number(e.target.value)}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("langue")}</div><select value={ed.lang||"fr"} onChange={e => setEd(p => ({...p, lang:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}><option value="fr">Français</option><option value="es">Español</option><option value="en">English</option><option value="it">Italiano</option></select></div>
+              </div>
+              <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,margin:"16px 0 8px"}}>{t("datosFacturacion")}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 14px"}}>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>VAT / NIF</div><input value={ed.vatId||""} onChange={e => setEd(p => ({...p, vatId:e.target.value}))} placeholder="IT01234567890" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("adresse")}</div><input value={ed.address||""} onChange={e => setEd(p => ({...p, address:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>IBAN</div><input value={ed.iban||""} onChange={e => setEd(p => ({...p, iban:e.target.value}))} placeholder="IT60..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>BIC / SWIFT</div><input value={ed.bic||""} onChange={e => setEd(p => ({...p, bic:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              </div>
+              <Btn onClick={() => { const upd = {...ed, origEmail:ed.email}; setUsers(p => p.map(u => u.email===ed.email?{...u,name:ed.name,co:ed.co,phone:ed.phone,city:ed.city,country:ed.country,commRate:ed.commRate,lang:ed.lang,notes:"VAT:"+( ed.vatId||"")+"\\nAddr:"+(ed.address||"")+"\\nIBAN:"+(ed.iban||"")+"\\nBIC:"+(ed.bic||"")}:u)); dbUpdateUser({...upd,notes:"VAT:"+(ed.vatId||"")+"\\nAddr:"+(ed.address||"")+"\\nIBAN:"+(ed.iban||"")+"\\nBIC:"+(ed.bic||"")}); setModal(null); }} style={{width:"100%",marginTop:14}}>{t("enregistrer")}</Btn>
+            </>}
           </>}
 
-          {/* NEW PACKAGING */}
+          {/* NEW DISTRIBUTOR */}
+          {modal === "newDist" && <>
+            <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:16}}>+ {t("distributeur")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 14px"}}>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("contact")} *</div><input value={ed.name||""} onChange={e => setEd(p => ({...p, name:e.target.value}))} placeholder="Marcelo Rossi" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")} *</div><input value={ed.co||""} onChange={e => setEd(p => ({...p, co:e.target.value}))} placeholder="Ottica Milano" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("email")} *</div><input value={ed.email||""} onChange={e => setEd(p => ({...p, email:e.target.value}))} placeholder="marcelo@ottica.it" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("motDePasse")} *</div><input value={ed.pw||""} onChange={e => setEd(p => ({...p, pw:e.target.value}))} placeholder="min. 8" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("telephone")}</div><input value={ed.phone||""} onChange={e => setEd(p => ({...p, phone:e.target.value}))} placeholder="+39..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("ville")}</div><input value={ed.city||""} onChange={e => setEd(p => ({...p, city:e.target.value}))} placeholder="Milano" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pays")}</div><input value={ed.country||""} onChange={e => setEd(p => ({...p, country:e.target.value}))} placeholder="IT" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commission")} %</div><input type="number" value={ed.commRate||""} onChange={e => setEd(p => ({...p, commRate:e.target.value}))} placeholder="15" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("langue")}</div><select value={ed.lang||"fr"} onChange={e => setEd(p => ({...p, lang:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}><option value="fr">Français</option><option value="es">Español</option><option value="en">English</option><option value="it">Italiano</option></select></div>
+            </div>
+            <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,margin:"16px 0 8px"}}>{t("datosFacturacion")} ({t("nouveau")})</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px 14px"}}>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>VAT / NIF</div><input value={ed.vatId||""} onChange={e => setEd(p => ({...p, vatId:e.target.value}))} placeholder="IT01234567890" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("adresse")}</div><input value={ed.address||""} onChange={e => setEd(p => ({...p, address:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>IBAN</div><input value={ed.iban||""} onChange={e => setEd(p => ({...p, iban:e.target.value}))} placeholder="IT60..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>BIC / SWIFT</div><input value={ed.bic||""} onChange={e => setEd(p => ({...p, bic:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+            </div>
+            {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginTop:10}}>{loginErr}</div>}
+            <Btn onClick={() => { if(!ed.name||!ed.email||!ed.pw){setLoginErr(t("errLogin"));return;} if(users.find(u=>u.email.toLowerCase()===ed.email.toLowerCase())){setLoginErr("Email exists");return;} const nu={email:ed.email,pw:ed.pw,role:"distributor",name:ed.name,co:ed.co,lang:ed.lang||"it",commRate:Number(ed.commRate)||15,active:true,phone:ed.phone,city:ed.city,country:ed.country,notes:"VAT:"+(ed.vatId||"")+"\\nAddr:"+(ed.address||"")+"\\nIBAN:"+(ed.iban||"")+"\\nBIC:"+(ed.bic||"")}; setUsers(p=>[...p,nu]); dbSaveUser(nu); setLoginErr(""); setModal(null); }} style={{width:"100%",marginTop:14}}>{t("enregistrer")}</Btn>
+          </>}
           {modal === "newPack" && <>
             <div style={{marginBottom:12}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("packType")}</div>
@@ -2826,9 +3074,7 @@ export default function App() {
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>
-          {products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}
-        </div>
+        {renderModelCatalog()}
       </Sec>}
 
       {view === "c-cart" && <Sec title={t("panier")}>
@@ -3158,7 +3404,7 @@ export default function App() {
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12}}>{products.filter(p => (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase()))).map(p => renderCard(p))}</div>
+        {renderModelCatalog()}
       </Sec>}
 
       {view === "d-cart" && <Sec title={t("panier")}>
@@ -3569,7 +3815,7 @@ export default function App() {
       </Sec>}
 
       {/* ADMIN DISTRIBUTORS */}
-      {view === "a-dist" && <Sec title={t("distributeurs")}>
+      {view === "a-dist" && <Sec title={t("distributeurs")} right={role==="admin" && <Btn small onClick={() => { setModal("newDist"); setEd({name:"",co:"",email:"",pw:"",phone:"",city:"",country:"",commRate:"15",lang:"fr",vatId:"",address:"",iban:"",bic:""}); }}>+ {t("distributeur")}</Btn>}>
         {(() => {
           const dists = users.filter(u => u.role === "distributor");
           return dists.length === 0
@@ -3585,10 +3831,14 @@ export default function App() {
                 return (
                   <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewDist"); setEd({...d, _dLabel:dLabel, _dClients:dClients, _dOrders:dOrders, _dSales:dSales, _dComm:dComm, _dPaid:dPaid, _tab:"resume", distNotes:privateNotes["dist_"+d.email]||""}); }}>
                     <div style={{padding:"16px 20px",display:"flex",alignItems:"center",gap:14}}>
-                      <div style={{width:40,height:40,borderRadius:20,background:C.bl+"20",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:700,fontFamily:BD,color:C.bl,flexShrink:0}}>{d.name[0]}</div>
+                      <div style={{width:40,height:40,borderRadius:20,background:C.bl+"20",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:700,fontFamily:BD,color:C.bl,flexShrink:0}}>{d.name?.[0]||"?"}</div>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700}}>{d.co || d.name}</div>
-                        <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{d.name} · {d.email} · {d.phone||""}</div>
+                        <div style={{display:"flex",alignItems:"center",gap:8}}>
+                          <span style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700}}>{d.co || d.name}</span>
+                          <span style={{fontSize:9,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 8px",borderRadius:10}}>{d.commRate||15}%</span>
+                          {d.country && <span style={{fontSize:9,fontFamily:BD,color:C.gr,background:C.bg,padding:"2px 8px",borderRadius:10}}>{d.country}</span>}
+                        </div>
+                        <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{d.name} · {d.email}{d.phone?" · "+d.phone:""}{d.city?" · "+d.city:""}</div>
                       </div>
                       <div style={{display:"flex",gap:16,alignItems:"center",flexShrink:0}}>
                         <div style={{textAlign:"center"}}><div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("clients")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dClients.length}</div></div>
@@ -3603,36 +3853,175 @@ export default function App() {
         })()}
       </Sec>}
 
-      {view === "a-stock" && <Sec title={t("gestionStock")} right={<Btn small onClick={() => { setModal("newProd"); setEd({model:"",color:"",sku:"",cat:"Essential",col:"Essential",stock:"20",fixedPrice:0}); }}>{t("nouveauProduit")}</Btn>}>
-        <div style={{display:"flex",gap:6,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
-            <button key={v} onClick={() => setColFilter(v)} style={{padding:"6px 14px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
-          ))}
-          <span style={{flex:1}} />
-          {(() => { const out = products.filter(p => p.stock === 0).length; const low = products.filter(p => p.stock > 0 && p.stock < 5).length; return <>
-            {out > 0 && <span style={{fontSize:10,fontFamily:BD,color:"#fff",background:C.rd,padding:"3px 10px",borderRadius:10,fontWeight:600}}>{out} {t("agotado")}</span>}
-            {low > 0 && <span style={{fontSize:10,fontFamily:BD,color:C.yl,background:C.yl+"15",padding:"3px 10px",borderRadius:10,fontWeight:600}}>{low} {t("alerteStock")}</span>}
-          </>; })()}
-          <input placeholder={t("rechercherProd")} value={stockSearch} onChange={e => setStockSearch(e.target.value)} style={{padding:"6px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(170px, 30vw)"}} />
-        </div>
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {products.filter(p => (colFilter === "all" || p.col === colFilter) && (!stockSearch || p.model.toLowerCase().includes(stockSearch.toLowerCase()) || p.color.toLowerCase().includes(stockSearch.toLowerCase()) || p.sku.toLowerCase().includes(stockSearch.toLowerCase()))).map((p, i) => (
-            <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"08":p.stock<5?C.yl+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock: String(p.stock)}); }}>
-              <div style={{width:40,height:40,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}>
-                {p.imageUrl ? <img src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:BD}}>—</span>}
+      {view === "a-stock" && <Sec title={t("gestionStock")} right={<div style={{display:"flex",gap:6}}><Btn small ghost onClick={() => { const allLines = orders.flatMap(o => (o.lines||[]).map(l => ({...l}))); const velocity = {}; products.forEach(p => { velocity[p.sku] = allLines.filter(l => l.sku === p.sku).reduce((s,l) => s+l.qty, 0); }); const restock = products.filter(p => p.stock < 10 || (velocity[p.sku]||0) > p.stock).sort((a,b) => (a.stock-(velocity[a.sku]||0))-(b.stock-(velocity[b.sku]||0))).map(p => { const sold=velocity[p.sku]||0; const sug=Math.max(0,Math.ceil(sold*1.5)-p.stock); return {...p,_sold:sold,_sug:sug,_order:sug}; }); setModal("supplierOrder"); setEd({lines:restock}); }}>📋 Pedido proveedor</Btn><Btn small onClick={() => { setModal("newProd"); setEd({model:"",color:"",sku:"",cat:"Essential",col:"Essential",stock:"20",fixedPrice:0}); }}>{t("nouveauProduit")}</Btn></div>}>
+        {(() => {
+          const allLines = orders.flatMap(o => (o.lines||[]).map(l => ({...l})));
+          const velocity = {}; products.forEach(p => { velocity[p.sku] = allLines.filter(l => l.sku === p.sku).reduce((s,l) => s+l.qty, 0); });
+          const totalStock = products.reduce((s,p) => s+p.stock, 0);
+          const outOfStock = products.filter(p => p.stock === 0);
+          const lowStock = products.filter(p => p.stock > 0 && p.stock < 5);
+          const alertStock = products.filter(p => p.stock >= 5 && p.stock < 10);
+          const needRestock = products.filter(p => p.stock < 10 && (velocity[p.sku]||0) >= p.stock);
+          const problemProducts = products.filter(p => p.stock === 0 || p.stock < 5 || (p.stock < 10 && (velocity[p.sku]||0) >= p.stock)).sort((a,b) => a.stock - b.stock);
+          const topSold = [...products].sort((a,b) => (velocity[b.sku]||0)-(velocity[a.sku]||0)).slice(0,5);
+
+          /* Group by model */
+          const modelGroups = {};
+          const filteredProducts = products.filter(p => {
+            const matchCol = colFilter === "all" || p.col === colFilter;
+            const matchSearch = !stockSearch || p.model.toLowerCase().includes(stockSearch.toLowerCase()) || p.color.toLowerCase().includes(stockSearch.toLowerCase()) || p.sku.toLowerCase().includes(stockSearch.toLowerCase());
+            return matchCol && matchSearch;
+          });
+          filteredProducts.forEach(p => {
+            if (!modelGroups[p.model]) modelGroups[p.model] = {model:p.model, col:p.col, colors:[], totalStock:0, totalSold:0, imageUrl:""};
+            modelGroups[p.model].colors.push(p);
+            modelGroups[p.model].totalStock += p.stock;
+            modelGroups[p.model].totalSold += (velocity[p.sku]||0);
+            if (!modelGroups[p.model].imageUrl && p.imageUrl) modelGroups[p.model].imageUrl = p.imageUrl;
+          });
+          const modelList = Object.values(modelGroups).sort((a,b) => a.totalStock - b.totalStock);
+
+          return <>
+          {/* KPI CARDS */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:8,marginBottom:16}}>
+            {[[totalStock,"STOCK TOTAL",C.dk,"all"],[outOfStock.length,"AGOTADOS",C.rd,"out"],[lowStock.length,"< 5 UDS",C.yl,"low"],[alertStock.length,"< 10 UDS","#e67e22","alert"],[needRestock.length,"REPONER",C.bl,"restock"]].map(([val,label,color,fk]) =>
+              <div key={fk} onClick={() => { setStockFilter(fk); if(fk!=="all") setStockShowAll(true); }} style={{background:stockFilter===fk?color+"12":C.wh,border:"1px solid "+(stockFilter===fk?color+"40":C.ln),borderRadius:8,padding:"10px 8px",textAlign:"center",cursor:"pointer"}}>
+                <div style={{fontSize:22,fontWeight:300,fontFamily:DP,color}}>{val}</div>
+                <div style={{fontSize:8,color:color+"90",fontFamily:BD,letterSpacing:0.5,fontWeight:600}}>{label}</div>
               </div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",alignItems:"baseline",gap:6}}>
-                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</span>
-                  <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span>
+            )}
+          </div>
+
+          {/* TOP SELLERS */}
+          <div style={{marginBottom:16}}>
+            <div style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk,marginBottom:8}}>🔥 Top vendidos</div>
+            <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
+              {topSold.map(p => <div key={p.sku} style={{minWidth:120,background:C.wh,border:"1px solid "+(p.stock<5?C.rd+"40":C.ln),borderRadius:6,padding:"8px 10px",flexShrink:0}}>
+                <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
+                  {p.imageUrl && <img src={p.imageUrl} style={{width:24,height:24,objectFit:"contain",borderRadius:2}} />}
+                  <div><div style={{fontSize:10,fontWeight:600,fontFamily:BD}}>{p.model}</div><div style={{fontSize:8,color:C.gr,fontFamily:BD}}>{p.color}</div></div>
                 </div>
-                <div style={{fontSize:9,fontFamily:BD,color:C.gr2,marginTop:1}}>{p.sku}</div>
-              </div>
-              <span style={{fontSize:9,fontFamily:BD,color:p.col==="Acetato"?"#7a5c3a":C.gr2,background:p.col==="Acetato"?"#e8d5c0":C.bg,padding:"2px 6px",borderRadius:10,flexShrink:0}}>{p.col}</span>
-              <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:p.stock<5?C.rd+"12":"transparent",padding:p.stock===0?"3px 8px":"0 4px",borderRadius:10,minWidth:32,textAlign:"center",flexShrink:0}}>{p.stock===0?t("agotado"):p.stock}</span>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:9,fontFamily:BD}}>
+                  <span style={{color:C.bl}}>Vend: {velocity[p.sku]||0}</span>
+                  <span style={{color:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,fontWeight:700}}>St: {p.stock}</span>
+                </div>
+              </div>)}
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* SEARCH + FILTERS */}
+          <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
+            <input placeholder={"🔍 "+t("rechercherProd")} value={stockSearch} onChange={e => setStockSearch(e.target.value)} style={{padding:"7px 12px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />
+            {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) =>
+              <button key={v} onClick={() => setColFilter(v)} style={{padding:"5px 12px",background:colFilter===v?C.dk:"transparent",color:colFilter===v?C.bg:C.gr,border:"1px solid "+(colFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:3}}>{l}</button>
+            )}
+            <span style={{flex:1}} />
+            <button onClick={() => { setStockShowAll(!stockShowAll); setStockFilter("all"); }} style={{padding:"5px 14px",background:stockShowAll?C.dk:C.bl+"12",color:stockShowAll?C.bg:C.bl,border:"1px solid "+(stockShowAll?C.dk:C.bl+"30"),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:600,borderRadius:3}}>{stockShowAll?"✕ Solo problemas":"📦 Ver todo"}</button>
+          </div>
+
+          {/* DEFAULT: ONLY PROBLEMS */}
+          {!stockShowAll && !stockSearch && stockFilter==="all" && <>
+            {problemProducts.length === 0 ? <div style={{textAlign:"center",padding:30,color:C.gn,fontFamily:BD,fontSize:13}}>✓ Todo el stock OK — sin urgencias</div> :
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              <div style={{padding:"8px 12px",background:C.rd+"08",borderBottom:"1px solid "+C.rd+"15",fontSize:10,fontFamily:BD,fontWeight:600,color:C.rd}}>⚠ {problemProducts.length} productos necesitan atención</div>
+              {problemProducts.map((p,i) => {
+                const sold = velocity[p.sku]||0;
+                const ratio = sold > 0 && p.stock > 0 ? p.stock/sold : p.stock===0?0:99;
+                return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":C.yl+"04",cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
+                  <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                  </div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span>
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span>
+                    <div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku} · {p.col}</div>
+                  </div>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.bl,minWidth:45,textAlign:"center"}}>Vend: {sold}</span>
+                  <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":C.rd,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:40,textAlign:"center"}}>{p.stock===0?"AGOTADO":p.stock}</span>
+                  <span style={{fontSize:14}}>{p.stock===0?"🔴":ratio<1?"🟠":"🟡"}</span>
+                </div>;
+              })}
+            </div>}
+          </>}
+
+          {/* FILTERED VIEW (when clicking KPI cards) */}
+          {!stockShowAll && (stockSearch || stockFilter!=="all") && <>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:filteredProducts).sort((a,b)=>a.stock-b.stock).map((p,i) => {
+                const sold=velocity[p.sku]||0;
+                return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
+                  <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                  </div>
+                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
+                  <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
+                  <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:35,textAlign:"center"}}>{p.stock===0?"AGT":p.stock}</span>
+                </div>;
+              })}
+              {(stockFilter==="out"?outOfStock:stockFilter==="low"?lowStock:stockFilter==="alert"?alertStock:stockFilter==="restock"?needRestock:filteredProducts).length===0 && <div style={{padding:20,textAlign:"center",fontSize:12,color:C.gr}}>—</div>}
+            </div>
+          </>}
+
+          {/* VER TODO: GROUPED BY MODEL */}
+          {stockShowAll && !stockSearch && <>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              {modelList.map((mg,mi) => {
+                const isExpanded = expandedModels[mg.model];
+                const hasProblems = mg.colors.some(c => c.stock < 5);
+                const minStock = Math.min(...mg.colors.map(c=>c.stock));
+                return <div key={mg.model}>
+                  <div onClick={() => setExpandedModels(p => ({...p,[mg.model]:!p[mg.model]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderBottom:"1px solid "+C.bg2,background:hasProblems?(minStock===0?C.rd+"06":C.yl+"04"):(mi%2?C.bg:C.wh),cursor:"pointer"}}>
+                    <span style={{fontSize:10,color:C.gr,width:14,flexShrink:0}}>{isExpanded?"▼":"▶"}</span>
+                    <div style={{width:32,height:32,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                      {mg.imageUrl ? <img src={mg.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                    </div>
+                    <div style={{flex:1}}>
+                      <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.dk}}>{mg.model}</span>
+                      <span style={{fontSize:10,fontFamily:BD,color:C.gr,marginLeft:6}}>{mg.colors.length} colores</span>
+                    </div>
+                    <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{mg.col}</span>
+                    <span style={{fontSize:10,fontFamily:BD,color:C.bl,minWidth:45,textAlign:"center"}}>Vend: {mg.totalSold}</span>
+                    <span style={{fontSize:14,fontWeight:700,fontFamily:BD,color:minStock===0?C.rd:minStock<5?C.yl:minStock<10?"#e67e22":C.gn,minWidth:35,textAlign:"center"}}>{mg.totalStock}</span>
+                    <span style={{fontSize:13}}>{minStock===0?"🔴":minStock<5?"🟡":"🟢"}</span>
+                  </div>
+                  {isExpanded && mg.colors.sort((a,b) => a.stock-b.stock).map((p,ci) => {
+                    const sold=velocity[p.sku]||0;
+                    return <div key={p.sku} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 12px 7px 48px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"04":C.bg,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
+                      <div style={{width:28,height:28,borderRadius:3,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                        {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                      </div>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.dk,flex:1}}>{p.color}</span>
+                      <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</span>
+                      <span style={{fontSize:9,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
+                      <span style={{fontSize:12,fontWeight:700,fontFamily:BD,color:p.stock===0?C.rd:p.stock<5?C.yl:C.gn,minWidth:30,textAlign:"center"}}>{p.stock}</span>
+                      <span style={{fontSize:12}}>{p.stock===0?"🔴":p.stock<5?"🟡":"🟢"}</span>
+                    </div>;
+                  })}
+                </div>;
+              })}
+            </div>
+          </>}
+
+          {/* VER TODO + SEARCH: flat filtered list */}
+          {stockShowAll && stockSearch && <>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+              {filteredProducts.sort((a,b) => a.stock-b.stock).map((p,i) => {
+                const sold=velocity[p.sku]||0;
+                return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
+                  <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
+                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                  </div>
+                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
+                  <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
+                  <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:35,textAlign:"center"}}>{p.stock===0?"AGT":p.stock}</span>
+                </div>;
+              })}
+            </div>
+          </>}
+
+        </>;})()}
       </Sec>}
 
       {view === "a-inv" && <Sec title={t("factures")}>
@@ -4262,6 +4651,69 @@ export default function App() {
           ))}
           {faqs.filter(f => (role === "admin" || role === "team") ? true : f.on).length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:30}}>—</div>}
         </div>
+      </Sec>}
+
+      {/* ═══ EMPLOYEE CLOCK IN/OUT ═══ */}
+      {view === "e-fichaje" && <Sec title={t("fichaje")} sub="Calle Ardilla 13, Sevilla">
+        <div style={{maxWidth:400,margin:"0 auto",textAlign:"center"}}>
+          <div style={{width:120,height:120,borderRadius:60,background:clockStatus==="in"?"#2d6b4f18":"#18332f08",border:"2px solid "+(clockStatus==="in"?"#2d6b4f":"#18332f20"),display:"flex",alignItems:"center",justifyContent:"center",margin:"20px auto",fontSize:40}}>{clockStatus==="in"?"🟢":"⚪"}</div>
+          <div style={{fontSize:18,fontWeight:600,marginBottom:6}}>{clockStatus==="in"?t("fichado"):t("noFichado")}</div>
+          <div style={{fontSize:12,color:CL.dk+"60",marginBottom:24}}>{new Date().toLocaleDateString(lang,{weekday:"long",day:"numeric",month:"long"})}</div>
+          {geoError && <div style={{fontSize:11,color:"#e74c3c",background:"#e74c3c08",border:"1px solid #e74c3c20",borderRadius:6,padding:"10px 14px",marginBottom:16}}>{geoError}</div>}
+          <div style={{display:"flex",gap:12,justifyContent:"center",marginBottom:30}}>
+            <button onClick={() => doTimeclock("in")} disabled={clockStatus==="in"} style={{padding:"14px 32px",background:clockStatus==="in"?"#18332f30":"#2d6b4f",color:"#fff",border:"none",borderRadius:6,fontSize:13,fontFamily:BD,fontWeight:600,cursor:clockStatus==="in"?"default":"pointer",opacity:clockStatus==="in"?0.4:1}}>{t("ficharEntrada")}</button>
+            <button onClick={() => doTimeclock("out")} disabled={clockStatus!=="in"} style={{padding:"14px 32px",background:clockStatus!=="in"?"#18332f30":"#e74c3c",color:"#fff",border:"none",borderRadius:6,fontSize:13,fontFamily:BD,fontWeight:600,cursor:clockStatus!=="in"?"default":"pointer",opacity:clockStatus!=="in"?0.4:1}}>{t("ficharSalida")}</button>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:30}}>
+            {[["horasHoy",getHours(timeclock,user?.email,new Date(new Date().setHours(0,0,0,0)),new Date())],["horasSemana",getHours(timeclock,user?.email,new Date(new Date().setDate(new Date().getDate()-new Date().getDay()+1)),new Date())],["horasMes",getHours(timeclock,user?.email,new Date(new Date().getFullYear(),new Date().getMonth(),1),new Date())]].map(([k,v]) => <div key={k} style={{background:"#fff",border:"1px solid #18332f10",borderRadius:8,padding:14,textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP}}>{v.toFixed(1)}h</div><div style={{fontSize:10,color:CL.dk+"60"}}>{t(k)}</div></div>)}
+          </div>
+          <div style={{textAlign:"left"}}>
+            <div style={{fontSize:13,fontWeight:600,marginBottom:10}}>{t("historialFichajes")}</div>
+            {timeclock.filter(r => r.user_email === user?.email).slice(0,20).map((r,i) => <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:i%2?"transparent":"#18332f04",borderRadius:4,fontSize:11}}>
+              <span style={{fontWeight:500,color:r.type==="in"?"#2d6b4f":"#e74c3c"}}>{r.type==="in"?"▶ "+t("entrada"):"◼ "+t("salida")}</span>
+              <span style={{color:CL.dk+"60"}}>{new Date(r.timestamp).toLocaleString(lang,{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</span>
+              <span style={{color:CL.dk+"40"}}>{r.distance_m || r.distance || "—"}m</span>
+            </div>)}
+            {timeclock.filter(r => r.user_email === user?.email).length === 0 && <div style={{fontSize:12,color:CL.dk+"40",textAlign:"center",padding:20}}>{t("sinFichajes")}</div>}
+          </div>
+        </div>
+      </Sec>}
+
+      {/* ═══ ADMIN EMPLOYEES SECTION ═══ */}
+      {view === "a-empleados" && <Sec title={t("empleados")} sub={t("fichaje") + " · Calle Ardilla 13, Sevilla · " + MAX_DISTANCE + "m max"}>
+        {(() => { const teamUsers = users.filter(u => u.role === "team"); const now = new Date(); const today = new Date(now.getFullYear(),now.getMonth(),now.getDate()); const weekStart = new Date(today); weekStart.setDate(today.getDate()-today.getDay()+1); const monthStart = new Date(now.getFullYear(),now.getMonth(),1); return teamUsers.length === 0 ? <div style={{textAlign:"center",padding:40,color:CL.dk+"40"}}>{t("noResults")}</div> : teamUsers.map(emp => {
+          const empRecs = timeclock.filter(r => r.user_email === emp.email);
+          const lastRec = empRecs[0];
+          const isIn = lastRec?.type === "in";
+          const hToday = getHours(timeclock,emp.email,today,now);
+          const hWeek = getHours(timeclock,emp.email,weekStart,now);
+          const hMonth = getHours(timeclock,emp.email,monthStart,now);
+          const uniqueDays = new Set(empRecs.filter(r=>r.type==="in").map(r=>new Date(r.timestamp).toDateString())).size;
+          return <div key={emp.email} style={{background:"#fff",border:"1px solid #18332f10",borderRadius:8,padding:20,marginBottom:16}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{width:40,height:40,borderRadius:20,background:CL.dk+"10",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:600}}>{emp.name?.charAt(0)}</div>
+                <div><div style={{fontWeight:600,fontSize:14}}>{emp.name}</div><div style={{fontSize:11,color:CL.dk+"60"}}>{emp.email}</div></div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <div style={{width:8,height:8,borderRadius:4,background:isIn?"#2d6b4f":"#ccc"}}></div>
+                <span style={{fontSize:11,color:isIn?"#2d6b4f":CL.dk+"40",fontWeight:500}}>{isIn?t("fichado"):t("noFichado")}</span>
+              </div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:10,marginBottom:16}}>
+              {[["horasHoy",hToday.toFixed(1)+"h"],["horasSemana",hWeek.toFixed(1)+"h"],["horasMes",hMonth.toFixed(1)+"h"],["diasTrabajados",uniqueDays],["mediaHoras",uniqueDays>0?(hMonth/uniqueDays).toFixed(1)+"h":"—"]].map(([k,v]) => <div key={k} style={{textAlign:"center",padding:"10px 4px",background:"#18332f04",borderRadius:6}}><div style={{fontSize:18,fontWeight:300,fontFamily:DP}}>{v}</div><div style={{fontSize:9,color:CL.dk+"60",letterSpacing:0.3}}>{t(k)}</div></div>)}
+            </div>
+            <div style={{fontSize:12,fontWeight:600,marginBottom:8}}>{t("historialFichajes")}</div>
+            <div style={{maxHeight:200,overflow:"auto"}}>
+              {empRecs.slice(0,30).map((r,i) => <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 10px",background:i%2?"transparent":"#18332f04",borderRadius:4,fontSize:11}}>
+                <span style={{fontWeight:500,color:r.type==="in"?"#2d6b4f":"#e74c3c",minWidth:60}}>{r.type==="in"?"▶ "+t("entrada"):"◼ "+t("salida")}</span>
+                <span style={{color:CL.dk+"80"}}>{new Date(r.timestamp).toLocaleString(lang,{weekday:"short",day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}</span>
+                <span style={{color:CL.dk+"40"}}>{r.distance_m || r.distance || "—"}m</span>
+              </div>)}
+              {empRecs.length === 0 && <div style={{fontSize:11,color:CL.dk+"40",textAlign:"center",padding:16}}>{t("sinFichajes")}</div>}
+            </div>
+          </div>; })
+        })()}
       </Sec>}
 
       {/* FLOATING CART BUTTON - hide on cart page */}
