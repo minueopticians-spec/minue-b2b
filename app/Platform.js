@@ -7,6 +7,9 @@ const CL = {dk:"#18332f",bg:"#f8efe6",bg2:"#f0e5d8",gr:"#6b7f7a",gr2:"#96a5a1",l
 const CD = {dk:"#e8dfd6",bg:"#1a1f1e",bg2:"#242a28",gr:"#8a9b96",gr2:"#6b7f7a",ln:"#2e3835",gn:"#4a9e75",yl:"#d4a017",rd:"#cf5050",bl:"#3a8cc2",wh:"#212826"};
 let C = CL;
 const DP = "'Cormorant Garamond',Georgia,serif";
+const IMG_SCALE = {default:1.32, MCLEAN:1.55, MCQUEEN:1.55, LAMARR:1.55, CLEO:1.55};
+const imgScale = (model) => IMG_SCALE[(model||"").toUpperCase().trim()] || IMG_SCALE.default;
+const PSTAGES = [["nuevo","etapaNuevo","#8e44ad"],["contactado","etapaContactado","#2980b9"],["interesado","etapaInteresado","#c47a00"],["cliente","etapaCliente","#1d6e4e"],["descartado","etapaDescartado","#9aa4a0"]];
 const BD = "'DM Sans',system-ui,sans-serif";
 const LOGO = "data:image/jpeg;base64,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";
 const fmt = n => n.toFixed(2).replace(".",",");
@@ -622,6 +625,23 @@ const T = {
   sinClientesAun:{fr:"Vous n'avez pas encore de clients. Créez votre première boutique pour commander.",es:"Aún no tienes clientes. Crea tu primera tienda para poder pedir.",en:"You have no clients yet. Create your first store to place an order.",it:"Non hai ancora clienti. Crea il tuo primo negozio per ordinare."},
   crearPrimerCliente:{fr:"Créer ma première boutique",es:"Crear mi primera tienda",en:"Create my first store",it:"Crea il mio primo negozio"},
   clienteCreado:{fr:"Client créé",es:"Cliente creado",en:"Client created",it:"Cliente creato"},
+  voirPanier:{fr:"Voir le panier",es:"Ver carrito",en:"View cart",it:"Vedi carrello"},
+  acetatoTramoInfo:{fr:"Les %n unités Acetato comptent pour le palier de prix, mais gardent leur prix fixe.",es:"Las %n uds Acetato cuentan para el tramo de precio, pero mantienen su precio fijo.",en:"The %n Acetato units count toward the price tier, but keep their fixed price.",it:"Le %n unità Acetato contano per la fascia di prezzo, ma mantengono il loro prezzo fisso."},
+  tarifAcetato:{fr:"Tarif Acetato",es:"Tarifa Acetato",en:"Acetato pricing",it:"Tariffa Acetato"},
+  tarifAcetatoSub:{fr:"Prix fixe par unité, quelle que soit la quantité. Les unités comptent pour le palier des autres collections.",es:"Precio fijo por unidad, sea cual sea la cantidad. Sus unidades cuentan para el tramo del resto de colecciones.",en:"Fixed price per unit, regardless of quantity. Units count toward the tier of other collections.",it:"Prezzo fisso per unità, indipendentemente dalla quantità. Le unità contano per la fascia delle altre collezioni."},
+  prospectos:{fr:"Prospects",es:"Prospectos",en:"Prospects",it:"Prospect"},
+  prospectosSub:{fr:"Contacts à travailler — assignés par Minuë ou ajoutés par vous",es:"Contactos a trabajar — asignados por Minuë o añadidos por ti",en:"Contacts to work — assigned by Minuë or added by you",it:"Contatti da lavorare — assegnati da Minuë o aggiunti da te"},
+  etapaNuevo:{fr:"Nouveau",es:"Nuevo",en:"New",it:"Nuovo"},
+  etapaContactado:{fr:"Contacté",es:"Contactado",en:"Contacted",it:"Contattato"},
+  etapaInteresado:{fr:"Intéressé",es:"Interesado",en:"Interested",it:"Interessato"},
+  etapaCliente:{fr:"Client ✓",es:"Cliente ✓",en:"Client ✓",it:"Cliente ✓"},
+  etapaDescartado:{fr:"Écarté",es:"Descartado",en:"Discarded",it:"Scartato"},
+  notaMinue:{fr:"Note de Minuë",es:"Nota de Minuë",en:"Note from Minuë",it:"Nota di Minuë"},
+  misNotas:{fr:"Mes notes",es:"Mis notas",en:"My notes",it:"Le mie note"},
+  nuevoProspecto:{fr:"Nouveau prospect",es:"Nuevo prospecto",en:"New prospect",it:"Nuovo prospect"},
+  prospectoCreado:{fr:"Prospect créé",es:"Prospecto creado",en:"Prospect created",it:"Prospect creato"},
+  sinProspectos:{fr:"Aucun prospect pour le moment.",es:"Sin prospectos por ahora.",en:"No prospects yet.",it:"Nessun prospect per ora."},
+  novedadesTendencias:{fr:"Nouveautés & tendances",es:"Novedades y tendencias",en:"News & trends",it:"Novità e tendenze"},
   clienteEliminado:{fr:"Client supprimé",es:"Cliente eliminado",en:"Client deleted",it:"Cliente eliminato"},
   pedidoEliminado:{fr:"Commande supprimée",es:"Pedido eliminado",en:"Order deleted",it:"Ordine eliminato"},
   agotadoLabel:{fr:"ÉPUISÉ",es:"AGOTADO",en:"SOLD OUT",it:"ESAURITO"},
@@ -937,11 +957,7 @@ const FAQ_INIT = [
   {id:5,q:{fr:"Comment obtenir les photos produit ?",es:"¿Cómo obtener las fotos del producto?",en:"How to get product photos?",it:"How to get product photos?"},a:{fr:"Rendez-vous dans la section Ressources pour télécharger les photos HD, logos et textes commerciaux.",es:"Ve a la sección Recursos para descargar fotos HD, logos y textos comerciales.",en:"Visit the Resources section to download HD photos, logos and commercial texts.",it:"Visit the Resources section to download HD photos, logos and commercial texts."},on:true},
 ];
 
-const NEWS_INIT = [
-  {id:1,title:{fr:"Nouvelle collection SS26",es:"Nueva colección SS26",en:"New SS26 collection",it:"Nuova collezione SS26"},content:{fr:"Découvrez nos 19 modèles Essential et 10 modèles Acetato premium.",es:"Descubre nuestros 19 modelos Essential y 10 modelos Acetato premium.",en:"Discover our 19 Essential and 10 premium Acetato models.",it:"Scopri i nostri 19 modelli Essential e 10 modelli Acetato premium."},date:"15/03/2026",pinned:true,on:true,url:""},
-  {id:2,title:{fr:"Best-sellers à recommander",es:"Best-sellers para recomendar",en:"Best-sellers to recommend",it:"Bestseller da consigliare"},content:{fr:"BAKER Tea, CARDINALE Carey et ARDEN Champagne sont les plus demandés cette saison.",es:"BAKER Tea, CARDINALE Carey y ARDEN Champagne son los más pedidos esta temporada.",en:"BAKER Tea, CARDINALE Carey and ARDEN Champagne are this season's most requested.",it:"BAKER Tea, CARDINALE Carey and ARDEN Champagne are this season's most requested."},date:"18/03/2026",pinned:false,on:true,url:"https://minueopticians.com"},
-  {id:3,title:{fr:"Exposition optique Paris",es:"Feria óptica París",en:"Paris optical fair",it:"Paris optical fair"},content:{fr:"Retrouvez Minuë au Salon SILMO du 20 au 23 septembre 2026.",es:"Encuentra Minuë en el salón SILMO del 20 al 23 de septiembre 2026.",en:"Find Minuë at SILMO fair from Sep 20-23, 2026.",it:"Find Minuë at SILMO fair from Sep 20-23, 2026."},date:"20/03/2026",pinned:false,on:true,url:"https://silmoparis.com"},
-];
+const NEWS_INIT = [];
 
 const PROMOS_INIT = [];
 
@@ -964,14 +980,16 @@ const FLAGS = {fr:"FR",es:"ES",en:"EN",it:"IT"};
 
 /* ═══ SHARED UI ═══ */
 const Badge = ({l, c}) => (
-  <span style={{fontSize:10,padding:"3px 9px",borderRadius:3,fontFamily:BD,color:c,background:c+"1a",fontWeight:500,whiteSpace:"nowrap"}}>{l}</span>
+  <span style={{fontSize:10,padding:"3px 10px",borderRadius:20,fontFamily:BD,color:c,background:c+"14",fontWeight:600,whiteSpace:"nowrap",display:"inline-flex",alignItems:"center",gap:5,border:"1px solid "+c+"22"}}>
+    <span style={{width:5,height:5,borderRadius:3,background:c,flexShrink:0}} />{l}
+  </span>
 );
 const Btn = ({children, onClick, disabled, small, ghost, style}) => (
   <button onClick={onClick} disabled={disabled} style={{padding:small?"7px 14px":"11px 22px",background:disabled?C.gr2:ghost?"transparent":C.dk,color:ghost?C.dk:C.bg,border:ghost?"1px solid "+C.ln:"none",fontSize:small?11:12,cursor:disabled?"default":"pointer",fontFamily:BD,fontWeight:500,borderRadius:3,...(style||{})}}>{children}</button>
 );
 
 const Sec = ({title, sub, right, children}) => (
-  <div style={{padding:"20px min(24px, 4vw)"}}>
+  <div className="viewfade" style={{padding:"20px min(24px, 4vw)"}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:sub?6:18,flexWrap:"wrap",gap:8}}>
       <h1 style={{fontSize:"min(26px, 5.5vw)",fontWeight:500,letterSpacing:0.5,margin:0,fontFamily:DP,color:C.dk,lineHeight:1.2}}>{title}</h1>
       {right}
@@ -1142,6 +1160,7 @@ export default function App() {
   const [floatInput, setFloatInput] = useState("");
   const [floatLoading, setFloatLoading] = useState(false);
   const [floatError, setFloatError] = useState("");
+  const [prospects, setProspects] = useState([]); // mini-CRM distribuidores
   const [toasts, setToasts] = useState([]); // [{id, msg, type}]
   const toast = (msg, type="success") => { const id = Date.now()+Math.random(); setToasts(p => [...p, {id, msg, type}]); setTimeout(() => setToasts(p => p.filter(x => x.id !== id)), 3200); };
   const [confirmBox, setConfirmBox] = useState(null); // {msg, onYes}
@@ -1241,7 +1260,7 @@ export default function App() {
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,priceEssential:Number(r.price_essential)||0,priceIcons:Number(r.price_icons)||0,priceAcetato:Number(r.price_acetato)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||"",it:r.condition_it||""},visible:r.visible_to||[],on:r.active!==false,targetClients:r.target_clients||[]});
-  const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
+  const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||"",it:r.title_it||r.title_fr||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||"",it:r.content_it||r.content_fr||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
   const dbToFaq = r => ({id:r.id,q:{fr:r.question_fr||"",es:r.question_es||"",en:r.question_en||""},a:{fr:r.answer_fr||"",es:r.answer_es||"",en:r.answer_en||""},on:r.active!==false});
 
   useEffect(() => {
@@ -1274,6 +1293,7 @@ export default function App() {
         }
         const {data:prms} = await supabase.from("promos").select("*");
         if (prms) setPromos(prms.map(dbToPromo));
+        try { const {data:prosp} = await supabase.from("prospects").select("*").order("created_at",{ascending:false}); if (prosp) setProspects(prosp.map(dbToProspect)); } catch(e) { console.log("prospects load:", e); }
         // Product alerts (waitlist)
         try {
           if (user && (user.role === "admin" || user.role === "team")) { const {data:als} = await supabase.from("product_alerts").select("*"); if (als) setProductAlerts(als); }
@@ -1351,6 +1371,10 @@ export default function App() {
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||"",active:prod.active!==false}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
   const dbDeleteClient = async (id) => { if (!dbReady) return; try { await supabase.from("clients").delete().eq("id",id); } catch(e) { console.log('DB delete client:', e); } };
   const dbDeleteOrder = async (order) => { if (!dbReady || !order?.dbId) return; try { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("orders").delete().eq("id",order.dbId); } catch(e) { console.log('DB delete order:', e); } };
+  const dbToProspect = r => ({id:r.id, distributor:r.distributor, name:r.name, city:r.city||"", country:r.country||"", email:r.email||"", phone:r.phone||"", web:r.web||"", instagram:r.instagram||"", noteAdmin:r.note_admin||"", noteDist:r.note_dist||"", stage:r.stage||"nuevo", createdAt:r.created_at});
+  const dbSaveProspect = async (p) => { if (!dbReady) return null; try { const {data} = await supabase.from("prospects").insert({distributor:p.distributor, name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo"}).select().single(); return data ? dbToProspect(data) : null; } catch(e) { console.log('DB prospect:', e); return null; } };
+  const dbUpdateProspect = async (p) => { if (!dbReady) return; try { await supabase.from("prospects").update({name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo", updated_at:new Date().toISOString()}).eq("id",p.id); } catch(e) { console.log('DB prospect upd:', e); } };
+  const dbDeleteProspect = async (id) => { if (!dbReady) return; try { await supabase.from("prospects").delete().eq("id",id); } catch(e) { console.log('DB prospect del:', e); } };
   const dbSaveProductCost = async (productId, costs) => { if (!dbReady) return; try { await supabase.from("product_costs").upsert({product_id:productId, supplier_cost:costs.supplier||0, freight_cost:costs.freight||0, customs_cost:costs.customs||0, packaging_cost:costs.packaging||0, updated_at:new Date().toISOString()}, {onConflict:"product_id"}); } catch(e) { console.log('DB error:', e); } };
   const dbSaveChannelConfig = async (cfg) => { if (!dbReady) return; try { await supabase.from("business_config").upsert({key:"channel_config", value:cfg, updated_at:new Date().toISOString()}, {onConflict:"key"}); } catch(e) { console.log('DB error:', e); } };
   const dbSaveFixedCost = async (fc) => { if (!dbReady) return null; try { const {data} = await supabase.from("fixed_costs").insert({name:fc.name, category:fc.category, amount:fc.amount, frequency:fc.frequency}).select().single(); return data?.id; } catch(e) { console.log('DB error:', e); return null; } };
@@ -1468,8 +1492,8 @@ export default function App() {
   };
   const dbSavePromo = async (p) => { if (!dbReady) return null; try { const {data,error} = await supabase.from("promos").insert({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr||"",condition_es:p.cond?.es||"",condition_en:p.cond?.en||"",condition_it:p.cond?.it||"",visible_to:p.visible||[],active:p.on!==false,target_clients:p.targetClients||[]}).select().single(); if (error) { console.log('Promo insert error:', error); return null; } return data?.id; } catch(e) { console.log('DB error:', e); return null; } };
   const dbUpdatePromo = async (p) => { if (!dbReady) return; try { await supabase.from("promos").update({name:p.name,type:p.type,discount:p.disc,condition_fr:p.cond?.fr||"",condition_es:p.cond?.es||"",condition_en:p.cond?.en||"",condition_it:p.cond?.it||"",visible_to:p.visible||[],active:p.on!==false,target_clients:p.targetClients||[]}).eq("id",p.id); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:true}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveNews = async (n) => { if (!dbReady) return null; try { const {data} = await supabase.from("news").insert({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,title_it:n.title?.it,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,content_it:n.content?.it,url:n.url||"",pinned:!!n.pinned,active:true}).select().single(); return data?.id || null; } catch(e) { console.log('DB error:', e); return null; } };
+  const dbUpdateNews = async (n) => { if (!dbReady) return; try { await supabase.from("news").update({title_fr:n.title?.fr,title_es:n.title?.es,title_en:n.title?.en,title_it:n.title?.it,content_fr:n.content?.fr,content_es:n.content?.es,content_en:n.content?.en,content_it:n.content?.it,url:n.url||"",pinned:!!n.pinned,active:n.on!==false}).eq("id",n.id); } catch(e) { console.log('DB error:', e); } };
   const dbSaveFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").insert({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:true}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateFaq = async (f) => { if (!dbReady) return; try { await supabase.from("faqs").update({question_fr:f.q?.fr,question_es:f.q?.es,question_en:f.q?.en,answer_fr:f.a?.fr,answer_es:f.a?.es,answer_en:f.a?.en,active:f.on!==false}).eq("id",f.id); } catch(e) { console.log('DB error:', e); } };
   const dbSavePackaging = async (pk) => { if (!dbReady) return; try { const {data} = await supabase.from("packaging").insert({type:pk.type,name_fr:pk.name?.fr,name_es:pk.name?.es,name_en:pk.name?.en,desc_fr:pk.desc?.fr,desc_es:pk.desc?.es,desc_en:pk.desc?.en,image_url:pk.imageUrl||"",active:true}).select().single(); return data; } catch(e) { console.log("DB error:", e); } };
@@ -1523,17 +1547,19 @@ export default function App() {
   const priceIcons = activeClient ? (Number(activeClient.priceIcons)||0) : 0;
   const priceAcetato = activeClient ? (Number(activeClient.priceAcetato)||0) : 0;
   const earlyPay = activeClient ? activeClient.earlyPay : false;
-  // Essential pricing: legacy customPrice OR priceEssential OR volume tier
-  const essentialUnitPrice = customPrice > 0 ? customPrice : (priceEssential > 0 ? priceEssential : getPrice(essentialOnlyCount || 1, 0));
-  // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same as essential)
-  const iconsUnitPrice = customPrice > 0 ? customPrice : (priceIcons > 0 ? priceIcons : getPrice(iconsCount || 1, 0));
+  // TIER: ALL cart units (incl. Acetato) count toward the volume tier
+  const tierQty = cartCount;
+  // Essential pricing: legacy customPrice OR priceEssential OR volume tier (tier from TOTAL units)
+  const essentialUnitPrice = customPrice > 0 ? customPrice : (priceEssential > 0 ? priceEssential : getPrice(tierQty || 1, 0));
+  // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same tier)
+  const iconsUnitPrice = customPrice > 0 ? customPrice : (priceIcons > 0 ? priceIcons : getPrice(tierQty || 1, 0));
   const essentialTotal = essentialOnlyCount * essentialUnitPrice + iconsCount * iconsUnitPrice;
   const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); const priceForAcetato = customPrice > 0 ? customPrice : (priceAcetato > 0 ? priceAcetato : (p ? p.fixedPrice : ACETATO_PRICE)); return s + priceForAcetato * q; }, 0);
   const cartTotal = essentialTotal + acetatoTotal;
   const earlyPaySaving = earlyPay ? cartTotal * 0.03 : 0;
   const finalTotal = cartTotal - earlyPaySaving;
-  const currentTier = getTier(essentialCount || 1);
-  const nextTier = getNextTier(essentialCount || 1);
+  const currentTier = getTier(tierQty || 1);
+  const nextTier = getNextTier(tierQty || 1);
 
   /* Distributor clients */
   const distCo = user ? (user.co||"") : "";
@@ -1629,16 +1655,39 @@ export default function App() {
     const labelStyleLight = {fontSize:9,color:CL.dk+"50",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
     return (
       <div style={{minHeight:"100vh",background:CL.dk,position:"relative",overflow:"hidden"}}>
-        {/* DECORATIVE LINES */}
+        <style>{`
+          .loginhero { display: none; }
+          @media (min-width: 940px) {
+            .loginhero { display: flex !important; }
+            .loginshift { margin-left: 46vw; }
+          }
+        `}</style>
+        {/* LEFT BRAND PANEL — desktop */}
+        <div className="loginhero" style={{position:"fixed",top:0,left:0,bottom:0,width:"46vw",flexDirection:"column",justifyContent:"flex-end",overflow:"hidden",background:"linear-gradient(160deg,#0f2420 0%,"+CL.dk+" 55%,#1d4435 100%)",zIndex:2}}>
+          <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/39_44c32943-2007-46af-8be9-108b17eb72b4.png?v=1781006140" alt="" onError={e => { e.target.style.display = "none"; }} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}} />
+          <div style={{position:"absolute",inset:0,background:"linear-gradient(to top, rgba(15,30,26,0.92) 0%, rgba(15,30,26,0.35) 45%, rgba(15,30,26,0.15) 100%)"}} />
+          <div style={{position:"absolute",top:"-12%",right:"-12%",width:"40vw",height:"40vw",maxWidth:480,maxHeight:480,borderRadius:"50%",background:"radial-gradient(circle, rgba(184,134,11,0.14) 0%, transparent 65%)"}} />
+          <div style={{position:"relative",padding:"0 8% 8%"}}>
+            <div style={{fontSize:11,fontFamily:BD,letterSpacing:4,color:"#c4956a",fontWeight:700,marginBottom:14}}>MINUË · B2B</div>
+            <div style={{fontSize:"min(44px, 3.4vw)",fontFamily:DP,fontWeight:300,fontStyle:"italic",color:"#f8efe6",lineHeight:1.15,marginBottom:18}}>{lang==="es"?"Diseños convertidos en miradas.":lang==="en"?"Designs turned into gazes.":lang==="it"?"Design trasformati in sguardi.":"Des designs convertis en regards."}</div>
+            <div style={{fontSize:13,fontFamily:BD,color:"#f8efe6aa",lineHeight:1.7,maxWidth:380}}>{lang==="es"?"Catálogo SS26, tarifas por volumen y seguimiento de pedidos. Tu espacio mayorista, abierto 24/7.":lang==="en"?"SS26 catalogue, volume pricing and order tracking. Your wholesale space, open 24/7.":lang==="it"?"Catalogo SS26, prezzi a volume e tracciamento ordini. Il tuo spazio wholesale, aperto 24/7.":"Catalogue SS26, tarifs dégressifs et suivi de commande. Votre espace wholesale, ouvert 24h/24."}</div>
+            <div style={{display:"flex",gap:18,marginTop:24,flexWrap:"wrap"}}>
+              {(lang==="es"?["Catálogo completo","Pedido en 2 min","Tarifas en vivo"]:lang==="en"?["Full catalogue","Order in 2 min","Live pricing"]:lang==="it"?["Catalogo completo","Ordine in 2 min","Prezzi live"]:["Catalogue complet","Commande en 2 min","Tarifs en direct"]).map((b,i) => <span key={i} style={{fontSize:11,fontFamily:BD,color:"#f8efe6",fontWeight:600,display:"flex",alignItems:"center",gap:6}}><span style={{color:"#c4956a"}}>✦</span>{b}</span>)}
+            </div>
+          </div>
+        </div>
+        {/* DECORATIVE LINES + GLOWS */}
         <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,pointerEvents:"none",overflow:"hidden"}}>
           <div style={{position:"absolute",top:0,left:"20%",width:1,height:"100%",background:"linear-gradient(to bottom, transparent, #f8efe608, transparent)"}} />
           <div style={{position:"absolute",top:0,left:"80%",width:1,height:"100%",background:"linear-gradient(to bottom, transparent, #f8efe608, transparent)"}} />
           <div style={{position:"absolute",top:"30%",left:0,width:"100%",height:1,background:"linear-gradient(to right, transparent, #f8efe606, transparent)"}} />
+          <div style={{position:"absolute",top:"-15%",right:"-10%",width:"55vw",height:"55vw",maxWidth:560,maxHeight:560,borderRadius:"50%",background:"radial-gradient(circle, rgba(184,134,11,0.10) 0%, transparent 65%)"}} />
+          <div style={{position:"absolute",bottom:"-20%",left:"-12%",width:"60vw",height:"60vw",maxWidth:620,maxHeight:620,borderRadius:"50%",background:"radial-gradient(circle, rgba(248,239,230,0.05) 0%, transparent 60%)"}} />
         </div>
 
         {regSent ? (
           /* SUCCESS STATE */
-          <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",zIndex:1}}>
+          <div className="loginshift" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 20px",position:"relative",zIndex:1}}>
             <div style={{width:1,height:60,background:"#f8efe615",marginBottom:24}} />
             <div style={{fontSize:"min(28px, 7vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,fontStyle:"italic",marginBottom:16,textAlign:"center"}}>{t("demandeEnvoyee").split("!")[0]}</div>
             <div style={{width:30,height:1,background:"#f8efe618",marginBottom:16}} />
@@ -1647,7 +1696,7 @@ export default function App() {
           </div>
         ) : !registerMode ? (
           /* LOGIN */
-          <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
+          <div className="loginshift" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
             <div style={{textAlign:"center",marginBottom:50}}>
               <img src={LOGO} alt="Minuë" style={{width:"min(100px, 25vw)",height:"min(100px, 25vw)",objectFit:"contain",borderRadius:10,marginBottom:24,marginTop:20,opacity:0.9}} />
               <div style={{width:40,height:1,background:"#f8efe618",margin:"0 auto 20px"}} />
@@ -1747,13 +1796,13 @@ export default function App() {
   const navItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
     ? [["e-dash","dashboard"],["a-ord","commandes"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
+    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
-  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5"};
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2"};
   const bottomItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
     : role === "distributor"
@@ -1767,11 +1816,23 @@ export default function App() {
   const renderNav = () => {
     const rc = role==="admin"?"#e8a87c":role==="team"?"#a8c8e8":role==="distributor"?"#87ceeb":"#c4956a";
     return (<>
+    <style>{`
+      input:not([type=checkbox]):not([type=radio]), select, textarea { border-radius: 8px !important; transition: border-color .2s ease, box-shadow .2s ease, background .2s ease; }
+      input:focus, select:focus, textarea:focus { outline: none !important; border-color: rgba(24,51,47,0.45) !important; box-shadow: 0 0 0 3px rgba(24,51,47,0.07); }
+      button { transition: transform .14s ease, box-shadow .2s ease, opacity .2s ease, background .2s ease, color .2s ease; }
+      button:active { transform: scale(0.97); }
+      .mcard { transition: transform .18s ease, box-shadow .18s ease; }
+      @media (hover:hover) { .mcard:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(24,51,47,0.12); } }
+      @keyframes viewIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .viewfade { animation: viewIn .2s ease; }
+      ::selection { background: rgba(184,134,11,0.22); }
+      * { -webkit-tap-highlight-color: transparent; }
+    `}</style>
     {/* TOP BAR — slim */}
     <nav style={{background:darkMode?"#141c1a":CL.dk,position:"sticky",top:0,zIndex:100}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px min(16px, 3vw)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:"min(50px, 14vw)",borderRadius:3}} />
+          <img src={LOGO} alt="Minuë" style={{height:"min(63px, 17vw)",borderRadius:4}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -1849,7 +1910,7 @@ export default function App() {
     </nav>
 
     {/* BOTTOM BAR — Instagram style */}
-    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:150,background:darkMode?"#141c1a":CL.dk,borderTop:"1px solid rgba(248,239,230,0.08)",paddingBottom:"env(safe-area-inset-bottom, 0px)"}}>
+    <div style={{position:"fixed",bottom:0,left:0,right:0,zIndex:150,background:darkMode?"rgba(20,28,26,0.85)":"rgba(24,51,47,0.88)",backdropFilter:"blur(18px) saturate(150%)",WebkitBackdropFilter:"blur(18px) saturate(150%)",borderTop:"1px solid rgba(248,239,230,0.10)",paddingBottom:"env(safe-area-inset-bottom, 0px)"}}>
       <div style={{display:"flex",justifyContent:"space-around",alignItems:"center",padding:"6px 0 8px"}}>
         {bottomItems.map(([v, k]) => {
           const on = view === v;
@@ -1898,7 +1959,7 @@ export default function App() {
         // Grouped layout for admin/team — flat grid for client/distributor
         const groups = role === "admin" ? [
           ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats","a-decisiones","a-analytics","a-ord","a-inv"]],
-          ["👥 "+(t("grpClientes")||"Clientes"), ["a-cl","a-dist","a-comercial","a-msg","a-recom"]],
+          ["👥 "+(t("grpClientes")||"Clientes"), ["a-cl","a-dist","a-prospectos","a-comercial","a-msg","a-recom"]],
           ["📦 "+(t("grpOperaciones")||"Operaciones"), ["a-stock","a-almacen","a-logistica","a-pack","a-tasks","a-empleados"]],
           ["📣 "+(t("grpContenido")||"Contenido"), ["a-promo","a-news","a-faq"]],
           ["⚙️ "+(t("grpSistema")||"Sistema"), ["a-negocio","a-users"]]
@@ -1930,8 +1991,8 @@ export default function App() {
 
   const renderTierBar = () => {
     if (essentialCount === 0 || customPrice > 0 || priceEssential > 0 || priceIcons > 0) return null;
-    const pct = nextTier ? Math.min(100, ((essentialCount - currentTier.min) / (nextTier.min - currentTier.min)) * 100) : 100;
-    const unitsToNext = nextTier ? nextTier.min - essentialCount : 0;
+    const pct = nextTier ? Math.min(100, ((tierQty - currentTier.min) / (nextTier.min - currentTier.min)) * 100) : 100;
+    const unitsToNext = nextTier ? nextTier.min - tierQty : 0;
     const saving = nextTier ? (essentialUnitPrice - nextTier.price) * essentialCount : 0;
     return (
       <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"14px 16px",marginBottom:14}}>
@@ -1942,6 +2003,7 @@ export default function App() {
         <div style={{height:6,background:C.bg2,borderRadius:3,overflow:"hidden",marginBottom:6}}>
           <div style={{height:6,background:nextTier?C.yl:C.gn,borderRadius:3,width:pct+"%",transition:"width 0.4s"}} />
         </div>
+        {acetatoCount > 0 && <div style={{fontSize:10,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c040",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginBottom:6,lineHeight:1.5}}>ℹ️ {t("acetatoTramoInfo").replace("%n", acetatoCount)}</div>}
         {nextTier
           ? <span style={{fontFamily:BD,fontSize:11,color:C.yl}}>+{unitsToNext} uds = {fmt(nextTier.price)} €/ud ({t("economisez")} {fmt(saving)} €)</span>
           : <span style={{fontFamily:BD,fontSize:11,color:C.gn}}>{t("meilleurTarif")}</span>
@@ -1962,9 +2024,9 @@ export default function App() {
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     const hasFav = variants.some(v => favs.includes(v.id));
     return (
-      <div key={modelName} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewModel"); setEd({model:modelName, variants}); }}>
-        <div style={{height:"min(168px, 40vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
-          {first.imageUrl ? <img src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : "MINUË"}
+      <div key={modelName} className="mcard" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:12,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewModel"); setEd({model:modelName, variants}); }}>
+        <div style={{height:"min(192px, 45vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+          {first.imageUrl ? <img src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(modelName)+")",transformOrigin:"center"}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":first.col==="Icons"?"#b8860b":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":first.col==="Icons"?"#f5ecd8":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{first.col}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
             {tags.filter(tg => tg !== "icons").map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
@@ -1998,9 +2060,9 @@ export default function App() {
     const tags = p.tags || [];
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     return (
-      <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,overflow:"hidden",boxShadow:"0 2px 12px rgba(24,51,47,0.05)",transition:"transform 0.15s, box-shadow 0.15s"}}>
-        <div style={{height:"min(185px, 44vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
-          {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.22)",transformOrigin:"center"}} /> : "MINUË"}
+      <div key={p.id} className="mcard" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,overflow:"hidden",boxShadow:"0 2px 12px rgba(24,51,47,0.05)"}}>
+        <div style={{height:"min(208px, 48vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
+          {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(p.model)+")",transformOrigin:"center"}} /> : "MINUË"}
           {p.stock === 0 && (role === "client" || role === "distributor") && <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:C.dk,background:"rgba(255,255,255,0.95)",padding:"5px 14px",borderRadius:20,letterSpacing:1.5,border:"1px solid "+C.ln}}>{t("agotadoLabel")}</span></div>}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
           <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
@@ -3629,7 +3691,7 @@ export default function App() {
             <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
               <label style={{fontSize:11,fontFamily:BD,color:C.dk,display:"flex",alignItems:"center",gap:6,cursor:"pointer"}}><input type="checkbox" checked={ed.pinned||false} onChange={e => setEd(p => ({...p, pinned:e.target.checked}))} /> {t("epingle")}</label>
             </div>
-            <Btn onClick={() => { if(ed.title && ed.title.fr){ const nn = {...ed, id:Date.now(), date:new Date().toLocaleDateString("fr-FR"), on:true}; setNews(p => [...p, nn]); dbSaveNews(nn); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={async () => { if(ed.title && ed.title.fr){ const tempId = Date.now(); const nn = {...ed, id:tempId, date:new Date().toLocaleDateString("fr-FR"), on:true}; setNews(p => [...p, nn]); const realId = await dbSaveNews(nn); if (realId) setNews(p => p.map(x => x.id===tempId ? {...x, id:realId} : x)); toast(t("enregistrer")); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT NEWS */}
@@ -4193,6 +4255,36 @@ export default function App() {
           </>}
 
           {/* NEW TASK */}
+          {modal === "newProspect" && <>
+            <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:16}}>🎯 {ed._editing ? (t("modifier")||"Editar") : t("nuevoProspecto")}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {role === "admin" && !ed._byDist && <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>DISTRIBUIDOR *</div>
+                <select value={ed.distributor||""} onChange={e => setEd(p => ({...p, distributor:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  {users.filter(u => u.role === "distributor").map(u => <option key={u.email} value={u.co}>{u.co} ({u.name})</option>)}
+                </select>
+              </div>}
+              <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("nomBoutique")||"NOMBRE"} *</div><input value={ed.name||""} onChange={e => setEd(p => ({...p, name:e.target.value}))} placeholder="Óptica Bella Vista" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("ville")||"CIUDAD"}</div><input value={ed.city||""} onChange={e => setEd(p => ({...p, city:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("pays")||"PAÍS"}</div><input value={ed.country||""} onChange={e => setEd(p => ({...p, country:e.target.value}))} placeholder="IT" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>EMAIL</div><input value={ed.email||""} onChange={e => setEd(p => ({...p, email:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("telephone")||"TELÉFONO"}</div><input value={ed.phone||""} onChange={e => setEd(p => ({...p, phone:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>WEB</div><input value={ed.web||""} onChange={e => setEd(p => ({...p, web:e.target.value}))} placeholder="boutique.com" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>INSTAGRAM</div><input value={ed.instagram||""} onChange={e => setEd(p => ({...p, instagram:e.target.value}))} placeholder="@boutique" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+              </div>
+              {(role === "admin") && <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("notaMinue").toUpperCase()}</div><textarea value={ed.noteAdmin||""} onChange={e => setEd(p => ({...p, noteAdmin:e.target.value}))} rows={2} placeholder="Contactar de mi parte, conocí al dueño en SILMO..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} /></div>}
+            </div>
+            <Btn disabled={!ed.name || !ed.distributor} onClick={async () => {
+              if (ed._editing) { const np = {...ed}; delete np._editing; delete np._pDist; setProspects(x => x.map(y => y.id===ed.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); }
+              else { const tempId = "tmp-"+Date.now(); const np = {id:tempId, distributor:ed.distributor, name:ed.name, city:ed.city||"", country:ed.country||"", email:ed.email||"", phone:ed.phone||"", web:ed.web||"", instagram:ed.instagram||"", noteAdmin:ed.noteAdmin||"", noteDist:ed.noteDist||"", stage:"nuevo"}; setProspects(x => [np, ...x]); const saved = await dbSaveProspect(np); if (saved) setProspects(x => x.map(y => y.id===tempId?saved:y)); toast(t("prospectoCreado")); }
+              setModal(null);
+            }} style={{width:"100%",marginTop:14}}>{t("enregistrer")}</Btn>
+          </>}
+
           {modal === "newFixedCost" && <>
             <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:16}}>🏢 Nuevo coste fijo</div>
             <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -4411,6 +4503,23 @@ export default function App() {
 
           {/* ✨ NEW SINCE LAST VISIT */}
           {(() => {
+          const activeNews = news.filter(n => n.on).sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0)).slice(0,3);
+          if (activeNews.length === 0) return null;
+          return <div style={{padding:"16px min(24px,4vw) 0"}}>
+            <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:10}}>📣 {t("novedadesTendencias")}</div>
+            <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
+              {activeNews.map(n => <div key={n.id} onClick={() => n.url ? window.open(n.url,"_blank") : setView(role==="distributor"?"d-news":"c-news")} style={{minWidth:240,maxWidth:300,flexShrink:0,background:"linear-gradient(135deg,"+CL.dk+","+"#1d4435)",borderRadius:14,padding:"16px 18px",cursor:"pointer",position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:-30,right:-30,width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle, rgba(196,149,106,0.25), transparent 70%)"}} />
+                {n.pinned && <span style={{fontSize:8,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
+                <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:"#f8efe6",marginTop:4,lineHeight:1.3}}>{(n.title&&n.title[lang])||(n.title&&n.title.fr)||""}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:"#f8efe690",marginTop:6,lineHeight:1.5,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{(n.content&&n.content[lang])||(n.content&&n.content.fr)||""}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
+              </div>)}
+            </div>
+          </div>;
+        })()}
+
+        {(() => {
             let seenMax = 0;
             try { seenMax = parseInt(localStorage.getItem("minue_seenmax_"+user.email)) || 0; } catch(e) {}
             const maxId = products.reduce((m,p) => Math.max(m, Number(p.id)||0), 0);
@@ -4923,6 +5032,17 @@ export default function App() {
             </div>}
           </div>
         </div>}
+        {/* ACETATO PRICING CARD */}
+        <div style={{background:"linear-gradient(135deg,#e8d5c030,#e8d5c015)",border:"1.5px solid #d4b896",borderRadius:10,padding:"16px 20px",marginBottom:16,display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
+          <div style={{fontSize:28,flexShrink:0}}>🪵</div>
+          <div style={{flex:1,minWidth:180}}>
+            <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:"#7a5c3a",letterSpacing:0.5}}>{t("tarifAcetato")}</div>
+            <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:3,lineHeight:1.5}}>{t("tarifAcetatoSub")}</div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{fontSize:26,fontFamily:DP,fontWeight:500,color:"#7a5c3a"}}>{fmt(customPrice > 0 ? customPrice : (priceAcetato > 0 ? priceAcetato : ACETATO_PRICE))} €<span style={{fontSize:11,color:C.gr,fontWeight:400,marginLeft:4}}>/ud</span></div>
+          </div>
+        </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,opacity:(customPrice>0||priceEssential>0||priceIcons>0)?0.55:1}}>
           {TIERS.map((tier, i) => { const isA = cartCount >= tier.min && cartCount <= tier.max && customPrice === 0; return (
             <div key={i} style={{background:C.wh,border:"2px solid "+(isA?C.gn:C.ln),borderRadius:6,padding:18,position:"relative"}}>
@@ -5277,7 +5397,7 @@ export default function App() {
           if (favProducts.length === 0) {
             return <div style={{textAlign:"center",padding:"60px 20px"}}>
               <div style={{fontSize:48,marginBottom:14,color:C.ln}}>♡</div>
-              <div style={{fontSize:14,fontFamily:BD,color:C.gr,maxWidth:380,margin:"0 auto",lineHeight:1.6}}>{t("sinFavoritos")}</div>
+              <div style={{fontSize:14,fontFamily:BD,color:C.gr,maxWidth:380,margin:"0 auto",lineHeight:1.6}}>{t("sinFavoritos")}</div><Btn onClick={() => setView(role==="distributor"?"d-cat":"c-cat")} style={{marginTop:18}}>{t("descubrirCol")} →</Btn>
               <Btn onClick={() => setView(role==="distributor"?"d-cat":"c-cat")} style={{marginTop:20}}>{t("exploraCatalogo")} →</Btn>
             </div>;
           }
@@ -5601,6 +5721,35 @@ export default function App() {
           <div style={{fontSize:"min(24px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:4}}>{t("bienvenida")}, {user.name} ✦</div>
           <div style={{fontSize:12,fontFamily:BD,opacity:0.6}}>{user.co}</div>
         </div>
+        {(() => {
+          const activeNews = news.filter(n => n.on).sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0)).slice(0,3);
+          if (activeNews.length === 0) return null;
+          return <div style={{padding:"16px min(24px,4vw) 0"}}>
+            <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:10}}>📣 {t("novedadesTendencias")}</div>
+            <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
+              {activeNews.map(n => <div key={n.id} onClick={() => n.url ? window.open(n.url,"_blank") : setView(role==="distributor"?"d-news":"c-news")} style={{minWidth:240,maxWidth:300,flexShrink:0,background:"linear-gradient(135deg,"+CL.dk+","+"#1d4435)",borderRadius:14,padding:"16px 18px",cursor:"pointer",position:"relative",overflow:"hidden"}}>
+                <div style={{position:"absolute",top:-30,right:-30,width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle, rgba(196,149,106,0.25), transparent 70%)"}} />
+                {n.pinned && <span style={{fontSize:8,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
+                <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:"#f8efe6",marginTop:4,lineHeight:1.3}}>{(n.title&&n.title[lang])||(n.title&&n.title.fr)||""}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:"#f8efe690",marginTop:6,lineHeight:1.5,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{(n.content&&n.content[lang])||(n.content&&n.content.fr)||""}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
+              </div>)}
+            </div>
+          </div>;
+        })()}
+        {(() => {
+          const myP = prospects.filter(p => p.distributor === user.co);
+          const pending = myP.filter(p => p.stage === "nuevo" || p.stage === "contactado").length;
+          if (myP.length === 0) return null;
+          return <div style={{margin:"14px min(24px,4vw) 0",background:"linear-gradient(135deg,#8e44ad12,#8e44ad06)",border:"1.5px solid #8e44ad35",borderRadius:12,padding:"14px 18px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",flexWrap:"wrap"}} onClick={() => setView("d-prospectos")}>
+            <div style={{fontSize:26}}>🎯</div>
+            <div style={{flex:1,minWidth:160}}>
+              <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("prospectos")}: {myP.length}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{pending > 0 ? pending+" "+t("etapaNuevo").toLowerCase()+"/"+t("etapaContactado").toLowerCase() : "✓"}</div>
+            </div>
+            <span style={{fontSize:11,fontFamily:BD,fontWeight:700,color:"#8e44ad"}}>→</span>
+          </div>;
+        })()}
         <div style={{padding:"20px min(24px, 4vw)"}}>
           {/* REFERRAL LINK */}
           {(() => {
@@ -7192,6 +7341,83 @@ export default function App() {
         </>;
       })()}
 
+      {view === "a-prospectos" && (() => {
+        const distUsers = users.filter(u => u.role === "distributor");
+        const fDist = ed._pDist || "all";
+        const list = prospects.filter(p => fDist === "all" || p.distributor === fDist);
+        const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
+        return <Sec title={"🎯 " + t("prospectos")} sub="Asigna contactos a tus distribuidores para que los trabajen" right={<Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteAdmin:"",distributor:distUsers[0]?.co||"",_pDist:fDist}); }}>{t("nuevoProspecto")}</Btn>}>
+          <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+            {[["all",t("tous")+" ("+prospects.length+")"], ...distUsers.map(u => [u.co, u.co+" ("+prospects.filter(p => p.distributor===u.co).length+")"])].map(([v,l]) =>
+              <button key={v} onClick={() => setEd(p => ({...p, _pDist:v}))} style={{padding:"6px 14px",background:fDist===v?C.dk:"transparent",color:fDist===v?C.bg:C.gr,border:"1px solid "+(fDist===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
+          </div>
+          {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:10,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> :
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:10}}>
+            {list.map(p => { const st = stageOf(p.stage); return (
+              <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderLeft:"4px solid "+st[2],borderRadius:10,padding:"14px 16px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
+                  <div style={{minWidth:0}}>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{p.name}</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(", ")||"—"} · <span style={{color:C.bl}}>{p.distributor}</span></div>
+                  </div>
+                  <Badge l={t(st[1])} c={st[2]} />
+                </div>
+                <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
+                  {p.email && <a href={"mailto:"+p.email} style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>✉ Email</a>}
+                  {p.phone && <a href={"tel:"+p.phone} style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📞 {p.phone}</a>}
+                  {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>🌐 Web</a>}
+                  {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📷 {p.instagram}</a>}
+                </div>
+                {p.noteAdmin && <div style={{fontSize:10,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c030",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginTop:10,lineHeight:1.5}}>📝 {p.noteAdmin}</div>}
+                {p.noteDist && <div style={{fontSize:10,fontFamily:BD,color:C.gr,background:C.bg,borderRadius:6,padding:"6px 10px",marginTop:6,lineHeight:1.5}}>💬 {p.distributor}: {p.noteDist}</div>}
+                <div style={{display:"flex",gap:6,marginTop:10}}>
+                  <button onClick={() => { setModal("newProspect"); setEd({...p, _editing:true, _pDist:fDist}); }} style={{flex:1,padding:"6px 0",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>{t("modifier")||"Editar"}</button>
+                  <button onClick={() => askConfirm(t("confirmarEliminar"), () => { setProspects(x => x.filter(y => y.id !== p.id)); dbDeleteProspect(p.id); })} style={{padding:"6px 12px",background:"transparent",border:"1px solid "+C.rd+"50",borderRadius:6,fontSize:10,fontFamily:BD,color:C.rd,cursor:"pointer"}}>✕</button>
+                </div>
+              </div>); })}
+          </div>}
+        </Sec>;
+      })()}
+
+      {view === "d-prospectos" && (() => {
+        const myProspects = prospects.filter(p => p.distributor === user.co);
+        const fStage = ed._pStage || "all";
+        const list = myProspects.filter(p => fStage === "all" || p.stage === fStage);
+        const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
+        return <Sec title={"🎯 " + t("prospectos")} sub={t("prospectosSub")} right={<Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteDist:"",distributor:user.co,_byDist:true}); }}>{t("nuevoProspecto")}</Btn>}>
+          <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+            {[["all",t("tous")+" ("+myProspects.length+")"], ...PSTAGES.map(([v,k,col]) => [v, t(k)+" ("+myProspects.filter(p => p.stage===v).length+")"])].map(([v,l]) =>
+              <button key={v} onClick={() => setEd(p => ({...p, _pStage:v}))} style={{padding:"6px 14px",background:fStage===v?C.dk:"transparent",color:fStage===v?C.bg:C.gr,border:"1px solid "+(fStage===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
+          </div>
+          {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:10,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> :
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
+            {list.map(p => { const st = stageOf(p.stage); return (
+              <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderLeft:"4px solid "+st[2],borderRadius:10,padding:"14px 16px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
+                  <div style={{minWidth:0}}>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{p.name}</div>
+                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(", ")||"—"}</div>
+                  </div>
+                  <select value={p.stage} onChange={e => { const np = {...p, stage:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); }} style={{padding:"4px 8px",border:"1.5px solid "+st[2],borderRadius:14,fontFamily:BD,fontSize:10,fontWeight:700,background:st[2]+"12",color:st[2],cursor:"pointer"}}>
+                    {PSTAGES.map(([v,k]) => <option key={v} value={v}>{t(k)}</option>)}
+                  </select>
+                </div>
+                <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
+                  {p.email && <a href={"mailto:"+p.email} style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>✉ Email</a>}
+                  {p.phone && <a href={"tel:"+p.phone} style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📞 {p.phone}</a>}
+                  {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>🌐 Web</a>}
+                  {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📷 IG</a>}
+                </div>
+                {p.noteAdmin && <div style={{fontSize:10,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c030",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginTop:10,lineHeight:1.5}}>📝 {t("notaMinue")}: {p.noteAdmin}</div>}
+                <div style={{marginTop:8}}>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>{t("misNotas").toUpperCase()}</div>
+                  <textarea defaultValue={p.noteDist} onBlur={e => { if(e.target.value !== p.noteDist){ const np = {...p, noteDist:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); } }} rows={2} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+                </div>
+              </div>); })}
+          </div>}
+        </Sec>;
+      })()}
+
       {view === "a-negocio" && (() => {
         // Compute derived metrics from orders
         const totalCost = (pid) => { const c = productCosts[pid]; if (!c) return 0; return (c.supplier||0)+(c.freight||0)+(c.customs||0)+(c.packaging||0); };
@@ -8451,10 +8677,9 @@ export default function App() {
       </>}
 
       {/* FLOATING CART BUTTON - hide on cart page */}
-      {role !== "admin" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:76,right:20,height:48,borderRadius:24,background:C.dk,color:"#f8efe6",border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:600,boxShadow:"0 4px 16px rgba(24,51,47,0.3)",zIndex:160,display:"flex",alignItems:"center",gap:8,padding:"0 18px 0 14px"}}>
-        <span style={{fontSize:18}}>🛒</span>
-        <span>{cartCount}</span>
-        <span style={{fontSize:10,fontWeight:400,opacity:0.7}}>{fmt(finalTotal)} €</span>
+      {role !== "admin" && role !== "team" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:78,right:16,height:56,borderRadius:28,background:"linear-gradient(135deg,#1d4435,"+C.dk+")",color:"#f8efe6",border:"1.5px solid rgba(196,149,106,0.5)",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:700,boxShadow:"0 6px 24px rgba(24,51,47,0.45)",zIndex:160,display:"flex",alignItems:"center",gap:10,padding:"0 20px 0 16px",animation:"toastIn 0.3s ease"}}>
+        <span style={{position:"relative",fontSize:20}}>🛒<span style={{position:"absolute",top:-7,right:-10,background:"#c4956a",color:C.dk,fontSize:9,fontWeight:800,padding:"1px 5px",borderRadius:8,fontFamily:BD}}>{cartCount}</span></span>
+        <span style={{display:"flex",flexDirection:"column",alignItems:"flex-start",lineHeight:1.15}}><span style={{fontSize:12}}>{t("voirPanier")}</span><span style={{fontSize:10,opacity:0.75,fontWeight:500}}>{fmt(finalTotal)} €</span></span>
       </button>}
     </div>
   );
