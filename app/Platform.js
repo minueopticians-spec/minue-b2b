@@ -897,59 +897,11 @@ const PRODUCTS_INIT = [
   {id:177,model:"KERR",color:"Carey",sku:"MN-KERR-CRY",col:"Icons",cat:"Icons",stock:10,fixedPrice:0,tags:["icons"],imageUrl:"https://cdn.shopify.com/s/files/1/0052/2797/0629/files/IMG_5634.jpg"}
 ];
 
-const ORDERS_INIT = [
-  {id:"#MN-0001",client:"Le Bruit des Vagues",dist:"MPM Diffusion",date:"13/03/2026",items:50,total:850.26,comm:127.54,status:"partial",pay:"pending",shippingCost:0,track:"131DAFC1021215124R",carrier:"Zeleris",trackUrl:"",clientNotes:"Envío 1: 35 uds entregado (Factura M2026003). Envío 2: 15 uds pendiente 1ª semana abril. Pago: 50% a 15 días (04/04) + 50% a 45 días (04/05).",
-    lines:[
-      {model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",qty:2,price:17.01,qtyReceived:0},
-      {model:"GARDNER",color:"Amber Doré",sku:"MN-GRDN-ADR",qty:2,price:17.01,qtyReceived:2},
-      {model:"VITTI",color:"Velvet",sku:"MN-VTTI-VLV",qty:2,price:17.01,qtyReceived:0},
-      {model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",qty:2,price:17.01,qtyReceived:0},
-      {model:"NOVA",color:"Jade",sku:"MN-NOVA-JDE",qty:2,price:17.01,qtyReceived:0},
-      {model:"NOVA",color:"Ruby",sku:"MN-NOVA-RBY",qty:2,price:17.01,qtyReceived:0},
-      {model:"BOLDEN",color:"Nude",sku:"MN-BLDN-NDE",qty:2,price:17.01,qtyReceived:2},
-      {model:"HEDY",color:"Matcha",sku:"MN-HEDY-MTC",qty:2,price:17.01,qtyReceived:2},
-      {model:"HEDY",color:"Guiza",sku:"MN-HEDY-GZA",qty:2,price:17.01,qtyReceived:2},
-      {model:"ARIELLE",color:"Dusty",sku:"MN-AREL-DSY",qty:2,price:17.01,qtyReceived:1},
-      {model:"DENEUVE",color:"Tea",sku:"MN-DNVE-TEA",qty:2,price:17.01,qtyReceived:2},
-      {model:"HART",color:"Sunset",sku:"MN-HART-SNS",qty:2,price:17.01,qtyReceived:2},
-      {model:"GUGU",color:"Gold Green",sku:"MN-GUGU-GGR",qty:2,price:17.01,qtyReceived:2},
-      {model:"GRANT",color:"Carey",sku:"MN-GRNT-CRY",qty:2,price:17.01,qtyReceived:2},
-      {model:"BERRY",color:"Navy",sku:"MN-BRRY-NVY",qty:2,price:17.01,qtyReceived:1},
-      {model:"STONE",color:"Tea",sku:"MN-STON-TEA",qty:2,price:17.01,qtyReceived:2},
-      {model:"ROBERTS",color:"Jasper",sku:"MN-RBRT-JSP",qty:2,price:17.01,qtyReceived:2},
-      {model:"ROBERTS",color:"Green Carey",sku:"MN-RBRT-GCR",qty:2,price:17.01,qtyReceived:2},
-      {model:"THURMAN",color:"Cloud",sku:"MN-THRM-CLD",qty:2,price:17.01,qtyReceived:2},
-      {model:"MACLAINE",color:"Black",sku:"MN-MCLN-BLK",qty:2,price:17.01,qtyReceived:2},
-      {model:"HARLOW",color:"Gold-Green",sku:"MN-HRLW-GGR",qty:2,price:17.01,qtyReceived:1},
-      {model:"LOREN",color:"Black",sku:"MN-LORN-BLK",qty:2,price:17.01,qtyReceived:0},
-      {model:"LOREN",color:"Toffee",sku:"MN-LORN-TFE",qty:2,price:17.01,qtyReceived:2},
-      {model:"ZIYI",color:"Mandarine",sku:"MN-ZIYI-MND",qty:2,price:17.01,qtyReceived:2},
-      {model:"LAMARR",color:"Louvre",sku:"MN-LMRR-LVR",qty:2,price:17.01,qtyReceived:2}
-    ]},
-  {id:"#MN-0002",client:"Il et Elle",dist:"MPM Diffusion",date:"20/01/2026",items:20,total:398.00,comm:59.70,status:"delivered",pay:"pending",shippingCost:0,track:"",carrier:"",trackUrl:"",clientNotes:"",
-    lines:[{model:"HEDY",color:"Guiza",qty:2,price:19.90},{model:"HAZEL",color:"Petal",qty:2,price:19.90},{model:"KERR",color:"Black",qty:2,price:19.90},{model:"CLEO",color:"Black",qty:2,price:19.90},{model:"CLEO",color:"Tea",qty:2,price:19.90},{model:"THURMAN",color:"Black",qty:2,price:19.90},{model:"LAMARR",color:"Carey",qty:2,price:19.90},{model:"MACLAINE",color:"Black",qty:2,price:19.90},{model:"MACLAINE",color:"Tea",qty:2,price:19.90},{model:"LANE",color:"Tea",qty:2,price:19.90}]},
-  {id:"#2589",client:"Optique Rivoli",dist:"Agent Sud",date:"05/03/2026",items:30,total:537,comm:80.55,status:"delivered",pay:"paid",shippingCost:0,track:"ZEL001",carrier:"GLS",trackUrl:"https://www.gls-spain.es/track?id=ZEL001",clientNotes:"",
-    lines:[{model:"CARDINALE",color:"Guiza",sku:"MN-CARD-GZA",qty:6,price:17.9},{model:"BERGMAN",color:"Brown",sku:"MN-BRGM-BRN",qty:6,price:17.9},{model:"VITTI",color:"Brown Carey",sku:"MN-VTTI-BCR",qty:6,price:17.9},{model:"BAKER",color:"Mint",sku:"MN-BAKR-MNT",qty:6,price:17.9},{model:"TURA",color:"Velvet",sku:"MN-TURA-VLV",qty:6,price:17.9}]},
-  {id:"#2615",client:"Concept Store Lyon",dist:"Direct",date:"18/03/2026",items:40,total:716,comm:0,status:"confirmed",pay:"invoiced",shippingCost:0,track:"",carrier:"",trackUrl:"",clientNotes:"",
-    lines:[{model:"GARDNER",color:"Black",sku:"MN-GRDN-BLK",qty:8,price:17.9},{model:"BAKER",color:"Black",sku:"MN-BAKR-BLK",qty:8,price:17.9},{model:"VITTI",color:"Caramel",sku:"MN-VTTI-CRM",qty:8,price:17.9},{model:"CARDINALE",color:"Tea",sku:"MN-CARD-TEA",qty:8,price:17.9},{model:"BERGMAN",color:"Brown Carey",sku:"MN-BRGM-BCR",qty:8,price:17.9}]},
-];
+const ORDERS_INIT = [];
 
-const CLIENTS_INIT = [
-  {id:1,name:"Le Bruit des Vagues",contact:"Agnès",city:"Vannes",country:"FR",orders:1,total:850.26,status:"active",channel:"Agent Sud",customPrice:0,earlyPay:false,notes:""},
-  {id:2,name:"Optique Rivoli",contact:"Claire",city:"Paris",country:"FR",orders:2,total:1290.6,status:"active",channel:"Agent Sud",customPrice:0,earlyPay:true,notes:""},
-  {id:3,name:"Maison Solaire",contact:"Hugo",city:"Bordeaux",country:"FR",orders:0,total:0,status:"prospect",channel:"Agent Sud",customPrice:0,earlyPay:false,notes:""},
-  {id:4,name:"Concept Store Lyon",contact:"Lucas",city:"Lyon",country:"FR",orders:1,total:716,status:"active",channel:"Direct",customPrice:0,earlyPay:false,notes:""},
-  {id:5,name:"Brillen Hamburg",contact:"Anna",city:"Hamburg",country:"DE",orders:4,total:2148,status:"vip",channel:"Faire",customPrice:16.50,earlyPay:true,notes:""},
-];
+const CLIENTS_INIT = [];
 
-const TASKS_INIT = [
-  {id:1,title:"Preparar lookbook SS26",desc:"Fotos + textos para distribuidores",priority:"haute",area:"marketing",status:"enCours",date:"20/03/2026"},
-  {id:2,title:"Revisar factura Optique Rivoli",desc:"Comprobar importes y enviar",priority:"haute",area:"finances",status:"aFaire",date:"22/03/2026"},
-  {id:3,title:"Contactar nuevas ópticas Berlín",desc:"Lista de 10 ópticas potenciales",priority:"moyenne",area:"commercial",status:"aFaire",date:"23/03/2026"},
-  {id:4,title:"Actualizar stock Acetato",desc:"Verificar unidades físicas vs sistema",priority:"moyenne",area:"produits",status:"enCours",date:"21/03/2026"},
-  {id:5,title:"Enviar credenciales a Minuë Colombia",desc:"Email con acceso B2B portal",priority:"haute",area:"clientsArea",status:"fait",date:"23/03/2026"},
-  {id:6,title:"Configurar envío DHL Le Bruit des Vagues",desc:"Pedido #MN-0001 parcial",priority:"basse",area:"logistique",status:"aFaire",date:"22/03/2026"},
-];
+const TASKS_INIT = [];
 
 const FAQ_INIT = [
   {id:1,q:{fr:"Quel est le minimum de commande ?",es:"¿Cuál es el pedido mínimo?",en:"What is the minimum order?",it:"What is the minimum order?"},a:{fr:"Il n'y a pas de minimum par modèle. Le prix unitaire dépend du volume total de votre commande (voir Tarifs).",es:"No hay mínimo por modelo. El precio unitario depende del volumen total del pedido (ver Tarifas).",en:"No minimum per model. Unit price depends on your total order volume (see Pricing).",it:"No minimum per model. Unit price depends on your total order volume (see Pricing)."},on:true},
@@ -1282,21 +1234,14 @@ export default function App() {
         const {data:usrs} = await supabase.from("users").select("*");
         if (usrs && usrs.length > 0) setUsers(usrs.map(dbToUser));
         const {data:cls} = await supabase.from("clients").select("*");
-        if (cls) { if (cls.length > 0) setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.co && c.name.toLowerCase() === user.co.toLowerCase()) || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase()) || (c.company_email && user.email && c.company_email.toLowerCase() === user.email.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
+        if (cls) { setClients(cls.map(dbToClient)); if (user) { const myClient = cls.find(c => c.user_id === user.id || (c.name && user.co && c.name.toLowerCase() === user.co.toLowerCase()) || (c.name && user.name && c.name.toLowerCase() === user.name.toLowerCase()) || (c.company_email && user.email && c.company_email.toLowerCase() === user.email.toLowerCase())); if (myClient) setAccountData({companyName:myClient.company_name||"",taxId:myClient.tax_id||"",address:myClient.address||"",postalCode:myClient.postal_code||"",city:myClient.city||"",country:myClient.country||"",phone:myClient.phone||"",companyEmail:myClient.company_email||"",bankHolder:myClient.bank_holder||"",iban:myClient.iban||"",bic:myClient.bic||"",shippingAddress:myClient.shipping_address||"",shippingCity:myClient.shipping_city||"",shippingPostal:myClient.shipping_postal||"",shippingCountry:myClient.shipping_country||""}); } }
         const {data:ords} = await supabase.from("orders").select("*").order("created_at",{ascending:false});
         if (ords) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
           const linesByOrder = {};
           (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection,qtyReceived:l.qty_received||0}); });
-          if (ords.length > 0) {
-            const dbOrders = ords.map(o => dbToOrder(o, linesByOrder[o.id]||[]));
-            // Merge: keep local orders that don't exist in DB (matched by id)
-            setOrders(prev => {
-              const dbIds = new Set(dbOrders.map(o => o.id));
-              const localOnly = prev.filter(o => !dbIds.has(o.id));
-              return [...dbOrders, ...localOnly];
-            });
-          }
+          // DB is the single source of truth — no merge with hardcoded/local orders
+          setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
         }
         const {data:prms} = await supabase.from("promos").select("*");
         if (prms) setPromos(prms.map(dbToPromo));
@@ -1314,7 +1259,7 @@ export default function App() {
         const {data:fqs} = await supabase.from("faqs").select("*");
         if (fqs) setFaqs(fqs.map(dbToFaq));
         const {data:tsks} = await supabase.from("tasks").select("*").order("created_at",{ascending:false});
-        if (tsks && tsks.length > 0) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
+        if (tsks) setTasks(tsks.map(t => ({id:t.id,title:t.title,desc:t.description||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",dueDate:t.due_date||"",assignee:t.assignee||"",date:t.created_at?new Date(t.created_at).toLocaleDateString("fr-FR"):"-"})));
         if (user && usrs) { const fresh = usrs.map(dbToUser).find(u => u.email.toLowerCase() === user.email.toLowerCase()); if (fresh && fresh.active) { setUser(fresh); try { localStorage.setItem("minue_session", JSON.stringify({user:fresh,ts:Date.now()})); } catch(e) {} } else if (fresh && !fresh.active) { setUser(null); try { localStorage.removeItem("minue_session"); } catch(e) {} } }
         if (user) { const {data:fvs} = await supabase.from("user_favorites").select("product_id").eq("user_email",user.email); if (fvs) setFavs(fvs.map(f => f.product_id)); }
         const {data:pks} = await supabase.from("packaging").select("*").order("sort_order",{ascending:true});
