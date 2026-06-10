@@ -626,6 +626,12 @@ const T = {
   crearPrimerCliente:{fr:"Créer ma première boutique",es:"Crear mi primera tienda",en:"Create my first store",it:"Crea il mio primo negozio"},
   clienteCreado:{fr:"Client créé",es:"Cliente creado",en:"Client created",it:"Cliente creato"},
   voirPanier:{fr:"Voir le panier",es:"Ver carrito",en:"View cart",it:"Vedi carrello"},
+  idiomaPreferido:{fr:"Langue préférée",es:"Idioma preferido",en:"Preferred language",it:"Lingua preferita"},
+  bienvenidaLogin:{fr:"Bienvenue.",es:"Bienvenido.",en:"Welcome.",it:"Benvenuto."},
+  accedeEspacio:{fr:"Accédez à votre espace wholesale privé",es:"Accede a tu espacio mayorista privado",en:"Access your private wholesale space",it:"Accedi al tuo spazio wholesale privato"},
+  noTienesCuenta:{fr:"Pas encore de compte ?",es:"¿Aún no tienes cuenta?",en:"No account yet?",it:"Non hai ancora un account?"},
+  uneteBoutiques:{fr:"Rejoignez les boutiques partenaires Minuë · Réponse sous 24h",es:"Únete a las tiendas partner de Minuë · Respuesta en 24h",en:"Join Minuë's partner boutiques · Reply within 24h",it:"Unisciti ai negozi partner Minuë · Risposta entro 24h"},
+  emailYaExiste:{fr:"Cet email a déjà un compte ou une demande en cours.",es:"Este email ya tiene una cuenta o una solicitud en curso.",en:"This email already has an account or a pending request.",it:"Questa email ha già un account o una richiesta in corso."},
   acetatoTramoInfo:{fr:"Les %n unités Acetato comptent pour le palier de prix, mais gardent leur prix fixe.",es:"Las %n uds Acetato cuentan para el tramo de precio, pero mantienen su precio fijo.",en:"The %n Acetato units count toward the price tier, but keep their fixed price.",it:"Le %n unità Acetato contano per la fascia di prezzo, ma mantengono il loro prezzo fisso."},
   tarifAcetato:{fr:"Tarif Acetato",es:"Tarifa Acetato",en:"Acetato pricing",it:"Tariffa Acetato"},
   tarifAcetatoSub:{fr:"Prix fixe par unité, quelle que soit la quantité. Les unités comptent pour le palier des autres collections.",es:"Precio fijo por unidad, sea cual sea la cantidad. Sus unidades cuentan para el tramo del resto de colecciones.",en:"Fixed price per unit, regardless of quantity. Units count toward the tier of other collections.",it:"Prezzo fisso per unità, indipendentemente dalla quantità. Le unità contano per la fascia delle altre collezioni."},
@@ -1037,13 +1043,21 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lang, _setLang] = useState("fr");
-  const setLang = (l) => { _setLang(l); try { const s = localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); sess.user.lang = l; localStorage.setItem("minue_session", JSON.stringify(sess)); } } catch(e) { console.log('DB error:', e); } };
+  const setLang = (l) => { _setLang(l); try { localStorage.setItem("minue_lang", l); const s = localStorage.getItem("minue_session"); if (s) { const sess = JSON.parse(s); sess.user.lang = l; localStorage.setItem("minue_session", JSON.stringify(sess)); } } catch(e) { console.log('DB error:', e); } };
   const [view, _setView] = useState("c-cat");
   const setView = (v) => { _setView(v); try { localStorage.setItem("minue_view", v); } catch(e) { console.log('DB error:', e); } };
   const [hydrated, setHydrated] = useState(false);
   // Hydrate from localStorage AFTER mount (avoids SSR mismatch)
   useEffect(() => {
     try {
+      // Language: saved manual choice > browser language > EN fallback
+      const savedLang = localStorage.getItem("minue_lang");
+      if (savedLang && ["fr","es","en","it"].includes(savedLang)) {
+        _setLang(savedLang);
+      } else {
+        const navLang = ((navigator.language || navigator.userLanguage || "en").slice(0,2)).toLowerCase();
+        _setLang(["fr","es","en","it"].includes(navLang) ? navLang : "en");
+      }
       const s = localStorage.getItem("minue_session");
       if (s) {
         const sess = JSON.parse(s);
@@ -1464,8 +1478,8 @@ export default function App() {
     }
     setFloatLoading(false);
   };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:true}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,lang:u.lang||"fr",comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateClient = async (c) => {
     if (!dbReady) return;
@@ -1633,7 +1647,7 @@ export default function App() {
 
   const doRegister = async () => {
     if (!regData.name || !regData.email || !regData.co) { setLoginErr(t("errLogin")); return; }
-    if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr("Email exists"); return; }
+    if (users.find(u => u.email.toLowerCase() === regData.email.toLowerCase())) { setLoginErr(t("emailYaExiste")); return; }
     const tempPw = "pending_" + Date.now();
     const channel = referralDist ? (referralDist.co||"Direct") : "Direct";
     const refNote = referralDist ? "\nReferido por: "+referralDist.co+" ("+referralDist.email+")" : "";
@@ -1697,11 +1711,10 @@ export default function App() {
         ) : !registerMode ? (
           /* LOGIN */
           <div className="loginshift" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
-            <div style={{textAlign:"center",marginBottom:50}}>
-              <img src={LOGO} alt="Minuë" style={{width:"min(100px, 25vw)",height:"min(100px, 25vw)",objectFit:"contain",borderRadius:10,marginBottom:24,marginTop:20,opacity:0.9}} />
-              <div style={{width:40,height:1,background:"#f8efe618",margin:"0 auto 20px"}} />
-              <div style={{fontSize:"min(13px, 3.5vw)",fontFamily:DP,color:"#f8efe640",fontStyle:"italic",lineHeight:1.8,letterSpacing:0.5}}>Your private wholesale space</div>
-              <div style={{fontSize:10,fontFamily:BD,color:"#f8efe625",letterSpacing:4,textTransform:"uppercase",marginTop:10}}>B2B Platform</div>
+            <div style={{textAlign:"center",marginBottom:40}}>
+              <img src={LOGO} alt="Minuë" style={{width:"min(84px, 21vw)",height:"min(84px, 21vw)",objectFit:"contain",borderRadius:10,marginBottom:20,marginTop:10,opacity:0.95}} />
+              <div style={{fontSize:"min(40px, 9vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,fontStyle:"italic",lineHeight:1.15,marginBottom:10}}>{t("bienvenidaLogin")}</div>
+              <div style={{fontSize:"min(13px, 3.6vw)",fontFamily:BD,color:"#f8efe670",lineHeight:1.7,letterSpacing:0.3,maxWidth:300,margin:"0 auto"}}>{t("accedeEspacio")}</div>
             </div>
             <div style={{width:"min(360px, 85vw)"}}>
               <div style={{marginBottom:24}}>
@@ -1714,9 +1727,10 @@ export default function App() {
                 {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginTop:10,letterSpacing:0.3}}>{loginErr}</div>}
               </div>
               <button onClick={doLogin} style={{width:"100%",padding:"16px 0",background:"#f8efe6",color:CL.dk,border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:500,cursor:"pointer",letterSpacing:2,textTransform:"uppercase",transition:"all 0.3s"}} onMouseEnter={e => e.target.style.opacity="0.9"} onMouseLeave={e => e.target.style.opacity="1"}>{t("connexion")}</button>
-              <div style={{textAlign:"center",marginTop:36}}>
-                <div style={{width:40,height:1,background:"#f8efe615",margin:"0 auto 20px"}} />
-                <button onClick={() => { setRegisterMode(true); setLoginErr(""); }} style={{fontSize:11,fontFamily:BD,color:"#f8efe640",background:"none",border:"none",cursor:"pointer",letterSpacing:1,transition:"color 0.3s"}} onMouseEnter={e => e.target.style.color="#f8efe680"} onMouseLeave={e => e.target.style.color="#f8efe640"}>{t("solliciterAcces")}</button>
+              <div style={{marginTop:32,background:"linear-gradient(135deg, rgba(196,149,106,0.10), rgba(196,149,106,0.04))",border:"1px solid rgba(196,149,106,0.35)",borderRadius:14,padding:"20px 22px",textAlign:"center"}}>
+                <div style={{fontSize:14,fontFamily:DP,fontStyle:"italic",color:"#f8efe6",marginBottom:4}}>{t("noTienesCuenta")}</div>
+                <div style={{fontSize:10.5,fontFamily:BD,color:"#f8efe670",lineHeight:1.6,marginBottom:14}}>{t("uneteBoutiques")}</div>
+                <button onClick={() => { setRegisterMode(true); setLoginErr(""); }} style={{width:"100%",padding:"13px 0",background:"linear-gradient(135deg,#c4956a,#d4a030)",color:CL.dk,border:"none",borderRadius:24,fontSize:12,fontFamily:BD,fontWeight:700,cursor:"pointer",letterSpacing:1,transition:"all 0.25s",boxShadow:"0 4px 16px rgba(196,149,106,0.25)"}} onMouseEnter={e => e.target.style.transform="translateY(-1px)"} onMouseLeave={e => e.target.style.transform="none"}>{t("solliciterAcces")} →</button>
               </div>
             </div>
             <div style={{display:"flex",gap:8,marginTop:40}}>
@@ -1727,7 +1741,7 @@ export default function App() {
           </div>
         ) : (
           /* REGISTER */
-          <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px min(30px, 5vw)",position:"relative",zIndex:1}}>
+          <div className="loginshift" style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"40px min(30px, 5vw)",position:"relative",zIndex:1}}>
             <div style={{width:"100%",maxWidth:520,background:CL.bg,borderRadius:16,padding:"min(50px, 8vw) min(40px, 6vw)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
               {referralDist && <div style={{background:"linear-gradient(135deg,"+CL.gn+"15,"+CL.gn+"08)",border:"1px solid "+CL.gn+"40",borderRadius:8,padding:"12px 16px",marginBottom:24,display:"flex",alignItems:"center",gap:12}}>
                 <div style={{fontSize:22}}>🤝</div>
@@ -1775,9 +1789,17 @@ export default function App() {
                   <input value={regData.web} onChange={e => setRegData(p => ({...p, web:e.target.value}))} placeholder="@store or url" style={inputStyleLight} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
                 </div>
               </div>
+              <div style={{marginBottom:20}}>
+                <div style={labelStyleLight}>{t("idiomaPreferido")} *</div>
+                <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+                  {[["fr","🇫🇷 Français"],["es","🇪🇸 Español"],["en","🇬🇧 English"],["it","🇮🇹 Italiano"]].map(([v,l]) =>
+                    <button key={v} type="button" onClick={() => setLang(v)} style={{padding:"9px 16px",background:lang===v?CL.dk:"transparent",color:lang===v?"#f8efe6":CL.dk+"90",border:"1.5px solid "+(lang===v?CL.dk:CL.dk+"25"),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20,transition:"all 0.2s"}}>{l}</button>
+                  )}
+                </div>
+              </div>
               <div style={{marginBottom:24}}>
                 <div style={labelStyleLight}>{t("messageSolicitud")}</div>
-                <textarea value={regData.message} onChange={e => setRegData(p => ({...p, message:e.target.value}))} rows={3} placeholder={lang==="fr"?"Type de boutique, marques distribuées, etc.":lang==="es"?"Tipo de tienda, marcas que distribuyes, etc.":"Store type, brands you carry, etc."} style={{...inputStyleLight,border:"none",borderBottom:"1px solid "+CL.dk+"18",resize:"vertical",fontFamily:BD,padding:"10px 0"}} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
+                <textarea value={regData.message} onChange={e => setRegData(p => ({...p, message:e.target.value}))} rows={3} placeholder={lang==="fr"?"Type de boutique, marques distribuées, etc.":lang==="es"?"Tipo de tienda, marcas que distribuyes, etc.":lang==="it"?"Tipo di negozio, marchi che distribuisci, ecc.":"Store type, brands you carry, etc."} style={{...inputStyleLight,border:"none",borderBottom:"1px solid "+CL.dk+"18",resize:"vertical",fontFamily:BD,padding:"10px 0"}} onFocus={e => e.target.style.borderBottomColor=CL.dk+"50"} onBlur={e => e.target.style.borderBottomColor=CL.dk+"18"} />
               </div>
               {loginErr && <div style={{fontSize:11,color:"#e74c3c",fontFamily:BD,marginBottom:14,padding:"10px 14px",background:"#e74c3c08",borderRadius:6}}>{loginErr}</div>}
               <button onClick={doRegister} style={{width:"100%",padding:"16px 0",background:CL.dk,color:"#f8efe6",border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:500,cursor:"pointer",letterSpacing:2,textTransform:"uppercase",transition:"opacity 0.3s"}} onMouseEnter={e => e.target.style.opacity="0.85"} onMouseLeave={e => e.target.style.opacity="1"}>{t("envoyerDemande")}</button>
