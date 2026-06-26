@@ -3209,6 +3209,7 @@ export default function App() {
               <Btn onClick={() => { const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:ed.total, shippingCost:ed.shippingCost, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?ed.total*0.15:0, payMethod:ed.payMethod, paymentLink:ed.paymentLink, payDueDate:ed.payDueDate, payReminderDays:ed.payReminderDays, paySplit1Amount:ed.paySplit1Amount, paySplit1Date:ed.paySplit1Date, paySplit1Done:ed.paySplit1Done, paySplit2Amount:ed.paySplit2Amount, paySplit2Date:ed.paySplit2Date, paySplit2Done:ed.paySplit2Done}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => askConfirm(t("confirmarEliminar"), () => { const o = orders[ed.idx]; setOrders(p => p.filter((_, i) => i !== ed.idx)); dbDeleteOrder(o); toast(t("pedidoEliminado")); setModal(null); })} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
+            <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
