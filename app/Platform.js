@@ -2262,7 +2262,7 @@ export default function App() {
         <div class="col">
           <h3>Remitente</h3>
           <div class="name">Minuë Opticians</div>
-          Calle Gutiérrez de Alba 2<br>41010 Sevilla, España<br>NIF: ES77843808D<br>hola@minueopticians.com
+          Calle Ardilla nº13, oficinas<br>41010 Sevilla, España<br>NIF: ES77843808D<br>hola@minueopticians.com
         </div>
         <div class="col">
           <h3>Cliente</h3>
@@ -2283,7 +2283,7 @@ export default function App() {
       </table>
       ${o.clientNotes ? '<div class="notes"><strong>Notas:</strong> '+o.clientNotes+'</div>' : ''}
       <div class="sign"><div>Firma remitente</div><div>Firma recepción / fecha</div></div>
-      <div class="foot">Minuë Opticians · Calle Gutiérrez de Alba 2, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com<br>Este albarán acompaña la mercancía y no tiene valor de factura.</div>
+      <div class="foot">Minuë Opticians · Calle Ardilla nº13, oficinas, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com<br>Este albarán acompaña la mercancía y no tiene valor de factura.</div>
     </div>
       <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); }<\/script>
     </body></html>`;
