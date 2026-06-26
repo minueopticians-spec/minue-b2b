@@ -626,6 +626,8 @@ const T = {
   crearPrimerCliente:{fr:"Créer ma première boutique",es:"Crear mi primera tienda",en:"Create my first store",it:"Crea il mio primo negozio"},
   clienteCreado:{fr:"Client créé",es:"Cliente creado",en:"Client created",it:"Cliente creato"},
   voirPanier:{fr:"Voir le panier",es:"Ver carrito",en:"View cart",it:"Vedi carrello"},
+  descargarAlbaran:{fr:"Télécharger le bon de livraison (PDF)",es:"Descargar albarán (PDF)",en:"Download delivery note (PDF)",it:"Scarica bolla di consegna (PDF)"},
+  popupBloqueado:{fr:"Autorisez les fenêtres pop-up pour télécharger",es:"Permite ventanas emergentes para descargar",en:"Allow pop-ups to download",it:"Consenti i popup per scaricare"},
   idiomaPreferido:{fr:"Langue préférée",es:"Idioma preferido",en:"Preferred language",it:"Lingua preferita"},
   bienvenidaLogin:{fr:"Bienvenue.",es:"Bienvenido.",en:"Welcome.",it:"Benvenuto."},
   accedeEspacio:{fr:"Accédez à votre espace wholesale privé",es:"Accede a tu espacio mayorista privado",en:"Access your private wholesale space",it:"Accedi al tuo spazio wholesale privato"},
@@ -1480,7 +1482,7 @@ export default function App() {
   };
   const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
   const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,lang:u.lang||"fr",comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
-  const dbSaveClient = async (c) => { if (!dbReady) return; try { await supabase.from("clients").insert({name:c.name,contact:c.contact,city:c.city,country:c.country||"FR",channel:"Direct",status:"prospect"}); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveClient = async (c) => { if (!dbReady) return null; try { const {data} = await supabase.from("clients").insert({name:c.name,contact:c.contact||null,city:c.city||null,country:c.country||"FR",channel:c.channel||"Direct",status:c.status||"prospect",company_email:c.companyEmail||null,phone:c.phone||null,notes:c.notes||null}).select().single(); return data?.id || null; } catch(e) { console.log('DB error:', e); return null; } };
   const dbUpdateClient = async (c) => {
     if (!dbReady) return;
     const fields = {name:c.name,contact:c.contact,city:c.city,country:c.country,phone:c.phone||null,company_email:c.companyEmail||null,company_name:c.companyName||null,tax_id:c.taxId||null,address:c.address||null,postal_code:c.postalCode||null,bank_holder:c.bankHolder||null,iban:c.iban||null,bic:c.bic||null,shipping_address:c.shippingAddress||null,shipping_city:c.shippingCity||null,shipping_postal:c.shippingPostal||null,shipping_country:c.shippingCountry||null,custom_price:c.customPrice||0,price_essential:c.priceEssential||0,price_icons:c.priceIcons||0,price_acetato:c.priceAcetato||0,early_pay:!!c.earlyPay,status:c.status,notes:c.notes,channel:c.channel};
@@ -1554,8 +1556,9 @@ export default function App() {
     if (c.name === activeClientName) return true;
     if (c.name && activeClientName && c.name.toLowerCase().trim() === activeClientName.toLowerCase().trim()) return true;
     if (user && user.role === "client" && c.companyEmail && c.companyEmail.toLowerCase() === user.email.toLowerCase()) return true;
+    if (user && user.role === "client" && c.contact && user.name && c.contact.toLowerCase().trim() === user.name.toLowerCase().trim()) return true;
     return false;
-  });
+  }) || (user && user.role === "client" ? {name:user.co||user.name, contact:user.name, companyEmail:user.email, customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, status:"prospect", orders:0, total:0, _synthetic:true} : null);
   const customPrice = activeClient ? activeClient.customPrice || 0 : 0;
   const priceEssential = activeClient ? (Number(activeClient.priceEssential)||0) : 0;
   const priceIcons = activeClient ? (Number(activeClient.priceIcons)||0) : 0;
@@ -2208,6 +2211,82 @@ export default function App() {
     const rows = orders.map(o => [o.id||"",o.client||"",o.dist||"",o.date||"",o.items||0,o.total||0,o.status||"",o.pay||"",o.carrier||"",o.track||"",o.clientNotes||""]);
     exportCSV("minue_pedidos_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
   };
+
+  const downloadAlbaran = (o) => {
+    const cl = clients.find(c => c.name === o.client || (c.name && o.client && c.name.toLowerCase().trim() === o.client.toLowerCase().trim())) || {};
+    const lines = o.lines || [];
+    const totalUnits = lines.reduce((s,l) => s + (l.qty||0), 0) || o.items || 0;
+    const fmtN = n => (Number(n)||0).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2});
+    const today = new Date().toLocaleDateString("es-ES");
+    const addr = [cl.address, [cl.postalCode, cl.city].filter(Boolean).join(" "), cl.country].filter(Boolean).join("<br>");
+    const shipAddr = [cl.shippingAddress||cl.address, [cl.shippingPostal||cl.postalCode, cl.shippingCity||cl.city].filter(Boolean).join(" "), cl.shippingCountry||cl.country].filter(Boolean).join("<br>");
+    const rowsHtml = lines.map(l => `<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;font-weight:600;color:#18332f">${l.model||""}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;color:#555">${l.color||""}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;color:#888;font-size:11px">${l.sku||""}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:600">${l.qty||0}</td>
+    </tr>`).join("");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Albarán ${o.id}</title>
+    <style>
+      @page { size: A4; margin: 18mm; }
+      * { box-sizing: border-box; }
+      body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #2a2a2a; margin: 0; padding: 0; font-size: 13px; line-height: 1.5; }
+      .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #18332f; padding-bottom: 18px; margin-bottom: 26px; }
+      .brand { font-size: 30px; font-weight: 300; letter-spacing: 4px; color: #18332f; font-style: italic; }
+      .brand-sub { font-size: 10px; letter-spacing: 3px; color: #b8860b; font-weight: 700; margin-top: 2px; }
+      .doc-title { text-align: right; }
+      .doc-title h1 { font-size: 22px; color: #18332f; margin: 0 0 4px; letter-spacing: 2px; }
+      .doc-title .meta { font-size: 12px; color: #777; }
+      .cols { display: flex; gap: 40px; margin-bottom: 26px; }
+      .col { flex: 1; }
+      .col h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #b8860b; margin: 0 0 6px; font-weight: 700; }
+      .col .name { font-weight: 700; color: #18332f; font-size: 14px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+      thead th { background: #18332f; color: #f8efe6; padding: 10px 12px; text-align: left; font-size: 11px; letter-spacing: 0.5px; font-weight: 600; }
+      thead th:last-child { text-align: center; }
+      tfoot td { padding: 12px; font-weight: 700; font-size: 15px; color: #18332f; border-top: 2px solid #18332f; }
+      .notes { background: #f8efe6; border-radius: 8px; padding: 14px 18px; font-size: 12px; color: #555; margin-bottom: 20px; }
+      .foot { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #999; text-align: center; line-height: 1.7; }
+      .sign { display: flex; gap: 60px; margin-top: 50px; }
+      .sign div { flex: 1; border-top: 1px solid #999; padding-top: 6px; font-size: 11px; color: #777; text-align: center; }
+    </style></head><body>
+      <div class="head">
+        <div><div class="brand">Minuë</div><div class="brand-sub">OPTICIANS</div></div>
+        <div class="doc-title"><h1>ALBARÁN</h1><div class="meta">Nº ${o.id}<br>Fecha: ${today}<br>Pedido: ${o.date||"—"}</div></div>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <h3>Remitente</h3>
+          <div class="name">Minuë Opticians</div>
+          Calle Gutiérrez de Alba 2<br>41010 Sevilla, España<br>NIF: ES77843808D<br>hola@minueopticians.com
+        </div>
+        <div class="col">
+          <h3>Cliente</h3>
+          <div class="name">${o.client||cl.name||"—"}</div>
+          ${cl.companyName ? cl.companyName+"<br>" : ""}${cl.taxId ? "NIF: "+cl.taxId+"<br>" : ""}${addr||"—"}
+        </div>
+        <div class="col">
+          <h3>Dirección de envío</h3>
+          ${shipAddr||addr||"—"}
+          ${o.carrier ? "<br><br><strong>Transportista:</strong> "+o.carrier : ""}
+          ${o.track ? "<br><strong>Tracking:</strong> "+o.track : ""}
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Modelo</th><th>Color</th><th>SKU</th><th>Cantidad</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        <tfoot><tr><td colspan="3">TOTAL UNIDADES</td><td style="text-align:center">${totalUnits}</td></tr></tfoot>
+      </table>
+      ${o.clientNotes ? '<div class="notes"><strong>Notas:</strong> '+o.clientNotes+'</div>' : ''}
+      <div class="sign"><div>Firma remitente</div><div>Firma recepción / fecha</div></div>
+      <div class="foot">Minuë Opticians · Calle Gutiérrez de Alba 2, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com<br>Este albarán acompaña la mercancía y no tiene valor de factura.</div>
+      <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); }<\/script>
+    </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
+    else { toast(t("popupBloqueado")||"Permite ventanas emergentes para descargar el albarán"); }
+  };
+
 
   const renderKPI = (label, value, accent, onClick) => (
     <div onClick={onClick} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 14px",...(onClick?{cursor:"pointer"}:{})}}>
@@ -3476,6 +3555,7 @@ export default function App() {
               if (changes.length > 0) logOrderChange(ed.id, "Edición de pedido", changes.join(" · "));
               setModal(null); 
             }} style={{width:"100%",marginTop:8}}>{t("editarCmd")}</Btn>}
+            {(role === "admin" || role === "team") && <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>}
           </>;
           })()}
 
@@ -3540,7 +3620,7 @@ export default function App() {
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesUser")}</div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
-            <Btn onClick={() => { if(ed.email && ed.name && ed.pw){ setUsers(p => [...p, {...ed, active: true}]); dbSaveUser(ed); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
+            <Btn onClick={async () => { if(ed.email && ed.name && ed.pw){ const nu = {...ed, active: true}; setUsers(p => [...p, nu]); await dbSaveUser(nu); if(ed.role === "client"){ const exists = clients.find(cl => (cl.companyEmail && cl.companyEmail.toLowerCase()===ed.email.toLowerCase()) || (cl.name && ed.co && cl.name.toLowerCase()===ed.co.toLowerCase())); if(!exists){ const nc = {id:Date.now(), name:ed.co||ed.name, contact:ed.name, companyEmail:ed.email, phone:ed.phone||"", city:ed.city||"", country:ed.country||"FR", channel:"Direct", status:"prospect", customPrice:0, priceEssential:0, priceIcons:0, priceAcetato:0, earlyPay:false, orders:0, total:0, notes:ed.notes||""}; setClients(p => [...p, nc]); const cid = await dbSaveClient(nc); if(cid) setClients(p => p.map(x => x.id===nc.id?{...x,id:cid}:x)); } } toast(t("enregistrer")); setModal(null); }}} style={{width:"100%"}}>{t("enregistrer")}</Btn>
           </>}
 
           {/* EDIT USER */}
