@@ -2228,9 +2228,12 @@ export default function App() {
     </tr>`).join("");
     const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Albarán ${o.id}</title>
     <style>
-      @page { size: A4; margin: 18mm; }
+      @page { size: A4; margin: 14mm; }
       * { box-sizing: border-box; }
-      body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #2a2a2a; margin: 0; padding: 0; font-size: 13px; line-height: 1.5; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #2a2a2a; font-size: 13px; line-height: 1.5; }
+      .page { padding: 16mm 18mm; max-width: 210mm; margin: 0 auto; }
+      @media print { .page { padding: 0; } }
       .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #18332f; padding-bottom: 18px; margin-bottom: 26px; }
       .brand { font-size: 30px; font-weight: 300; letter-spacing: 4px; color: #18332f; font-style: italic; }
       .brand-sub { font-size: 10px; letter-spacing: 3px; color: #b8860b; font-weight: 700; margin-top: 2px; }
@@ -2250,8 +2253,9 @@ export default function App() {
       .sign { display: flex; gap: 60px; margin-top: 50px; }
       .sign div { flex: 1; border-top: 1px solid #999; padding-top: 6px; font-size: 11px; color: #777; text-align: center; }
     </style></head><body>
+    <div class="page">
       <div class="head">
-        <div><div class="brand">Minuë</div><div class="brand-sub">OPTICIANS</div></div>
+        <div><img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:54px;width:auto;display:block" /></div>
         <div class="doc-title"><h1>ALBARÁN</h1><div class="meta">Nº ${o.id}<br>Fecha: ${today}<br>Pedido: ${o.date||"—"}</div></div>
       </div>
       <div class="cols">
@@ -2280,6 +2284,7 @@ export default function App() {
       ${o.clientNotes ? '<div class="notes"><strong>Notas:</strong> '+o.clientNotes+'</div>' : ''}
       <div class="sign"><div>Firma remitente</div><div>Firma recepción / fecha</div></div>
       <div class="foot">Minuë Opticians · Calle Gutiérrez de Alba 2, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com<br>Este albarán acompaña la mercancía y no tiene valor de factura.</div>
+    </div>
       <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 300); }<\/script>
     </body></html>`;
     const w = window.open("", "_blank");
@@ -3928,7 +3933,7 @@ export default function App() {
                   </style></head><body>
                     <div class="header">
                       <div>
-                        <div class="brand">Minuë</div>
+                        <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
                         <div class="brand-sub">Opticians · Wholesale</div>
                       </div>
                       <div class="inv-title">
@@ -8092,7 +8097,7 @@ export default function App() {
             </style></head><body>
               <div class="header">
                 <div>
-                  <div class="brand">Minuë</div>
+                  <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
                   <div class="brand-sub">Opticians · Wholesale Eyewear</div>
                 </div>
                 <div class="doc-title">
