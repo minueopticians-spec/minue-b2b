@@ -678,6 +678,14 @@ const T = {
   descargarProforma:{fr:"Télécharger la proforma",es:"Descargar proforma",en:"Download proforma",it:"Scarica proforma"},
   facturaTrasPago:{fr:"La facture vous sera envoyée par email une fois la proforma réglée.",es:"La factura se te enviará por email una vez abonada la proforma.",en:"The invoice will be emailed to you once the proforma is paid.",it:"La fattura ti verrà inviata via email una volta saldata la proforma."},
   facturaPagada:{fr:"Commande réglée. La facture vous a été envoyée par email.",es:"Pedido abonado. La factura se ha enviado por email.",en:"Order paid. The invoice has been emailed to you.",it:"Ordine saldato. La fattura è stata inviata via email."},
+  miHistorico:{fr:"Mon historique",es:"Mi histórico",en:"My history",it:"Il mio storico"},
+  miHistoricoSub:{fr:"Tous les modèles que vous avez commandés et leurs quantités",es:"Todos los diseños que has pedido y sus cantidades",en:"All designs you've ordered and their quantities",it:"Tutti i modelli che hai ordinato e le quantità"},
+  sinHistorico:{fr:"Pas encore d'historique d'achats",es:"Aún no hay histórico de compras",en:"No purchase history yet",it:"Nessuno storico acquisti"},
+  unitsTotales:{fr:"Unités au total",es:"Unidades en total",en:"Total units",it:"Unità totali"},
+  refsDistintas:{fr:"Références",es:"Referencias",en:"References",it:"Referenze"},
+  modelosDistintos:{fr:"Modèles différents",es:"Modelos distintos",en:"Different models",it:"Modelli diversi"},
+  porColeccion:{fr:"Par collection",es:"Por colección",en:"By collection",it:"Per collezione"},
+  rankingDisenos:{fr:"Vos modèles, du plus au moins commandé",es:"Tus diseños, de más a menos pedido",en:"Your designs, most to least ordered",it:"I tuoi modelli, dal più al meno ordinato"},
   primerPedidoTitulo:{fr:"Prêt pour votre première commande ?",es:"¿List@ para tu primer pedido?",en:"Ready for your first order?",it:"Pronto per il primo ordine?"},
   primerPedidoSub:{fr:"Découvrez la collection et composez votre commande.",es:"Descubre la colección y monta tu pedido.",en:"Explore the collection and build your order.",it:"Scopri la collezione e crea il tuo ordine."},
   resumenEnvio:{fr:"Résumé de l'envoi",es:"Resumen del envío",en:"Shipment summary",it:"Riepilogo spedizione"},
@@ -1249,6 +1257,7 @@ export default function App() {
   const [confirmBox, setConfirmBox] = useState(null); // {msg, onYes}
   const askConfirm = (msg, onYes) => setConfirmBox({msg, onYes});
   const [productAlerts, setProductAlerts] = useState([]); // [{id, client_email, product_id}]
+  const [clientHistory, setClientHistory] = useState([]); // [{client_name, model, color, qty, source, year}]
   const dbAddAlert = async (productId) => { if (!dbReady) return; try { const {data} = await supabase.from("product_alerts").insert({client_email:user.email, client_name:user.co||user.name, product_id:productId}).select().single(); if (data) setProductAlerts(p => [...p, data]); } catch(e) { console.log("alert err", e); } };
   const dbRemoveAlert = async (alertId) => { if (!dbReady) return; try { await supabase.from("product_alerts").delete().eq("id",alertId); setProductAlerts(p => p.filter(a => a.id !== alertId)); } catch(e) {} };
   const [news, setNews] = useState(NEWS_INIT);
@@ -1381,6 +1390,7 @@ export default function App() {
         try {
           if (user && (user.role === "admin" || user.role === "team")) { const {data:als} = await supabase.from("product_alerts").select("*"); if (als) setProductAlerts(als); }
           else if (user) { const {data:als} = await supabase.from("product_alerts").select("*").eq("client_email", user.email); if (als) setProductAlerts(als); }
+          try { const {data:ch} = await supabase.from("client_history").select("*"); if (ch) setClientHistory(ch); } catch(e) {}
         } catch(e) {}
         // Business config
         try {
@@ -1635,6 +1645,28 @@ export default function App() {
   const tierQty = cartCount;
   // Essential pricing: legacy customPrice OR priceEssential OR volume tier (tier from TOTAL units)
   const essentialUnitPrice = customPrice > 0 ? customPrice : (priceEssential > 0 ? priceEssential : getPrice(tierQty || 1, 0));
+
+  // Combina histórico importado (Shopify) + pedidos de la plataforma para un cliente
+  const buildPurchaseHistory = (clientName) => {
+    const tally = {};
+    // 1) Histórico importado
+    clientHistory.filter(h => h.client_name === clientName || (h.client_name && clientName && h.client_name.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(h => {
+      const k = (h.model||"")+"||"+(h.color||"");
+      if (!tally[k]) tally[k] = {model:h.model, color:h.color, qty:0};
+      tally[k].qty += Number(h.qty)||0;
+    });
+    // 2) Pedidos en plataforma
+    orders.filter(o => o.client === clientName || (o.client && clientName && o.client.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(o => {
+      (o.lines||[]).forEach(l => { const k = (l.model||"")+"||"+(l.color||""); if(!tally[k]) tally[k] = {model:l.model, color:l.color, qty:0}; tally[k].qty += (l.qty||0); });
+    });
+    const list = Object.values(tally).sort((a,b) => b.qty - a.qty);
+    const totalUnits = list.reduce((s,x) => s + x.qty, 0);
+    // Por colección (cruzando con products)
+    const byCol = {};
+    list.forEach(d => { const p = products.find(x => x.model===d.model && x.color===d.color); const col = (p && p.col) || "Essential"; byCol[col] = (byCol[col]||0) + d.qty; });
+    return { list, totalUnits, byCol };
+  };
+
   // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same tier)
   const iconsUnitPrice = customPrice > 0 ? customPrice : (priceIcons > 0 ? priceIcons : getPrice(tierQty || 1, 0));
   const essentialTotal = essentialOnlyCount * essentialUnitPrice + iconsCount * iconsUnitPrice;
@@ -1886,7 +1918,7 @@ export default function App() {
   /* ═══ ROLE & NAV CONFIG ═══ */
   const role = user.role;
   const navItems = role === "client"
-    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
+    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
@@ -1894,7 +1926,7 @@ export default function App() {
     : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
-  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2"};
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",miHistorico:"M3 3v18h18M7 14l4-4 4 4 5-5"};
   const bottomItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
     : role === "distributor"
@@ -5017,6 +5049,21 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>;
           })()}
 
+          {/* 📊 RESUMEN HISTÓRICO (enlace a sección completa) */}
+          {(() => {
+            const clientName = user.co || user.name;
+            const {list, totalUnits} = buildPurchaseHistory(clientName);
+            if (totalUnits === 0) return null;
+            return <div onClick={() => setView("c-historico")} style={{background:"linear-gradient(135deg,"+CL.dk+",#1d4435)",borderRadius:14,padding:"18px 20px",marginBottom:18,cursor:"pointer",color:CL.bg,display:"flex",alignItems:"center",gap:16}}>
+              <div style={{fontSize:30}}>📊</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,marginBottom:2}}>{t("miHistorico")}</div>
+                <div style={{fontSize:12,fontFamily:BD,opacity:0.85}}>{totalUnits} {t("unitsTotales").toLowerCase()} · {list.length} {t("refsDistintas").toLowerCase()}</div>
+              </div>
+              <span style={{fontSize:18}}>→</span>
+            </div>;
+          })()}
+
           {/* 🔄 QUIZÁS TOCA REPONER (recompra: modelos suyos parados 60+ días, con stock) */}
           {(() => {
             const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
@@ -6232,6 +6279,74 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {news.filter(n => n.on).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
         </div>
       </Sec>}
+
+      {view === "c-historico" && (() => {
+        const clientName = user.co || user.name;
+        const {list, totalUnits, byCol} = buildPurchaseHistory(clientName);
+        if (list.length === 0) return <Sec title={t("miHistorico")}><div style={{textAlign:"center",padding:50,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontSize:14,fontFamily:BD,color:C.gr}}>{t("sinHistorico")}</div></div></Sec>;
+        const maxQty = list[0].qty;
+        const colColors = {Essential:"#18332f", Icons:"#c4956a", Acetato:"#8e44ad", Otros:"#888"};
+        const colEntries = Object.entries(byCol).sort((a,b) => b[1]-a[1]);
+        // donut
+        let acc = 0; const circ = 2*Math.PI*52;
+        const segs = colEntries.map(([col, q]) => { const frac = q/totalUnits; const seg = {col, q, frac, offset:acc, color:colColors[col]||colColors.Otros}; acc += frac; return seg; });
+        const modelCount = new Set(list.map(d => d.model)).size;
+        return <Sec title={"📊 "+t("miHistorico")} sub={t("miHistoricoSub")}>
+          {/* KPIs */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:12,marginBottom:20}}>
+            <div style={{background:"linear-gradient(135deg,"+CL.dk+",#1d4435)",borderRadius:14,padding:"18px 16px",color:CL.bg}}>
+              <div style={{fontSize:30,fontFamily:DP,fontWeight:500}}>{totalUnits}</div>
+              <div style={{fontSize:10,fontFamily:BD,opacity:0.8,letterSpacing:0.5}}>{t("unitsTotales")}</div>
+            </div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px 16px"}}>
+              <div style={{fontSize:30,fontFamily:DP,fontWeight:500,color:C.dk}}>{list.length}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5}}>{t("refsDistintas")}</div>
+            </div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px 16px"}}>
+              <div style={{fontSize:30,fontFamily:DP,fontWeight:500,color:C.dk}}>{modelCount}</div>
+              <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5}}>{t("modelosDistintos")}</div>
+            </div>
+          </div>
+
+          {/* DONUT por colección + leyenda */}
+          {colEntries.length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"20px 22px",marginBottom:20,display:"flex",alignItems:"center",gap:28,flexWrap:"wrap"}}>
+            <svg width="130" height="130" viewBox="0 0 130 130" style={{flexShrink:0}}>
+              <circle cx="65" cy="65" r="52" fill="none" stroke={C.bg2} strokeWidth="20" />
+              {segs.map((s,i) => <circle key={i} cx="65" cy="65" r="52" fill="none" stroke={s.color} strokeWidth="20" strokeDasharray={`${s.frac*circ} ${circ}`} strokeDashoffset={-s.offset*circ} transform="rotate(-90 65 65)" />)}
+              <text x="65" y="60" textAnchor="middle" fontSize="22" fontWeight="600" fill={C.dk} fontFamily="serif">{totalUnits}</text>
+              <text x="65" y="76" textAnchor="middle" fontSize="9" fill={C.gr} fontFamily="sans-serif">uds</text>
+            </svg>
+            <div style={{flex:1,minWidth:160}}>
+              <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:12}}>{t("porColeccion")}</div>
+              {segs.map((s,i) => <div key={i} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+                <span style={{width:12,height:12,borderRadius:3,background:s.color,flexShrink:0}} />
+                <span style={{flex:1,fontSize:12,fontFamily:BD,color:C.dk}}>{s.col}</span>
+                <span style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk}}>{s.q}</span>
+                <span style={{fontSize:10,fontFamily:BD,color:C.gr,minWidth:38,textAlign:"right"}}>{Math.round(s.frac*100)}%</span>
+              </div>)}
+            </div>
+          </div>}
+
+          {/* RANKING completo con barras */}
+          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"20px 22px"}}>
+            <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:16}}>{t("rankingDisenos")}</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {list.map((d,i) => { const prod = products.find(p => p.model===d.model && p.color===d.color); const inStock = prod && prod.active!==false && prod.stock>0; return (
+                <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+                  <span style={{fontSize:10,fontFamily:BD,color:C.gr2,minWidth:22,textAlign:"right"}}>{i+1}</span>
+                  <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model} <span style={{color:C.gr,fontWeight:400}}>{d.color}</span></div>
+                    <div style={{height:6,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:6,width:Math.max(4,(d.qty/maxQty)*100)+"%",background:i<3?"linear-gradient(90deg,#d4a030,#c4956a)":CL.dk,borderRadius:3}} /></div>
+                  </div>
+                  <span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,minWidth:34,textAlign:"right"}}>{d.qty}</span>
+                  {inStock && <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{padding:"5px 9px",background:CL.dk,color:CL.bg,border:"none",borderRadius:6,fontSize:9,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
+                </div>
+              );})}
+            </div>
+          </div>
+        </Sec>;
+      })()}
 
       {view === "c-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
