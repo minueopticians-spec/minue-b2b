@@ -670,6 +670,16 @@ const T = {
   anadir:{fr:"Ajouter",es:"Añadir",en:"Add",it:"Aggiungi"},
   anadidoAlPedido:{fr:"Ajouté à la commande",es:"Añadido al pedido",en:"Added to order",it:"Aggiunto all'ordine"},
   guardarCambios:{fr:"Enregistrer les changements",es:"Guardar cambios",en:"Save changes",it:"Salva modifiche"},
+  cantidad:{fr:"Quantité",es:"Cantidad",en:"Quantity",it:"Quantità"},
+  estadoPedidos:{fr:"État de vos commandes",es:"Estado de tus pedidos",en:"Your orders status",it:"Stato dei tuoi ordini"},
+  verTodos:{fr:"Voir tout",es:"Ver todos",en:"View all",it:"Vedi tutti"},
+  verPedido:{fr:"Voir",es:"Ver",en:"View",it:"Vedi"},
+  proforma:{fr:"Proforma",es:"Proforma",en:"Proforma",it:"Proforma"},
+  descargarProforma:{fr:"Télécharger la proforma",es:"Descargar proforma",en:"Download proforma",it:"Scarica proforma"},
+  facturaTrasPago:{fr:"La facture vous sera envoyée par email une fois la proforma réglée.",es:"La factura se te enviará por email una vez abonada la proforma.",en:"The invoice will be emailed to you once the proforma is paid.",it:"La fattura ti verrà inviata via email una volta saldata la proforma."},
+  facturaPagada:{fr:"Commande réglée. La facture vous a été envoyée par email.",es:"Pedido abonado. La factura se ha enviado por email.",en:"Order paid. The invoice has been emailed to you.",it:"Ordine saldato. La fattura è stata inviata via email."},
+  primerPedidoTitulo:{fr:"Prêt pour votre première commande ?",es:"¿List@ para tu primer pedido?",en:"Ready for your first order?",it:"Pronto per il primo ordine?"},
+  primerPedidoSub:{fr:"Découvrez la collection et composez votre commande.",es:"Descubre la colección y monta tu pedido.",en:"Explore the collection and build your order.",it:"Scopri la collezione e crea il tuo ordine."},
   resumenEnvio:{fr:"Résumé de l'envoi",es:"Resumen del envío",en:"Shipment summary",it:"Riepilogo spedizione"},
   enCaminoUds:{fr:"en route",es:"en camino",en:"on the way",it:"in arrivo"},
   entregadoUds:{fr:"livrées",es:"entregadas",en:"delivered",it:"consegnate"},
@@ -1225,6 +1235,7 @@ export default function App() {
   const [aiError, setAiError] = useState("");
   const [aiFloatOpen, setAiFloatOpen] = useState(false);
   const [noteData, setNoteData] = useState(null); // {orderId, client, clientType, extras, discount, incidents, freeNotes}
+  const [qtyPick, setQtyPick] = useState(null); // {productId, model, color, qty} para reorder con cantidad
   const [noteText, setNoteText] = useState(""); // texto generado por IA
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteError, setNoteError] = useState("");
@@ -2266,6 +2277,77 @@ export default function App() {
     const h = ["No","Client","Distributeur","Date","Unites","Total","Status","Paiement","Transporteur","Tracking","Notes"];
     const rows = orders.map(o => [o.id||"",o.client||"",o.dist||"",o.date||"",o.items||0,o.total||0,o.status||"",o.pay||"",o.carrier||"",o.track||"",o.clientNotes||""]);
     exportCSV("minue_pedidos_"+new Date().toISOString().slice(0,10)+".csv", h, rows);
+  };
+
+  const downloadProforma = (o) => {
+    const cl = clients.find(c => c.name === o.client || (c.name && o.client && c.name.toLowerCase().trim() === o.client.toLowerCase().trim())) || {};
+    const lines = o.lines || [];
+    const fmtN = n => (Number(n)||0).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2});
+    const today = new Date().toLocaleDateString("es-ES");
+    const addr = [cl.address, [cl.postalCode, cl.city].filter(Boolean).join(" "), cl.country].filter(Boolean).join("<br>");
+    const subtotal = lines.reduce((s,l) => s + (l.price||0) * (l.qty||0), 0);
+    const discounted = applyDiscount(subtotal, o.discountType, o.discountValue);
+    const saved = subtotal - discounted;
+    const ship = o.shippingCost > 0 ? o.shippingCost : 0;
+    const grandTotal = discounted + ship;
+    const totalUnits = lines.reduce((s,l) => s + (l.qty||0), 0);
+    const rowsHtml = lines.map(l => `<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;font-weight:600;color:#18332f">${l.model||""}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;color:#555">${l.color||""}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:center">${l.qty||0}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:right;color:#555">${fmtN(l.price)} €</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:right;font-weight:600">${fmtN((l.price||0)*(l.qty||0))} €</td>
+    </tr>`).join("");
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Proforma ${o.id}</title>
+    <style>
+      @page { size: A4; margin: 14mm; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #2a2a2a; font-size: 13px; line-height: 1.5; }
+      .page { padding: 16mm 18mm; max-width: 210mm; margin: 0 auto; }
+      @media print { .page { padding: 0; } }
+      .head { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #18332f; padding-bottom: 18px; margin-bottom: 26px; }
+      .doc-title { text-align: right; }
+      .doc-title h1 { font-size: 22px; color: #18332f; margin: 0 0 4px; letter-spacing: 2px; }
+      .doc-title .meta { font-size: 12px; color: #777; }
+      .cols { display: flex; gap: 40px; margin-bottom: 26px; }
+      .col { flex: 1; }
+      .col h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: #b8860b; margin: 0 0 6px; font-weight: 700; }
+      .col .name { font-weight: 700; color: #18332f; font-size: 14px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+      thead th { background: #18332f; color: #f8efe6; padding: 10px 12px; text-align: left; font-size: 11px; letter-spacing: 0.5px; font-weight: 600; }
+      thead th:nth-child(3) { text-align: center; } thead th:nth-child(4), thead th:nth-child(5) { text-align: right; }
+      .totals { margin-left: auto; width: 50%; }
+      .totals tr td { padding: 5px 12px; font-size: 12px; }
+      .totals .grand { font-weight: 700; font-size: 16px; color: #18332f; border-top: 2px solid #18332f; padding-top: 10px; }
+      .foot { margin-top: 36px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 10px; color: #999; text-align: center; line-height: 1.7; }
+    </style></head><body>
+      <div class="page">
+        <div class="head">
+          <div><img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block" /></div>
+          <div class="doc-title"><h1>PROFORMA</h1><div class="meta">Nº ${o.id}<br>Fecha: ${today}</div></div>
+        </div>
+        <div class="cols">
+          <div class="col"><h3>De</h3><div class="name">Minuë Opticians</div>Calle Ardilla nº13, oficinas<br>41010 Sevilla, España<br>NIF: ES77843808D<br>hola@minueopticians.com</div>
+          <div class="col"><h3>Cliente</h3><div class="name">${o.client||cl.name||"—"}</div>${cl.taxId ? "NIF: "+cl.taxId+"<br>" : ""}${addr||"—"}</div>
+        </div>
+        <table>
+          <thead><tr><th>Modelo</th><th>Color</th><th>Cant.</th><th>Precio</th><th>Importe</th></tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+        <table class="totals">
+          <tr><td>Subtotal (${totalUnits} uds)</td><td style="text-align:right">${fmtN(subtotal)} €</td></tr>
+          ${saved > 0.001 ? '<tr><td style="color:#a06a2c">Descuento</td><td style="text-align:right;color:#a06a2c">− '+fmtN(saved)+' €</td></tr>' : ''}
+          ${ship > 0 ? '<tr><td>Envío</td><td style="text-align:right">'+fmtN(ship)+' €</td></tr>' : ''}
+          <tr class="grand"><td>TOTAL</td><td style="text-align:right">${fmtN(grandTotal)} €</td></tr>
+        </table>
+        <div class="foot">Documento proforma sin valor fiscal · La factura se emite y se envía por email una vez abonada esta proforma.<br>Minuë Opticians · Calle Ardilla nº13, oficinas, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com</div>
+      </div>
+      <script>window.onload=function(){setTimeout(function(){window.print();},350);}<\/script>
+    </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
+    else { toast(t("popupBloqueado")||"Permite ventanas emergentes"); }
   };
 
   const downloadAlbaran = (o) => {
@@ -3783,6 +3865,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               setModal(null); 
             }} style={{width:"100%",marginTop:8}}>{role === "client" ? t("guardarCambios")||t("editarCmd") : t("editarCmd")}</Btn>}
             {(role === "admin" || role === "team") && <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>}
+            {ed.pay !== "paid" && <Btn ghost onClick={() => downloadProforma(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarProforma")}</Btn>}
+            {ed.pay === "paid" ? <div style={{marginTop:10,padding:"10px 14px",background:CL.gn+"0c",border:"1px solid "+CL.gn+"30",borderRadius:8,fontSize:11,fontFamily:BD,color:CL.gn,lineHeight:1.5}}>✓ {t("facturaPagada")}</div> : <div style={{marginTop:10,padding:"10px 14px",background:C.bg,border:"1px solid "+C.ln,borderRadius:8,fontSize:10.5,fontFamily:BD,color:C.gr,lineHeight:1.5}}>ℹ️ {t("facturaTrasPago")}</div>}
           </>;
           })()}
 
@@ -4863,6 +4947,50 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         {/* ORDER NOTIFICATIONS */}
         <div style={{padding:"20px min(24px, 4vw)"}}>
 
+          {/* 📦 ESTADO DE TUS PEDIDOS (lo primero) */}
+          {(() => {
+            const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
+            const sorted = [...myOrders].sort((a,b) => new Date(b._rawDate||0) - new Date(a._rawDate||0));
+            const active = sorted.filter(o => o.status !== "delivered" && o.status !== "cancelled");
+            const SLABEL = {confirmed:t("confirme"),preparing:t("enPrepa"),partial:t("expedie"),shipped:t("expedie"),delivered:t("livre"),cancelled:t("annule")};
+            const SICON = {confirmed:"✓",preparing:"📦",partial:"🚚",shipped:"🚚",delivered:"🏠",cancelled:"✕"};
+            if (myOrders.length === 0) {
+              return <div style={{background:"linear-gradient(135deg,"+CL.dk+"08,"+CL.gn+"10)",border:"1px solid "+CL.gn+"30",borderRadius:14,padding:"22px 20px",marginBottom:18,textAlign:"center"}}>
+                <div style={{fontSize:14,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:6}}>{t("primerPedidoTitulo")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:14}}>{t("primerPedidoSub")}</div>
+                <Btn onClick={() => setView("c-cat")}>{t("descubrirCol")} →</Btn>
+              </div>;
+            }
+            return <div style={{marginBottom:18}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>📦 {t("estadoPedidos")}</div>
+                <button onClick={() => setView("c-ord")} style={{background:"none",border:"none",color:CL.gn,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{t("verTodos")} →</button>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                {(active.length > 0 ? active : sorted.slice(0,2)).slice(0,3).map((o,i) => {
+                  const steps = ["confirmed","preparing","shipped","delivered"];
+                  const cur = {confirmed:0,preparing:1,partial:2,shipped:2,delivered:3}[o.status] ?? 0;
+                  return <div key={i} onClick={() => { setModal("viewOrd"); setEd({...o}); }} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:12,padding:"14px 16px",cursor:"pointer",display:"flex",alignItems:"center",gap:14}}>
+                    <div style={{fontSize:22}}>{SICON[o.status]||"📦"}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                        <span style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{o.id}</span>
+                        <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:CL.gn,background:CL.gn+"12",padding:"2px 9px",borderRadius:10}}>{SLABEL[o.status]||o.status}</span>
+                      </div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:3}}>{o.items} {t("unites")} · {fmt(o.total)} € · {o.date}</div>
+                      {(o.status==="shipped"||o.status==="partial") && <div style={{height:4,background:C.bg2,borderRadius:2,marginTop:8,overflow:"hidden"}}><div style={{height:4,width:((cur/3)*100)+"%",background:CL.gn,borderRadius:2}} /></div>}
+                    </div>
+                    <div style={{display:"flex",flexDirection:"column",gap:5,flexShrink:0}}>
+                      {o.pay !== "paid" && <button onClick={e => { e.stopPropagation(); downloadProforma(o); }} style={{padding:"5px 10px",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:9,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer",whiteSpace:"nowrap"}}>📄 {t("proforma")}</button>}
+                      <span style={{fontSize:10,color:C.gr,textAlign:"center"}}>{t("verPedido")} →</span>
+                    </div>
+                  </div>;
+                })}
+              </div>
+              {active.length === 0 && <Btn onClick={() => setView("c-cat")} style={{width:"100%",marginTop:10}}>+ {t("nouvelleCmd")||t("descubrirCol")}</Btn>}
+            </div>;
+          })()}
+
           {/* ★ TUS DISEÑOS MÁS PEDIDOS (top personal) */}
           {(() => {
             const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
@@ -4882,7 +5010,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <div style={{height:5,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:5,width:Math.max(12,(d.qty/maxQty)*100)+"%",background:"linear-gradient(90deg,#d4a030,#c4956a)",borderRadius:3}} /></div>
                     </div>
                     <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a06a2c",flexShrink:0}}>{d.qty}<span style={{fontSize:9,color:C.gr,fontWeight:400}}> uds</span></div>
-                    {prod && <button onClick={() => { addToCart(prod.id, 2); toast(t("anadidoAlCarrito")); }} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
+                    {prod && <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
                   </div>
                 );})}
               </div>
@@ -4914,7 +5042,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{prod.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{prod.color}</div>
                   <div style={{fontSize:9,fontFamily:BD,color:"#2471a3",marginTop:3,marginBottom:7}}>{t("haceTiempo").replace("%d", Math.floor(days/30))}</div>
-                  <button onClick={() => { addToCart(prod.id, 2); toast(t("anadidoAlCarrito")); }} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
+                  <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
                 </div>)}
               </div>
             </div>;
@@ -4936,7 +5064,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{prod.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:7}}>{prod.color}{(prod.tags||[]).includes("top") ? " · ★" : ""}</div>
-                  <button onClick={() => { addToCart(prod.id, 2); toast(t("anadidoAlCarrito")); }} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
+                  <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
                 </div>)}
               </div>
             </div>;
@@ -9109,6 +9237,25 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>; })
         })()}
       </Sec>}
+
+      {/* SELECTOR DE CANTIDAD (reorder) */}
+      {qtyPick && <div onClick={() => setQtyPick(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+        <div onClick={e => e.stopPropagation()} style={{background:C.wh,borderRadius:16,padding:"24px 22px",width:"min(340px,100%)",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
+          <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:1,marginBottom:4}}>{(t("reorder")||"Repetir").toUpperCase()}</div>
+          <div style={{fontSize:18,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:2}}>{qtyPick.model}</div>
+          <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:18}}>{qtyPick.color}</div>
+          <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8,fontWeight:600}}>{t("cantidad")||"Cantidad"}</div>
+          <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20,justifyContent:"center"}}>
+            <button onClick={() => setQtyPick(p => ({...p, qty:Math.max(1, p.qty-1)}))} style={{width:44,height:44,borderRadius:10,background:C.bg,border:"1px solid "+C.ln,fontSize:20,color:C.dk,cursor:"pointer"}}>−</button>
+            <input type="number" value={qtyPick.qty} onChange={e => setQtyPick(p => ({...p, qty:Math.max(1, parseInt(e.target.value)||1)}))} style={{width:70,height:44,textAlign:"center",border:"1px solid "+C.ln,borderRadius:10,fontFamily:BD,fontSize:18,fontWeight:700,color:C.dk}} />
+            <button onClick={() => setQtyPick(p => ({...p, qty:p.qty+1}))} style={{width:44,height:44,borderRadius:10,background:C.bg,border:"1px solid "+C.ln,fontSize:20,color:C.dk,cursor:"pointer"}}>+</button>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <Btn ghost onClick={() => setQtyPick(null)} style={{flex:1}}>{t("annuler")||"Cancelar"}</Btn>
+            <Btn onClick={() => { addToCart(qtyPick.productId, qtyPick.qty); toast(t("anadidoAlCarrito")); setQtyPick(null); }} style={{flex:2}}>+ {t("ajouterPanier")||t("panier")} ({qtyPick.qty})</Btn>
+          </div>
+        </div>
+      </div>}
 
       {/* TOASTS */}
       {toasts.length > 0 && <div style={{position:"fixed",bottom:140,left:"50%",transform:"translateX(-50%)",zIndex:300,display:"flex",flexDirection:"column",gap:8,alignItems:"center",pointerEvents:"none",width:"min(420px, calc(100vw - 32px))"}}>
