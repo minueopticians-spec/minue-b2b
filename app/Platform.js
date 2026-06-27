@@ -627,6 +627,38 @@ const T = {
   clienteCreado:{fr:"Client créé",es:"Cliente creado",en:"Client created",it:"Cliente creato"},
   voirPanier:{fr:"Voir le panier",es:"Ver carrito",en:"View cart",it:"Vedi carrello"},
   descargarAlbaran:{fr:"Télécharger le bon de livraison (PDF)",es:"Descargar albarán (PDF)",en:"Download delivery note (PDF)",it:"Scarica bolla di consegna (PDF)"},
+  generarNota:{fr:"Générer une note",es:"Generar nota",en:"Generate note",it:"Genera nota"},
+  generandoNota:{fr:"Génération…",es:"Generando…",en:"Generating…",it:"Generazione…"},
+  descargarNotaPDF:{fr:"Télécharger la note (PDF)",es:"Descargar nota (PDF)",en:"Download note (PDF)",it:"Scarica nota (PDF)"},
+  regenerar:{fr:"Régénérer",es:"Regenerar",en:"Regenerate",it:"Rigenera"},
+  tipoCliente:{fr:"Type de client",es:"Tipo de cliente",en:"Client type",it:"Tipo di cliente"},
+  idiomaCartaAuto:{fr:"Langue de la lettre (auto par pays)",es:"Idioma de la carta (auto por país)",en:"Letter language (auto by country)",it:"Lingua della lettera (auto per paese)"},
+  extrasIncluidos:{fr:"Extras inclus",es:"Extras incluidos",en:"Extras included",it:"Extra inclusi"},
+  incidencia:{fr:"Incident à mentionner",es:"Incidencia a mencionar",en:"Issue to mention",it:"Problema da menzionare"},
+  codigoDescuento:{fr:"Code de réduction",es:"Código descuento",en:"Discount code",it:"Codice sconto"},
+  notasAdicionales:{fr:"Notes additionnelles",es:"Notas adicionales",en:"Additional notes",it:"Note aggiuntive"},
+  pedido:{fr:"Commande",es:"Pedido",en:"Order",it:"Ordine"},
+  pedidoVsServido:{fr:"Commandé / Servi",es:"Pedido / Servido",en:"Ordered / Served",it:"Ordinato / Servito"},
+  servido:{fr:"Servi",es:"Servido",en:"Served",it:"Servito"},
+  servidoLower:{fr:"servies",es:"servidas",en:"served",it:"servite"},
+  sinServir:{fr:"non servies",es:"sin servir",en:"unserved",it:"non servite"},
+  dejarPendiente:{fr:"Laisser en attente",es:"Dejar pendiente",en:"Leave pending",it:"Lasciare in sospeso"},
+  anularLinea:{fr:"Annuler",es:"Anular",en:"Cancel",it:"Annulla"},
+  pendientesServir:{fr:"En attente de service",es:"Pendientes de servir",en:"Pending fulfilment",it:"In attesa di evasione"},
+  pendientesServirSub:{fr:"Lignes commandées non encore servies, par client",es:"Líneas pedidas aún no servidas, por cliente",en:"Ordered lines not yet served, by client",it:"Righe ordinate non ancora servite, per cliente"},
+  tuPedidoParcial:{fr:"Certains articles seront envoyés plus tard",es:"Algunos artículos se enviarán más tarde",en:"Some items will ship later",it:"Alcuni articoli verranno spediti più tardi"},
+  unidadesPendientes:{fr:"unités en attente — envoyées sans frais dès réception du stock",es:"uds pendientes — te las enviaremos sin coste cuando vuelva el stock",en:"units pending — shipped free when stock returns",it:"unità in sospeso — spedite gratis al ritorno dello stock"},
+  sinPendientes:{fr:"Aucune ligne en attente. Tout est servi.",es:"Nada pendiente. Todo servido.",en:"Nothing pending. All served.",it:"Niente in sospeso. Tutto servito."},
+  tusMasPedidos:{fr:"Vos modèles les plus commandés",es:"Tus diseños más pedidos",en:"Your most ordered designs",it:"I tuoi modelli più ordinati"},
+  resumenEnvio:{fr:"Résumé de l'envoi",es:"Resumen del envío",en:"Shipment summary",it:"Riepilogo spedizione"},
+  enCaminoUds:{fr:"en route",es:"en camino",en:"on the way",it:"in arrivo"},
+  entregadoUds:{fr:"livrées",es:"entregadas",en:"delivered",it:"consegnate"},
+  pedidoUds:{fr:"commandées",es:"pedidas",en:"ordered",it:"ordinate"},
+  anuladoUds:{fr:"annulées",es:"anuladas",en:"cancelled",it:"annullate"},
+  enviadoLower:{fr:"envoyées",es:"enviadas",en:"sent",it:"inviate"},
+  pendienteLower:{fr:"en attente",es:"pendientes",en:"pending",it:"in sospeso"},
+  anuladoLower:{fr:"annulées",es:"anuladas",en:"cancelled",it:"annullate"},
+  avisoPendienteCliente:{fr:"Les unités en attente vous seront envoyées sans frais dès le retour du stock. Vous ne payez que ce qui est expédié.",es:"Las unidades pendientes se te enviarán sin coste cuando vuelva el stock. Solo pagas lo que se envía.",en:"Pending units will be shipped free when stock returns. You only pay for what's sent.",it:"Le unità in sospeso ti verranno inviate gratis al ritorno dello stock. Paghi solo ciò che viene spedito."},
   popupBloqueado:{fr:"Autorisez les fenêtres pop-up pour télécharger",es:"Permite ventanas emergentes para descargar",en:"Allow pop-ups to download",it:"Consenti i popup per scaricare"},
   idiomaPreferido:{fr:"Langue préférée",es:"Idioma preferido",en:"Preferred language",it:"Lingua preferita"},
   bienvenidaLogin:{fr:"Bienvenue.",es:"Bienvenido.",en:"Welcome.",it:"Benvenuto."},
@@ -1172,6 +1204,10 @@ export default function App() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
   const [aiFloatOpen, setAiFloatOpen] = useState(false);
+  const [noteData, setNoteData] = useState(null); // {orderId, client, clientType, extras, discount, incidents, freeNotes}
+  const [noteText, setNoteText] = useState(""); // texto generado por IA
+  const [noteLoading, setNoteLoading] = useState(false);
+  const [noteError, setNoteError] = useState("");
   const [floatChat, setFloatChat] = useState([]);
   const [floatInput, setFloatInput] = useState("");
   const [floatLoading, setFloatLoading] = useState(false);
@@ -1303,7 +1339,7 @@ export default function App() {
         if (ords) {
           const {data:allLines} = await supabase.from("order_lines").select("*");
           const linesByOrder = {};
-          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection,qtyReceived:l.qty_received||0}); });
+          (allLines||[]).forEach(l => { if(!linesByOrder[l.order_id]) linesByOrder[l.order_id]=[]; linesByOrder[l.order_id].push({model:l.model,color:l.color,sku:l.sku,qty:l.quantity,price:Number(l.unit_price),col:l.collection,qtyServed:l.qty_received==null?l.quantity:l.qty_received,lineStatus:l.line_status||"complete"}); });
           // DB is the single source of truth — no merge with hardcoded/local orders
           setOrders(ords.map(o => dbToOrder(o, linesByOrder[o.id]||[])));
         }
@@ -1380,7 +1416,7 @@ export default function App() {
     if (!dbReady || !order.dbId) return;
     try {
       await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm,payment_method:order.payMethod||null,payment_link:order.paymentLink||null,payment_due_date:order.payDueDate||null,payment_reminder_days:order.payReminderDays||null,pay_split1_amount:order.paySplit1Amount||null,pay_split1_date:order.paySplit1Date||null,pay_split1_done:order.paySplit1Done||false,pay_split2_amount:order.paySplit2Amount||null,pay_split2_date:order.paySplit2Date||null,pay_split2_done:order.paySplit2Done||false}).eq("id",order.dbId);
-      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential"}))); }
+      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential",qty_received:(l.qtyServed==null?l.qty:l.qtyServed),line_status:l.lineStatus||"complete"}))); }
     } catch(e) { console.log("DB update order:", e); }
   };
 
@@ -1823,11 +1859,11 @@ export default function App() {
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
-    ? [["e-dash","dashboard"],["a-ord","commandes"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
+    ? [["e-dash","dashboard"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
+    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
-  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2"};
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2"};
   const bottomItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
     : role === "distributor"
@@ -2290,6 +2326,134 @@ export default function App() {
     const w = window.open("", "_blank");
     if (w) { w.document.write(html); w.document.close(); }
     else { toast(t("popupBloqueado")||"Permite ventanas emergentes para descargar el albarán"); }
+  };
+
+  // ── NOTAS PERSONALIZADAS PARA CLIENTES ──
+  const langFromCountry = (country) => {
+    const c = (country||"").toUpperCase().trim();
+    const map = {ES:"es","ESPAÑA":"es",SPAIN:"es", FR:"fr",FRANCE:"fr","FRANCIA":"fr", IT:"it",ITALY:"it","ITALIA":"it", DE:"de",AT:"de",GERMANY:"de","ALEMANIA":"de",AUSTRIA:"de", NL:"nl",NETHERLANDS:"nl","PAÍSES BAJOS":"nl",BE:"fr",BELGIUM:"fr","BÉLGICA":"fr", PT:"pt",PORTUGAL:"pt"};
+    return map[c] || "en";
+  };
+
+  const generateNote = async () => {
+    if (!noteData || noteLoading) return;
+    setNoteError(""); setNoteLoading(true); setNoteText("");
+    const cl = clients.find(c => c.name === noteData.client || (c.name && noteData.client && c.name.toLowerCase().trim() === noteData.client.toLowerCase().trim())) || {};
+    const lang = noteData.language || langFromCountry(cl.country || noteData.country);
+    const clientOrders = orders.filter(o => o.client === noteData.client).length;
+    const langNames = {es:"español",fr:"francés",it:"italiano",de:"alemán",nl:"neerlandés",pt:"portugués",en:"inglés"};
+    const prompt = `Eres el sistema de notas manuscritas de Minuë Opticians (marca de gafas premium de Sevilla). Escribe una carta personalizada que se imprimirá y meterá dentro del envío a un cliente B2B (una tienda). El objetivo: que al abrir el paquete sienta que alguien se sentó a escribirle. NO es marketing, es relación.
+
+DATOS DEL CLIENTE:
+- Nombre/tienda: ${noteData.client}
+- Ciudad: ${cl.city || noteData.city || "—"}
+- País: ${cl.country || noteData.country || "—"}
+- Idioma de la carta: ${langNames[lang]} (ESCRIBE TODA LA CARTA EN ${langNames[lang].toUpperCase()})
+- Tipo de cliente: ${noteData.clientType}
+- Nº de pedidos de este cliente hasta ahora: ${clientOrders}
+${noteData.extras ? "- Extras incluidos en el envío: "+noteData.extras : ""}
+${noteData.incidents ? "- Incidencia a mencionar con honestidad: "+noteData.incidents : ""}
+${noteData.discountCode ? "- Lleva código descuento: "+noteData.discountCode+" ("+(noteData.discountPct||"")+"% en próximo pedido Faire)" : ""}
+${noteData.freeNotes ? "- Observaciones para personalizar: "+noteData.freeNotes : ""}
+
+ESTRUCTURA (4 párrafos + 1 cita literaria):
+P1 — Apertura emocional según tipo de cliente (nuevo: celebrar que eligieron Minuë / repite: "has vuelto y eso lo dice todo" / vuelve: celebrar reencuentro sin reproches / VIP: reconocer la relación / distribuidor: tono socio a socio, tuteo).
+P2 — Conexión geográfica real con su ciudad (nombra calle/plaza/barrio real si lo conoces, carácter real de la región, su tipo de negocio). Si hay incidencia, menciónala aquí con honestidad. Si hay extras, como gesto de confianza.
+CITA — Una cita real de alguien famoso nacido/vinculado a su ciudad o región (preferible) o su país. EN ${langNames[lang].toUpperCase()}. 
+P3 — Atar la cita al cliente de forma natural ("Lo decía vuestro/a [autor]...").
+P4 — Cierre breve (2-3 frases). Usa "De Sevilla a [ciudad]" como fórmula.
+
+REGLAS DE TONO:
+- Frases cortas, ritmo conversacional, suena a persona no a plantilla.
+- Datos concretos (años, nº pedido, km). Humor sutil si encaja.
+- NUNCA menciones: creación artesanal, taller, hecho a mano, acetato italiano, precios, márgenes, lenguaje de marketing.
+- NUNCA suenes a IA (evita estructuras paralelas perfectas y listas).
+
+FORMATO DE SALIDA (exacto, para que yo lo parsee):
+GREETING: [saludo espaciado, ej: QUERIDA / CHÈRE / CARA según género e idioma]
+NAME: [nombre del cliente tal cual]
+BODY: [los 4 párrafos separados por una línea en blanco entre cada uno, SIN etiquetas]
+QUOTE: [texto de la cita]
+QUOTE_AUTHOR: [autor en mayúsculas]
+SIGN: [despedida, ej: Con todo nuestro cariño]
+TEAM: [firma equipo, ej: EL EQUIPO MINUË — para distribuidores usa ALEJANDRO & MINUË]
+Devuelve SOLO ese bloque, sin texto adicional.`;
+
+    try {
+      const resp = await fetch("/api/generate-note", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ question: prompt })
+      });
+      const data = await resp.json();
+      if (data.error) { setNoteError(data.error); }
+      else { setNoteText(data.answer || ""); }
+    } catch(e) {
+      setNoteError("No se pudo conectar con la IA. ¿Está configurada la API key en Vercel?");
+    }
+    setNoteLoading(false);
+  };
+
+  const parseNote = (raw) => {
+    const get = (key) => { const m = raw.match(new RegExp(key+":\\s*([\\s\\S]*?)(?=\\n[A-Z_]+:|$)")); return m ? m[1].trim() : ""; };
+    return { greeting:get("GREETING"), name:get("NAME"), body:get("BODY"), quote:get("QUOTE"), author:get("QUOTE_AUTHOR"), sign:get("SIGN"), team:get("TEAM") };
+  };
+
+  const downloadNotePDF = () => {
+    if (!noteText) return;
+    const n = parseNote(noteText);
+    const cl = clients.find(c => c.name === noteData.client) || {};
+    const lang = noteData.language || langFromCountry(cl.country || noteData.country);
+    const giftLabel = {es:"UN REGALO PARA TI",fr:"UN CADEAU POUR VOUS",it:"UN REGALO PER TE",de:"EIN GESCHENK FÜR DICH",nl:"EEN CADEAU VOOR JOU",pt:"UM PRESENTE PARA TI",en:"A GIFT FOR YOU"}[lang]||"A GIFT FOR YOU";
+    const spaced = (s) => (s||"").split("").join("\u200a");
+    const bodyHtml = n.body.split(/\n\s*\n/).map(p => `<p class="para">${p.trim()}</p><div class="sep-sm"></div>`).join("");
+    const discountHtml = noteData.discountCode ? `
+      <div class="gift-label">${spaced(giftLabel)}</div>
+      <div class="gift-box">${noteData.discountCode}</div>
+      <div class="gift-desc">${noteData.discountPct||""}% ${lang==="es"?"de descuento en tu próximo pedido Faire":lang==="fr"?"de réduction sur votre prochaine commande Faire":lang==="it"?"di sconto sul tuo prossimo ordine Faire":"off your next Faire order"}${noteData.discountUrl?'<br><span style="font-size:8pt;color:#999">'+noteData.discountUrl+'</span>':''}</div>` : "";
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Nota ${noteData.client}</title>
+    <style>
+      @page { size: A4; margin: 0; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #2a2a2a; }
+      .sheet { width: 210mm; min-height: 297mm; padding: 26mm 0; display: flex; flex-direction: column; align-items: center; }
+      .frame { border: 0.5pt solid #e0e0e0; width: 174mm; min-height: 245mm; padding: 16mm 22mm; display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .logo { width: 68px; height: 68px; border-radius: 16px; object-fit: contain; margin-bottom: 18px; }
+      .sep { width: 40px; height: 0.8pt; background: #c8c8c8; margin: 16px 0; }
+      .sep-sm { width: 24px; height: 0.6pt; background: #e0e0e0; margin: 11px auto; }
+      .greeting { font-size: 11pt; color: #666; letter-spacing: 3px; margin-bottom: 8px; }
+      .name { font-family: Georgia, serif; font-style: italic; font-size: ${(n.name||"").length > 18 ? "30pt" : "38pt"}; color: #2a2a2a; line-height: 1.1; }
+      .para { font-size: 10pt; line-height: 14.5pt; color: #2a2a2a; max-width: 125mm; }
+      .quote-wrap { border-left: 1.5pt solid #c8c8c8; padding-left: 14px; margin: 6px auto 4px 0; text-align: left; max-width: 120mm; }
+      .quote { font-family: Georgia, serif; font-style: italic; font-size: 10.8pt; color: #2a2a2a; line-height: 15pt; }
+      .quote-author { font-size: 7.8pt; color: #666; letter-spacing: 2px; margin-top: 6px; }
+      .gift-label { font-size: 8pt; color: #666; letter-spacing: 3px; margin-top: 8px; margin-bottom: 8px; }
+      .gift-box { border: 1.2pt dashed #c8c8c8; border-radius: 6px; padding: 12px 28px; font-family: 'Helvetica Neue', Arial; font-weight: 700; font-size: 17pt; color: #193330; letter-spacing: 2px; }
+      .gift-desc { font-size: 9pt; color: #666; margin-top: 8px; line-height: 1.5; }
+      .sign { font-family: Georgia, serif; font-style: italic; font-size: 12.5pt; color: #2a2a2a; margin-top: 6px; }
+      .team { font-size: 9pt; color: #666; letter-spacing: 2px; margin-top: 6px; }
+      .footer { font-size: 6.5pt; color: #999; letter-spacing: 2px; margin-top: auto; padding-top: 24px; }
+      .grow { flex: 1; }
+    </style></head><body>
+      <div class="sheet"><div class="frame">
+        <img class="logo" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" />
+        <div class="sep"></div>
+        <div class="greeting">${spaced(n.greeting)}</div>
+        <div class="name">${n.name}</div>
+        <div class="sep"></div>
+        ${bodyHtml}
+        ${n.quote ? `<div class="quote-wrap"><div class="quote">${n.quote}</div><div class="quote-author">${spaced(n.author)}</div></div>` : ""}
+        ${discountHtml}
+        <div class="sep"></div>
+        <div class="sign">${n.sign}</div>
+        <div class="team">${spaced(n.team)}</div>
+        <div class="grow"></div>
+        <div class="footer">${spaced("MINUË OPTICIANS · HANDCRAFTED IN SPAIN")}</div>
+      </div></div>
+      <script>window.onload=function(){setTimeout(function(){window.print();},350);}<\/script>
+    </body></html>`;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(html); w.document.close(); }
+    else { toast(t("popupBloqueado")||"Permite ventanas emergentes"); }
   };
 
 
@@ -3073,37 +3237,34 @@ export default function App() {
               </div>
             </div>}
             {ed.lines && ed.lines.length > 0 && <>
-              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
-              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden",maxHeight:220,overflowY:"auto"}}>
-                {ed.lines.map((l, i) => (
-                  <div key={i} style={{display:"flex",alignItems:"center",gap:4,padding:"6px 12px",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
-                    <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
-                    <span style={{color:C.gr}}>{l.color}</span>
-                    <button onClick={() => {
-                      const nl = ed.lines.map((x,j) => j===i ? {...x, qty: Math.max(1, x.qty-1)} : x);
-                      const ni = nl.reduce((s,x)=>s+x.qty,0); const nt = nl.reduce((s,x)=>s+x.price*x.qty,0);
-                      setEd(p => ({...p, lines:nl, items:ni, total:nt}));
-                    }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk,padding:0}}>-</button>
-                    <span style={{fontWeight:600,minWidth:24,textAlign:"center"}}>{l.qty}</span>
-                    <button onClick={() => {
-                      const nl = ed.lines.map((x,j) => j===i ? {...x, qty: x.qty+1} : x);
-                      const ni = nl.reduce((s,x)=>s+x.qty,0); const nt = nl.reduce((s,x)=>s+x.price*x.qty,0);
-                      setEd(p => ({...p, lines:nl, items:ni, total:nt}));
-                    }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk,padding:0}}>+</button>
-                    <span style={{fontWeight:600,minWidth:50,textAlign:"right"}}>{fmt(l.price * l.qty)} €</span>
-                    <button onClick={() => {
-                      const removed = ed.lines[i];
-                      const newLines = ed.lines.filter((_, j) => j !== i);
-                      const newItems = newLines.reduce((s, x) => s + x.qty, 0);
-                      const newTotal = newLines.reduce((s, x) => s + x.price * x.qty, 0);
-                      const note = (ed.clientNotes ? ed.clientNotes + "\n" : "") + removed.model + " " + removed.color + " (x" + removed.qty + ") " + t("artSupprime");
-                      setEd(p => ({...p, lines: newLines, items: newItems, total: newTotal, clientNotes: note}));
-                    }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:9,fontFamily:BD,fontWeight:600,padding:"2px 4px",flexShrink:0}}>✕</button>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")} · <span style={{color:"#a06a2c"}}>{t("pedidoVsServido")}</span></div>
+              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden",maxHeight:300,overflowY:"auto"}}>
+                {ed.lines.map((l, i) => {
+                  const served = l.qtyServed==null ? l.qty : l.qtyServed;
+                  const pending = l.qty - served;
+                  const st = l.lineStatus || "complete";
+                  const recalc = (nl) => { const ni = nl.reduce((s,x)=>s+(x.qtyServed==null?x.qty:x.qtyServed),0); const nt = nl.reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0); setEd(p => ({...p, lines:nl, items:ni, total:nt})); };
+                  return (
+                  <div key={i} style={{padding:"8px 12px",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
+                    <div style={{display:"flex",alignItems:"center",gap:4}}>
+                      <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></span>
+                      <span style={{color:C.gr,fontSize:9}}>{t("pedido")}: {l.qty}</span>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, qtyServed: Math.max(0, served-1)} : x); recalc(nl); }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>-</button>
+                      <span style={{fontWeight:700,minWidth:40,textAlign:"center",color:pending>0?"#a06a2c":C.dk}} title={t("servido")}>{served}{pending>0?"/"+l.qty:""}</span>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, qtyServed: Math.min(l.qty, served+1)} : x); recalc(nl); }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>+</button>
+                      <span style={{fontWeight:600,minWidth:50,textAlign:"right"}}>{fmt(l.price * served)} €</span>
+                      <button onClick={() => { const removed = ed.lines[i]; const newLines = ed.lines.filter((_, j) => j !== i); const note = (ed.clientNotes ? ed.clientNotes + "\n" : "") + removed.model + " " + removed.color + " (x" + removed.qty + ") " + t("artSupprime"); const ni = newLines.reduce((s,x)=>s+(x.qtyServed==null?x.qty:x.qtyServed),0); const nt = newLines.reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0); setEd(p => ({...p, lines: newLines, items: ni, total: nt, clientNotes: note})); }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:9,fontWeight:600,padding:"2px 4px",flexShrink:0}}>✕</button>
+                    </div>
+                    {pending > 0 && <div style={{display:"flex",alignItems:"center",gap:6,marginTop:5,paddingLeft:2}}>
+                      <span style={{fontSize:9,color:"#a06a2c",fontWeight:600}}>{pending} {t("sinServir")}:</span>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"pending"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:9,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="pending"?"#c47a00":C.ln),background:st==="pending"?"#c47a0015":"transparent",color:st==="pending"?"#c47a00":C.gr}}>{t("dejarPendiente")}</button>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"cancelled"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:9,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="cancelled"?C.rd:C.ln),background:st==="cancelled"?C.rd+"15":"transparent",color:st==="cancelled"?C.rd:C.gr}}>{t("anularLinea")}</button>
+                    </div>}
                   </div>
-                ))}
+                );})}
                 <div style={{display:"flex",justifyContent:"space-between",padding:"7px 12px",background:C.bg,fontFamily:BD,fontSize:11,fontWeight:600}}>
-                  <span>{ed.items || ed.lines.reduce((s,x)=>s+x.qty,0)} {t("unites")}</span>
-                  <span>{fmt(ed.total || ed.lines.reduce((s,x)=>s+x.price*x.qty,0))} €</span>
+                  <span>{ed.items || ed.lines.reduce((s,x)=>s+(x.qtyServed==null?x.qty:x.qtyServed),0)} {t("unites")}</span>
+                  <span>{fmt(ed.total || ed.lines.reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0))} €</span>
                 </div>
               </div>
             </>}
@@ -3215,6 +3376,7 @@ export default function App() {
               <Btn ghost onClick={() => askConfirm(t("confirmarEliminar"), () => { const o = orders[ed.idx]; setOrders(p => p.filter((_, i) => i !== ed.idx)); dbDeleteOrder(o); toast(t("pedidoEliminado")); setModal(null); })} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
             <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>
+            <Btn ghost onClick={() => { const cl = clients.find(c => c.name === ed.client) || {}; setNoteText(""); setNoteError(""); setNoteData({orderId:ed.id, client:ed.client, city:cl.city||"", country:cl.country||"", clientType: cl.status==="vip"?"VIP/exclusividad":"Nuevo", language:"", extras:"", incidents:"", freeNotes:"", discountCode:"", discountPct:"", discountUrl:""}); setModal("genNote"); }} style={{width:"100%",marginTop:8,borderColor:"#c4956a",color:"#a06a2c"}}>✍️ {t("generarNota")}</Btn>
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
@@ -3260,12 +3422,17 @@ export default function App() {
 
           {modal === "viewOrd" && (() => {
             const canEdit = role === "distributor" && ed.status === "confirmed";
-            const isPartial = ed.status === "partial";
-            const hasQtyData = isPartial && ed.lines && ed.lines.some(l => (l.qtyReceived||0) > 0);
-            const shippedQty = hasQtyData ? ed.lines.reduce((s,l) => s + (l.qtyReceived||0), 0) : 0;
-            const pendingQty = isPartial ? ed.items - shippedQty : 0;
-            const shippedLines = hasQtyData ? ed.lines.filter(l => (l.qtyReceived||0) > 0) : [];
-            const pendingLines = hasQtyData ? ed.lines.filter(l => (l.qtyReceived||0) < l.qty) : [];
+            const lines = ed.lines || [];
+            const servedOf = l => l.qtyServed==null ? l.qty : l.qtyServed;
+            const pendingOf = l => (l.lineStatus === "pending") ? (l.qty - servedOf(l)) : 0;
+            const cancelledOf = l => (l.lineStatus === "cancelled") ? (l.qty - servedOf(l)) : 0;
+            const shippedQty = lines.reduce((s,l) => s + servedOf(l), 0);
+            const pendingQty = lines.reduce((s,l) => s + pendingOf(l), 0);
+            const cancelledQty = lines.reduce((s,l) => s + cancelledOf(l), 0);
+            const orderedQty = lines.reduce((s,l) => s + l.qty, 0);
+            const hasPending = pendingQty > 0;
+            const hasCancelled = cancelledQty > 0;
+            const isPartial = hasPending || hasCancelled;
             return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
@@ -3305,67 +3472,60 @@ export default function App() {
               </div>;
             })()}
 
-            {/* PARTIAL PROGRESS - only with qtyReceived data */}
-            {isPartial && hasQtyData && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("envioPartial")}</span>
-                <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{shippedQty} / {ed.items} {t("unites")}</span>
-              </div>
-              <div style={{height:6,background:C.bg2,borderRadius:3,overflow:"hidden",marginBottom:10}}>
-                <div style={{height:6,background:C.gn,borderRadius:3,width:Math.round(shippedQty/ed.items*100)+"%"}} />
-              </div>
-              <div style={{display:"flex",gap:12}}>
-                <div style={{flex:1,background:C.gn+"10",borderRadius:6,padding:"8px 12px",textAlign:"center"}}>
-                  <div style={{fontSize:18,fontFamily:BD,color:C.gn,fontWeight:700}}>{shippedQty}</div>
-                  <div style={{fontSize:9,fontFamily:BD,color:C.gn}}>{t("enviado")}</div>
+            {/* RESUMEN VISUAL ENVÍO (servido vs pedido) */}
+            {isPartial && <div style={{background:"linear-gradient(135deg,#faf6ef,#fff)",border:"1px solid #e8dcc8",borderRadius:12,padding:"16px 18px",marginBottom:16}}>
+              <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>📦 {t("resumenEnvio")}</div>
+              <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
+                <div style={{flex:"1 1 80px",background:C.gn+"10",borderRadius:8,padding:"10px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:20,fontFamily:DP,color:C.gn,fontWeight:600}}>{shippedQty}</div>
+                  <div style={{fontSize:8.5,fontFamily:BD,color:C.gn,fontWeight:600,letterSpacing:0.3}}>{(ed.status==="delivered")?t("entregadoUds"):(ed.status==="shipped")?t("enCaminoUds"):t("enviado")}</div>
                 </div>
-                <div style={{flex:1,background:C.yl+"10",borderRadius:6,padding:"8px 12px",textAlign:"center"}}>
-                  <div style={{fontSize:18,fontFamily:BD,color:C.yl,fontWeight:700}}>{pendingQty}</div>
-                  <div style={{fontSize:9,fontFamily:BD,color:C.yl}}>{t("pendienteEnvio")}</div>
+                {hasPending && <div style={{flex:"1 1 80px",background:"#c47a0010",borderRadius:8,padding:"10px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:20,fontFamily:DP,color:"#a06a2c",fontWeight:600}}>{pendingQty}</div>
+                  <div style={{fontSize:8.5,fontFamily:BD,color:"#a06a2c",fontWeight:600,letterSpacing:0.3}}>{t("pendienteEnvio")}</div>
+                </div>}
+                {hasCancelled && <div style={{flex:"1 1 80px",background:C.gr2+"12",borderRadius:8,padding:"10px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:20,fontFamily:DP,color:C.gr,fontWeight:600}}>{cancelledQty}</div>
+                  <div style={{fontSize:8.5,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.3}}>{t("anuladoUds")}</div>
+                </div>}
+                <div style={{flex:"1 1 80px",background:C.dk+"08",borderRadius:8,padding:"10px 8px",textAlign:"center"}}>
+                  <div style={{fontSize:20,fontFamily:DP,color:C.dk,fontWeight:600}}>{orderedQty}</div>
+                  <div style={{fontSize:8.5,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.3}}>{t("pedidoUds")}</div>
                 </div>
               </div>
+              {hasPending && <div style={{fontSize:10.5,fontFamily:BD,color:"#a06a2c",lineHeight:1.6,background:"#c47a0008",borderRadius:6,padding:"8px 12px"}}>⏳ {t("avisoPendienteCliente")}</div>}
             </div>}
 
-            {/* PARTIAL without qtyReceived data - show badge */}
-            {isPartial && !hasQtyData && <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"14px 16px",marginBottom:16}}>
-              <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:4}}>{t("envioPartial")}</div>
-              <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{ed.clientNotes || ed.notes || ""}</div>
-            </div>}
-
-            {/* SHIPPED ITEMS (partial with data) */}
-            {isPartial && hasQtyData && shippedLines.length > 0 && <>
-              <div style={{fontSize:11,fontFamily:BD,color:C.gn,fontWeight:700,marginBottom:6}}>✓ {t("enviado")} — {shippedQty} {t("unites")}</div>
-              <div style={{background:C.wh,border:"1px solid "+C.gn+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
-                {shippedLines.map((l, i) => (
-                  <div key={"s"+i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
-                    <span style={{width:6,height:6,borderRadius:3,background:C.gn,flexShrink:0}} />
-                    <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
-                    <span style={{color:C.gr}}>{l.color}</span>
-                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{l.qtyReceived||l.qty}</span>
-                    <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * (l.qtyReceived||l.qty))} €</span>
+            {/* DESGLOSE POR DISEÑO: pedido vs enviado */}
+            {ed.lines && ed.lines.length > 0 && <>
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}{isPartial ? " · "+t("pedidoVsServido") : ""}</div>
+              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:14,overflow:"hidden"}}>
+                {ed.lines.map((l, i) => {
+                  const sv = servedOf(l); const pend = pendingOf(l); const canc = cancelledOf(l); const prod = products.find(p => p.model===l.model && p.color===l.color);
+                  return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                    <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:600,color:C.dk}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></div>
+                      {isPartial && (pend>0||canc>0) && <div style={{fontSize:9,fontFamily:BD,marginTop:2}}>
+                        <span style={{color:C.gn,fontWeight:600}}>{sv} {t("enviadoLower")}</span>
+                        {pend>0 && <span style={{color:"#a06a2c",fontWeight:600}}> · {pend} {t("pendienteLower")}</span>}
+                        {canc>0 && <span style={{color:C.gr,fontWeight:600}}> · {canc} {t("anuladoLower")}</span>}
+                      </div>}
+                    </div>
+                    {canEdit ? <>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: Math.max(1, nl[i].qty-1)}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>-</button>
+                      <span style={{fontWeight:600,minWidth:22,textAlign:"center"}}>{l.qty}</span>
+                      <button onClick={() => { const nl = [...ed.lines]; nl[i] = {...nl[i], qty: nl[i].qty+1}; const items = nl.reduce((s,x) => s+x.qty,0); const total = nl.reduce((s,x) => s+x.qty*x.price,0); setEd(p => ({...p, lines:nl, items, total})); }} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,color:C.dk,padding:0}}>+</button>
+                    </> : <span style={{fontWeight:700,minWidth:50,textAlign:"center",color:isPartial&&pend>0?"#a06a2c":C.dk}}>{isPartial ? sv+"/"+l.qty : "x"+l.qty}</span>}
+                    <span style={{fontWeight:600,minWidth:55,textAlign:"right"}}>{fmt(l.price * (isPartial ? sv : l.qty))} €</span>
                   </div>
-                ))}
+                );})}
               </div>
             </>}
 
-            {/* PENDING ITEMS (partial with data) */}
-            {isPartial && hasQtyData && pendingLines.length > 0 && <>
-              <div style={{fontSize:11,fontFamily:BD,color:C.yl,fontWeight:700,marginBottom:6}}>⏳ {t("pendienteEnvio")} — {pendingQty} {t("unites")}</div>
-              <div style={{background:C.wh,border:"1px solid "+C.yl+"30",borderRadius:4,marginBottom:14,overflow:"hidden"}}>
-                {pendingLines.map((l, i) => { const pend = l.qty - (l.qtyReceived||0); return (
-                  <div key={"p"+i} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,opacity:0.7}}>
-                    <span style={{width:6,height:6,borderRadius:3,background:C.yl,flexShrink:0}} />
-                    <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model}</span>
-                    <span style={{color:C.gr}}>{l.color}</span>
-                    <span style={{fontWeight:600,minWidth:28,textAlign:"center"}}>x{pend}</span>
-                    <span style={{fontWeight:600,minWidth:55,textAlign:"right",color:C.gr}}>{fmt(l.price * pend)} €</span>
-                  </div>
-                ); })}
-              </div>
-            </>}
-
-            {/* NORMAL LINES (non-partial OR partial without qty data) */}
-            {(!isPartial || (isPartial && !hasQtyData)) && ed.lines && ed.lines.length > 0 && <>
+            {/* (bloque antiguo desactivado — solo se usa para canEdit del distribuidor) */}
+            {canEdit && ed.lines && ed.lines.length > 0 && <>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:500}}>{t("detailArt")}</div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:4,marginBottom:14,overflow:"hidden"}}>
                 {ed.lines.map((l, i) => (
@@ -3564,6 +3724,58 @@ export default function App() {
             {(role === "admin" || role === "team") && <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>}
           </>;
           })()}
+
+          {/* GENERAR NOTA PERSONALIZADA */}
+          {modal === "genNote" && noteData && <>
+            <div style={{fontSize:16,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:2}}>✍️ {t("generarNota")}</div>
+            <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:16}}>{noteData.client} · {noteData.city||"—"}, {noteData.country||"—"} · {t("pedido")} {noteData.orderId}</div>
+
+            {!noteText ? <>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("tipoCliente")}</div>
+                <select value={noteData.clientType} onChange={e => setNoteData(p => ({...p, clientType:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
+                  {["Nuevo","Repite esta temporada","Cliente antiguo que vuelve","VIP/exclusividad","Distribuidor/socio"].map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("idiomaCartaAuto")}</div>
+                <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                  {[["","Auto"],["es","ES"],["fr","FR"],["it","IT"],["de","DE"],["nl","NL"],["pt","PT"],["en","EN"]].map(([v,l]) =>
+                    <button key={v} onClick={() => setNoteData(p => ({...p, language:v}))} style={{padding:"6px 13px",background:noteData.language===v?C.dk:"transparent",color:noteData.language===v?C.bg:C.gr,border:"1px solid "+(noteData.language===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
+                </div>
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("extrasIncluidos")}</div>
+                <input value={noteData.extras} onChange={e => setNoteData(p => ({...p, extras:e.target.value}))} placeholder="Ej: display de mostrador, 2 diseños extra de regalo" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("incidencia")}</div>
+                <input value={noteData.incidents} onChange={e => setNoteData(p => ({...p, incidents:e.target.value}))} placeholder="Ej: retraso por volumen de pedidos, modelo Bergman pendiente" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1.4fr 0.6fr",gap:10,marginBottom:12}}>
+                <div>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("codigoDescuento")}</div>
+                  <input value={noteData.discountCode} onChange={e => setNoteData(p => ({...p, discountCode:e.target.value.toUpperCase()}))} placeholder="MINUE10" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                </div>
+                <div>
+                  <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>%</div>
+                  <input type="number" value={noteData.discountPct} onChange={e => setNoteData(p => ({...p, discountPct:e.target.value}))} placeholder="10" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+                </div>
+              </div>
+              <div style={{marginBottom:16}}>
+                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600}}>{t("notasAdicionales")}</div>
+                <textarea value={noteData.freeNotes} onChange={e => setNoteData(p => ({...p, freeNotes:e.target.value}))} rows={2} placeholder="Ej: mencionar colección Bergman, relación muy cercana por WhatsApp, es una farmacia no óptica" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+              </div>
+              {noteError && <div style={{background:C.rd+"10",border:"1px solid "+C.rd+"30",borderRadius:6,padding:"10px 14px",marginBottom:12,fontSize:11,fontFamily:BD,color:C.rd}}>{noteError}</div>}
+              <Btn onClick={generateNote} disabled={noteLoading} style={{width:"100%"}}>{noteLoading ? t("generandoNota") : "✨ "+t("generarNota")}</Btn>
+            </> : <>
+              <div style={{background:"#faf8f4",border:"1px solid "+C.ln,borderRadius:10,padding:"20px 22px",marginBottom:14,maxHeight:340,overflowY:"auto",whiteSpace:"pre-wrap",fontSize:12,fontFamily:BD,lineHeight:1.7,color:C.dk}}>{(() => { const n = parseNote(noteText); return `${n.greeting}\n${n.name}\n\n${n.body}\n\n${n.quote ? "« "+n.quote+" »\n— "+n.author+"\n\n" : ""}${noteData.discountCode ? "🎁 "+noteData.discountCode+" ("+noteData.discountPct+"%)\n\n" : ""}${n.sign}\n${n.team}`; })()}</div>
+              <div style={{display:"flex",gap:8}}>
+                <Btn ghost onClick={() => { setNoteText(""); }} style={{flex:1}}>↺ {t("regenerar")}</Btn>
+                <Btn onClick={downloadNotePDF} style={{flex:2}}>📄 {t("descargarNotaPDF")}</Btn>
+              </div>
+            </>}
+          </>}
 
           {/* NEW USER */}
           {modal === "newUser" && <>
@@ -4590,6 +4802,32 @@ export default function App() {
         {/* ORDER NOTIFICATIONS */}
         <div style={{padding:"20px min(24px, 4vw)"}}>
 
+          {/* ★ TUS DISEÑOS MÁS PEDIDOS (top personal) */}
+          {(() => {
+            const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
+            const tally = {};
+            myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"||"+l.color; if(!tally[k]) tally[k] = {model:l.model, color:l.color, qty:0}; tally[k].qty += (l.qty||0); }));
+            const top = Object.values(tally).sort((a,b) => b.qty - a.qty).slice(0,5);
+            if (top.length === 0) return null;
+            const maxQty = top[0].qty;
+            return <div style={{background:"linear-gradient(135deg,#d4a03010,#c4903a05)",border:"1.5px solid #d4a03035",borderRadius:14,padding:"16px 18px",marginBottom:18}}>
+              <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a06a2c",marginBottom:12}}>★ {t("tusMasPedidos")}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:9}}>
+                {top.map((d, i) => { const prod = products.find(p => p.model===d.model && p.color===d.color); return (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{width:36,height:36,borderRadius:8,background:C.wh,border:"1px solid "+C.ln,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model} <span style={{color:C.gr,fontWeight:400}}>{d.color}</span></div>
+                      <div style={{height:5,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:5,width:Math.max(12,(d.qty/maxQty)*100)+"%",background:"linear-gradient(90deg,#d4a030,#c4956a)",borderRadius:3}} /></div>
+                    </div>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a06a2c",flexShrink:0}}>{d.qty}<span style={{fontSize:9,color:C.gr,fontWeight:400}}> uds</span></div>
+                    {prod && <button onClick={() => { addToCart(prod.id, 2); toast(t("anadidoAlCarrito")); }} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
+                  </div>
+                );})}
+              </div>
+            </div>;
+          })()}
+
           {/* 🔔 BACK IN STOCK (waitlist hits) */}
           {(() => {
             const backInStock = productAlerts.filter(a => a.client_email === user.email).map(a => { const p = products.find(x => String(x.id) === String(a.product_id) && x.active !== false && x.stock > 0); return p ? {alert:a, p} : null; }).filter(Boolean);
@@ -5102,6 +5340,7 @@ export default function App() {
               <div style={{padding:"0 18px 10px",display:"flex",justifyContent:"space-between"}}>
                 {steps.map((s,si) => <span key={s} style={{fontSize:7,fontFamily:BD,color:si<=currentStep?C.dk:C.gr2,fontWeight:si===currentStep?600:400,textAlign:"center",flex:1}}>{SL[s]}</span>)}
               </div>
+              {(() => { const pend = (o.lines||[]).reduce((s,l) => { const sv = l.qtyServed==null?l.qty:l.qtyServed; return s + (l.lineStatus==="pending" ? l.qty-sv : 0); }, 0); return pend > 0 ? <div style={{padding:"8px 18px 12px",background:"#c47a0008",borderTop:"1px solid #c47a0020",fontSize:11,fontFamily:BD,color:"#a06a2c"}}><span style={{fontWeight:700}}>⏳ {t("tuPedidoParcial")}:</span> {pend} {t("unidadesPendientes")}</div> : null; })()}
               {o.clientNotes && <div style={{padding:"8px 18px 12px",background:C.bl+"06",borderTop:"1px solid "+C.bl+"15",fontSize:11,fontFamily:BD,color:C.bl}}><span style={{fontWeight:600}}>📝</span> {o.clientNotes}</div>}
             </div>;
           })}
@@ -7523,6 +7762,46 @@ export default function App() {
                 </div>
               </div>); })}
           </div>}
+        </Sec>;
+      })()}
+
+      {view === "a-pendientes" && (() => {
+        const pendingLines = [];
+        orders.forEach(o => {
+          (o.lines||[]).forEach(l => {
+            const served = l.qtyServed==null ? l.qty : l.qtyServed;
+            const pending = l.qty - served;
+            if (pending > 0 && l.lineStatus === "pending") pendingLines.push({order:o, line:l, pending});
+          });
+        });
+        const byClient = {};
+        pendingLines.forEach(p => { const k = p.order.client||"—"; if(!byClient[k]) byClient[k]=[]; byClient[k].push(p); });
+        const clientKeys = Object.keys(byClient).sort();
+        const totalPending = pendingLines.reduce((s,p) => s + p.pending, 0);
+        return <Sec title={"⏳ " + t("pendientesServir")} sub={t("pendientesServirSub")}>
+          {clientKeys.length === 0 ? <div style={{textAlign:"center",padding:40,background:C.wh,border:"1px dashed "+C.ln,borderRadius:10,fontSize:13,fontFamily:BD,color:C.gr2}}>✓ {t("sinPendientes")}</div> : <>
+            <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+              <div style={{background:"#c47a0012",border:"1px solid #c47a0030",borderRadius:10,padding:"12px 18px"}}>
+                <div style={{fontSize:22,fontFamily:DP,fontWeight:600,color:"#a06a2c"}}>{totalPending}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>uds {t("sinServir")}</div>
+              </div>
+              <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 18px"}}>
+                <div style={{fontSize:22,fontFamily:DP,fontWeight:600,color:C.dk}}>{clientKeys.length}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("clients").toLowerCase()}</div>
+              </div>
+            </div>
+            {clientKeys.map(ck => <div key={ck} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,marginBottom:12,overflow:"hidden"}}>
+              <div style={{background:C.bg,padding:"10px 16px",fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk,borderBottom:"1px solid "+C.ln}}>{ck}</div>
+              {byClient[ck].map((p, i) => <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 16px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
+                <div style={{flex:1}}>
+                  <span style={{fontWeight:600,color:C.dk}}>{p.line.model}</span> <span style={{color:C.gr}}>{p.line.color}</span>
+                  <span style={{fontSize:10,color:C.gr,marginLeft:8}}>· {t("pedido")} {p.order.id} · {p.order.date}</span>
+                </div>
+                <span style={{background:"#c47a0015",color:"#a06a2c",padding:"3px 10px",borderRadius:12,fontSize:11,fontWeight:700}}>{p.pending} {t("sinServir")}</span>
+                <button onClick={() => { const oi = orders.findIndex(o => o.id === p.order.id); if(oi>=0){ setEd({...orders[oi], idx:oi}); setModal("editOrd"); } }} style={{padding:"5px 12px",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>{t("editarCmd")||"Abrir"}</button>
+              </div>)}
+            </div>)}
+          </>}
         </Sec>;
       })()}
 
