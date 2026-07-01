@@ -141,6 +141,7 @@ const T = {
   stockActuel:{fr:"Stock actuel",es:"Stock actual",en:"Current stock",it:"Stock attuale"},
   nouveauStock:{fr:"Nouveau stock",es:"Nuevo stock",en:"New stock",it:"Nuovo stock"},
   mettreAJour:{fr:"Mettre à jour",es:"Actualizar",en:"Update",it:"Aggiorna"},
+  erreurSauvegarde:{fr:"Erreur lors de l'enregistrement",es:"Error al guardar",en:"Error saving",it:"Errore nel salvataggio"},
   ajouterCat:{fr:"Ajouter",es:"Añadir",en:"Add",it:"Aggiungi"},
   modele:{fr:"Modèle",es:"Modelo",en:"Model",it:"Modello"},
   couleur:{fr:"Couleur",es:"Color",en:"Color",it:"Colore"},
@@ -686,6 +687,11 @@ const T = {
   modelosDistintos:{fr:"Modèles différents",es:"Modelos distintos",en:"Different models",it:"Modelli diversi"},
   porColeccion:{fr:"Par collection",es:"Por colección",en:"By collection",it:"Per collezione"},
   rankingDisenos:{fr:"Vos modèles, du plus au moins commandé",es:"Tus diseños, de más a menos pedido",en:"Your designs, most to least ordered",it:"I tuoi modelli, dal più al meno ordinato"},
+  todosAnios:{fr:"Toutes les années",es:"Todos los años",en:"All years",it:"Tutti gli anni"},
+  buscarSeccion:{fr:"Rechercher une section…",es:"Buscar sección…",en:"Search section…",it:"Cerca sezione…"},
+  pedabasAntes:{fr:"Vous commandiez avant... et plus maintenant",es:"Lo pedías antes... y ahora no",en:"You used to order... but not anymore",it:"Li ordinavi prima... e ora no"},
+  pedabasAntesSub:{fr:"Modèles que vous commandiez les années précédentes mais pas cette année — toujours disponibles.",es:"Modelos que pedías años anteriores pero no este año — siguen disponibles.",en:"Models you ordered in previous years but not this year — still available.",it:"Modelli che ordinavi negli anni scorsi ma non quest'anno — ancora disponibili."},
+  pedisteAntes:{fr:"%d unités auparavant",es:"%d uds en su día",en:"%d units before",it:"%d unità prima"},
   primerPedidoTitulo:{fr:"Prêt pour votre première commande ?",es:"¿List@ para tu primer pedido?",en:"Ready for your first order?",it:"Pronto per il primo ordine?"},
   primerPedidoSub:{fr:"Découvrez la collection et composez votre commande.",es:"Descubre la colección y monta tu pedido.",en:"Explore the collection and build your order.",it:"Scopri la collezione e crea il tuo ordine."},
   resumenEnvio:{fr:"Résumé de l'envoi",es:"Resumen del envío",en:"Shipment summary",it:"Riepilogo spedizione"},
@@ -1244,6 +1250,8 @@ export default function App() {
   const [aiFloatOpen, setAiFloatOpen] = useState(false);
   const [noteData, setNoteData] = useState(null); // {orderId, client, clientType, extras, discount, incidents, freeNotes}
   const [qtyPick, setQtyPick] = useState(null); // {productId, model, color, qty} para reorder con cantidad
+  const [histYear, setHistYear] = useState("all"); // filtro de año en Mi histórico
+  const [navSearch, setNavSearch] = useState(""); // buscador del menú más
   const [noteText, setNoteText] = useState(""); // texto generado por IA
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteError, setNoteError] = useState("");
@@ -1462,6 +1470,7 @@ export default function App() {
   };
 
   const dbUpdateProduct = async (prod) => { if (!dbReady) return; try { await supabase.from("products").update({stock:prod.stock,tags:prod.tags||[],shape:prod.shape||"",color_family:prod.colorFamily||"",active:prod.active!==false}).eq("id",prod.id); } catch(e) { console.log('DB error:', e); } };
+  const dbInsertProduct = async (prod) => { if (!dbReady) return null; try { const {data, error} = await supabase.from("products").insert({model:prod.model, color:prod.color||"", sku:prod.sku||null, collection:prod.col||"Essential", category:prod.cat||prod.col||"Essential", stock:prod.stock||0, fixed_price:prod.fixedPrice||0, tags:prod.tags||[], image_url:prod.imageUrl||null, active:true}).select().single(); if(error){ console.log('DB insert error:', error); return null; } return data ? data.id : null; } catch(e) { console.log('DB error:', e); return null; } };
   const dbDeleteClient = async (id) => { if (!dbReady) return; try { await supabase.from("clients").delete().eq("id",id); } catch(e) { console.log('DB delete client:', e); } };
   const dbDeleteOrder = async (order) => { if (!dbReady || !order?.dbId) return; try { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("orders").delete().eq("id",order.dbId); } catch(e) { console.log('DB delete order:', e); } };
   const dbToProspect = r => ({id:r.id, distributor:r.distributor, name:r.name, city:r.city||"", country:r.country||"", email:r.email||"", phone:r.phone||"", web:r.web||"", instagram:r.instagram||"", noteAdmin:r.note_admin||"", noteDist:r.note_dist||"", stage:r.stage||"nuevo", createdAt:r.created_at});
@@ -1611,7 +1620,8 @@ export default function App() {
   const t = k => (T[k] && T[k][lang]) || (T[k] && T[k].fr) || k;
 
   /* Status labels (reactive to lang) */
-  const SL = {confirmed:t("confirme"),shipped:t("expedie"),partial:t("partiel"),delivered:t("livre"),pending:t("enAttente"),preparing:t("enPrepa")};
+  const SL = {confirmed:t("confirme"),preparing:t("enPrepa"),shipped:t("expedie"),delivered:t("livre"),cancelled:t("annule")};
+  const SL_LEGACY = {...SL, partial:t("partiel"), pending:t("enAttente")}; // para mostrar pedidos antiguos
   const SC = {confirmed:C.bl,shipped:C.yl,partial:C.yl,delivered:C.gn,pending:C.gr,preparing:C.dk};
   const PL = {pending:t("enAttente"),invoiced:t("facture"),paid:t("paye")};
   const PC = {pending:C.yl,invoiced:C.bl,paid:C.gn};
@@ -1647,24 +1657,50 @@ export default function App() {
   const essentialUnitPrice = customPrice > 0 ? customPrice : (priceEssential > 0 ? priceEssential : getPrice(tierQty || 1, 0));
 
   // Combina histórico importado (Shopify) + pedidos de la plataforma para un cliente
-  const buildPurchaseHistory = (clientName) => {
+  const buildPurchaseHistory = (clientName, yearFilter) => {
     const tally = {};
-    // 1) Histórico importado
-    clientHistory.filter(h => h.client_name === clientName || (h.client_name && clientName && h.client_name.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(h => {
+    // 1) Histórico importado (filtrado por año si se indica)
+    clientHistory.filter(h => (h.client_name === clientName || (h.client_name && clientName && h.client_name.toLowerCase().trim() === clientName.toLowerCase().trim())) && (!yearFilter || yearFilter === "all" || String(h.year) === String(yearFilter))).forEach(h => {
       const k = (h.model||"")+"||"+(h.color||"");
       if (!tally[k]) tally[k] = {model:h.model, color:h.color, qty:0};
       tally[k].qty += Number(h.qty)||0;
     });
-    // 2) Pedidos en plataforma
+    // 2) Pedidos en plataforma (solo si no se filtra por un año pasado concreto, o si el pedido es de ese año)
     orders.filter(o => o.client === clientName || (o.client && clientName && o.client.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(o => {
+      const oyear = o._rawDate ? new Date(o._rawDate).getFullYear().toString() : null;
+      if (yearFilter && yearFilter !== "all" && oyear && oyear !== String(yearFilter)) return;
       (o.lines||[]).forEach(l => { const k = (l.model||"")+"||"+(l.color||""); if(!tally[k]) tally[k] = {model:l.model, color:l.color, qty:0}; tally[k].qty += (l.qty||0); });
     });
     const list = Object.values(tally).sort((a,b) => b.qty - a.qty);
     const totalUnits = list.reduce((s,x) => s + x.qty, 0);
-    // Por colección (cruzando con products)
     const byCol = {};
     list.forEach(d => { const p = products.find(x => x.model===d.model && x.color===d.color); const col = (p && p.col) || "Essential"; byCol[col] = (byCol[col]||0) + d.qty; });
     return { list, totalUnits, byCol };
+  };
+
+  // Años disponibles en el histórico de un cliente
+  const historyYears = (clientName) => {
+    const ys = new Set();
+    clientHistory.filter(h => h.client_name === clientName || (h.client_name && clientName && h.client_name.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(h => { if(h.year) ys.add(String(h.year)); });
+    orders.filter(o => o.client === clientName || (o.client && clientName && o.client.toLowerCase().trim() === clientName.toLowerCase().trim())).forEach(o => { if(o._rawDate) ys.add(new Date(o._rawDate).getFullYear().toString()); });
+    return [...ys].sort((a,b) => b.localeCompare(a));
+  };
+
+  // Diseños que pedía en años anteriores pero NO en el año más reciente (oportunidad de recompra)
+  const lapsedDesigns = (clientName) => {
+    const years = historyYears(clientName);
+    if (years.length < 2) return [];
+    const latest = years[0];
+    const latestList = buildPurchaseHistory(clientName, latest).list;
+    const latestKeys = new Set(latestList.map(d => d.model+"||"+d.color));
+    // Lo pedido en años anteriores agregado
+    const prevTally = {};
+    years.slice(1).forEach(y => buildPurchaseHistory(clientName, y).list.forEach(d => { const k = d.model+"||"+d.color; if(!prevTally[k]) prevTally[k] = {model:d.model, color:d.color, qty:0}; prevTally[k].qty += d.qty; }));
+    // Los que pedía antes, NO en el último año, y siguen disponibles con stock
+    return Object.values(prevTally).filter(d => !latestKeys.has(d.model+"||"+d.color)).map(d => {
+      const p = products.find(x => x.model===d.model && x.color===d.color && x.active!==false && x.stock>0);
+      return p ? {...d, prod:p} : null;
+    }).filter(Boolean).sort((a,b) => b.qty - a.qty);
   };
 
   // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same tier)
@@ -1763,7 +1799,7 @@ export default function App() {
     setRegSent(true);
   };
 
-  if (!hydrated || (!user && loading)) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:11,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
+  if (!hydrated || (!user && loading)) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img loading="lazy" src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:11,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
   if (!user) {
     const inputStyle = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid #f8efe625",background:"transparent",fontFamily:BD,fontSize:13,color:"#f8efe6",boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
     const inputStyleLight = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid "+CL.dk+"18",background:"transparent",fontFamily:BD,fontSize:13,color:CL.dk,boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
@@ -1780,7 +1816,7 @@ export default function App() {
         `}</style>
         {/* LEFT BRAND PANEL — desktop */}
         <div className="loginhero" style={{position:"fixed",top:0,left:0,bottom:0,width:"46vw",flexDirection:"column",justifyContent:"flex-end",overflow:"hidden",background:"linear-gradient(160deg,#0f2420 0%,"+CL.dk+" 55%,#1d4435 100%)",zIndex:2}}>
-          <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/39_44c32943-2007-46af-8be9-108b17eb72b4.png?v=1781006140" alt="" onError={e => { e.target.style.display = "none"; }} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}} />
+          <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/39_44c32943-2007-46af-8be9-108b17eb72b4.png?v=1781006140" alt="" onError={e => { e.target.style.display = "none"; }} style={{position:"absolute",inset:0,width:"100%",height:"100%",objectFit:"cover"}} />
           <div style={{position:"absolute",inset:0,background:"linear-gradient(to top, rgba(15,30,26,0.92) 0%, rgba(15,30,26,0.35) 45%, rgba(15,30,26,0.15) 100%)"}} />
           <div style={{position:"absolute",top:"-12%",right:"-12%",width:"40vw",height:"40vw",maxWidth:480,maxHeight:480,borderRadius:"50%",background:"radial-gradient(circle, rgba(184,134,11,0.14) 0%, transparent 65%)"}} />
           <div style={{position:"relative",padding:"0 8% 8%"}}>
@@ -1814,7 +1850,7 @@ export default function App() {
           /* LOGIN */
           <div className="loginshift" style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px min(40px, 6vw)",position:"relative",zIndex:1}}>
             <div style={{textAlign:"center",marginBottom:40}}>
-              <img src={LOGO} alt="Minuë" style={{width:"min(84px, 21vw)",height:"min(84px, 21vw)",objectFit:"contain",borderRadius:10,marginBottom:20,marginTop:10,opacity:0.95}} />
+              <img loading="lazy" src={LOGO} alt="Minuë" style={{width:"min(84px, 21vw)",height:"min(84px, 21vw)",objectFit:"contain",borderRadius:10,marginBottom:20,marginTop:10,opacity:0.95}} />
               <div style={{fontSize:"min(40px, 9vw)",fontFamily:DP,color:"#f8efe6",fontWeight:300,fontStyle:"italic",lineHeight:1.15,marginBottom:10}}>{t("bienvenidaLogin")}</div>
               <div style={{fontSize:"min(13px, 3.6vw)",fontFamily:BD,color:"#f8efe670",lineHeight:1.7,letterSpacing:0.3,maxWidth:300,margin:"0 auto"}}>{t("accedeEspacio")}</div>
             </div>
@@ -1956,7 +1992,7 @@ export default function App() {
     <nav style={{background:darkMode?"#141c1a":CL.dk,position:"sticky",top:0,zIndex:100}}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px min(16px, 3vw)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={() => setView(navItems[0][0])}>
-          <img src={LOGO} alt="Minuë" style={{height:"min(63px, 17vw)",borderRadius:4}} />
+          <img loading="lazy" src={LOGO} alt="Minuë" style={{height:"min(63px, 17vw)",borderRadius:4}} />
           <span style={{fontSize:8,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
@@ -2040,11 +2076,13 @@ export default function App() {
           const on = view === v;
           const isCart = k === "panier" && cartCount > 0;
           const iconPath = navIcons[k] || navIcons.commandes;
+          const bottomBadge = (role==="admin"||role==="team") && v==="a-ord" ? orders.filter(o => o.status==="confirmed").length : 0;
           return (
             <button key={v} onClick={() => { setView(v); setMoreOpen(false); }} style={{background:"none",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"4px 8px",position:"relative",minWidth:0}}>
               <div style={{position:"relative"}}>
                 <NavIcon d={iconPath} size={22} color={on?"#f8efe6":"rgba(248,239,230,0.35)"} />
                 {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+                {bottomBadge > 0 && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{bottomBadge}</span>}
               </div>
               <span style={{fontSize:9,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.35)",letterSpacing:0.3}}>{t(k)}</span>
               {on && <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:20,height:2,background:rc,borderRadius:1}} />}
@@ -2066,20 +2104,46 @@ export default function App() {
     {/* MORE DRAWER */}
     {moreOpen && <div style={{position:"fixed",bottom:62,left:0,right:0,zIndex:140,background:darkMode?"#1a2422":"rgba(24,51,47,0.97)",borderTop:"1px solid rgba(248,239,230,0.08)",maxHeight:"60vh",overflowY:"auto",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)"}}>
       {(() => {
+        // Badges de trabajo pendiente (solo admin/team)
+        const workBadges = {};
+        if (role === "admin" || role === "team") {
+          const toPrep = orders.filter(o => o.status === "confirmed").length;
+          if (toPrep > 0) workBadges["a-ord"] = toPrep;
+          let pendLines = 0;
+          orders.forEach(o => (o.lines||[]).forEach(l => { const sv = l.qtyServed==null?l.qty:l.qtyServed; if(l.lineStatus==="pending" && l.qty-sv>0) pendLines += 1; }));
+          if (pendLines > 0) workBadges["a-pendientes"] = pendLines;
+          const pendingUsers = users.filter(u => u.active === false).length;
+          if (pendingUsers > 0) workBadges["a-users"] = pendingUsers;
+          const lowStock = products.filter(p => p.active!==false && p.stock > 0 && p.stock <= 5).length;
+          if (lowStock > 0) workBadges["a-stock"] = lowStock;
+        }
         const renderTile = ([v, k]) => {
           const on = view === v;
           const iconPath = navIcons[k] || navIcons.commandes;
           const isCart = k === "panier" && cartCount > 0;
+          const wb = workBadges[v];
           return (
-            <button key={v} onClick={() => { setView(v); setMoreOpen(false); }} style={{background:on?"rgba(248,239,230,0.08)":"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 4px",borderRadius:8}}>
+            <button key={v} onClick={() => { setView(v); setMoreOpen(false); setNavSearch(""); }} style={{background:on?"rgba(248,239,230,0.08)":"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 4px",borderRadius:8}}>
               <div style={{position:"relative"}}>
                 <NavIcon d={iconPath} size={20} color={on?"#f8efe6":"rgba(248,239,230,0.4)"} />
                 {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+                {wb && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:8,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{wb}</span>}
               </div>
               <span style={{fontSize:9,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
             </button>
           );
         };
+        // BUSCADOR: filtra las secciones por texto
+        const q = navSearch.trim().toLowerCase();
+        if (q) {
+          const matches = navItems.filter(([v, k]) => (t(k)||k).toLowerCase().includes(q));
+          return <div style={{padding:"12px 12px 20px"}}>
+            <input autoFocus value={navSearch} onChange={e => setNavSearch(e.target.value)} placeholder={t("buscarSeccion")||"Buscar sección…"} style={{width:"100%",padding:"11px 14px",border:"1px solid rgba(248,239,230,0.2)",borderRadius:10,background:"rgba(248,239,230,0.08)",color:"#f8efe6",fontFamily:BD,fontSize:13,boxSizing:"border-box",marginBottom:10,outline:"none"}} />
+            {matches.length > 0
+              ? <div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:4}}>{matches.map(renderTile)}</div>
+              : <div style={{textAlign:"center",padding:"20px 0",fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.4)"}}>—</div>}
+          </div>;
+        }
         // Grouped layout for admin/team — flat grid for client/distributor
         const groups = role === "admin" ? [
           ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats","a-decisiones","a-analytics","a-ord","a-inv"]],
@@ -2093,11 +2157,13 @@ export default function App() {
           ["📣 "+(t("grpContenido")||"Contenido"), ["a-promo","a-news","a-pack","a-faq"]],
           ["⏱ "+(t("grpPersonal")||"Personal"), ["a-tasks","e-fichaje","e-account"]]
         ] : null;
+        const searchBar = <input value={navSearch} onChange={e => setNavSearch(e.target.value)} placeholder={t("buscarSeccion")||"Buscar sección…"} style={{width:"100%",padding:"11px 14px",border:"1px solid rgba(248,239,230,0.2)",borderRadius:10,background:"rgba(248,239,230,0.08)",color:"#f8efe6",fontFamily:BD,fontSize:13,boxSizing:"border-box",marginBottom:8,outline:"none"}} />;
         if (!groups) {
-          return <div style={{padding:"16px 12px 20px",display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:4}}>{moreItems.map(renderTile)}</div>;
+          return <div style={{padding:"16px 12px 20px"}}>{searchBar}<div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:4}}>{moreItems.map(renderTile)}</div></div>;
         }
         const moreSet = new Set(moreItems.map(([v]) => v));
         return <div style={{padding:"12px 12px 20px"}}>
+          {searchBar}
           {groups.map(([label, views]) => {
             const items = views.filter(v => moreSet.has(v)).map(v => navItems.find(([nv]) => nv === v)).filter(Boolean);
             if (items.length === 0) return null;
@@ -2150,7 +2216,7 @@ export default function App() {
     return (
       <div key={modelName} className="mcard" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:12,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewModel"); setEd({model:modelName, variants}); }}>
         <div style={{height:"min(192px, 45vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
-          {first.imageUrl ? <img src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(modelName)+")",transformOrigin:"center"}} /> : "MINUË"}
+          {first.imageUrl ? <img loading="lazy" src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(modelName)+")",transformOrigin:"center"}} /> : "MINUË"}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":first.col==="Icons"?"#b8860b":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":first.col==="Icons"?"#f5ecd8":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{first.col}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
             {tags.filter(tg => tg !== "icons").map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
@@ -2186,7 +2252,7 @@ export default function App() {
     return (
       <div key={p.id} className="mcard" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,overflow:"hidden",boxShadow:"0 2px 12px rgba(24,51,47,0.05)"}}>
         <div style={{height:"min(208px, 48vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
-          {p.imageUrl ? <img src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(p.model)+")",transformOrigin:"center"}} /> : "MINUË"}
+          {p.imageUrl ? <img loading="lazy" src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(p.model)+")",transformOrigin:"center"}} /> : "MINUË"}
           {p.stock === 0 && (role === "client" || role === "distributor") && <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:C.dk,background:"rgba(255,255,255,0.95)",padding:"5px 14px",borderRadius:20,letterSpacing:1.5,border:"1px solid "+C.ln}}>{t("agotadoLabel")}</span></div>}
           <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
           <span style={{position:"absolute",top:8,right:8,fontSize:9,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
@@ -2250,7 +2316,7 @@ export default function App() {
             onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 16px rgba(24,51,47,0.12)"}
             onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
             <div style={{height:"min(180px, 42vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
-              {mainColor.imageUrl ? <img src={mainColor.imageUrl} alt={mg.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:32,color:C.ln,fontFamily:DP}}>MINUË</span>}
+              {mainColor.imageUrl ? <img loading="lazy" src={mainColor.imageUrl} alt={mg.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:32,color:C.ln,fontFamily:DP}}>MINUË</span>}
               <span style={{position:"absolute",top:8,left:8,fontSize:9,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{mg.col}</span>
               {[...mg.tags].filter(tg => tagConf[tg]).length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
                 {[...mg.tags].map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase"}}>{tagConf[tg].l}</span> : null)}
@@ -2268,7 +2334,7 @@ export default function App() {
               {/* Color dots preview */}
               <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>
                 {mg.colors.slice(0,6).map((c,i) => <div key={i} style={{width:20,height:20,borderRadius:10,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                  {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <div style={{width:"100%",height:"100%",background:C.bg}} />}
+                  {c.imageUrl ? <img loading="lazy" src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <div style={{width:"100%",height:"100%",background:C.bg}} />}
                 </div>)}
                 {mg.colors.length > 6 && <span style={{fontSize:9,fontFamily:BD,color:C.gr,display:"flex",alignItems:"center"}}>+{mg.colors.length-6}</span>}
               </div>
@@ -2287,7 +2353,7 @@ export default function App() {
       <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:"1 1 80px",minWidth:60}}>{o.client}</span>
       <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{o.date}</span>
       <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(o.total)} €</span>
-      <Badge l={SL[o.status]} c={SC[o.status]} />
+      <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
       <Badge l={PL[o.pay]} c={PC[o.pay]} />
       <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>→</span>
     </div>
@@ -2356,7 +2422,7 @@ export default function App() {
     </style></head><body>
       <div class="page">
         <div class="head">
-          <div><img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block" /></div>
+          <div><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block" /></div>
           <div class="doc-title"><h1>PROFORMA</h1><div class="meta">Nº ${o.id}<br>Fecha: ${today}</div></div>
         </div>
         <div class="cols">
@@ -2425,7 +2491,7 @@ export default function App() {
     </style></head><body>
     <div class="page">
       <div class="head">
-        <div><img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:54px;width:auto;display:block" /></div>
+        <div><img loading="lazy" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:54px;width:auto;display:block" /></div>
         <div class="doc-title"><h1>ALBARÁN</h1><div class="meta">Nº ${o.id}<br>Fecha: ${today}<br>Pedido: ${o.date||"—"}</div></div>
       </div>
       <div class="cols">
@@ -2569,7 +2635,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       .grow { flex: 1; }
     </style></head><body>
       <div class="sheet"><div class="frame">
-        <img class="logo" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" />
+        <img loading="lazy" class="logo" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" />
         <div class="sep"></div>
         <div class="greeting">${spaced(n.greeting)}</div>
         <div class="name">${n.name}</div>
@@ -2642,7 +2708,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <span style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
                       <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.date}</span>
                       <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} uds · {fmt(o.total)} €</span>
-                      <Badge l={SL[o.status]} c={SC[o.status]} />
+                      <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                     </div>
                   ))}
                 </div> : <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:20}}>—</div>}
@@ -2808,12 +2874,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 {/* LEFT: Image */}
                 <div style={{flex:"1 1 260px",minWidth:200}}>
                   <div style={{height:260,background:C.wh,borderRadius:6,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:10}}>
-                    {sel.imageUrl ? <img src={sel.imageUrl} alt={sel.model+" "+sel.color} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:40,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                    {sel.imageUrl ? <img loading="lazy" src={sel.imageUrl} alt={sel.model+" "+sel.color} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:40,color:C.ln,fontFamily:DP}}>MINUË</span>}
                   </div>
                   {/* Color thumbnails */}
                   <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                     {colors.map((c,i) => <div key={i} onClick={() => setSelectedColorIdx(i)} style={{width:48,height:48,borderRadius:6,border:selectedColorIdx===i?"2px solid "+C.dk:"1px solid "+C.ln,overflow:"hidden",cursor:"pointer",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",transition:"border 0.2s"}}>
-                      {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} /> : <span style={{fontSize:6,color:C.gr,fontFamily:BD}}>—</span>}
+                      {c.imageUrl ? <img loading="lazy" src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} /> : <span style={{fontSize:6,color:C.gr,fontFamily:BD}}>—</span>}
                     </div>)}
                   </div>
                 </div>
@@ -2836,7 +2902,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       const inCart = cart[c.id]>0;
                       return <div key={c.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",borderRadius:6,marginBottom:4,background:selectedColorIdx===i?C.dk+"08":inCart?C.gn+"08":"transparent",border:"1px solid "+(selectedColorIdx===i?C.dk+"20":inCart?C.gn+"20":"transparent"),cursor:"pointer"}} onClick={() => setSelectedColorIdx(i)}>
                         <div style={{width:32,height:32,borderRadius:4,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0,background:C.wh}}>
-                          {c.imageUrl ? <img src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                          {c.imageUrl ? <img loading="lazy" src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
                         </div>
                         <div style={{flex:1}}>
                           <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:selectedColorIdx===i?600:400}}>{c.color}</div>
@@ -2872,7 +2938,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
           {modal === "editSt" && <>
             {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden",position:"relative"}}>
-              <img src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6,opacity:ed.active===false?0.4:1}} />
+              <img loading="lazy" src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6,opacity:ed.active===false?0.4:1}} />
               {ed.active === false && <div style={{position:"absolute",top:8,right:8,background:"#666",color:"#fff",padding:"3px 10px",borderRadius:3,fontSize:9,fontFamily:BD,fontWeight:700,letterSpacing:1}}>OCULTO</div>}
             </div>}
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
@@ -2978,7 +3044,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
               {(ed.lines||[]).map((l,i) => <div key={l.sku} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid "+C.bg2,background:l._order>0?(l.stock===0?C.rd+"06":l._manual?"#8e44ad08":C.bl+"04"):"transparent"}}>
                 <div style={{width:32,height:32,borderRadius:3,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                  {l.imageUrl ? <img src={l.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                  {l.imageUrl ? <img loading="lazy" src={l.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
                 </div>
                 <div style={{flex:1,minWidth:0}}>
                   <span style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{l.model} </span>
@@ -3027,7 +3093,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>Prix fixe Acetato (€)</div>
               <input type="number" step="0.10" value={ed.fixedPrice || ACETATO_PRICE} onChange={e => setEd(p => ({...p, fixedPrice: parseFloat(e.target.value) || ACETATO_PRICE}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>}
-            <Btn onClick={() => { if(ed.model){setProducts(p => [...p, {id:p.length+50, model:ed.model.toUpperCase(), color:ed.color||"", sku:ed.sku||"MN-NEW", col:ed.col||"Essential", cat:ed.col||"Essential", stock:parseInt(ed.stock)||0, fixedPrice:ed.col==="Acetato"?(ed.fixedPrice||ACETATO_PRICE):0}]); setModal(null);} }} style={{width:"100%"}}>{t("ajouterCat")}</Btn>
+            <Btn onClick={async () => { if(ed.model){ const newProd = {model:ed.model.toUpperCase(), color:ed.color||"", sku:ed.sku||"MN-NEW", col:ed.col||"Essential", cat:ed.col||"Essential", stock:parseInt(ed.stock)||0, fixedPrice:ed.col==="Acetato"?(ed.fixedPrice||ACETATO_PRICE):0, tags:[], imageUrl:ed.imageUrl||""}; const newId = await dbInsertProduct(newProd); if(newId){ setProducts(p => [...p, {...newProd, id:newId, active:true}]); toast(t("ajouterCat")); setModal(null); } else { toast(t("erreurSauvegarde")||"Error al guardar"); } } }} style={{width:"100%"}}>{t("ajouterCat")}</Btn>
           </>}
 
           {/* NEW ORDER */}
@@ -3536,7 +3602,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {/* VIEW MODEL */}
           {modal === "viewModel" && ed.variants && <>
             <div style={{display:"flex",gap:14,alignItems:"center",marginBottom:16}}>
-              {(() => { const first = ed.variants.find(v => v.imageUrl) || ed.variants[0]; return first.imageUrl ? <img src={first.imageUrl} alt={ed.model} style={{width:80,height:80,objectFit:"contain",borderRadius:6,border:"1px solid "+C.ln}} /> : <div style={{width:80,height:80,borderRadius:6,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:18,color:C.ln,border:"1px solid "+C.ln}}>MINUË</div>; })()}
+              {(() => { const first = ed.variants.find(v => v.imageUrl) || ed.variants[0]; return first.imageUrl ? <img loading="lazy" src={first.imageUrl} alt={ed.model} style={{width:80,height:80,objectFit:"contain",borderRadius:6,border:"1px solid "+C.ln}} /> : <div style={{width:80,height:80,borderRadius:6,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:18,color:C.ln,border:"1px solid "+C.ln}}>MINUË</div>; })()}
               <div>
                 <div style={{fontSize:22,fontFamily:DP,color:C.dk,fontWeight:600}}>{ed.model}</div>
                 <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>{ed.variants[0].col} · {ed.variants.length} {t("couleurs")} · {ed.variants.reduce((s,v) => s+v.stock,0)} {t("stockDisponible")}</div>
@@ -3591,7 +3657,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             return <>
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:6,flexWrap:"wrap"}}>
               <span style={{fontSize:24,fontFamily:DP,color:C.dk,fontWeight:600,letterSpacing:1}}>{ed.id}</span>
-              <Badge l={SL[ed.status]} c={SC[ed.status]} />
+              <Badge l={SL_LEGACY[ed.status]} c={SC[ed.status]} />
               <Badge l={PL[ed.pay]} c={PC[ed.pay]} />
             </div>
             <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:canEdit?8:16}}>{ed.client} · {ed.date} · {ed.dist}</div>
@@ -3659,7 +3725,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   const sv = servedOf(l); const pend = pendingOf(l); const canc = cancelledOf(l); const prod = products.find(p => p.model===l.model && p.color===l.color);
                   return (
                   <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
-                    <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                    <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontWeight:600,color:C.dk}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></div>
                       {isPartial && (pend>0||canc>0) && <div style={{fontSize:9,fontFamily:BD,marginTop:2}}>
@@ -4322,7 +4388,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </style></head><body>
                     <div class="header">
                       <div>
-                        <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
+                        <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
                         <div class="brand-sub">Opticians · Wholesale</div>
                       </div>
                       <div class="inv-title">
@@ -4560,7 +4626,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <span style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
                     <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.client} · {o.date}</span>
                     <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{fmt(o.total)} €</span>
-                    <Badge l={SL[o.status]} c={SC[o.status]} />
+                    <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                   </div>
                 ))}
                 {ed._dOrders.length === 0 && <div style={{padding:20,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>—</div>}
@@ -4591,7 +4657,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <span style={{fontSize:13,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
                     <span style={{fontSize:11,fontFamily:BD,color:C.gr,flex:1}}>{o.client} · {o.date}</span>
                     <span style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} uds · {fmt(o.total)} €</span>
-                    <Badge l={SL[o.status]} c={SC[o.status]} />
+                    <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                     <Badge l={PL[o.pay]} c={PC[o.pay]} />
                   </div>
                 ))}
@@ -4676,7 +4742,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   return p.model.toLowerCase().includes(s) || p.color.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s);
                 }).slice(0,60).map(p => <div key={p.id} onClick={() => { dbAddRecommendation(ed._recClient, p.id); }} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",cursor:"pointer",position:"relative"}}>
                   <div style={{height:80,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} /> : <span style={{fontSize:14,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} /> : <span style={{fontSize:14,color:C.ln,fontFamily:DP}}>MINUË</span>}
                   </div>
                   <div style={{padding:"6px 8px",background:"#faf6f1"}}>
                     <div style={{fontSize:10,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
@@ -5036,7 +5102,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",flexDirection:"column",gap:9}}>
                 {top.map((d, i) => { const prod = products.find(p => p.model===d.model && p.color===d.color); return (
                   <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
-                    <div style={{width:36,height:36,borderRadius:8,background:C.wh,border:"1px solid "+C.ln,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                    <div style={{width:36,height:36,borderRadius:8,background:C.wh,border:"1px solid "+C.ln,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model} <span style={{color:C.gr,fontWeight:400}}>{d.color}</span></div>
                       <div style={{height:5,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:5,width:Math.max(12,(d.qty/maxQty)*100)+"%",background:"linear-gradient(90deg,#d4a030,#c4956a)",borderRadius:3}} /></div>
@@ -5085,7 +5151,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:10.5,fontFamily:BD,color:C.gr,marginBottom:12,lineHeight:1.5}}>{t("quizasReponerSub")}</div>
               <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
                 {restock.map(({prod, days}) => <div key={prod.id} style={{minWidth:150,maxWidth:160,flexShrink:0,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10}}>
-                  <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
+                  <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{prod.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{prod.color}</div>
                   <div style={{fontSize:9,fontFamily:BD,color:"#2471a3",marginTop:3,marginBottom:7}}>{t("haceTiempo").replace("%d", Math.floor(days/30))}</div>
@@ -5108,7 +5174,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:10.5,fontFamily:BD,color:C.gr,marginBottom:12,lineHeight:1.5}}>{t("descubreModelosSub")}</div>
               <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
                 {pool.map(prod => <div key={prod.id} style={{minWidth:150,maxWidth:160,flexShrink:0,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10}}>
-                  <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
+                  <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{prod.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:7}}>{prod.color}{(prod.tags||[]).includes("top") ? " · ★" : ""}</div>
                   <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
@@ -5124,11 +5190,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:CL.gn,marginBottom:10}}>🎉 {t("haVuelto")}</div>
               <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
                 {backInStock.map(({alert, p}) => <div key={alert.id} style={{minWidth:170,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10,flexShrink:0}}>
-                  <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontFamily:DP,color:C.ln}}>MINUË</span>}</div>
+                  <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontFamily:DP,color:C.ln}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{p.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8}}>{p.color}</div>
                   <div style={{display:"flex",gap:5}}>
-                    <button onClick={() => { addToCart(p.id, 2); dbRemoveAlert(alert.id); toast(t("anadidoAlCarrito")); }} style={{flex:1,padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
+                    <button onClick={() => { setQtyPick({productId:p.id, model:p.model, color:p.color, qty:2}); dbRemoveAlert(alert.id); }} style={{flex:1,padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
                     <button onClick={() => dbRemoveAlert(alert.id)} style={{padding:"6px 9px",background:"transparent",color:C.gr2,border:"1px solid "+C.ln,borderRadius:6,fontSize:10,cursor:"pointer"}}>✕</button>
                   </div>
                 </div>)}
@@ -5166,7 +5232,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
                 {newSince.map(p => <div key={p.id} onClick={() => { setView("c-cat"); setFilter(p.model); }} style={{minWidth:150,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10,flexShrink:0,cursor:"pointer",position:"relative"}}>
                   <span style={{position:"absolute",top:8,left:8,fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:"#8e44ad",padding:"2px 7px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("nuevo").toUpperCase()}</span>
-                  <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:18}}>MINUË</span>}</div>
+                  <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:18}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{p.model}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{p.color}</div>
                 </div>)}
@@ -5257,7 +5323,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:500}}>{o.items} {t("unites")} · {fmt(o.total)} €</div>
                     <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{o.date}</div>
                   </div>
-                  <Badge l={SL[o.status]} c={SC[o.status]} />
+                  <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                   {o.track && <a href={o.trackUrl||"#"} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.bl,textDecoration:"none",background:C.bl+"10",padding:"4px 8px",borderRadius:4}} onClick={e => e.stopPropagation()}>📦 Track</a>}
                 </div>
               ))}
@@ -5271,7 +5337,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",cursor:"pointer",position:"relative"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
                 <div style={{position:"absolute",top:6,left:6,width:22,height:22,borderRadius:11,background:C.dk,color:C.bg,fontSize:10,fontWeight:700,fontFamily:BD,display:"flex",alignItems:"center",justifyContent:"center",zIndex:1}}>{i+1}</div>
                 <div style={{height:120,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                  {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} /> : <span style={{fontSize:20,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                  {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} /> : <span style={{fontSize:20,color:C.ln,fontFamily:DP}}>MINUË</span>}
                 </div>
                 <div style={{padding:"8px 10px",background:"#faf6f1"}}>
                   <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
@@ -5289,7 +5355,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {top.map(({p,qty},i) => (
                 <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 14px",display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(0); setModal("viewModel"); }}>
                   <div style={{width:44,height:44,borderRadius:6,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
                   </div>
                   <div>
                     <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
@@ -5311,7 +5377,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {recProds.map(p => <div key={p.id} style={{background:"linear-gradient(135deg,"+C.dk+"05,"+C.gn+"08)",border:"1px solid "+C.gn+"30",borderRadius:8,overflow:"hidden",position:"relative",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
                 <div style={{position:"absolute",top:6,left:6,fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>✨ PARA TI</div>
                 <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                  {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
+                  {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                 </div>
                 <div style={{padding:"10px 12px",background:"#faf6f1"}}>
                   <div style={{fontSize:13,fontWeight:600,fontFamily:DP,color:C.dk}}>{p.model}</div>
@@ -5373,14 +5439,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const suggestedQty = Math.max(1, Math.round(qty/Math.max(1,myOrders.length)));
                 return <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",position:"relative"}}>
                   <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                     {inCart > 0 && <span style={{position:"absolute",top:6,right:6,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:10}}>x{inCart}</span>}
                   </div>
                   <div style={{padding:"10px 12px",background:"#faf6f1"}}>
                     <div style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div>
                     <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:2}}>{p.color}</div>
                     <div style={{fontSize:9,fontFamily:BD,color:C.gr2,marginBottom:8}}>Pediste {qty} uds</div>
-                    <button onClick={() => addToCart(p.id, suggestedQty)} style={{width:"100%",padding:"7px 0",background:C.dk,color:C.bg,border:"none",fontSize:10,cursor:"pointer",fontFamily:BD,borderRadius:4,fontWeight:600}}>+ {suggestedQty} ud{suggestedQty>1?"s":""} 🛒</button>
+                    <button onClick={() => setQtyPick({productId:p.id, model:p.model, color:p.color, qty:suggestedQty})} style={{width:"100%",padding:"7px 0",background:C.dk,color:C.bg,border:"none",fontSize:10,cursor:"pointer",fontFamily:BD,borderRadius:4,fontWeight:600}}>+ {t("reorder")||"Repetir"} 🛒</button>
                   </div>
                 </div>;
               })}
@@ -5612,7 +5678,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} {t("unites")} · {fmt(o.total)} €</div>
-                  <div style={{display:"flex",gap:6,marginTop:6}}><Badge l={SL[o.status]} c={SC[o.status]} /><Badge l={PL[o.pay]} c={PC[o.pay]} /></div>
+                  <div style={{display:"flex",gap:6,marginTop:6}}><Badge l={SL_LEGACY[o.status]} c={SC[o.status]} /><Badge l={PL[o.pay]} c={PC[o.pay]} /></div>
                 </div>
                 {o.track && <a href={o.trackUrl||"#"} target="_blank" rel="noreferrer" style={{fontSize:10,fontFamily:BD,color:C.bl,textDecoration:"none",background:C.bl+"10",padding:"6px 12px",borderRadius:6,fontWeight:500}} onClick={e => e.stopPropagation()}>📦 Track</a>}
                 <span style={{fontSize:12,color:C.gr}}>→</span>
@@ -5712,7 +5778,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             {products.filter(p => p.active !== false && p.imageUrl && ((ed._resCol||"all")==="all" || p.col === ed._resCol)).map(p => (
               <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,overflow:"hidden"}}>
                 <div style={{height:110,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:C.wh}}>
-                  <img src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} loading="lazy" />
+                  <img loading="lazy" src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} loading="lazy" />
                 </div>
                 <div style={{padding:"8px 10px"}}>
                   <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.model} <span style={{color:C.gr,fontWeight:400}}>{p.color}</span></div>
@@ -6051,7 +6117,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b4c3b" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                   </button>
                   <div style={{height:140,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                   </div>
                   <div style={{padding:"10px 14px",background:"#faf6f1"}}>
                     <div style={{fontSize:9,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"2px 7px",borderRadius:10,display:"inline-block",marginBottom:4}}>{p.col}</div>
@@ -6154,7 +6220,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {topSold.length === 0 ? <div style={{padding:20,textAlign:"center",fontSize:11,color:C.gr,fontFamily:BD}}>—</div> :
                   topSold.map(({p,qty}, i) => <div key={p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 16px",borderBottom:i<topSold.length-1?"1px solid "+C.bg2:"none"}}>
                     <div style={{width:22,height:22,borderRadius:11,background:i<3?C.gn:C.bg,color:i<3?"#fff":C.gr,fontSize:11,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
-                    <div style={{width:34,height:34,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>{p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}</div>
+                    <div style={{width:34,height:34,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
                       <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{p.color}</div>
@@ -6175,7 +6241,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {topFavs.length === 0 ? <div style={{padding:20,textAlign:"center",fontSize:11,color:C.gr,fontFamily:BD}}>—</div> :
                   topFavs.map(({p,cnt}, i) => <div key={p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 16px",borderBottom:i<topFavs.length-1?"1px solid "+C.bg2:"none"}}>
                     <div style={{width:22,height:22,borderRadius:11,background:i<3?"#6b4c3b":C.bg,color:i<3?"#fff":C.gr,fontSize:11,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>{i+1}</div>
-                    <div style={{width:34,height:34,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>{p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}</div>
+                    <div style={{width:34,height:34,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
                       <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{p.color}</div>
@@ -6282,9 +6348,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {view === "c-historico" && (() => {
         const clientName = user.co || user.name;
-        const {list, totalUnits, byCol} = buildPurchaseHistory(clientName);
-        if (list.length === 0) return <Sec title={t("miHistorico")}><div style={{textAlign:"center",padding:50,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontSize:14,fontFamily:BD,color:C.gr}}>{t("sinHistorico")}</div></div></Sec>;
-        const maxQty = list[0].qty;
+        const years = historyYears(clientName);
+        const {list, totalUnits, byCol} = buildPurchaseHistory(clientName, histYear);
+        const lapsed = lapsedDesigns(clientName);
+        if (list.length === 0 && histYear === "all") return <Sec title={t("miHistorico")}><div style={{textAlign:"center",padding:50,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontSize:14,fontFamily:BD,color:C.gr}}>{t("sinHistorico")}</div></div></Sec>;
+        const maxQty = list.length > 0 ? list[0].qty : 1;
         const colColors = {Essential:"#18332f", Icons:"#c4956a", Acetato:"#8e44ad", Otros:"#888"};
         const colEntries = Object.entries(byCol).sort((a,b) => b[1]-a[1]);
         // donut
@@ -6292,6 +6360,27 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         const segs = colEntries.map(([col, q]) => { const frac = q/totalUnits; const seg = {col, q, frac, offset:acc, color:colColors[col]||colColors.Otros}; acc += frac; return seg; });
         const modelCount = new Set(list.map(d => d.model)).size;
         return <Sec title={"📊 "+t("miHistorico")} sub={t("miHistoricoSub")}>
+          {/* SELECTOR DE AÑO */}
+          {years.length > 0 && <div style={{display:"flex",gap:6,marginBottom:18,flexWrap:"wrap"}}>
+            <button onClick={() => setHistYear("all")} style={{padding:"7px 16px",borderRadius:20,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(histYear==="all"?CL.dk:C.ln),background:histYear==="all"?CL.dk:"transparent",color:histYear==="all"?CL.bg:C.gr}}>{t("todosAnios")}</button>
+            {years.map(y => <button key={y} onClick={() => setHistYear(y)} style={{padding:"7px 16px",borderRadius:20,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(histYear===y?CL.dk:C.ln),background:histYear===y?CL.dk:"transparent",color:histYear===y?CL.bg:C.gr}}>{y}</button>)}
+          </div>}
+
+          {/* 🔍 LO PEDÍAS Y AHORA NO (oportunidad recompra, solo en vista "todos") */}
+          {histYear === "all" && lapsed.length > 0 && <div style={{background:"linear-gradient(135deg,#c0392b10,#c0392b04)",border:"1.5px solid #c0392b30",borderRadius:14,padding:"16px 18px",marginBottom:20}}>
+            <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a93226",marginBottom:4}}>🔍 {t("pedabasAntes")}</div>
+            <div style={{fontSize:10.5,fontFamily:BD,color:C.gr,marginBottom:12,lineHeight:1.5}}>{t("pedabasAntesSub")}</div>
+            <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
+              {lapsed.slice(0,8).map(d => <div key={d.prod.id} style={{minWidth:150,maxWidth:160,flexShrink:0,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10}}>
+                <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{d.prod.imageUrl ? <img loading="lazy" src={d.prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:10}}>MINUË</span>}</div>
+                <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{d.color}</div>
+                <div style={{fontSize:9,fontFamily:BD,color:"#a93226",marginTop:3,marginBottom:7}}>{t("pedisteAntes").replace("%d", d.qty)}</div>
+                <button onClick={() => setQtyPick({productId:d.prod.id, model:d.prod.model, color:d.prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("reorder")||"Repetir"}</button>
+              </div>)}
+            </div>
+          </div>}
+
           {/* KPIs */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:12,marginBottom:20}}>
             <div style={{background:"linear-gradient(135deg,"+CL.dk+",#1d4435)",borderRadius:14,padding:"18px 16px",color:CL.bg}}>
@@ -6334,7 +6423,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {list.map((d,i) => { const prod = products.find(p => p.model===d.model && p.color===d.color); const inStock = prod && prod.active!==false && prod.stock>0; return (
                 <div key={i} style={{display:"flex",alignItems:"center",gap:10}}>
                   <span style={{fontSize:10,fontFamily:BD,color:C.gr2,minWidth:22,textAlign:"right"}}>{i+1}</span>
-                  <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                  <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model} <span style={{color:C.gr,fontWeight:400}}>{d.color}</span></div>
                     <div style={{height:6,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:6,width:Math.max(4,(d.qty/maxQty)*100)+"%",background:i<3?"linear-gradient(90deg,#d4a030,#c4956a)":CL.dk,borderRadius:3}} /></div>
@@ -6513,7 +6602,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 16px",display:"flex",alignItems:"center",gap:10,cursor:"pointer"}} onClick={() => { setModal("viewOrd"); setEd({...o, idx:orders.indexOf(o)}); }}>
                   <span style={{fontSize:13,fontFamily:DP,color:C.dk,fontWeight:600}}>{o.id}</span>
                   <span style={{fontSize:12,fontFamily:BD,color:C.gr,flex:1}}>{o.client}</span>
-                  <Badge l={SL[o.status]} c={SC[o.status]} />
+                  <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                   <Badge l={PL[o.pay]} c={PC[o.pay]} />
                 </div>
               ))}
@@ -7107,7 +7196,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div key={o.id} style={{background:C.wh,border:"1px solid "+(pct===100?C.gn+"50":C.ln),borderRadius:8,marginBottom:10,overflow:"hidden"}}>
                   <div onClick={() => setExpandedPrep(isOpen ? null : o.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",cursor:"pointer"}}>
                     <div style={{flex:1}}>
-                      <div style={{display:"flex",gap:8,alignItems:"center"}}><span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk}}>{o.id}</span><Badge l={SL[o.status]} c={SC[o.status]} /></div>
+                      <div style={{display:"flex",gap:8,alignItems:"center"}}><span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk}}>{o.id}</span><Badge l={SL_LEGACY[o.status]} c={SC[o.status]} /></div>
                       <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{o.client} · {o.items} uds · {o.date} · {o.dist}</div>
                     </div>
                     <div style={{textAlign:"right",minWidth:60}}>
@@ -7542,7 +7631,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
               {topSold.map(p => <div key={p.sku} style={{minWidth:120,background:C.wh,border:"1px solid "+(p.stock<5?C.rd+"40":C.ln),borderRadius:6,padding:"8px 10px",flexShrink:0}}>
                 <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
-                  {p.imageUrl && <img src={p.imageUrl} style={{width:24,height:24,objectFit:"contain",borderRadius:2}} />}
+                  {p.imageUrl && <img loading="lazy" src={p.imageUrl} style={{width:24,height:24,objectFit:"contain",borderRadius:2}} />}
                   <div><div style={{fontSize:10,fontWeight:600,fontFamily:BD}}>{p.model}</div><div style={{fontSize:8,color:C.gr,fontFamily:BD}}>{p.color}</div></div>
                 </div>
                 <div style={{display:"flex",justifyContent:"space-between",fontSize:9,fontFamily:BD}}>
@@ -7574,7 +7663,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const ratio = sold > 0 && p.stock > 0 ? p.stock/sold : p.stock===0?0:99;
                 return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":C.yl+"04",cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
                   <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
                     <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span>
@@ -7596,7 +7685,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const sold=velocity[p.sku]||0;
                 return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.active===false?"#fafafa":p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer",opacity:p.active===false?0.6:1}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
                   <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0,position:"relative"}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",opacity:p.active===false?0.5:1}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",opacity:p.active===false?0.5:1}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
                   <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span>{p.active===false && <span style={{fontSize:8,marginLeft:6,padding:"1px 5px",background:"#66666625",color:"#666",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>OCULTO</span>}<div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
                   <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
@@ -7619,7 +7708,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div onClick={() => setExpandedModels(p => ({...p,[mg.model]:!p[mg.model]}))} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 12px",borderBottom:"1px solid "+C.bg2,background:hasProblems?(minStock===0?C.rd+"06":C.yl+"04"):(mi%2?C.bg:C.wh),cursor:"pointer"}}>
                     <span style={{fontSize:10,color:C.gr,width:14,flexShrink:0}}>{isExpanded?"▼":"▶"}</span>
                     <div style={{width:32,height:32,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                      {mg.imageUrl ? <img src={mg.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                      {mg.imageUrl ? <img loading="lazy" src={mg.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                     </div>
                     <div style={{flex:1}}>
                       <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.dk}}>{mg.model}</span>
@@ -7634,7 +7723,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     const sold=velocity[p.sku]||0;
                     return <div key={p.sku} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 12px 7px 48px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"04":C.bg,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
                       <div style={{width:28,height:28,borderRadius:3,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                        {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
+                        {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
                       </div>
                       <span style={{fontSize:11,fontFamily:BD,color:C.dk,flex:1}}>{p.color}</span>
                       <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</span>
@@ -7655,7 +7744,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const sold=velocity[p.sku]||0;
                 return <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,background:p.stock===0?C.rd+"06":i%2?C.bg:C.wh,cursor:"pointer"}} onClick={() => { setModal("editSt"); setEd({...p, stock:String(p.stock), _sold:sold}); }}>
                   <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
-                    {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
                   <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
                   <span style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
@@ -8271,7 +8360,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const save = () => dbSaveProductCost(p.id, productCosts[p.id]||c);
                 return <div key={p.id} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 14px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh}}>
                   <div style={{flex:"1 1 140px",minWidth:100,display:"flex",alignItems:"center",gap:8}}>
-                    {p.imageUrl && <div style={{width:28,height:28,borderRadius:3,overflow:"hidden",background:C.wh,border:"1px solid "+C.ln,flexShrink:0}}><img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /></div>}
+                    {p.imageUrl && <div style={{width:28,height:28,borderRadius:3,overflow:"hidden",background:C.wh,border:"1px solid "+C.ln,flexShrink:0}}><img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /></div>}
                     <div style={{minWidth:0}}><div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.model}</div><div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{p.color}</div></div>
                   </div>
                   {["supplier","freight","customs","packaging"].map((f,fi) => <input key={f} type="number" step="0.01" value={c[f]||""} onChange={e => upd(f,e.target.value)} onBlur={save} placeholder="0" style={{width:fi===0||fi===3?62:55,padding:"5px 4px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,textAlign:"center",boxSizing:"border-box"}} />)}
@@ -8733,7 +8822,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </style></head><body>
               <div class="header">
                 <div>
-                  <img src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
+                  <img loading="lazy" src="https://cdn.shopify.com/s/files/1/0052/2797/0629/files/LOGO_VERDE_MINUE.png?v=1613555706" alt="Minuë" style="height:50px;width:auto;display:block;margin-bottom:4px" />
                   <div class="brand-sub">Opticians · Wholesale Eyewear</div>
                 </div>
                 <div class="doc-title">
@@ -9043,7 +9132,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{padding:"6px 16px"}}>
               {products.filter(p => p.stock < 10).sort((a,b) => a.stock - b.stock).slice(0,6).map((p,i) => (
                 <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid "+C.bg2}}>
-                  {p.imageUrl ? <img src={p.imageUrl} style={{width:30,height:30,objectFit:"contain",borderRadius:4}} /> : <span style={{width:30,height:30,background:C.bg,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:7,color:C.ln}}>—</span>}
+                  {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:30,height:30,objectFit:"contain",borderRadius:4}} /> : <span style={{width:30,height:30,background:C.bg,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:7,color:C.ln}}>—</span>}
                   <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:1,fontWeight:500}}>{p.model} <span style={{color:C.gr,fontWeight:400}}>{p.color}</span></span>
                   <span style={{fontSize:14,fontWeight:700,fontFamily:BD,color:p.stock<5?C.rd:C.yl,background:p.stock<5?C.rd+"10":C.yl+"10",padding:"2px 8px",borderRadius:10}}>{p.stock}</span>
                 </div>
@@ -9067,7 +9156,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <span style={{fontSize:12,fontFamily:BD,color:C.gr,flex:1}}>{o.client}</span>
                   <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{o.date}</span>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(o.total)} €</span>
-                  <Badge l={SL[o.status]} c={SC[o.status]} />
+                  <Badge l={SL_LEGACY[o.status]} c={SC[o.status]} />
                 </div>
               ))}
               {orders.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:14,textAlign:"center"}}>—</div>}
@@ -9147,7 +9236,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const p = products.find(x => x.model === model);
                 return (<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:"1px solid "+C.bg2}}>
                   <span style={{fontSize:11,fontFamily:BD,color:C.gr2,fontWeight:700,minWidth:20}}>{i+1}.</span>
-                  {p?.imageUrl ? <img src={p.imageUrl} style={{width:28,height:28,objectFit:"contain",borderRadius:3}} /> : <span style={{width:28}} />}
+                  {p?.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:28,height:28,objectFit:"contain",borderRadius:3}} /> : <span style={{width:28}} />}
                   <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:1,fontWeight:500}}>{model}</span>
                   <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.gn}}>{qty} uds</span>
                 </div>);
@@ -9186,7 +9275,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {items.map((pk,i) => (
                 <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
                   {pk.imageUrl ? <div style={{height:140,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                    <img src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} />
+                    <img loading="lazy" src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} />
                   </div> : <div style={{height:140,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:24,color:C.ln,letterSpacing:2}}>MINUË</div>}
                   <div style={{padding:"14px 16px"}}>
                     <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600}}>{(pk.name&&pk.name[lang])||pk.name?.fr||""}</div>
@@ -9208,7 +9297,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {items.map((pk,i) => (
                 <div key={pk.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",opacity:pk.on?1:0.4,cursor:"pointer"}} onClick={() => { setModal("editPack"); setEd({...pk}); }}>
                   {pk.imageUrl ? <div style={{height:120,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                    <img src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} />
+                    <img loading="lazy" src={pk.imageUrl} alt="" style={{width:"100%",height:"100%",objectFit:"contain",padding:6}} />
                   </div> : <div style={{height:120,background:C.bg,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:DP,fontSize:20,color:C.ln}}>MINUË</div>}
                   <div style={{padding:"12px 14px"}}>
                     <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{(pk.name&&pk.name[lang])||pk.name?.fr||""}</div>
@@ -9301,7 +9390,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
                   {recProducts.map(p => <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",position:"relative"}}>
                     <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
-                      {p.imageUrl ? <img src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:20,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                      {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:20,color:C.ln,fontFamily:DP}}>MINUË</span>}
                     </div>
                     <div style={{padding:"8px 12px",background:"#faf6f1"}}>
                       <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
