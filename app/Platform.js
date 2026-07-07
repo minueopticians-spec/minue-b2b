@@ -702,6 +702,20 @@ const T = {
   stockActual:{fr:"Stock actuel",es:"Stock actual",en:"Current stock",it:"Stock attuale"},
   noEncontradoCatalogo:{fr:"Introuvable au catalogue",es:"No encontrado en catálogo",en:"Not found in catalog",it:"Non trovato a catalogo"},
   confirmarRecepcion:{fr:"Confirmer la réception",es:"Confirmar recepción",en:"Confirm reception",it:"Conferma ricezione"},
+  eligeCantidad:{fr:"Choisissez d'abord une quantité",es:"Elige una cantidad primero",en:"Choose a quantity first",it:"Scegli prima una quantità"},
+  supprimer:{fr:"Supprimer",es:"Eliminar",en:"Remove",it:"Rimuovi"},
+  prospectoNuevoMinue:{fr:"nouveau prospect de Minuë",es:"prospecto nuevo de Minuë",en:"new prospect from Minuë",it:"nuovo prospect da Minuë"},
+  prospectosNuevosMinue:{fr:"nouveaux prospects de Minuë",es:"prospectos nuevos de Minuë",en:"new prospects from Minuë",it:"nuovi prospect da Minuë"},
+  prospectosNuevosSub:{fr:"Contacts de votre zone à travailler — cliquez pour les voir",es:"Contactos de tu zona para trabajar — pulsa para verlos",en:"Contacts in your area to work — tap to see them",it:"Contatti della tua zona — tocca per vederli"},
+  importarProspectos:{fr:"Importer des prospects",es:"Importar prospectos",en:"Import prospects",it:"Importa prospect"},
+  importarProspectosSub:{fr:"Collez une liste depuis Excel/CSV pour créer plusieurs prospects d'un coup.",es:"Pega una lista desde Excel/CSV para crear varios prospectos de golpe.",en:"Paste a list from Excel/CSV to create several prospects at once.",it:"Incolla una lista da Excel/CSV per creare più prospect insieme."},
+  asignarA:{fr:"Assigner à",es:"Asignar a",en:"Assign to",it:"Assegna a"},
+  pegaCSV:{fr:"Collez vos données (CSV)",es:"Pega tus datos (CSV)",en:"Paste your data (CSV)",it:"Incolla i tuoi dati (CSV)"},
+  formatoCSV:{fr:"Format (une ligne par prospect)",es:"Formato (una línea por prospecto)",en:"Format (one line per prospect)",it:"Formato (una riga per prospect)"},
+  prospectosDetectados:{fr:"prospects détectés",es:"prospectos detectados",en:"prospects detected",it:"prospect rilevati"},
+  prospectosImportados:{fr:"prospects importés",es:"prospectos importados",en:"prospects imported",it:"prospect importati"},
+  nadaQueImportar:{fr:"Rien à importer",es:"Nada que importar",en:"Nothing to import",it:"Niente da importare"},
+  importar:{fr:"Importer",es:"Importar",en:"Import",it:"Importa"},
   pedabasAntes:{fr:"Vous commandiez avant... et plus maintenant",es:"Lo pedías antes... y ahora no",en:"You used to order... but not anymore",it:"Li ordinavi prima... e ora no"},
   pedabasAntesSub:{fr:"Modèles que vous commandiez les années précédentes mais pas cette année — toujours disponibles.",es:"Modelos que pedías años anteriores pero no este año — siguen disponibles.",en:"Models you ordered in previous years but not this year — still available.",it:"Modelli che ordinavi negli anni scorsi ma non quest'anno — ancora disponibili."},
   pedisteAntes:{fr:"%d unités auparavant",es:"%d uds en su día",en:"%d units before",it:"%d unità prima"},
@@ -1266,6 +1280,7 @@ export default function App() {
   const [histYear, setHistYear] = useState("all"); // filtro de año en Mi histórico
   const [navSearch, setNavSearch] = useState(""); // buscador del menú más
   const [supplierOrders, setSupplierOrders] = useState([]); // pedidos a proveedor (PO)
+  const [zoomImg, setZoomImg] = useState(null); // lightbox de imagen
   const [noteText, setNoteText] = useState(""); // texto generado por IA
   const [noteLoading, setNoteLoading] = useState(false);
   const [noteError, setNoteError] = useState("");
@@ -1492,6 +1507,15 @@ export default function App() {
   const dbDeleteOrder = async (order) => { if (!dbReady || !order?.dbId) return; try { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("orders").delete().eq("id",order.dbId); } catch(e) { console.log('DB delete order:', e); } };
   const dbToProspect = r => ({id:r.id, distributor:r.distributor, name:r.name, city:r.city||"", country:r.country||"", email:r.email||"", phone:r.phone||"", web:r.web||"", instagram:r.instagram||"", noteAdmin:r.note_admin||"", noteDist:r.note_dist||"", stage:r.stage||"nuevo", createdAt:r.created_at});
   const dbSaveProspect = async (p) => { if (!dbReady) return null; try { const {data} = await supabase.from("prospects").insert({distributor:p.distributor, name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo"}).select().single(); return data ? dbToProspect(data) : null; } catch(e) { console.log('DB prospect:', e); return null; } };
+  const dbSaveProspectsBulk = async (rows, distributor) => {
+    if (!dbReady || rows.length === 0) return 0;
+    try {
+      const payload = rows.map(p => ({distributor, name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:"", stage:"nuevo"}));
+      const {data} = await supabase.from("prospects").insert(payload).select();
+      if (data) { setProspects(x => [...data.map(dbToProspect), ...x]); return data.length; }
+      return 0;
+    } catch(e) { console.log("bulk prospect:", e); return 0; }
+  };
   const dbUpdateProspect = async (p) => { if (!dbReady) return; try { await supabase.from("prospects").update({name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo", updated_at:new Date().toISOString()}).eq("id",p.id); } catch(e) { console.log('DB prospect upd:', e); } };
   const dbDeleteProspect = async (id) => { if (!dbReady) return; try { await supabase.from("prospects").delete().eq("id",id); } catch(e) { console.log('DB prospect del:', e); } };
   const dbSaveProductCost = async (productId, costs) => { if (!dbReady) return; try { await supabase.from("product_costs").upsert({product_id:productId, supplier_cost:costs.supplier||0, freight_cost:costs.freight||0, customs_cost:costs.customs||0, packaging_cost:costs.packaging||0, updated_at:new Date().toISOString()}, {onConflict:"product_id"}); } catch(e) { console.log('DB error:', e); } };
@@ -1759,7 +1783,7 @@ export default function App() {
   /* Cart actions */
   const addToCart = (id, qty) => setCart(p => ({...p, [id]: (p[id] || 0) + (qty || 2)}));
   const setCardQty = (id, q) => setCardQtys(p => ({...p, [id]: Math.max(1, q)}));
-  const getCardQty = (id) => cardQtys[id] || 2;
+  const getCardQty = (id) => cardQtys[id] !== undefined ? cardQtys[id] : 0;
   const updateQty = (id, q) => {
     if (q <= 0) { setCart(p => { const n = {...p}; delete n[id]; return n; }); }
     else { setCart(p => ({...p, [id]: q})); }
@@ -2147,6 +2171,10 @@ export default function App() {
           if (pendingUsers > 0) workBadges["a-users"] = pendingUsers;
           const lowStock = products.filter(p => p.active!==false && p.stock > 0 && p.stock <= 5).length;
           if (lowStock > 0) workBadges["a-stock"] = lowStock;
+        }
+        if (role === "distributor") {
+          const newProsp = prospects.filter(p => p.distributor === user.co && p.stage === "nuevo").length;
+          if (newProsp > 0) workBadges["d-prospectos"] = newProsp;
         }
         const renderTile = ([v, k]) => {
           const on = view === v;
@@ -2951,8 +2979,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
                 {/* LEFT: Image */}
                 <div style={{flex:"1 1 260px",minWidth:200}}>
-                  <div style={{height:260,background:C.wh,borderRadius:6,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:10}}>
-                    {sel.imageUrl ? <img loading="lazy" src={sel.imageUrl} alt={sel.model+" "+sel.color} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:40,color:C.ln,fontFamily:DP}}>MINUË</span>}
+                  <div style={{height:260,background:C.wh,borderRadius:6,border:"1px solid "+C.ln,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:10,position:"relative",cursor:sel.imageUrl?"zoom-in":"default"}} onClick={() => { if(sel.imageUrl) setZoomImg({url:sel.imageUrl, label:sel.model+" "+sel.color}); }}>
+                    {sel.imageUrl ? <><img loading="lazy" src={sel.imageUrl} alt={sel.model+" "+sel.color} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:10}} /><div style={{position:"absolute",bottom:8,right:8,background:"rgba(24,51,47,0.7)",color:"#f8efe6",borderRadius:6,width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>⤢</div></> : <span style={{fontSize:40,color:C.ln,fontFamily:DP}}>MINUË</span>}
                   </div>
                   {/* Color thumbnails */}
                   <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
@@ -2987,12 +3015,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                           <div style={{fontSize:9,fontFamily:BD,color:c.stock===0?C.rd:c.stock<5?C.yl:C.gr}}>Stock: {c.stock}{inCart?" · 🛒 x"+cart[c.id]:""}</div>
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:2,flexShrink:0}}>
-                          <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:3,overflow:"hidden"}}>
-                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, cq-1); }} style={{width:24,height:26,background:C.bg,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk}}>-</button>
-                            <span style={{minWidth:22,textAlign:"center",fontSize:11,fontFamily:BD,fontWeight:600}}>{cq}</span>
-                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, cq+1); }} style={{width:24,height:26,background:C.bg,border:"none",cursor:"pointer",fontSize:11,fontFamily:BD,color:C.dk}}>+</button>
+                          <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
+                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, Math.max(0, cq-1)); }} style={{width:26,height:28,background:C.bg,border:"none",cursor:"pointer",fontSize:12,fontFamily:BD,color:C.dk}}>−</button>
+                            <span style={{minWidth:26,textAlign:"center",fontSize:12,fontFamily:BD,fontWeight:700,color:cq>0?C.dk:C.gr2}}>{cq}</span>
+                            <button onClick={e => { e.stopPropagation(); setCardQty(c.id, cq+1); }} disabled={c.stock<=0} style={{width:26,height:28,background:C.bg,border:"none",cursor:c.stock<=0?"not-allowed":"pointer",fontSize:12,fontFamily:BD,color:c.stock<=0?C.gr2:C.dk,opacity:c.stock<=0?0.4:1}}>+</button>
                           </div>
-                          <button onClick={e => { e.stopPropagation(); addToCart(c.id, cq); }} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",fontSize:9,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>+🛒</button>
+                          <button onClick={e => { e.stopPropagation(); if(cq<=0){ toast(t("eligeCantidad")||"Elige una cantidad primero"); return; } addToCart(c.id, cq); setCardQty(c.id, 0); }} style={{padding:"6px 11px",background:cq>0?C.dk:C.ln,color:cq>0?C.bg:C.gr,border:"none",fontSize:10,cursor:cq>0?"pointer":"default",fontFamily:BD,borderRadius:6,fontWeight:600,transition:"all .2s"}}>+🛒</button>
                         </div>
                       </div>;
                     })}
@@ -4953,6 +4981,54 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </>}
 
           {/* NEW TASK */}
+          {modal === "importProspects" && (() => {
+            const distUsers = users.filter(u => u.role === "distributor");
+            const parseCSV = (text) => {
+              const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+              if (lines.length === 0) return [];
+              // Detectar separador
+              const sep = (lines[0].match(/;/g)||[]).length >= (lines[0].match(/,/g)||[]).length ? ";" : ",";
+              // Detectar si hay cabecera
+              const first = lines[0].toLowerCase();
+              const hasHeader = /nombre|name|tienda|email|ciudad|city/.test(first);
+              const dataLines = hasHeader ? lines.slice(1) : lines;
+              return dataLines.map(line => {
+                const parts = line.split(sep).map(s => s.trim().replace(/^["']|["']$/g,""));
+                return {name:parts[0]||"", city:parts[1]||"", country:parts[2]||"", email:parts[3]||"", phone:parts[4]||"", web:parts[5]||"", instagram:parts[6]||"", noteAdmin:parts[7]||""};
+              }).filter(p => p.name);
+            };
+            const preview = ed.impText ? parseCSV(ed.impText) : [];
+            return <>
+              <div style={{fontSize:16,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:2}}>📥 {t("importarProspectos")}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:14,lineHeight:1.5}}>{t("importarProspectosSub")}</div>
+
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>{t("asignarA")}</div>
+              <select value={ed.impDist} onChange={e => setEd(p => ({...p, impDist:e.target.value}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box",marginBottom:12}}>
+                {distUsers.map(d => <option key={d.co} value={d.co}>{d.co}</option>)}
+              </select>
+
+              <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>{t("pegaCSV")}</div>
+              <div style={{fontSize:9,fontFamily:BD,color:C.gr2,background:C.bg,borderRadius:6,padding:"7px 10px",marginBottom:6,lineHeight:1.5}}>{t("formatoCSV")}:<br/><code style={{fontSize:9,color:"#7a5c3a"}}>Nombre, Ciudad, País, Email, Teléfono, Web, Instagram, Nota</code></div>
+              <textarea value={ed.impText} onChange={e => setEd(p => ({...p, impText:e.target.value}))} placeholder={"Boutique Le Marais, Paris, FR, contact@lemarais.fr, +33612345678, lemarais.fr, @lemarais, Muy interesados en acetato\nConcept Store Lyon, Lyon, FR, hello@conceptlyon.fr, , conceptlyon.fr, @conceptlyon, "} rows={7} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:8,fontFamily:"monospace",fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",marginBottom:12}} />
+
+              {preview.length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:12,overflow:"hidden",maxHeight:200,overflowY:"auto"}}>
+                <div style={{background:CL.gn+"12",padding:"8px 12px",fontSize:11,fontFamily:BD,fontWeight:700,color:CL.gn}}>✓ {preview.length} {t("prospectosDetectados")}</div>
+                {preview.slice(0,20).map((p, i) => <div key={i} style={{padding:"7px 12px",borderBottom:"1px solid "+C.bg2,fontSize:11,fontFamily:BD}}>
+                  <span style={{fontWeight:600,color:C.dk}}>{p.name}</span>
+                  <span style={{color:C.gr,fontSize:10}}> · {[p.city,p.country].filter(Boolean).join(", ")}{p.email?" · "+p.email:""}</span>
+                </div>)}
+                {preview.length > 20 && <div style={{padding:"6px 12px",fontSize:10,fontFamily:BD,color:C.gr,textAlign:"center"}}>+{preview.length-20} más…</div>}
+              </div>}
+
+              <Btn onClick={async () => {
+                if (preview.length === 0) { toast(t("nadaQueImportar")||"Nada que importar"); return; }
+                const n = await dbSaveProspectsBulk(preview, ed.impDist);
+                toast("✓ "+n+" "+t("prospectosImportados"));
+                setModal(null);
+              }} disabled={preview.length === 0} style={{width:"100%"}}>{t("importar")} {preview.length > 0 ? "("+preview.length+")" : ""}</Btn>
+            </>;
+          })()}
+
           {modal === "newProspect" && <>
             <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:16}}>🎯 {ed._editing ? (t("modifier")||"Editar") : t("nuevoProspecto")}</div>
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -5664,14 +5740,17 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {customPrice === 0 && renderTierBar()}
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
               {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); if (!p) return null; const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
-                <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
-                  <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
-                  <div style={{display:"flex",alignItems:"center",gap:8}}>
-                    <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{fmt(itemPrice)} €</span>
-                    <button onClick={() => updateQty(+id, q-1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk,fontFamily:BD}}>-</button>
-                    <span style={{fontSize:13,fontFamily:BD,minWidth:22,textAlign:"center"}}>{q}</span>
-                    <button onClick={() => updateQty(+id, q+1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk,fontFamily:BD}}>+</button>
-                    <span style={{fontSize:13,fontFamily:BD,fontWeight:600,minWidth:65,textAlign:"right"}}>{fmt(itemPrice*q)} €</span>
+                <div key={id} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
+                  <div style={{width:44,height:44,borderRadius:8,background:C.wh,border:"1px solid "+C.ln,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
+                  <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:3,marginLeft:4}}>Acetato</span> : ""} · {fmt(itemPrice)} €</div></div>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                    <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
+                      <button onClick={() => updateQty(id, q-1)} style={{width:28,height:30,background:C.bg,border:"none",cursor:"pointer",color:C.dk,fontFamily:BD,fontSize:14}}>−</button>
+                      <span style={{fontSize:13,fontFamily:BD,fontWeight:700,minWidth:28,textAlign:"center"}}>{q}</span>
+                      <button onClick={() => updateQty(id, q+1)} style={{width:28,height:30,background:C.bg,border:"none",cursor:"pointer",color:C.dk,fontFamily:BD,fontSize:14}}>+</button>
+                    </div>
+                    <span style={{fontSize:13,fontFamily:BD,fontWeight:700,minWidth:62,textAlign:"right"}}>{fmt(itemPrice*q)} €</span>
+                    <button onClick={() => updateQty(id, 0)} title={t("supprimer")||"Eliminar"} style={{width:28,height:28,background:"transparent",border:"none",cursor:"pointer",color:C.rd,fontSize:15,borderRadius:6,flexShrink:0}}>✕</button>
                   </div>
                 </div>
               ); })}
@@ -6650,6 +6729,20 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{fontSize:12,fontFamily:BD,opacity:0.6}}>{user.co}</div>
         </div>
         {(() => {
+          const newProsp = prospects.filter(p => p.distributor === user.co && p.stage === "nuevo");
+          if (newProsp.length === 0) return null;
+          return <div style={{padding:"16px min(24px,4vw) 0"}}>
+            <div onClick={() => setView("d-prospectos")} style={{background:"linear-gradient(135deg,#c4956a,#b8860b)",borderRadius:14,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,color:"#fff",boxShadow:"0 4px 16px rgba(184,134,11,0.25)"}}>
+              <div style={{fontSize:28}}>🎯</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontFamily:BD,fontWeight:700,marginBottom:2}}>{newProsp.length} {newProsp.length === 1 ? t("prospectoNuevoMinue") : t("prospectosNuevosMinue")}</div>
+                <div style={{fontSize:11,fontFamily:BD,opacity:0.9}}>{t("prospectosNuevosSub")}</div>
+              </div>
+              <span style={{fontSize:20}}>→</span>
+            </div>
+          </div>;
+        })()}
+        {(() => {
           const activeNews = news.filter(n => n.on).sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0)).slice(0,3);
           if (activeNews.length === 0) return null;
           return <div style={{padding:"16px min(24px,4vw) 0"}}>
@@ -6923,9 +7016,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:9,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{fmt(itemPrice)} €</span>
-                    <button onClick={() => updateQty(+id, q-1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk}}>-</button>
+                    <button onClick={() => updateQty(id, q-1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk}}>-</button>
                     <span style={{fontSize:13,fontFamily:BD,minWidth:22,textAlign:"center"}}>{q}</span>
-                    <button onClick={() => updateQty(+id, q+1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk}}>+</button>
+                    <button onClick={() => updateQty(id, q+1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk}}>+</button>
                     <span style={{fontSize:13,fontFamily:BD,fontWeight:600,minWidth:65,textAlign:"right"}}>{fmt(itemPrice*q)} €</span>
                   </div>
                 </div>
@@ -8302,7 +8395,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         const fDist = ed._pDist || "all";
         const list = prospects.filter(p => fDist === "all" || p.distributor === fDist);
         const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
-        return <Sec title={"🎯 " + t("prospectos")} sub="Asigna contactos a tus distribuidores para que los trabajen" right={<Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteAdmin:"",distributor:distUsers[0]?.co||"",_pDist:fDist}); }}>{t("nuevoProspecto")}</Btn>}>
+        return <Sec title={"🎯 " + t("prospectos")} sub="Asigna contactos a tus distribuidores para que los trabajen" right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={() => { setModal("importProspects"); setEd({impText:"", impDist:distUsers[0]?.co||"", impPreview:[]}); }}>📥 CSV</Btn><Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteAdmin:"",distributor:distUsers[0]?.co||"",_pDist:fDist}); }}>{t("nuevoProspecto")}</Btn></div>}>
           <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
             {[["all",t("tous")+" ("+prospects.length+")"], ...distUsers.map(u => [u.co, u.co+" ("+prospects.filter(p => p.distributor===u.co).length+")"])].map(([v,l]) =>
               <button key={v} onClick={() => setEd(p => ({...p, _pDist:v}))} style={{padding:"6px 14px",background:fDist===v?C.dk:"transparent",color:fDist===v?C.bg:C.gr,border:"1px solid "+(fDist===v?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
@@ -9604,6 +9697,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>; })
         })()}
       </Sec>}
+
+      {/* ZOOM LIGHTBOX */}
+      {zoomImg && <div onClick={() => setZoomImg(null)} style={{position:"fixed",inset:0,background:"rgba(24,51,47,0.92)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,cursor:"zoom-out"}}>
+        <img src={zoomImg.url} alt={zoomImg.label} style={{maxWidth:"96%",maxHeight:"88%",objectFit:"contain"}} onClick={e => e.stopPropagation()} />
+        <div style={{position:"absolute",bottom:24,left:0,right:0,textAlign:"center",color:"#f8efe6",fontFamily:DP,fontSize:16,fontStyle:"italic"}}>{zoomImg.label}</div>
+        <button onClick={() => setZoomImg(null)} style={{position:"absolute",top:20,right:20,width:40,height:40,borderRadius:20,background:"rgba(248,239,230,0.15)",border:"none",color:"#f8efe6",fontSize:20,cursor:"pointer"}}>✕</button>
+      </div>}
 
       {/* SELECTOR DE CANTIDAD (reorder) */}
       {qtyPick && <div onClick={() => setQtyPick(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.45)",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
