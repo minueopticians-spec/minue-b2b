@@ -2386,8 +2386,9 @@ export default function App() {
               <div style={{fontSize:15,fontWeight:500,fontFamily:DP,color:C.dk}}>{mg.model}</div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
                 <span style={{fontSize:11,color:C.gr,fontFamily:BD}}>{mg.colors.length} {t("couleurs")}</span>
-                <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>
-                  {isAcetato ? fmt(mg.colors[0]?.fixedPrice||27.90) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €
+                <span style={{fontFamily:BD,color:C.dk,display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
+                  <span style={{fontSize:12,fontWeight:600}}>{isAcetato ? fmt(mg.colors[0]?.fixedPrice||27.90) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €</span>
+                  {!isAcetato && !(customPrice>0) && essentialUnitPrice > TIERS[TIERS.length-1].price && <span style={{fontSize:9,fontWeight:400,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</span>}
                 </span>
               </div>
               {/* Color dots preview */}
