@@ -776,6 +776,10 @@ const T = {
   retirerFav:{fr:"Retirer des favoris",es:"Quitar de favoritos",en:"Remove from favorites",it:"Rimuovi dai preferiti"},
   datosFacturacion:{fr:"Données de facturation",es:"Datos de facturación",en:"Billing details",it:"Dati di fatturazione"},
   noResults:{fr:"Aucun résultat",es:"Sin resultados",en:"No results",it:"Nessun risultato"},
+  novedades:{fr:"Nouveautés AW26/27",es:"Novedades AW26/27",en:"New Arrivals AW26/27",it:"Novità AW26/27"},
+  verTodo:{fr:"Voir tout",es:"Ver todo",en:"See all",it:"Vedi tutto"},
+  stockBajoLabel:{fr:"stock",es:"stock",en:"stock",it:"stock"},
+  filtrarColor:{fr:"Filtrer par couleur",es:"Filtrar por color",en:"Filter by color",it:"Filtra per colore"},
   plusTard:{fr:"Plus tard",es:"Más tarde",en:"Later",it:"Più tardi"},
   sinDireccionGuardada:{fr:"Aucune adresse enregistrée",es:"Sin dirección guardada",en:"No saved address",it:"Nessun indirizzo salvato"},
   tarjetasTecnicas:{fr:"Fiches techniques",es:"Fichas técnicas",en:"Tech sheets",it:"Schede tecniche"},
@@ -2380,10 +2384,13 @@ export default function App() {
               {[...mg.tags].filter(tg => tagConf[tg]).length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
                 {[...mg.tags].map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase"}}>{tagConf[tg].l}</span> : null)}
               </div>}
-              {totalInCart > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{totalInCart}</span>}
+              {totalInCart > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3,fontWeight:700}}>x{totalInCart}</span>}
             </div>
             <div style={{padding:"12px 14px",background:darkMode?C.bg2:"#faf6f1"}}>
-              <div style={{fontSize:15,fontWeight:500,fontFamily:DP,color:C.dk}}>{mg.model}</div>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={{fontSize:15,fontWeight:500,fontFamily:DP,color:C.dk}}>{mg.model}</span>
+                {minStock > 0 && minStock < 5 && <span style={{fontSize:9,fontFamily:BD,color:"#c47a00",fontWeight:500,opacity:0.8}}>{t("stockBajoLabel")}: {minStock}</span>}
+              </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
                 <span style={{fontSize:11,color:C.gr,fontFamily:BD}}>{mg.colors.length} {t("couleurs")}</span>
                 <span style={{fontFamily:BD,color:C.dk,display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
@@ -5806,7 +5813,51 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         </div>
       </div>}
 
-      {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
+      {view === "c-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={
+        <div style={{position:"relative",display:"inline-flex",alignItems:"center"}}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.gr} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{position:"absolute",left:10,pointerEvents:"none"}}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px 8px 30px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(220px, 45vw)",transition:"border-color 0.2s,box-shadow 0.2s",outline:"none"}} onFocus={e => { e.target.style.borderColor=C.gn; e.target.style.boxShadow="0 0 0 3px "+C.gn+"18"; }} onBlur={e => { e.target.style.borderColor=C.ln; e.target.style.boxShadow="none"; }} />
+        </div>
+      }>
+        {/* ═══ NOVEDADES (New Arrivals) SECTION ═══ */}
+        {(() => { const newProds = products.filter(p => (p.active !== false) && (p.tags||[]).includes("new")); if (newProds.length === 0) return null; return (
+          <div style={{marginBottom:20}}>
+            <div style={{background:"linear-gradient(135deg, #18332f 0%, #2d6b4f 60%, #b8860b 100%)",borderRadius:10,padding:"16px 18px 14px",marginBottom:12}}>
+              <div style={{fontSize:18,fontFamily:DP,color:"#f8efe6",fontWeight:500,letterSpacing:0.5}}>{t("novedades")} <span style={{opacity:0.7}}>&#10022;</span></div>
+            </div>
+            <div style={{display:"flex",gap:12,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch",scrollbarWidth:"thin"}}>
+              {newProds.map(p => {
+                const isAcetato = p.col === "Acetato";
+                const itemPrice = isAcetato ? (p.fixedPrice||27.90) : (customPrice>0?customPrice:essentialUnitPrice);
+                const inCart = cart[p.id]||0;
+                return <div key={p.id} style={{minWidth:150,maxWidth:170,flexShrink:0,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,overflow:"hidden",cursor:"pointer",boxShadow:"0 2px 8px rgba(24,51,47,0.08)",transition:"transform 0.2s,box-shadow 0.2s"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 6px 20px rgba(24,51,47,0.14)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="0 2px 8px rgba(24,51,47,0.08)"; }}>
+                  <div style={{height:120,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
+                    {p.imageUrl ? <img loading="lazy" src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,color:C.ln,fontFamily:DP}}>M</span>}
+                    <span style={{position:"absolute",top:6,left:6,fontSize:7,fontFamily:BD,fontWeight:700,color:"#fff",background:"#8e44ad",padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.5}}>{t("nuevo")}</span>
+                    {inCart > 0 && <span style={{position:"absolute",bottom:6,right:6,fontSize:8,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 6px",borderRadius:3,fontWeight:700}}>x{inCart}</span>}
+                  </div>
+                  <div style={{padding:"8px 10px",background:darkMode?C.bg2:"#faf6f1"}}>
+                    <div style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.model}</div>
+                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.color}</div>
+                    <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk,marginTop:4}}>{fmt(itemPrice)} &euro;</div>
+                  </div>
+                </div>;
+              })}
+            </div>
+          </div>
+        ); })()}
+
+        {/* ═══ COLOR PALETTE QUICK FILTER ═══ */}
+        <div style={{display:"flex",gap:5,marginBottom:12,alignItems:"center",flexWrap:"nowrap",overflowX:"auto",paddingBottom:4}}>
+          <button onClick={() => setColorFilter("all")} style={{padding:"3px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:9,fontFamily:BD,borderRadius:14,whiteSpace:"nowrap",flexShrink:0}}>{t("tous")}</button>
+          {[["careyCol","#8B6914"],["noir","#1a1a1a"],["marron","#7B4B2A"],["vert","#2d6b4f"],["bleu","#3B6B9E"],["rose","#D4839A"],["dore","#C5A55A"],["cremeNude","#E8D5C0"],["rougeVin","#722f37"],["gris","#8C8C8C"],["orangeCol","#D4763A"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
+            <button key={v} onClick={() => setColorFilter(colorFilter===v?"all":v)} title={t(v)} style={{width:22,height:22,borderRadius:11,background:bg,border:colorFilter===v?"2px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 3px "+C.dk:"none",padding:0,flexShrink:0,transition:"box-shadow 0.15s,border-color 0.15s"}} />
+          ))}
+        </div>
+
+        {/* ═══ COLLECTION + FILTER BUTTONS ═══ */}
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
           {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
@@ -5818,19 +5869,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <button onClick={() => setFilterPanel(filterPanel==="shape"?null:"shape")} style={{padding:"5px 12px",background:filterPanel==="shape"?C.dk:shapeFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="shape"?C.bg:shapeFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="shape"||shapeFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
             {t("forme")}{shapeFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="shape"?C.bg:C.dk}} />}
           </button>
-          <button onClick={() => setFilterPanel(filterPanel==="color"?null:"color")} style={{padding:"5px 12px",background:filterPanel==="color"?C.dk:colorFilter!=="all"?C.dk+"15":"transparent",color:filterPanel==="color"?C.bg:colorFilter!=="all"?C.dk:C.gr,border:"1px solid "+(filterPanel==="color"||colorFilter!=="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
-            {t("couleur")}{colorFilter!=="all"&&<span style={{width:6,height:6,borderRadius:3,background:filterPanel==="color"?C.bg:C.dk}} />}
-          </button>
         </div>
         {filterPanel==="shape"&&<div style={{display:"flex",gap:4,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln}}>
           {[["all","toutes"],["ronde","ronde"],["carree","carree"],["catEye","catEye"],["rectangulaire","rectangulaire"],["aviateur","aviateur"],["oversize","oversize"],["geometrique","geometrique"]].map(([v,k]) => (
             <button key={v} onClick={() => { setShapeFilter(v); if(v!=="all") setFilterPanel(null); }} style={{padding:"5px 12px",background:shapeFilter===v?C.dk:"transparent",color:shapeFilter===v?C.bg:C.dk,border:"1px solid "+(shapeFilter===v?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{v==="all"?t("toutes"):t(k)}</button>
-          ))}
-        </div>}
-        {filterPanel==="color"&&<div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln,alignItems:"center"}}>
-          <button onClick={() => { setColorFilter("all"); setFilterPanel(null); }} style={{padding:"4px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:9,fontFamily:BD,borderRadius:20}}>{t("tous")}</button>
-          {[["noir","#1a1a1a"],["careyCol","#8B6914"],["marron","#7B4B2A"],["vert","#2d6b4f"],["dore","#C5A55A"],["rose","#D4839A"],["bleu","#3B6B9E"],["rougeVin","#722f37"],["orangeCol","#D4763A"],["cremeNude","#E8D5C0"],["gris","#8C8C8C"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
-            <button key={v} onClick={() => { setColorFilter(v); setFilterPanel(null); }} title={t(v)} style={{width:26,height:26,borderRadius:13,background:bg,border:colorFilter===v?"3px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 4px "+C.dk:"none",padding:0}} />
           ))}
         </div>}
         {essentialCount > 0 && customPrice === 0 && renderTierBar()}
