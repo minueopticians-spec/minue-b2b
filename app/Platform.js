@@ -5274,7 +5274,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         {(() => {
           const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
           const totalUnits = myOrders.reduce((s, o) => s + (o.items || 0), 0);
-          const cartUnits = cart.reduce((s, c) => s + (c.qty || 0), 0);
+          const cartUnits = Object.values(cart||{}).reduce((s, q) => s + (parseInt(q)||0), 0);
           const combinedUnits = totalUnits + cartUnits;
           const currentTier = getTier(Math.max(1, combinedUnits));
           const nextTier = getNextTier(Math.max(1, combinedUnits));
