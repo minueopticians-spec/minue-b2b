@@ -5246,12 +5246,127 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{position:"absolute",top:"-40%",right:"-10%",width:380,height:380,borderRadius:"50%",background:"radial-gradient(circle, rgba(212,160,48,0.14) 0%, transparent 70%)",pointerEvents:"none"}} />
           <div style={{position:"absolute",bottom:"-50%",left:"-5%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle, rgba(248,239,230,0.06) 0%, transparent 70%)",pointerEvents:"none"}} />
           <div style={{position:"relative"}}>
-            <div style={{fontSize:"min(30px, 6.5vw)",fontFamily:DP,fontWeight:400,marginBottom:6,letterSpacing:0.5}}>{t("bienvenida")}, {user.name} ✦</div>
+            {user.co ? <>
+              <div style={{fontSize:"min(26px, 5.5vw)",fontFamily:DP,fontWeight:400,letterSpacing:0.8,opacity:0.75,marginBottom:2}}>{t("bienvenida")}</div>
+              <div style={{fontSize:"min(34px, 7.5vw)",fontFamily:DP,fontWeight:500,marginBottom:4,letterSpacing:0.3}}>{user.co} ✦</div>
+              <div style={{fontSize:13,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginBottom:6}}>{user.name.split(" ")[0]}</div>
+            </> : <div style={{fontSize:"min(30px, 6.5vw)",fontFamily:DP,fontWeight:400,marginBottom:6,letterSpacing:0.5}}>{t("bienvenida")}, {user.name} ✦</div>}
             {activeClient && activeClient.status === "vip" && <div style={{marginBottom:8}}><span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03015,#c4903a15)",padding:"4px 12px",borderRadius:5,letterSpacing:2,border:"1px solid #d4a03030"}}>★ VIP</span></div>}
+            {/* Tier / savings hint line */}
+            {(() => {
+              const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
+              const totalUnits = myOrders.reduce((s, o) => s + (o.items || 0), 0);
+              const tier = getTier(Math.max(1, totalUnits));
+              const nextTier = getNextTier(Math.max(1, totalUnits));
+              if (totalUnits === 0) return <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginBottom:4,lineHeight:1.5}}>
+                {/* TODO: i18n */}Desde 17,90 €/ud en pedidos de 40+ unidades
+              </div>;
+              return <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginBottom:4,lineHeight:1.5}}>
+                {/* TODO: i18n */}Tu precio actual: {fmt(tier.price)} €/ud {nextTier ? " · Siguiente nivel: " + fmt(nextTier.price) + " €/ud desde " + nextTier.min + " uds" : " · ¡Mejor precio alcanzado!"}
+              </div>;
+            })()}
             <div style={{fontSize:13,fontFamily:BD,color:"rgba(248,239,230,0.7)",maxWidth:500,lineHeight:1.5}}>{t("bienvenidaSub")}</div>
             <Btn onClick={() => setView("c-cat")} style={{marginTop:16,background:darkMode?"#e8dfd6":CL.bg,color:darkMode?"#141c1a":CL.dk,border:"none"}}>{t("descubrirCol")} →</Btn>
           </div>
         </div>
+
+        {/* PRICING TIER RECOMMENDATION / PRICING ADVANTAGE */}
+        {(() => {
+          const myOrders = orders.filter(o => o.client === user.co || o.client === user.name);
+          const totalUnits = myOrders.reduce((s, o) => s + (o.items || 0), 0);
+          const cartUnits = cart.reduce((s, c) => s + (c.qty || 0), 0);
+          const combinedUnits = totalUnits + cartUnits;
+          const currentTier = getTier(Math.max(1, combinedUnits));
+          const nextTier = getNextTier(Math.max(1, combinedUnits));
+          const bestTier = TIERS[TIERS.length - 1]; // 40-60 @ 17,90
+          const PVP_RETAIL = 52; // PVP medio estimado
+
+          // Card for NEW clients or low-volume (< 40 units total)
+          if (totalUnits < 40) {
+            const targetUnits = bestTier.min; // 40
+            const progress = Math.min((combinedUnits / targetUnits) * 100, 100);
+            const unitsToGo = Math.max(0, targetUnits - combinedUnits);
+            return <div style={{margin:"0 min(24px, 4vw) 0",padding:"20px 20px 22px",background:"linear-gradient(135deg,#18332f,#1d4a3a 50%,#1a3d30 100%)",borderRadius:16,color:CL.bg,position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",top:"-30%",right:"-8%",width:200,height:200,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,160,48,0.12) 0%,transparent 70%)",pointerEvents:"none"}} />
+              <div style={{position:"relative"}}>
+                {/* TODO: i18n */}
+                <div style={{fontSize:15,fontFamily:DP,fontWeight:500,marginBottom:4,letterSpacing:0.3}}>Desbloquea el mejor precio ✦</div>
+                <div style={{fontSize:11.5,fontFamily:BD,color:"rgba(248,239,230,0.7)",lineHeight:1.6,marginBottom:14}}>
+                  {unitsToGo > 0
+                    ? <>Añade <strong style={{color:"#d4a030"}}>{unitsToGo} unidades</strong> más para conseguir <strong style={{color:CL.bg}}>{fmt(bestTier.price)} €/ud</strong> — el mejor precio mayorista.</>
+                    : <>¡Ya alcanzas el mejor precio: <strong style={{color:"#d4a030"}}>{fmt(bestTier.price)} €/ud</strong>!</>}
+                </div>
+
+                {/* Progress bar */}
+                <div style={{marginBottom:14}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                    <span style={{fontSize:10,fontFamily:BD,color:"rgba(248,239,230,0.55)"}}>{combinedUnits} / {targetUnits} uds</span>
+                    <span style={{fontSize:10,fontFamily:BD,color:"#d4a030"}}>{Math.round(progress)}%</span>
+                  </div>
+                  <div style={{height:6,background:"rgba(248,239,230,0.12)",borderRadius:3,overflow:"hidden"}}>
+                    <div style={{height:6,width:Math.max(4, progress)+"%",background:"linear-gradient(90deg,#2d6b4f,#d4a030)",borderRadius:3,transition:"width 0.5s ease"}} />
+                  </div>
+                </div>
+
+                {/* Tier table */}
+                <div style={{display:"flex",gap:0,marginBottom:14}}>
+                  {TIERS.slice(2).map((tier, i) => {
+                    const isActive = currentTier && currentTier.min === tier.min;
+                    const isBest = tier.min === bestTier.min;
+                    return <div key={i} style={{flex:1,padding:"8px 0",textAlign:"center",background:isActive ? "rgba(248,239,230,0.1)" : "transparent",borderRadius:8,border:isBest ? "1px solid #d4a03060" : "1px solid transparent"}}>
+                      <div style={{fontSize:10,fontFamily:BD,color:"rgba(248,239,230,0.5)",marginBottom:3}}>{tier.label} uds</div>
+                      <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:isBest ? "#d4a030" : CL.bg}}>{fmt(tier.price)} €</div>
+                      {isActive && <div style={{fontSize:8,fontFamily:BD,color:CL.gn,marginTop:2,fontWeight:700}}>TU NIVEL</div>}
+                    </div>;
+                  })}
+                </div>
+
+                <Btn onClick={() => setView("c-cat")} style={{background:CL.bg,color:CL.dk,border:"none",width:"100%"}}>{totalUnits === 0 ? "Hacer mi primer pedido" : "Añadir más modelos"} →</Btn>
+              </div>
+            </div>;
+          }
+
+          // Card for RETURNING clients with 40+ units — "Your pricing advantage"
+          if (totalUnits >= 40) {
+            const avgWholesalePrice = currentTier.price;
+            const totalSaved = totalUnits * (PVP_RETAIL - avgWholesalePrice);
+            return <div style={{margin:"0 min(24px, 4vw) 0",padding:"18px 20px",background:"linear-gradient(135deg,"+CL.dk+"08,"+CL.gn+"10)",border:"1.5px solid "+CL.gn+"35",borderRadius:14,position:"relative"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                <div style={{fontSize:26}}>💎</div>
+                <div>
+                  {/* TODO: i18n */}
+                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>Tu ventaja de precio</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>Resumen de tus condiciones mayoristas</div>
+                </div>
+              </div>
+              <div style={{display:"flex",gap:10,marginBottom:12}}>
+                <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4}}>Tu precio/ud</div>
+                  <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(avgWholesalePrice)} €</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:2}}>Nivel {currentTier.label}</div>
+                </div>
+                <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4}}>PVP medio</div>
+                  <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:C.gr2,textDecoration:"line-through"}}>{PVP_RETAIL} €</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:CL.gn,fontWeight:700,marginTop:2}}>-{Math.round(((PVP_RETAIL - avgWholesalePrice) / PVP_RETAIL) * 100)}% dto.</div>
+                </div>
+                <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4}}>Ahorro total</div>
+                  <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:"#b8860b"}}>{fmt(totalSaved)} €</div>
+                  <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:2}}>en {totalUnits} uds</div>
+                </div>
+              </div>
+              {nextTier && <div style={{background:"linear-gradient(135deg,#d4a03008,#d4a03004)",border:"1px solid #d4a03025",borderRadius:8,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,lineHeight:1.5}}>
+                  {/* TODO: i18n */}
+                  Siguiente nivel: <strong>{fmt(nextTier.price)} €/ud</strong> desde {nextTier.min} uds
+                  <span style={{color:C.gr}}> · Ahorrarías {fmt((avgWholesalePrice - nextTier.price) * nextTier.min)} € más</span>
+                </div>
+              </div>}
+            </div>;
+          }
+          return null;
+        })()}
 
         {/* ORDER NOTIFICATIONS */}
         <div style={{padding:"20px min(24px, 4vw)"}}>
