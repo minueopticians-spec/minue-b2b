@@ -627,6 +627,15 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  clActivo:{fr:"Actives",es:"Activas",en:"Active",it:"Attivi"},
+  clPorActivar:{fr:"À activer",es:"Por activar",en:"To activate",it:"Da attivare"},
+  clDormido:{fr:"En sommeil",es:"Dormidas",en:"Dormant",it:"Inattivi"},
+  clVacioTitulo:{fr:"Votre première boutique arrive",es:"Tu primera tienda está por llegar",en:"Your first store is on its way",it:"Il tuo primo negozio sta arrivando"},
+  clVacioDesc:{fr:"Inscrivez une boutique à la main ou envoyez-lui votre lien : elle vous sera rattachée automatiquement.",es:"Da de alta una tienda a mano o mándale tu enlace: quedará vinculada a ti automáticamente.",en:"Add a store by hand or send it your link: it will be linked to you automatically.",it:"Registra un negozio a mano o mandagli il tuo link: sarà collegato a te automaticamente."},
+  hacerPedido:{fr:"Commander",es:"Hacer pedido",en:"Order",it:"Ordina"},
+  ultimoPedido:{fr:"dernière cde",es:"último pedido",en:"last order",it:"ultimo ordine"},
+  hoy:{fr:"auj.",es:"hoy",en:"today",it:"oggi"},
+  showroomOficial:{fr:"Partenaire officiel Minuë",es:"Partner oficial Minuë",en:"Official Minuë partner",it:"Partner ufficiale Minuë"},
   fechaPreferenteEnvio:{fr:"Date d'envoi souhaitée",es:"Fecha preferente de envío",en:"Preferred shipping date",it:"Data di spedizione preferita"},
   pvpRecomendado:{fr:"PVC conseillé",es:"PVP recomendado",en:"Suggested retail",it:"Prezzo consigliato"},
   margenTienda:{fr:"Votre marge",es:"Tu margen",en:"Your margin",it:"Il tuo margine"},
@@ -1585,6 +1594,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [distClFilter, setDistClFilter] = useState("all");
   const [seasonFilter, setSeasonFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
   const [prepChecks, setPrepChecks] = useState({});
@@ -7229,10 +7239,29 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {/* DISTRIBUTOR VIEWS */}
       {view === "d-dash" && <>
-        <div style={{padding:"min(30px, 6vw) min(24px, 4vw) min(20px, 4vw)",background:darkMode?"linear-gradient(135deg,#141c1a,#1e2d29)":"linear-gradient(135deg,"+CL.dk+","+CL.dk+"dd)",color:darkMode?"#e8dfd6":"#f8efe6"}}>
-          <div style={{fontSize:"min(24px, 5vw)",fontFamily:DP,fontWeight:400,marginBottom:4}}>{t("bienvenida")}, {user.name} ✦</div>
-          <div style={{fontSize:12,fontFamily:BD,opacity:0.6}}>{user.co}</div>
-        </div>
+        {(() => {
+          const zl = (user.notes||"").split("\n").find(l => /^zona\s*:/i.test(l.trim()));
+          const zone = zl ? zl.split(":").slice(1).join(":").trim() : (ZONES[(user.country||"").toUpperCase()] || user.country || "");
+          const ini = (user.name||"?").trim().split(/\s+/).slice(0,2).map(w => w[0]).join("").toUpperCase();
+          const pill = (bg, fg, bd) => ({display:"inline-flex",alignItems:"center",gap:6,padding:"6px 12px",borderRadius:20,background:bg,color:fg,border:"1px solid "+(bd||bg),fontSize:12,fontFamily:BD,fontWeight:600,whiteSpace:"nowrap"});
+          const ic = (d, c) => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+          return <div style={{position:"relative",overflow:"hidden",padding:"min(30px, 6vw) min(24px, 4vw) min(24px, 5vw)",background:darkMode?"linear-gradient(135deg,#141c1a,#1e2d29)":"linear-gradient(135deg,"+CL.dk+" 0%,#1f3f39 60%,#24473f 100%)",color:"#f8efe6"}}>
+            <div style={{position:"absolute",top:-60,right:-40,width:220,height:220,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,160,48,0.22) 0%,transparent 70%)",pointerEvents:"none"}} />
+            <div style={{position:"absolute",bottom:-80,left:-50,width:200,height:200,borderRadius:"50%",background:"radial-gradient(circle,rgba(196,149,106,0.14) 0%,transparent 70%)",pointerEvents:"none"}} />
+            <div className="mn-fade" style={{position:"relative",display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:54,height:54,borderRadius:27,background:"linear-gradient(135deg,#e0b25a,#c4956a)",color:CL.dk,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,fontFamily:DP,fontWeight:700,flexShrink:0,boxShadow:"0 6px 18px rgba(0,0,0,0.25), inset 0 0 0 2px rgba(255,255,255,0.35)"}}>{ini}</div>
+              <div style={{minWidth:0}}>
+                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,fontWeight:500,lineHeight:1.15}}>{t("bienvenida")}, {user.name} <span style={{color:"#e0b25a"}}>✦</span></div>
+                <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,letterSpacing:.3}}>{t("showroomOficial")}</div>
+              </div>
+            </div>
+            <div className="mn-fade" style={{position:"relative",display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
+              {user.co && <span style={{...pill("linear-gradient(135deg,#e0b25a,#c4956a)",CL.dk),boxShadow:"0 4px 14px rgba(212,160,48,0.3)",fontWeight:700}}>{ic(ICO.spark, CL.dk)}{user.co}</span>}
+              {zone && <span style={pill("rgba(248,239,230,0.1)","#f8efe6","rgba(248,239,230,0.22)")}>{ic(ICO.pin,"#8fc9a8")}{zone}</span>}
+              <span style={pill("rgba(143,201,168,0.14)","#bfe5cf","rgba(143,201,168,0.35)")}>{ic(ICO.percent,"#8fc9a8")}{(user.commRate||15)}% {t("condComision").toLowerCase()}</span>
+            </div>
+          </div>;
+        })()}
         {(() => {
           const newProsp = prospects.filter(p => p.distributor === user.co && p.stage === "nuevo");
           if (newProsp.length === 0) return null;
@@ -7871,33 +7900,72 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {view === "d-cl" && <Sec title={t("mesClients")+" ("+distClients.length+")"} right={<Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:""}); }}>{t("nouveau")}</Btn>}>
-        <input placeholder={"🔍 "+t("rechercherClient")} value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{padding:"7px 14px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(240px,60vw)",marginBottom:12,boxSizing:"border-box"}} />
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {distClients.filter(c => !clientSearch || (c.name||"").toLowerCase().includes(clientSearch.toLowerCase()) || (c.city||"").toLowerCase().includes(clientSearch.toLowerCase())).map((c, i) => {
-            const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",GB:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽"};
-            const clOrders = orders.filter(o => o.client === c.name);
-            const clTotal = clOrders.reduce((s,o) => s+(o.total||0), 0);
-            const lastOrd = clOrders[0];
-            return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",flexWrap:"wrap"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"resume"}); }}>
-              <div style={{width:34,height:34,borderRadius:17,background:(c.status==="prospect"?C.yl:CL.gn)+"20",color:c.status==="prospect"?"#c47a00":CL.gn,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:700,fontFamily:BD,flexShrink:0}}>{(c.name||"?")[0]?.toUpperCase()}</div>
-              <div style={{flex:1,minWidth:0}}>
-                <div style={{display:"flex",alignItems:"baseline",gap:6,flexWrap:"wrap"}}>
-                  <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{c.name}</span>
-                  <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{c.city}</span>
-                </div>
-                <div style={{fontSize:11,fontFamily:BD,color:C.gr2,marginTop:1}}>{flags[c.country]||"🌍"} {c.country||"—"} · {c.contact||"—"}</div>
-              </div>
-              {clOrders.length > 0 && <div style={{textAlign:"right",marginRight:4}}>
-                <div style={{fontSize:12,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(clTotal)} €</div>
-                <div style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{clOrders.length} {t("commandes").toLowerCase()}{lastOrd ? " · "+lastOrd.date : ""}</div>
-              </div>}
-              <Badge l={c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="prospect"?C.yl:C.gn} />
+        {(() => {
+          const flags = {FR:"🇫🇷",ES:"🇪🇸",DE:"🇩🇪",US:"🇺🇸",IT:"🇮🇹",PT:"🇵🇹",BE:"🇧🇪",NL:"🇳🇱",UK:"🇬🇧",GB:"🇬🇧",CH:"🇨🇭",CO:"🇨🇴",MX:"🇲🇽",GR:"🇬🇷",AU:"🇦🇺"};
+          const pd = d => { const p = (d||"").split("/"); return p.length===3 ? new Date(+p[2], +p[1]-1, +p[0]) : null; };
+          const rows = distClients.map(c => {
+            const co = orders.filter(o => o.client === c.name);
+            const last = co.map(o => pd(o.date)).filter(Boolean).sort((a,b) => b-a)[0] || null;
+            const days = last ? Math.floor((Date.now()-last.getTime())/86400000) : null;
+            const state = c.status === "prospect" || co.length === 0 ? "pending" : (days !== null && days > 90 ? "sleep" : "active");
+            return {c, co, total:co.reduce((s,o) => s+(o.total||0), 0), last, days, state};
+          });
+          const ST = {active:[t("clActivo"),ACC.green], pending:[t("clPorActivar"),ACC.gold], sleep:[t("clDormido"),ACC.wine]};
+          const f = distClFilter;
+          const q = (clientSearch||"").toLowerCase();
+          const list = rows.filter(r => (f==="all" || r.state===f) && (!q || (r.c.name||"").toLowerCase().includes(q) || (r.c.city||"").toLowerCase().includes(q))).sort((a,b) => b.total-a.total);
+          const sold = rows.reduce((s,r) => s+r.total, 0);
+          const btn = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,padding:"7px 11px",borderRadius:8,background:bg,color:fg,border:"1px solid "+(bd||bg),fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",textDecoration:"none",whiteSpace:"nowrap"});
+          return <>
+            <div className="mn-fade" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(110px,1fr))",gap:8,marginBottom:14}}>
+              {[["all",t("tous"),rows.length,CL.dk],["active",ST.active[0],rows.filter(r=>r.state==="active").length,ACC.green],["pending",ST.pending[0],rows.filter(r=>r.state==="pending").length,ACC.gold],["sleep",ST.sleep[0],rows.filter(r=>r.state==="sleep").length,ACC.wine]].map(([k,l,n,c]) => { const on = f===k; return (
+                <button key={k} className="mn-lift mn-press" onClick={() => setDistClFilter(k)} style={{textAlign:"left",padding:"12px 14px",borderRadius:12,cursor:"pointer",background:on?c:"linear-gradient(160deg,"+c+"12,"+C.wh+" 65%)",border:"1px solid "+(on?c:c+"35"),color:on?"#fff":C.dk}}>
+                  <div style={{fontSize:22,fontFamily:DP,fontWeight:600,lineHeight:1}}>{n}</div>
+                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,marginTop:4,opacity:on?.95:.75}}>{l}</div>
+                </button>); })}
             </div>
-            );
-          })}
-          {distClients.length === 0 && <div style={{padding:30,textAlign:"center",fontSize:12,fontFamily:BD,color:C.gr2}}>—</div>}
-        </div>
+            <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap",marginBottom:14}}>
+              <input placeholder={"🔍 "+t("rechercherClient")} value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{flex:1,minWidth:180,padding:"10px 14px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
+              <span style={{fontSize:13,fontFamily:BD,color:C.gr}}>{t("ventesTot")}: <b style={{color:ACC.green}}>{fmt(sold)} €</b></span>
+            </div>
+            {rows.length === 0 ? <div style={{textAlign:"center",padding:"34px 20px",background:C.wh,border:"1px dashed "+C.ln,borderRadius:14}}>
+              <IconChip d={ICO.users} c={ACC.sea} size={48} />
+              <div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk,marginTop:12}}>{t("clVacioTitulo")}</div>
+              <div style={{fontSize:13,fontFamily:BD,color:C.gr,marginTop:6,lineHeight:1.5}}>{t("clVacioDesc")}</div>
+              <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginTop:14}}>
+                <button className="mn-press" onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"ES",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:""}); }} style={btn(C.dk,C.bg)}>+ {t("registrarManualmente")}</button>
+                <button className="mn-press" onClick={() => setView("d-dash")} style={btn(C.wh,C.dk,C.ln)}>{t("compartir")} →</button>
+              </div>
+            </div> :
+            list.length === 0 ? <div style={{padding:24,textAlign:"center",fontSize:13,fontFamily:BD,color:C.gr2}}>—</div> :
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:10}}>
+              {list.map(({c,co,total,last,days,state},i) => { const [sl,sc] = ST[state]; const phone = (c.phone||"").replace(/[^0-9+]/g,""); const ini = (c.name||"?").trim().split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase(); return (
+                <div key={c.id||i} className="mn-lift" style={{background:"linear-gradient(150deg,"+sc+"0f,"+C.wh+" 60%)",border:"1px solid "+sc+"35",borderRadius:14,padding:"14px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}} onClick={() => { setModal("editCl"); setEd({...c, _tab:"resume"}); }}>
+                    <div style={{width:42,height:42,borderRadius:21,background:sc,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontFamily:DP,fontWeight:700,flexShrink:0}}>{ini}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                      <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{flags[c.country]||"🌍"} {[c.city,c.contact].filter(Boolean).join(" · ")||"—"}</div>
+                    </div>
+                    <span style={{fontSize:10,fontFamily:BD,fontWeight:800,letterSpacing:.4,color:"#fff",background:sc,padding:"4px 9px",borderRadius:9,whiteSpace:"nowrap"}}>{sl.toUpperCase()}</span>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,margin:"12px 0"}}>
+                    {[[fmt(total)+" €",t("ventesTot")],[String(co.length),t("pedidosLabel")],[last ? (days===0 ? t("hoy") : days+" d") : "—",t("ultimoPedido")]].map(([v,l],k) => (
+                      <div key={k} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"7px 8px",textAlign:"center"}}>
+                        <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:k===2&&state==="sleep"?ACC.wine:C.dk}}>{v}</div>
+                        <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:1}}>{l}</div>
+                      </div>))}
+                  </div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                    <button className="mn-press" onClick={() => { setCartCl(c.name); setView("d-cat"); }} style={btn(C.dk,C.bg)}>{t("hacerPedido")} →</button>
+                    {phone && <a href={"https://wa.me/"+phone.replace("+","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={btn("#25D366","#fff")}>WhatsApp</a>}
+                    {phone && <a href={"tel:"+phone} className="mn-press" style={btn(C.wh,C.dk,C.ln)}>{t("llamar")}</a>}
+                    {c.companyEmail && <a href={"mailto:"+c.companyEmail} className="mn-press" style={btn(C.wh,C.dk,C.ln)}>Email</a>}
+                  </div>
+                </div>); })}
+            </div>}
+          </>;
+        })()}
       </Sec>}
 
       {view === "d-promo" && <Sec title={t("promosActives")} sub={t("promosSub")}>
