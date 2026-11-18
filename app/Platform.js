@@ -627,6 +627,17 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  cuentaPendiente:{fr:"Votre demande est en cours de validation par Minuë. Vous recevrez vos accès très bientôt.",es:"Tu solicitud está pendiente de aprobación por Minuë. Recibirás tus accesos muy pronto.",en:"Your request is awaiting approval by Minuë. You'll receive your access very soon.",it:"La tua richiesta è in attesa di approvazione da Minuë. Riceverai presto i tuoi accessi."},
+  nuevaPw:{fr:"Nouveau mot de passe",es:"Nueva contraseña",en:"New password",it:"Nuova password"},
+  dejarVacioPw:{fr:"Laisser vide pour ne pas changer",es:"Déjalo vacío para no cambiarla",en:"Leave empty to keep it",it:"Lascia vuoto per non cambiarla"},
+  editarDireccionGuardada:{fr:"✎ Modifier mon adresse enregistrée",es:"✎ Editar mi dirección guardada",en:"✎ Edit my saved address",it:"✎ Modifica il mio indirizzo salvato"},
+  cambiarPw:{fr:"Changer le mot de passe",es:"Cambiar contraseña",en:"Change password",it:"Cambia password"},
+  pwActual:{fr:"Mot de passe actuel",es:"Contraseña actual",en:"Current password",it:"Password attuale"},
+  pwRepetir:{fr:"Répéter le nouveau",es:"Repite la nueva",en:"Repeat new password",it:"Ripeti la nuova"},
+  pwCorta:{fr:"Au moins 8 caractères.",es:"Mínimo 8 caracteres.",en:"At least 8 characters.",it:"Almeno 8 caratteri."},
+  pwNoCoincide:{fr:"Les mots de passe ne correspondent pas.",es:"Las contraseñas no coinciden.",en:"Passwords don't match.",it:"Le password non coincidono."},
+  pwActualMal:{fr:"Le mot de passe actuel n'est pas correct.",es:"La contraseña actual no es correcta.",en:"Current password is incorrect.",it:"La password attuale non è corretta."},
+  pwCambiada:{fr:"Mot de passe mis à jour ✓",es:"Contraseña actualizada ✓",en:"Password updated ✓",it:"Password aggiornata ✓"},
   comAFacturar:{fr:"Commission à facturer",es:"Comisión a facturar",en:"Commission to invoice",it:"Commissione da fatturare"},
   comEnEspera:{fr:"Commission en attente",es:"Comisión en espera",en:"Commission on hold",it:"Commissione in attesa"},
   comPagada:{fr:"Commission payée",es:"Comisión pagada",en:"Commission paid",it:"Commissione pagata"},
@@ -1601,6 +1612,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [pwForm, setPwForm] = useState({cur:"",n1:"",n2:"",msg:"",ok:false});
   const [landing] = useState(() => { try { return window.location.pathname.replace(/\/+$/,"") === "/invierno" ? "invierno" : null; } catch(e) { return null; } });
   const [lpTab, setLpTab] = useState("top");
   const [lpCart, setLpCart] = useState({});
@@ -1648,7 +1660,7 @@ export default function App() {
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||"",active:r.active!==false});
   const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,priceEssential:Number(r.price_essential)||0,priceIcons:Number(r.price_icons)||0,priceAcetato:Number(r.price_acetato)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
-  const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",_rawDate:r.created_at||null,status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false,discountType:r.discount_type||"",discountValue:Number(r.discount_value)||0});
+  const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",_rawDate:r.created_at||null,status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,invoiceNumber:r.invoice_number||"",invoiceDate:r.invoice_date||"",taxRate:(() => { const m = String(r.notes_internal||"").match(/\[iva:(\d+(?:\.\d+)?)\]/); return m ? Number(m[1]) : undefined; })(),lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false,discountType:r.discount_type||"",discountValue:Number(r.discount_value)||0});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||"",it:r.condition_it||""},visible:r.visible_to||[],on:r.active!==false,targetClients:r.target_clients||[]});
   const dbToNews = r => ({id:r.id,title:{fr:r.title_fr||"",es:r.title_es||"",en:r.title_en||"",it:r.title_it||r.title_fr||""},content:{fr:r.content_fr||"",es:r.content_es||"",en:r.content_en||"",it:r.content_it||r.content_fr||""},url:r.url||"",pinned:!!r.pinned,on:r.active!==false,date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-"});
   const dbToFaq = r => ({id:r.id,q:{fr:r.question_fr||"",es:r.question_es||"",en:r.question_en||""},a:{fr:r.answer_fr||"",es:r.answer_es||"",en:r.answer_en||""},on:r.active!==false});
@@ -1755,8 +1767,9 @@ export default function App() {
   const dbUpdateOrder = async (order) => {
     if (!dbReady || !order.dbId) return;
     try {
-      await supabase.from("orders").update({status:order.status,payment:order.pay,track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm,payment_method:order.payMethod||null,payment_link:order.paymentLink||null,payment_due_date:order.payDueDate||null,payment_reminder_days:order.payReminderDays||null,pay_split1_amount:order.paySplit1Amount||null,pay_split1_date:order.paySplit1Date||null,pay_split1_done:order.paySplit1Done||false,pay_split2_amount:order.paySplit2Amount||null,pay_split2_date:order.paySplit2Date||null,pay_split2_done:order.paySplit2Done,discount_type:order.discountType||null,discount_value:order.discountValue||0||false}).eq("id",order.dbId);
-      if (order.lines) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential",qty_received:(l.qtyServed==null?l.qty:l.qtyServed),line_status:l.lineStatus||"complete"}))); }
+      const {error:upErr} = await supabase.from("orders").update({status:order.status,payment:order.pay,invoice_number:order.invoiceNumber||null,invoice_date:order.invoiceDate||null,tax_rate:(order.taxRate!=null ? order.taxRate : defaultTax(clients.find(c => c.name === order.client) || {})),track_number:order.track,carrier:order.carrier,track_url:order.trackUrl,notes_internal:order.notes,notes_client:order.clientNotes,total:order.total,items_count:order.items,shipping_cost:order.shippingCost,commission:order.comm,payment_method:order.payMethod||null,payment_link:order.paymentLink||null,payment_due_date:order.payDueDate||null,payment_reminder_days:order.payReminderDays||null,pay_split1_amount:order.paySplit1Amount||null,pay_split1_date:order.paySplit1Date||null,pay_split1_done:order.paySplit1Done||false,pay_split2_amount:order.paySplit2Amount||null,pay_split2_date:order.paySplit2Date||null,pay_split2_done:order.paySplit2Done,discount_type:order.discountType||null,discount_value:order.discountValue||0||false}).eq("id",order.dbId);
+      if (upErr) { toast("⚠ "+(upErr.message||"Error al guardar"), "error"); return; }
+      if (order.lines && order.lines.length) { await supabase.from("order_lines").delete().eq("order_id",order.dbId); await supabase.from("order_lines").insert(order.lines.map(l => ({order_id:order.dbId,model:l.model,color:l.color,sku:l.sku,quantity:l.qty,unit_price:l.price,collection:l.col||"Essential",qty_received:(l.qtyServed==null?l.qty:l.qtyServed),line_status:l.lineStatus||"complete"}))); }
     } catch(e) { console.log("DB update order:", e); }
   };
 
@@ -1869,7 +1882,7 @@ export default function App() {
     setFloatLoading(false);
   };
   const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { await supabase.from("users").update({name:u.name,company:u.co,password_hash:u.pw,lang:u.lang||"fr",comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { const pwh = u.newPw ? await hashPw(u.newPw, u.origEmail||u.email) : u.pw; await supabase.from("users").update({name:u.name,company:u.co,password_hash:pwh,lang:u.lang||"fr",comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return null; try { const {data} = await supabase.from("clients").insert({name:c.name,contact:c.contact||null,city:c.city||null,country:c.country||"FR",channel:c.channel||"Direct",status:c.status||"prospect",company_email:c.companyEmail||null,phone:c.phone||null,notes:c.notes||null}).select().single(); return data?.id || null; } catch(e) { console.log('DB error:', e); return null; } };
   const dbUpdateClient = async (c) => {
     if (!dbReady) return;
@@ -1907,7 +1920,7 @@ export default function App() {
   const dbSaveTask = async (t) => { if (!dbReady) return; try { await supabase.from("tasks").insert({title:t.title,description:t.desc||"",priority:t.priority||"moyenne",area:t.area||"commercial",status:t.status||"aFaire",due_date:t.dueDate||null,assignee:t.assignee||null}); } catch(e) { console.log("DB error:", e); } };
   const dbUpdateTask = async (t) => { if (!dbReady || !t.id) return; try { await supabase.from("tasks").update({title:t.title,description:t.desc||"",priority:t.priority,area:t.area,status:t.status,due_date:t.dueDate||null,assignee:t.assignee||null}).eq("id",t.id); } catch(e) { console.log("DB error:", e); } };
   const dbDeleteTask = async (id) => { if (!dbReady) return; try { await supabase.from("tasks").delete().eq("id",id); } catch(e) { console.log("DB error:", e); } };
-  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq("user_id",user.id); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveAccountData = async (data) => { if (!dbReady || !user) return; try { await supabase.from("clients").update({company_name:data.companyName,tax_id:data.taxId,address:data.address,postal_code:data.postalCode,phone:data.phone,company_email:data.companyEmail,bank_holder:data.bankHolder,iban:data.iban,bic:data.bic,shipping_address:data.shippingAddress||null,shipping_city:data.shippingCity||null,shipping_postal:data.shippingPostal||null,shipping_country:data.shippingCountry||null}).eq(activeClient && activeClient.id ? "id" : "user_id", activeClient && activeClient.id ? activeClient.id : user.id); } catch(e) { console.log('DB error:', e); } };
 
   /* ═══ TIMECLOCK & RECOMMENDATIONS ═══ */
   const dbAddRecommendation = async (clientEmail, productId) => { setRecommendations(p => ({...p, [clientEmail]:[...(p[clientEmail]||[]), productId]})); if(dbReady) { try { await supabase.from("client_recommendations").insert({client_email:clientEmail,product_id:productId,created_by:user?.email||""}); } catch(e) { console.log("Rec err:", e); } } };
@@ -2007,8 +2020,10 @@ export default function App() {
 
   // Icons pricing: legacy customPrice OR priceIcons OR volume tier (same tier)
   const iconsUnitPrice = customPrice > 0 ? customPrice : (priceIcons > 0 ? priceIcons : getPrice(tierQty || 1, 0));
-  const essentialTotal = essentialOnlyCount * essentialUnitPrice + iconsCount * iconsUnitPrice;
-  const acetatoTotal = acetatoEntries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); const priceForAcetato = customPrice > 0 ? customPrice : (priceAcetato > 0 ? priceAcetato : (p ? p.fixedPrice : ACETATO_PRICE)); return s + priceForAcetato * q; }, 0);
+  const unitPriceFor = p => p.col === "Acetato" ? (customPrice > 0 ? customPrice : (priceAcetato > 0 ? priceAcetato : (p.fixedPrice || ACETATO_PRICE))) : (p.fixedPrice > 0 ? p.fixedPrice : (p.col === "Icons" ? iconsUnitPrice : essentialUnitPrice));
+  const sumFor = entries => entries.reduce((s,[id,q]) => { const p = products.find(x => String(x.id) === String(id)); return s + (p ? unitPriceFor(p) * q : 0); }, 0);
+  const essentialTotal = sumFor(cartEntries.filter(e => !acetatoEntries.includes(e)));
+  const acetatoTotal = sumFor(acetatoEntries);
   const cartTotal = essentialTotal + acetatoTotal;
   const earlyPaySaving = earlyPay ? cartTotal * 0.03 : 0;
   const finalTotal = cartTotal - earlyPaySaving;
@@ -2057,11 +2072,11 @@ export default function App() {
   };
 
   /* Place order */
-  const doOrder = () => {
+  const doOrder = async () => {
     const lines = cartEntries.map(([id, q]) => {
       const p = products.find(x => String(x.id) === String(id));
       if (!p) return null;
-      const price = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice;
+      const price = unitPriceFor(p);
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     }).filter(Boolean);
     const fundaNames = {fundaCrema:"Crema",fundaPistacho:"Pistacho",fundaBabyBlue:"Baby Blue",fundaYellowAmalfi:"Amalfi",fundaNaranja:"Naranja"};
@@ -2071,12 +2086,12 @@ export default function App() {
     const addrNote = shippingAddr === "new" && newShipAddr.street ? "Dirección nueva: "+newShipAddr.street+", "+newShipAddr.zip+" "+newShipAddr.city+(newShipAddr.country?", "+newShipAddr.country:"") : "";
     const fullNotes = [cartNotes, fundaNote, dateNote, addrNote].filter(Boolean).join(" · ");
     const newOrder = {
-      id: "#MN-" + String(orders.length + 1).padStart(4, "0"),
+      id: await getNextOrderNumber(),
       client: activeClientName || "—",
       dist: user.role === "distributor" ? distLabel : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
-      comm: user.role === "distributor" ? finalTotal * 0.15 : 0,
+      comm: user.role === "distributor" ? finalTotal * (user.commRate||15) / 100 : 0,
       status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: fullNotes, fundaPref, lines, preferredDate, payMethod: cartPayMethod||""
     };
     setOrders(p => [newOrder, ...p]);
@@ -2088,6 +2103,30 @@ export default function App() {
 
   /* ═══ LOGIN SCREEN ═══ */
   // Recarga limpia: no queda en memoria nada del usuario anterior (carrito elegido, filtros, datos cargados).
+  const savePw = async () => {
+    const f = pwForm;
+    if ((f.n1||"").length < 8) return setPwForm(x => ({...x, msg:t("pwCorta"), ok:false}));
+    if (f.n1 !== f.n2) return setPwForm(x => ({...x, msg:t("pwNoCoincide"), ok:false}));
+    const curH = await hashPw(f.cur||"", user.email);
+    if (curH !== user.pw && (f.cur||"") !== user.pw) return setPwForm(x => ({...x, msg:t("pwActualMal"), ok:false}));
+    const nh = await hashPw(f.n1, user.email);
+    if (dbReady) { const {error} = await supabase.from("users").update({password_hash:nh}).eq("email", user.email); if (error) return setPwForm(x => ({...x, msg:"⚠ "+error.message, ok:false})); }
+    setUser(u => ({...u, pw:nh}));
+    try { const ss = JSON.parse(localStorage.getItem("minue_session")||"null"); if (ss) { ss.user.pw = nh; localStorage.setItem("minue_session", JSON.stringify(ss)); } } catch(e) {}
+    setPwForm({cur:"",n1:"",n2:"",msg:t("pwCambiada"),ok:true});
+  };
+  const renderPwChange = () => <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+    <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>🔒 {t("cambiarPw")}</div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10}}>
+      {[["cur","pwActual","current-password"],["n1","nuevaPw","new-password"],["n2","pwRepetir","new-password"]].map(([k,lb,ac]) => <div key={k}>
+        <div style={{fontSize:12,color:C.gr,fontFamily:BD,marginBottom:4}}>{t(lb)}</div>
+        <input type="password" autoComplete={ac} value={pwForm[k]} onChange={e => setPwForm(x => ({...x, [k]:e.target.value, msg:""}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+      </div>)}
+    </div>
+    {pwForm.msg && <div style={{marginTop:10,fontSize:13,fontFamily:BD,color:pwForm.ok?C.gn:C.rd}}>{pwForm.msg}</div>}
+    <Btn onClick={savePw} style={{marginTop:12}}>{t("cambiarPw")}</Btn>
+  </div>;
+
   const doLogout = () => { try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) {} window.location.replace(window.location.pathname); };
 
   const doLogin = async () => {
@@ -2098,7 +2137,8 @@ export default function App() {
     let pool = users;
     if (dbReady) { try { const {data} = await supabase.from("users").select("*").ilike("email", em); pool = (data||[]).map(dbToUser); } catch(e) { pool = []; } }
     const found = pool.find(u => u.email.toLowerCase() === em && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
-    if (!found || found.active === false) { setLoginErr(t("errLogin")); return; }
+    if (!found) { setLoginErr(t("errLogin")); return; }
+    if (found.active === false) { setLoginErr(t("cuentaPendiente")); return; }
     setLoginErr("");
     if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
     setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
@@ -2431,12 +2471,12 @@ export default function App() {
   /* ═══ ROLE & NAV CONFIG ═══ */
   const role = user.role;
   const navItems = role === "client"
-    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
+    ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["c-selection","selectionPrivee"]] : []),["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
     ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["d-selection","selectionPrivee"]] : []),["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],["d-msg","mensajes"],["d-promo","promos"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
     ? [["e-dash","dashboard"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-mercado","mercado"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
+    : [["a-stats","stats"],...(AI_BACKEND?[["a-decisiones","decisiones"]]:[]),["a-analytics","analytics"],["a-mercado","mercado"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
   const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",miHistorico:"M3 3v18h18M7 14l4-4 4 4 5-5",mercado:"M2 12h4l3-9 4 18 3-9h6"};
@@ -2640,7 +2680,7 @@ export default function App() {
         }
         // Grouped layout for admin/team — flat grid for client/distributor
         const groups = role === "admin" ? [
-          ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats","a-decisiones","a-analytics","a-mercado","a-ord","a-inv"]],
+          ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats",...(AI_BACKEND?["a-decisiones"]:[]),"a-analytics","a-mercado","a-ord","a-inv"]],
           ["👥 "+(t("grpClientes")||"Clientes"), ["a-cl","a-dist","a-prospectos","a-comercial","a-msg","a-recom"]],
           ["📦 "+(t("grpOperaciones")||"Operaciones"), ["a-stock","a-almacen","a-logistica","a-pack","a-tasks","a-empleados"]],
           ["📣 "+(t("grpContenido")||"Contenido"), ["a-promo","a-news","a-faq"]],
@@ -2701,7 +2741,7 @@ export default function App() {
   const renderModelCard = (modelName, variants) => {
     const first = variants.find(v => v.imageUrl) || variants[0];
     const isAcetato = first.col === "Acetato";
-    const displayPrice = isAcetato ? first.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
+    const displayPrice = (isAcetato || first.fixedPrice > 0) ? (first.fixedPrice || ACETATO_PRICE) : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
     const totalStock = variants.reduce((s,v) => s + v.stock, 0);
     const inCartCount = variants.reduce((s,v) => s + (cart[v.id]||0), 0);
     const tags = [...new Set(variants.flatMap(v => v.tags||[]))];
@@ -2739,7 +2779,7 @@ export default function App() {
   const renderCard = (p) => {
     const inCart = cart[p.id] > 0;
     const isAcetato = p.col === "Acetato";
-    const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
+    const displayPrice = (isAcetato || p.fixedPrice > 0) ? (p.fixedPrice || ACETATO_PRICE) : (customPrice > 0 ? customPrice : essentialCount > 0 ? essentialUnitPrice : 26.90);
     const cq = getCardQty(p.id);
     const tags = p.tags || [];
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
@@ -2803,7 +2843,7 @@ export default function App() {
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(160px, calc(50% - 6px)),1fr))",gap:12}}>
         {models.map(mg => {
           const mainColor = mg.colors.find(c => c.imageUrl) || mg.colors[0];
-          const isAcetato = mg.col === "Acetato";
+          const isAcetato = mg.col === "Acetato" || (mg.colors[0]?.fixedPrice||0) > 0;
           const totalInCart = mg.colors.reduce((s,c) => s + (cart[c.id]||0), 0);
           const minStock = Math.min(...mg.colors.map(c => c.stock));
           return <div key={mg.model} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden",cursor:"pointer",transition:"box-shadow 0.2s"}} onClick={() => { setSelectedModel(mg); setSelectedColorIdx(0); setModal("viewModel"); }}
@@ -2825,7 +2865,7 @@ export default function App() {
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
                 <span style={{fontSize:12,color:C.gr,fontFamily:BD}}>{mg.colors.length} {t("couleurs")}</span>
                 <span style={{fontFamily:BD,color:C.dk,display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
-                  <span style={{fontSize:12,fontWeight:600}}>{isAcetato ? fmt(mg.colors[0]?.fixedPrice||27.90) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €</span>
+                  <span style={{fontSize:12,fontWeight:600}}>{isAcetato ? fmt(mg.colors[0]?.fixedPrice||ACETATO_PRICE) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €</span>
                   {!isAcetato && !(customPrice>0) && essentialUnitPrice > TIERS[TIERS.length-1].price && <span style={{fontSize:11,fontWeight:400,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</span>}
                 </span>
               </div>
@@ -2922,19 +2962,39 @@ export default function App() {
     else { toast(t("popupBloqueado")||"Permite ventanas emergentes"); }
   };
 
+  // IVA: 21% en España; 0% a tiendas de otros países (inversión del sujeto pasivo, como en tus facturas).
+  const isESclient = cl => /^(es|españa|espana|spain|espagne)$/i.test(String(cl.country||"").trim());
+  const defaultTax = cl => isESclient(cl) ? 21 : 0;
+  const nextInvoiceNumber = () => { const y = new Date().getFullYear(); const max = orders.map(o => String(o.invoiceNumber||"").match(new RegExp("^M"+y+"(\\d{3,})$"))).filter(Boolean).reduce((m,x) => Math.max(m, +x[1]), 0); return "M"+y+String(max+1).padStart(3,"0"); };
+  const distRate = d => { const u = users.find(x => x.role === "distributor" && String(x.co||"").toLowerCase().trim() === String(d||"").toLowerCase().trim()); return ((u && u.commRate) || 15) / 100; };
+  const docLang = cl => { const c = String(cl.country||"").toUpperCase(); return /^(FR|FRANCE|BE|BELGIQUE|CH|LU)/.test(c) ? "fr" : /^(IT|ITALIA)/.test(c) ? "it" : isESclient(cl) ? "es" : "en"; };
+  const IBAN_TXT = "IBAN ES11 2100 8447 6202 0010 9299 · BIC CAIXESBBXXX";
+  const mailDoc = (o, kind, number, amount) => {
+    const cl = clients.find(c => c.name === o.client) || {}; const L = docLang(cl);
+    const W = {fr:{p:"Facture proforma",f:"Facture",h:"Bonjour,",b:"Veuillez trouver ci-jointe la",m:"d'un montant de",pay:"Règlement par virement :",ref:"Référence",bye:"Merci et belle journée,"},
+      es:{p:"Factura proforma",f:"Factura",h:"Hola,",b:"Te adjuntamos la",m:"por un importe de",pay:"Pago por transferencia:",ref:"Concepto",bye:"Gracias y un saludo,"},
+      it:{p:"Fattura proforma",f:"Fattura",h:"Buongiorno,",b:"In allegato trova la",m:"per un importo di",pay:"Pagamento tramite bonifico:",ref:"Causale",bye:"Grazie e buona giornata,"},
+      en:{p:"Proforma invoice",f:"Invoice",h:"Hello,",b:"Please find attached the",m:"for an amount of",pay:"Payment by bank transfer:",ref:"Reference",bye:"Thank you and kind regards,"}}[L];
+    const name = kind === "proforma" ? W.p : W.f;
+    const body = W.h+"\n\n"+W.b+" "+name.toLowerCase()+" "+number+" "+W.m+" "+fmt(amount)+" €.\n\n"+W.pay+"\n"+IBAN_TXT+"\n"+W.ref+": "+number+"\n\n"+W.bye+"\nMinuë Opticians";
+    window.location.href = "mailto:"+(cl.companyEmail||"")+"?subject="+encodeURIComponent(name+" "+number+" — Minuë Opticians")+"&body="+encodeURIComponent(body);
+  };
+
   const downloadProforma = (o) => {
     const cl = clients.find(c => c.name === o.client || (c.name && o.client && c.name.toLowerCase().trim() === o.client.toLowerCase().trim())) || {};
     const lines = o.lines || [];
     const fmtN = n => (Number(n)||0).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2});
     const today = new Date().toLocaleDateString("es-ES");
     const addr = [cl.address, [cl.postalCode, cl.city].filter(Boolean).join(" "), cl.country].filter(Boolean).join("<br>");
-    const subtotal = lines.reduce((s,l) => s + (l.price||0) * (l.qty||0), 0);
-    const discounted = applyDiscount(subtotal, o.discountType, o.discountValue);
+    const subtotal = lines.length ? lines.reduce((s,l) => s + (l.price||0) * (l.qty||0), 0) : (o.total||0);
+    const discounted = lines.length ? applyDiscount(subtotal, o.discountType, o.discountValue) : subtotal;
     const saved = subtotal - discounted;
     const ship = o.shippingCost > 0 ? o.shippingCost : 0;
-    const grandTotal = discounted + ship;
+    const pTax = o.taxRate != null ? o.taxRate : defaultTax(cl);
+    const pTaxAmt = (discounted + ship) * pTax / 100;
+    const grandTotal = discounted + ship + pTaxAmt;
     const totalUnits = lines.reduce((s,l) => s + (l.qty||0), 0);
-    const rowsHtml = lines.map(l => `<tr>
+    const rowsHtml = !lines.length ? `<tr><td colspan="2" style="padding:9px 12px;border-bottom:1px solid #eee;font-weight:600;color:#18332f">Pedido ${o.id}</td><td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:center">${o.items||""}</td><td></td><td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:right;font-weight:600">${fmtN(subtotal)} €</td></tr>` : lines.map(l => `<tr>
       <td style="padding:9px 12px;border-bottom:1px solid #eee;font-weight:600;color:#18332f">${l.model||""}</td>
       <td style="padding:9px 12px;border-bottom:1px solid #eee;color:#555">${l.color||""}</td>
       <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:center">${l.qty||0}</td>
@@ -2982,8 +3042,11 @@ export default function App() {
           <tr><td>Subtotal (${totalUnits} uds)</td><td style="text-align:right">${fmtN(subtotal)} €</td></tr>
           ${saved > 0.001 ? '<tr><td style="color:#a06a2c">Descuento</td><td style="text-align:right;color:#a06a2c">− '+fmtN(saved)+' €</td></tr>' : ''}
           ${ship > 0 ? '<tr><td>Envío</td><td style="text-align:right">'+fmtN(ship)+' €</td></tr>' : ''}
+          <tr><td>IVA ${pTax}%</td><td style="text-align:right">${fmtN(pTaxAmt)} €</td></tr>
           <tr class="grand"><td>TOTAL</td><td style="text-align:right">${fmtN(grandTotal)} €</td></tr>
         </table>
+        ${pTax === 0 && !isESclient(cl) ? '<div style="font-size:11px;color:#555;margin-top:8px">Autoliquidation · Inversión del sujeto pasivo (art. 196 Directiva 2006/112/CE)'+(cl.taxId?' · VAT '+cl.taxId:'')+'</div>' : ''}
+        <div style="margin-top:14px;padding:12px 14px;border:1px solid #e3ddd4;border-radius:8px;font-size:12px;color:#18332f"><b>Pago por transferencia / Virement bancaire</b><br>${IBAN_TXT}<br>Concepto / Référence: ${o.id}</div>
         <div class="foot">Documento proforma sin valor fiscal · La factura se emite y se envía por email una vez abonada esta proforma.<br>Minuë Opticians · Calle Ardilla nº13, oficinas, 41010 Sevilla · NIF ES77843808D · hola@minueopticians.com</div>
       </div>
       <script>window.onload=function(){setTimeout(function(){window.print();},350);}<\/script>
@@ -3419,7 +3482,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             const colors = mg.colors;
             const sel = colors[selectedColorIdx] || colors[0];
             const isAcetato = mg.col === "Acetato";
-            const displayPrice = isAcetato ? (sel.fixedPrice||27.90) : (customPrice > 0 ? customPrice : essentialUnitPrice);
+            const displayPrice = (isAcetato || sel.fixedPrice > 0) ? (sel.fixedPrice||ACETATO_PRICE) : (customPrice > 0 ? customPrice : essentialUnitPrice);
             return <>
               <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
                 {/* LEFT: Image */}
@@ -3805,7 +3868,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   }
                   const lns = edLines.map(l => ({...l, price: l.col === "Acetato" ? 27.90 : edUp}));
                   const orderId = genOrderNumber();
-                  const newOrder = {id:orderId, client:clientName, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:finalT, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?finalT*0.15:0, status:"confirmed", pay:"pending", track:"", lines:lns, clientNotes: ed.clientNotes||"", shippingOverride: ed.shippingOverride||"", preferredDate: ed.preferredDate||"", payMethod: ed.payMethod||"", discountType: ed.discountType||"none", discount: ed.discount||0, discountReason: ed.discountReason||"", subtotal};
+                  const newOrder = {id:orderId, client:clientName, dist:ed.dist||"Direct", date:new Date().toLocaleDateString("fr-FR"), items:edQty, total:finalT, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?finalT*distRate(ed.dist):0, status:"confirmed", pay:"pending", track:"", lines:lns, clientNotes: ed.clientNotes||"", shippingOverride: ed.shippingOverride||"", preferredDate: ed.preferredDate||"", payMethod: ed.payMethod||"", discountType: ed.discountType||"none", discount: ed.discount||0, discountReason: ed.discountReason||"", subtotal};
                   setOrders(p => [newOrder, ...p]);
                   logOrderChange(orderId, "Pedido creado por "+role, "Cliente: "+clientName+" · "+edQty+" uds · "+fmt(finalT)+" €"+(ed.discountType!=="none"?" · Descuento "+(ed.discountType==="pct"?ed.discount+"%":fmt(ed.discount)+"€"):""));
                   if (dbReady) { try { const {data:co} = await supabase.from("orders").insert({order_number:orderId, client_name:clientName, distributor:ed.dist||"Direct", total:finalT, items_count:edQty, status:"confirmed", payment_status:"pending", client_notes:ed.clientNotes||"", preferred_date:ed.preferredDate||null, payment_method:ed.payMethod||null}).select().single(); if(co) { for (const l of lns) { await supabase.from("order_lines").insert({order_id:co.id, model:l.model, color:l.color, sku:l.sku, quantity:l.qty, unit_price:l.price, collection:l.col||""}); } } } catch(e){} }
@@ -4040,7 +4103,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
             {/* DESCUENTO MANUAL ADMIN */}
             {(() => {
-              const subtotal = (ed.lines||[]).reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0);
+              const subtotal = (ed.lines||[]).length ? (ed.lines||[]).reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0) : (orders[ed.idx]?.total || ed.total || 0);
               const finalT = applyDiscount(subtotal, ed.discountType, ed.discountValue);
               const saved = subtotal - finalT;
               return <div style={{background:"#faf6ef",border:"1px solid #e8dcc8",borderRadius:8,padding:"12px 14px",marginBottom:14}}>
@@ -4060,7 +4123,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{marginBottom:14}}>
                 <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("statutCmd")}</div>
                 <select value={ed.status} onChange={e => setEd(p => ({...p, status: e.target.value}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  {Object.keys(SL).map(k => <option key={k} value={k}>{SL[k]}</option>)}
+                  {Object.keys(SL).filter(k => k !== "cancelled").map(k => <option key={k} value={k}>{SL[k]}</option>)}
                 </select>
               </div>
               <div style={{marginBottom:14}}>
@@ -4160,11 +4223,16 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
 
             <div style={{display:"flex",gap:8}}>
-              <Btn onClick={() => { const subtotal = (ed.lines||[]).reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0); const finalT = applyDiscount(subtotal, ed.discountType, ed.discountValue); const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:finalT, discountType:ed.discountType||"", discountValue:ed.discountValue||0, shippingCost:ed.shippingCost, comm:ed.dist!=="Direct"&&ed.dist!=="Faire"?finalT*0.15:0, payMethod:ed.payMethod, paymentLink:ed.paymentLink, payDueDate:ed.payDueDate, payReminderDays:ed.payReminderDays, paySplit1Amount:ed.paySplit1Amount, paySplit1Date:ed.paySplit1Date, paySplit1Done:ed.paySplit1Done, paySplit2Amount:ed.paySplit2Amount, paySplit2Date:ed.paySplit2Date, paySplit2Done:ed.paySplit2Done}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); toast(t("enregistrer")); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
+              <Btn onClick={() => { const subtotal = (ed.lines||[]).length ? (ed.lines||[]).reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0) : (orders[ed.idx]?.total || ed.total || 0); const finalT = applyDiscount(subtotal, ed.discountType, ed.discountValue); const updated = {...orders[ed.idx], status:ed.status, pay:ed.pay, track:ed.track, carrier:ed.carrier, trackUrl:ed.trackUrl, notes:ed.notes, clientNotes:ed.clientNotes, lines:ed.lines, items:ed.items, total:finalT, discountType:ed.discountType||"", discountValue:ed.discountValue||0, shippingCost:ed.shippingCost, comm:(Math.abs(finalT-(orders[ed.idx]?.total||0)) < 0.005 && ed.dist === orders[ed.idx]?.dist) ? (orders[ed.idx]?.comm||0) : (ed.dist!=="Direct"&&ed.dist!=="Faire"?finalT*distRate(ed.dist):0), payMethod:ed.payMethod, paymentLink:ed.paymentLink, payDueDate:ed.payDueDate, payReminderDays:ed.payReminderDays, paySplit1Amount:ed.paySplit1Amount, paySplit1Date:ed.paySplit1Date, paySplit1Done:ed.paySplit1Done, paySplit2Amount:ed.paySplit2Amount, paySplit2Date:ed.paySplit2Date, paySplit2Done:ed.paySplit2Done}; setOrders(p => p.map((o, i) => i === ed.idx ? updated : o)); dbUpdateOrder(updated); toast(t("enregistrer")); setModal(null); }} style={{flex:1}}>{t("enregistrer")}</Btn>
               <Btn ghost onClick={() => askConfirm(t("confirmarEliminar"), () => { const o = orders[ed.idx]; setOrders(p => p.filter((_, i) => i !== ed.idx)); dbDeleteOrder(o); toast(t("pedidoEliminado")); setModal(null); })} style={{color:C.rd,borderColor:C.rd}}>{t("eliminarCmd")}</Btn>
             </div>
-            <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>
-            <Btn ghost onClick={() => { const cl = clients.find(c => c.name === ed.client) || {}; setNoteText(""); setNoteError(""); setNoteData({orderId:ed.id, client:ed.client, city:cl.city||"", country:cl.country||"", clientType: cl.status==="vip"?"VIP/exclusividad":"Nuevo", language:"", extras:"", incidents:"", freeNotes:"", discountCode:"", discountPct:"", discountUrl:""}); setModal("genNote"); }} style={{width:"100%",marginTop:8,borderColor:"#c4956a",color:"#a06a2c"}}>✍️ {t("generarNota")}</Btn>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:8}}>
+              <Btn ghost onClick={() => downloadProforma(orders[ed.idx] || ed)}>📄 Proforma</Btn>
+              <Btn ghost onClick={() => { const o = orders[ed.idx] || ed; const cl = clients.find(c => c.name === o.client) || {}; const tx = o.taxRate != null ? o.taxRate : defaultTax(cl); mailDoc(o, "proforma", o.id, ((o.total||0)+(o.shippingCost||0))*(1+tx/100)); }}>✉ Enviar proforma</Btn>
+              <Btn ghost onClick={() => { const o = orders[ed.idx] || ed; setEd({...o}); setModal("viewInv"); }}>🧾 {(orders[ed.idx]||{}).invoiceNumber ? "Factura "+orders[ed.idx].invoiceNumber : "Emitir factura"}</Btn>
+              <Btn ghost onClick={() => downloadAlbaran(ed)}>📦 {t("descargarAlbaran")}</Btn>
+            </div>
+            {AI_BACKEND && <Btn ghost onClick={() => { const cl = clients.find(c => c.name === ed.client) || {}; setNoteText(""); setNoteError(""); setNoteData({orderId:ed.id, client:ed.client, city:cl.city||"", country:cl.country||"", clientType: cl.status==="vip"?"VIP/exclusividad":"Nuevo", language:"", extras:"", incidents:"", freeNotes:"", discountCode:"", discountPct:"", discountUrl:""}); setModal("genNote"); }} style={{width:"100%",marginTop:8,borderColor:"#c4956a",color:"#a06a2c"}}>✍️ {t("generarNota")}</Btn>}
           </>}
 
           {/* VIEW ORDER (client / distributor read-only) */}
@@ -4724,8 +4792,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
             </div>
             <div style={{marginBottom:12}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("pwLabel")}</div>
-              <input value={ed.pw || ""} onChange={e => setEd(p => ({...p, pw: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
+              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("nuevaPw")}</div>
+              <input type="password" autoComplete="new-password" value={ed.newPw || ""} onChange={e => setEd(p => ({...p, newPw: e.target.value}))} placeholder={t("dejarVacioPw")} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             {ed.role === "distributor" && <div style={{marginBottom:12}}>
               <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commissionRate")}</div>
@@ -4966,10 +5034,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
           {/* VIEW INVOICE */}
           {modal === "viewInv" && (() => {
-            const invNumber = ed.invoiceNumber || ("F-" + new Date().getFullYear() + "-" + String((ed.id||"").replace("#MN-","")).padStart(4,"0"));
-            const invDate = ed.invoiceDate || ed.date || new Date().toLocaleDateString("fr-FR");
+            const issued = !!(orders.find(o => o.id === ed.id)||{}).invoiceNumber;
+            const invNumber = ed.invoiceNumber || nextInvoiceNumber();
+            const invDate = ed.invoiceDate || new Date().toISOString().slice(0,10);
             const cl = clients.find(c => c.name === ed.client) || {};
-            const taxRate = ed.taxRate !== undefined ? ed.taxRate : 21;
+            const taxRate = ed.taxRate !== undefined ? ed.taxRate : defaultTax(cl);
             const shippingC = ed.shippingCost || 0;
             const subtotal = ed.total || 0;
             const tax = (subtotal + shippingC) * (taxRate/100);
@@ -5061,7 +5130,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div class="totals">
                       <div class="tot-row"><span>Subtotal</span><span>${fmt(subtotal)} €</span></div>
                       ${shippingC > 0 ? `<div class="tot-row"><span>Envío</span><span>${fmt(shippingC)} €</span></div>` : ""}
-                      <div class="tot-row"><span>IVA (${taxRate}%)</span><span>${fmt(tax)} €</span></div>
+                      <div class="tot-row"><span>IVA (${taxRate}%)</span><span>${fmt(tax)} €</span></div>${taxRate === 0 && !isESclient(cl) ? '<div style="font-size:10px;color:#666;margin-top:6px">Autoliquidation · Inversión del sujeto pasivo (art. 196 Directiva 2006/112/CE)'+(cl.taxId?' · VAT '+cl.taxId:'')+'</div>' : ''}
                       <div class="tot-row grand"><span>TOTAL</span><span>${fmt(total)} €</span></div>
                     </div>
 
@@ -5144,11 +5213,17 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
             </div>
 
-            {ed._editMode && <Btn onClick={() => {
-              setOrders(p => p.map(o => o.id === ed.id ? {...o, invoiceNumber:ed.invoiceNumber||invNumber, invoiceDate:ed.invoiceDate||invDate, taxRate} : o));
-              logOrderChange(ed.id, "Factura editada", "Número: "+invNumber+" · IVA: "+taxRate+"%");
-              setEd(p => ({...p, _editMode: false}));
-            }} style={{width:"100%"}}>💾 Guardar factura</Btn>}
+            {taxRate === 0 && !isESclient(cl) && <div style={{fontSize:12,fontFamily:BD,color:cl.taxId?C.gr:C.rd,marginTop:8,padding:cl.taxId?0:"8px 10px",background:cl.taxId?"transparent":C.rd+"10",borderRadius:8}}>{cl.taxId ? "Inversión del sujeto pasivo · NIF-IVA "+cl.taxId : "⚠ Falta el NIF-IVA de "+(cl.name||"la tienda")+": añádelo en su ficha antes de emitir sin IVA."}</div>}
+            {(ed._editMode || !issued) && <Btn onClick={() => {
+              const base = orders.find(o => o.id === ed.id) || {};
+              const custom = taxRate !== defaultTax(cl);
+              const notes = String(base.notes||"").replace(/\s*\[iva:[\d.]+\]/g,"") + (custom ? " [iva:"+taxRate+"]" : "");
+              const upd = {...base, invoiceNumber:ed.invoiceNumber||invNumber, invoiceDate:ed.invoiceDate||invDate, taxRate: custom ? taxRate : undefined, notes:notes.trim()};
+              setOrders(p => p.map(o => o.id === ed.id ? upd : o)); dbUpdateOrder(upd);
+              logOrderChange(ed.id, issued ? "Factura editada" : "Factura emitida", "Número: "+upd.invoiceNumber+" · IVA: "+taxRate+"%");
+              setEd(p => ({...p, ...upd, _editMode: false})); toast(issued ? t("enregistrer") : "🧾 "+upd.invoiceNumber);
+            }} style={{width:"100%",marginTop:10}}>{issued ? "💾 Guardar factura" : "🧾 Emitir factura "+invNumber}</Btn>}
+            {issued && !ed._editMode && <Btn ghost onClick={() => mailDoc(ed, "factura", invNumber, total)} style={{width:"100%",marginTop:8}}>✉ Enviar factura por email{cl.companyEmail ? " · "+cl.companyEmail : ""}</Btn>}
             </>;
           })()}
 
@@ -6436,7 +6511,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{color:C.gr}}>{shCountry}</div>
                     {ac.phone && <div style={{color:C.gr,fontSize:11,marginTop:4}}>📞 {ac.phone}</div>}
                     <div style={{marginTop:8,paddingTop:8,borderTop:"1px solid "+C.ln}}>
-                      <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,padding:0,textDecoration:"underline"}}>✎ Editar mi dirección guardada</button>
+                      <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,padding:0,textDecoration:"underline"}}>{t("editarDireccionGuardada")}</button>
                     </div>
                   </div>;
                 })()}
@@ -6891,7 +6966,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(160px, calc(50% - 6px)),1fr))",gap:12}}>
               {favProducts.map(p => {
                 const isAcetato = p.col === "Acetato";
-                const displayPrice = isAcetato ? p.fixedPrice : (customPrice > 0 ? customPrice : essentialUnitPrice);
+                const displayPrice = (isAcetato || p.fixedPrice > 0) ? (p.fixedPrice || ACETATO_PRICE) : (customPrice > 0 ? customPrice : essentialUnitPrice);
                 return <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",position:"relative"}}>
                   <button onClick={() => { setFavs(f => f.filter(x => x !== p.id)); dbToggleFav(p.id); }} style={{position:"absolute",top:8,right:8,zIndex:1,background:"rgba(255,255,255,0.95)",border:"none",cursor:"pointer",width:28,height:28,borderRadius:14,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b4c3b" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -7346,6 +7421,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {view === "c-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
+          {renderPwChange()}
           {/* PERSONAL */}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
             <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
@@ -8019,7 +8095,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("totalHT")}</div>
                     <div style={{fontSize:28,fontFamily:DP,fontWeight:400,color:C.dk,lineHeight:1}}>{fmt(finalTotal)} €</div>
-                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*0.15)} €</div>
+                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>
                   </div>
                 </div>
               </div>
@@ -8077,7 +8153,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div>
                     <div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{t("totalHT")}</div>
                     <div style={{fontSize:30,fontWeight:300,fontFamily:DP,color:C.dk}}>{fmt(finalTotal)} €</div>
-                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*0.15)} €</div>
+                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>
                   </div>
                   <Btn onClick={doOrder} disabled={!cartCl}>{t("passerCmd")}</Btn>
                 </div>
@@ -8375,6 +8451,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {view === "d-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
+          {renderPwChange()}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
             <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
@@ -9056,21 +9133,33 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         </>;})()}
       </Sec>}
 
-      {view === "a-inv" && <Sec title={t("factures")}>
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-          {orders.map((o, i) => { const ship = o.shippingCost > 0 ? o.shippingCost : 0; const ttc = (o.total + ship) * 1.21; return (
-            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"12px 14px",borderBottom:"1px solid "+C.bg2}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,flex:1,cursor:"pointer",flexWrap:"wrap",minWidth:0}} onClick={() => { setModal("viewInv"); setEd({...o}); }}>
-                <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{("F-"+o.id.replace("#",""))}</span>
-                <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:"1 1 100px",minWidth:60}}>{o.client}</span>
-                <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{o.date}</span>
-                <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{fmt(ttc)} €</span>
-                <Badge l={PL[o.pay]} c={PC[o.pay]} />
+      {view === "a-inv" && <Sec title={t("factures")} sub="Emite la factura cuando el pedido sale o se cobra · IVA según país y NIF-IVA del cliente">
+        {(() => {
+          const tag = (o, tg) => (o.notes||"").includes("["+tg+"]");
+          const clOf = o => clients.find(c => c.name === o.client) || {};
+          const ttcOf = o => { const tx = o.taxRate != null ? o.taxRate : defaultTax(clOf(o)); return ((o.total||0) + (o.shippingCost||0)) * (1 + tx/100); };
+          const issued = orders.filter(o => o.invoiceNumber).sort((x,y) => String(y.invoiceNumber).localeCompare(String(x.invoiceNumber)));
+          const pending = orders.filter(o => !o.invoiceNumber && (o.total||0) > 0 && !tag(o,"estado:rechazado") && !tag(o,"oculto") && (o.pay === "paid" || o.status === "shipped" || o.status === "delivered" || o.status === "partial"));
+          const row = (o, i, right) => <div key={o.id+"-"+i} className="mn-press" onClick={() => { setModal("viewInv"); setEd({...o}); }} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",flexWrap:"wrap"}}>
+            <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.dk,minWidth:92}}>{o.invoiceNumber || o.id}</span>
+            <span style={{fontSize:13,fontFamily:BD,color:C.dk,flex:"1 1 140px",minWidth:0}}>{o.client}<span style={{color:C.gr,fontSize:12}}> · {o.dist}</span></span>
+            <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{o.invoiceDate || o.date}</span>
+            <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:700}}>{fmt(ttcOf(o))} €</span>
+            {right}
+          </div>;
+          return <>
+            {pending.length > 0 && <div style={{marginBottom:20}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{width:10,height:10,borderRadius:5,background:ACC.gold}} /><span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>Pendientes de facturar · {pending.length}</span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>enviados, entregados o cobrados sin factura</span></div>
+              <div style={{background:"linear-gradient(150deg,"+ACC.gold+"10,"+C.wh+" 60%)",border:"1px solid "+ACC.gold+"40",borderRadius:12,overflow:"hidden"}}>
+                {pending.map((o,i) => row(o, i, <span style={{fontSize:12,fontFamily:BD,fontWeight:700,color:"#fff",background:ACC.gold,padding:"6px 10px",borderRadius:8}}>🧾 Emitir</span>))}
               </div>
-              <button onClick={(e) => { e.stopPropagation(); askConfirm(t("confirmarEliminar"), () => { const o = orders[i]; setOrders(p => p.filter((_,j) => j!==i)); dbDeleteOrder(o); toast(t("pedidoEliminado")); }); }} style={{background:C.rd,border:"none",color:"#fff",cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,padding:"6px 10px",borderRadius:3,flexShrink:0,whiteSpace:"nowrap"}}>{t("eliminar")}</button>
+            </div>}
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><span style={{width:10,height:10,borderRadius:5,background:ACC.green}} /><span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>Facturas emitidas · {issued.length}</span></div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:12,overflow:"hidden"}}>
+              {issued.length === 0 ? <div style={{padding:20,fontSize:13,fontFamily:BD,color:C.gr,textAlign:"center"}}>Aún no hay facturas emitidas desde la plataforma.</div> : issued.map((o,i) => row(o, i, <Badge l={PL[o.pay]} c={PC[o.pay]} />))}
             </div>
-          ); })}
-        </div>
+          </>;
+        })()}
       </Sec>}
 
       {view === "a-promo" && <Sec title={t("gestionPromos")} right={<Btn small onClick={() => { setModal("newPromo"); setEd({name:"",type:"percent",disc:5,cond:{fr:"",es:"",en:"",it:""},on:true,visible:["client","distributor"]}); }}>{t("nouvellePromo")}</Btn>}>
@@ -10407,16 +10496,40 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <span style={{fontSize:12,fontFamily:BD,color:C.rd,fontWeight:600}}>→ Revisar</span>
           </div>
         )}
-        {users.filter(u => u.active === false && u.role !== "admin").length > 0 && (
-          <div onClick={() => { setView("a-users"); setUserFilter("pending"); }} style={{display:"flex",alignItems:"center",gap:10,padding:"12px 16px",background:"#f39c12"+"12",border:"1px solid #f39c12"+"40",borderRadius:8,marginBottom:16,cursor:"pointer"}}>
-            <span style={{width:10,height:10,borderRadius:5,background:"#f39c12",flexShrink:0}} />
-            <span style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:600}}>{users.filter(u => u.active === false && u.role !== "admin").length} {t("solicitudes")}</span>
-            <span style={{fontSize:12,fontFamily:BD,color:C.gr,flex:1}}>→ {t("voirTout")}</span>
-          </div>
-        )}
+        {/* HOY: lo que hay que hacer */}
+        {(() => {
+          const tg = (o, x) => (o.notes||"").includes("["+x+"]");
+          const live = orders.filter(o => !tg(o,"oculto") && !tg(o,"estado:rechazado"));
+          const toShip = live.filter(o => o.status === "confirmed" || o.status === "preparing");
+          const toInvoice = live.filter(o => !o.invoiceNumber && (o.total||0) > 0 && (o.pay === "paid" || ["shipped","delivered","partial"].includes(o.status)));
+          const toCollect = live.filter(o => o.pay !== "paid" && (["shipped","delivered","partial"].includes(o.status) || o.pay === "invoiced"));
+          const commDue = orders.filter(o => commState(o) === "facturar");
+          const web = live.filter(o => tg(o,"landing:invierno") && o.status === "pending");
+          const access = users.filter(u => u.active === false && u.role !== "admin");
+          const tiles = [
+            ["Por enviar", toShip.length, toShip.reduce((s,o)=>s+(o.total||0),0), ICO.truck, ACC.sea, () => setView("a-ord")],
+            ["Por facturar", toInvoice.length, toInvoice.reduce((s,o)=>s+(o.total||0),0), ICO.book, ACC.gold, () => setView("a-inv")],
+            ["Por cobrar", toCollect.length, toCollect.reduce((s,o)=>s+(o.total||0),0), ICO.coins, ACC.wine, () => setView("a-ord")],
+            ["Comisiones por pagar", commDue.length, commDue.reduce((s,o)=>s+(o.comm||0),0), ICO.percent, ACC.green, () => setView("a-dist")],
+            ["Pedidos web", web.length, web.reduce((s,o)=>s+(o.total||0),0), ICO.cart, ACC.terra, () => setView("a-ord")],
+            ["Solicitudes de acceso", access.length, null, ICO.users, ACC.sage, () => { setView("a-users"); setUserFilter("pending"); }],
+          ];
+          return <div style={{marginBottom:22}}>
+            <div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:10}}>Hoy</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
+              {tiles.map(([l,n,amt,d,c,go]) => <button key={l} className="mn-lift mn-press" onClick={go} style={{textAlign:"left",padding:"14px",borderRadius:12,cursor:"pointer",background:n?"linear-gradient(160deg,"+c+"16,"+C.wh+" 65%)":C.wh,border:"1px solid "+(n?c+"45":C.ln),opacity:n?1:.6}}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}><IconChip d={d} c={c} size={32} /><span style={{fontSize:24,fontFamily:DP,fontWeight:600,color:n?c:C.gr}}>{n}</span></div>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{l}</div>
+                {amt != null && <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{fmt(amt)} €</div>}
+              </button>)}
+            </div>
+          </div>;
+        })()}
+
         {/* KPI ROW */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:22}}>
-          {renderKPI(t("ca"), fmt(orders.reduce((s,o) => s+o.total, 0))+" €", C.gn, null, ICO.coins, ACC.green)}
+          {renderKPI("Cobrado", fmt(orders.filter(o => o.pay === "paid").reduce((s,o) => s+(o.total||0), 0))+" €", C.gn, null, ICO.coins, ACC.green)}
+          {renderKPI("Pendiente de cobro", fmt(orders.filter(o => o.pay !== "paid" && !(o.notes||"").includes("[estado:rechazado]") && !(o.notes||"").includes("[oculto]") && ["shipped","delivered","partial"].includes(o.status)).reduce((s,o) => s+(o.total||0), 0))+" €", null, null, ICO.cal, ACC.wine)}
           {renderKPI(t("commandes"), String(orders.length), null, () => setView("a-ord"), ICO.box, ACC.sea)}
           {renderKPI(t("unites"), String(orders.reduce((s,o) => s+o.items, 0)), null, null, ICO.grid, ACC.terra)}
           {renderKPI(t("clients"), String(clients.length), null, () => setView("a-cl"), ICO.users, ACC.wine)}
