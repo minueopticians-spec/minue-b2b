@@ -627,6 +627,15 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  comAFacturar:{fr:"Commission à facturer",es:"Comisión a facturar",en:"Commission to invoice",it:"Commissione da fatturare"},
+  comEnEspera:{fr:"Commission en attente",es:"Comisión en espera",en:"Commission on hold",it:"Commissione in attesa"},
+  comPagada:{fr:"Commission payée",es:"Comisión pagada",en:"Commission paid",it:"Commissione pagata"},
+  epCobrado:{fr:"Encaissé",es:"Cobrado",en:"Collected",it:"Incassato"},
+  epPendCobro:{fr:"Livré, à encaisser",es:"Entregado, pendiente de cobro",en:"Delivered, to collect",it:"Consegnato, da incassare"},
+  epPendEnvio:{fr:"En attente d'envoi",es:"Pendiente de envío",en:"Awaiting shipment",it:"In attesa di spedizione"},
+  epDevuelto:{fr:"Retourné ou reporté",es:"Devuelto o aplazado",en:"Returned or postponed",it:"Reso o rinviato"},
+  epRechazado:{fr:"Refusé",es:"Rechazado",en:"Rejected",it:"Rifiutato"},
+  accionesPendientes:{fr:"À faire",es:"Acciones pendientes",en:"To do",it:"Da fare"},
   clActivo:{fr:"Actives",es:"Activas",en:"Active",it:"Attivi"},
   clPorActivar:{fr:"À activer",es:"Por activar",en:"To activate",it:"Da attivare"},
   clDormido:{fr:"En sommeil",es:"Dormidas",en:"Dormant",it:"Inattivi"},
@@ -659,8 +668,6 @@ const T = {
   compartirPromos:{fr:"Partagez les offres actives avec vos boutiques",es:"Comparte las ofertas activas con tus tiendas",en:"Share active offers with your stores",it:"Condividi le offerte attive con i tuoi negozi"},
   msgPromos:{fr:"Offres Minuë en ce moment :",es:"Ofertas Minuë ahora mismo:",en:"Minuë offers right now:",it:"Offerte Minuë in questo momento:"},
   compartirEsta:{fr:"Partager",es:"Compartir",en:"Share",it:"Condividi"},
-  ocultarGuia:{fr:"Masquer",es:"Ocultar",en:"Hide",it:"Nascondi"},
-  verGuia:{fr:"Voir",es:"Ver",en:"Show",it:"Mostra"},
   graficoVentas:{fr:"Ventes des 6 derniers mois",es:"Ventas de los últimos 6 meses",en:"Sales over the last 6 months",it:"Vendite degli ultimi 6 mesi"},
   graficoVacio:{fr:"Vos ventes apparaîtront ici dès la première commande.",es:"Tus ventas aparecerán aquí con el primer pedido.",en:"Your sales will show here after the first order.",it:"Le tue vendite appariranno qui dal primo ordine."},
   seguimientoComercial:{fr:"Suivi commercial",es:"Seguimiento comercial",en:"Sales follow-up",it:"Follow-up commerciale"},
@@ -2012,6 +2019,12 @@ export default function App() {
   const distComm = distOrders.reduce((s, o) => s + o.comm, 0);
   const distPaid = distOrders.filter(o => o.pay === "paid").reduce((s, o) => s + o.comm, 0);
   const distInvoiced = distOrders.filter(o => o.pay === "invoiced").reduce((s, o) => s + o.comm, 0);
+  // Marcas en notas internas (solo admin las edita): [comm:pagada], [comm:facturar], [estado:rechazado]
+  const hasTag = (o, tg) => (o.notes||"").includes("["+tg+"]");
+  const commState = o => hasTag(o,"comm:pagada") ? "pagada" : (o.pay === "paid" || hasTag(o,"comm:facturar")) ? "facturar" : (hasTag(o,"estado:rechazado") ? "none" : (o.comm > 0 ? "espera" : "none"));
+  const orderCat = o => hasTag(o,"estado:rechazado") ? "rechazado" : o.pay === "paid" ? "cobrado" : (o.status === "delivered" || o.status === "shipped" || o.status === "partial") ? "pendCobro" : o.status === "pending" ? "devuelto" : "pendEnvio";
+  const sumComm = st => distOrders.filter(o => commState(o) === st).reduce((s, o) => s + o.comm, 0);
+  const distAFacturar = sumComm("facturar"), distEnEspera = sumComm("espera"), distPagada = sumComm("pagada");
 
   /* newOrd modal calculations */
   const edLines = ed.lines || [];
@@ -7385,9 +7398,56 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
             {renderKPI(t("ventesTot"), fmt(distSales)+" €", null, () => setView("d-ord"), ICO.chart, ACC.sea)}
             {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn, null, ICO.percent, ACC.green)}
-            {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn, null, ICO.coins, ACC.sage)}
-            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn, null, ICO.cal, ACC.gold)}
+            {renderKPI(t("comAFacturar"), fmt(distAFacturar)+" €", C.gn, null, ICO.coins, ACC.green)}
+            {renderKPI(t("comEnEspera"), fmt(distEnEspera)+" €", null, null, ICO.cal, ACC.gold)}
+            {renderKPI(t("comPagada"), fmt(distPagada)+" €", null, null, ICO.shield, ACC.sage)}
           </div>
+
+          {/* ACCIONES PENDIENTES (desde la ficha del distribuidor) */}
+          {(() => {
+            const lines = (user.notes||"").split("\n");
+            const i0 = lines.findIndex(l => /^\s*(à faire|a faire|acciones|pendiente|to do)\s*:/i.test(l));
+            if (i0 < 0) return null;
+            const items = []; for (let k = i0+1; k < lines.length && /^\s*-\s+/.test(lines[k]); k++) items.push(lines[k].replace(/^\s*-\s+/,"").trim());
+            if (!items.length) return null;
+            const key = "minue_todo_"+user.email;
+            const done = (() => { try { return JSON.parse(localStorage.getItem(key)||"{}"); } catch(e) { return {}; } })();
+            const toggle = it => { const d = {...done, [it]:!done[it]}; try { localStorage.setItem(key, JSON.stringify(d)); } catch(e) {} setGuideOpen(g => !g); };
+            const left = items.filter(it => !done[it]).length;
+            return <div className="mn-fade" style={{background:"linear-gradient(150deg,"+ACC.terra+"14,"+C.wh+" 60%)",border:"1px solid "+ACC.terra+"40",borderRadius:14,padding:"16px 18px",marginBottom:18}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                <IconChip d={ICO.spark} c={ACC.terra} />
+                <div style={{flex:1}}><div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("accionesPendientes")}</div><div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{left} / {items.length}</div></div>
+              </div>
+              {items.map((it,k) => <button key={k} className="mn-press" onClick={() => toggle(it)} style={{width:"100%",display:"flex",alignItems:"flex-start",gap:10,padding:"9px 4px",background:"transparent",border:"none",borderTop:k?"1px solid "+C.bg2:"none",cursor:"pointer",textAlign:"left"}}>
+                <span style={{width:20,height:20,borderRadius:6,border:"2px solid "+(done[it]?ACC.green:ACC.terra),background:done[it]?ACC.green:"transparent",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,flexShrink:0,marginTop:1}}>{done[it]?"✓":""}</span>
+                <span style={{fontSize:13,fontFamily:BD,color:done[it]?C.gr2:C.dk,textDecoration:done[it]?"line-through":"none",lineHeight:1.45}}>{it}</span>
+              </button>)}
+            </div>;
+          })()}
+
+          {/* ESTADO DE LOS PEDIDOS (importe HT) */}
+          {distOrders.length > 0 && (() => {
+            const cats = [["cobrado",t("epCobrado"),ACC.green],["pendCobro",t("epPendCobro"),ACC.gold],["pendEnvio",t("epPendEnvio"),ACC.sea],["devuelto",t("epDevuelto"),ACC.terra],["rechazado",t("epRechazado"),ACC.wine]];
+            const sums = {}; const cnt = {};
+            distOrders.forEach(o => { const c = orderCat(o); sums[c] = (sums[c]||0) + (o.total||0); cnt[c] = (cnt[c]||0) + 1; });
+            const tot = cats.reduce((s,[k]) => s + (sums[k]||0), 0) || 1;
+            return <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px",marginBottom:18}}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:14,flexWrap:"wrap"}}>
+                <div style={{display:"flex",alignItems:"center",gap:12}}><IconChip d={ICO.box} c={ACC.sea} /><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("estadoPedidos")}</div></div>
+                <div style={{fontSize:18,fontFamily:DP,fontWeight:600,color:C.dk}}>{fmt(distSales)} € <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>HT</span></div>
+              </div>
+              <div style={{display:"flex",height:16,borderRadius:8,overflow:"hidden",background:C.bg2,marginBottom:14}}>
+                {cats.map(([k,,c]) => sums[k] ? <div key={k} title={fmt(sums[k])+" €"} style={{width:(sums[k]/tot*100)+"%",background:c}} /> : null)}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+                {cats.map(([k,l,c]) => <div key={k} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",border:"1px solid "+c+"30",background:c+"0c",borderRadius:10}}>
+                  <span style={{width:10,height:10,borderRadius:5,background:c,flexShrink:0}} />
+                  <div style={{minWidth:0}}><div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk}}>{fmt(sums[k]||0)} €</div><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{l} · {cnt[k]||0}</div></div>
+                </div>)}
+              </div>
+            </div>;
+          })()}
 
           {/* ORDER NOTIFICATIONS */}
           {distOrders.length > 0 && <div style={{marginBottom:20}}>
@@ -9263,13 +9323,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             const toggle = id => setEd(x => ({...x, _pOpen:{...(x._pOpen||{}), [id]:!(x._pOpen||{})[id]}}));
             const setStage = (p, v) => { const np = {...p, stage:v}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); };
             const chip = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,fontSize:12,fontFamily:BD,fontWeight:600,color:fg,background:bg,padding:"7px 11px",borderRadius:8,textDecoration:"none",border:"1px solid "+(bd||bg)});
-            const viaMinue = list.filter(p => (p.noteAdmin||"").trim());
+            const prio = p => { const m = (p.noteAdmin||"").match(/Priorit[ée]\s*(\d)/i); return m ? +m[1] : 9; };
+            const viaMinue = list.filter(p => (p.noteAdmin||"").trim()).sort((a,b) => prio(a)-prio(b) || (a.name||"").localeCompare(b.name||""));
             const mine = list.filter(p => !(p.noteAdmin||"").trim());
             const renderCard = p => { const st = stageOf(p.stage); const isOpen = !!open[p.id]; const phone = (p.phone||"").replace(/[^0-9+]/g,""); return (
               <div key={p.id} className="mn-lift" style={{background:"linear-gradient(150deg,"+st[2]+"0d,"+C.wh+" 60%)",border:"1px solid "+st[2]+"35",borderLeft:"4px solid "+st[2],borderRadius:12,overflow:"hidden"}}>
                 <button onClick={() => toggle(p.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left"}}>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>{p.name}{(p.noteAdmin||"").trim() && <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:"#fff",background:CL.dk,padding:"2px 7px",borderRadius:8}}>{t("viaMinue").toUpperCase()}</span>}</div>
+                    <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>{p.name}{(p.noteAdmin||"").trim() && <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:"#fff",background:CL.dk,padding:"2px 7px",borderRadius:8}}>{t("viaMinue").toUpperCase()}</span>}{prio(p) < 9 && <span style={{fontSize:10,fontWeight:800,color:"#fff",background:[ACC.wine,ACC.gold,ACC.sea][prio(p)-1]||C.gr,padding:"2px 7px",borderRadius:8}}>P{prio(p)}</span>}</div>
                     <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:3}}>{[p.city,p.country].filter(Boolean).join(" · ")||"—"}</div>
                   </div>
                   <span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:"#fff",background:st[2],padding:"4px 9px",borderRadius:9,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
