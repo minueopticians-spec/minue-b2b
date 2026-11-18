@@ -627,6 +627,38 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  accionesRapidas:{fr:"Accès rapide",es:"Accesos rápidos",en:"Quick actions",it:"Accesso rapido"},
+  qaCatalogo:{fr:"Catalogue",es:"Catálogo",en:"Catalogue",it:"Catalogo"},
+  qaNuevoPedido:{fr:"Nouvelle commande",es:"Nuevo pedido",en:"New order",it:"Nuovo ordine"},
+  qaClientes:{fr:"Mes clients",es:"Mis clientes",en:"My clients",it:"I miei clienti"},
+  qaPedidos:{fr:"Mes commandes",es:"Mis pedidos",en:"My orders",it:"I miei ordini"},
+  compartir:{fr:"Partager",es:"Compartir",en:"Share",it:"Condividi"},
+  compartirDesc:{fr:"Envoyez ces liens à vos boutiques par WhatsApp ou email.",es:"Envía estos enlaces a tus tiendas por WhatsApp o email.",en:"Send these links to your stores by WhatsApp or email.",it:"Invia questi link ai tuoi negozi via WhatsApp o email."},
+  accesoPlataforma:{fr:"Accès à la plateforme",es:"Acceso a la plataforma",en:"Platform access",it:"Accesso alla piattaforma"},
+  accesoPlataformaDesc:{fr:"La boutique demande un accès et reste liée à vous.",es:"La tienda pide acceso y queda vinculada a ti.",en:"The store requests access and is linked to you.",it:"Il negozio richiede l'accesso e resta collegato a te."},
+  catalogoTrade:{fr:"Catalogue trade",es:"Catálogo trade",en:"Trade catalogue",it:"Catalogo trade"},
+  catalogoTradeDesc:{fr:"Catalogue et commande rapide, sans inscription.",es:"Catálogo y pedido rápido, sin registro.",en:"Catalogue and quick order, no sign-up.",it:"Catalogo e ordine rapido, senza registrazione."},
+  copiar:{fr:"Copier",es:"Copiar",en:"Copy",it:"Copia"},
+  msgPlataforma:{fr:"Bonjour ! Voici l'accès à l'espace professionnel Minuë pour voir la collection et commander :",es:"¡Hola! Te paso el acceso al espacio profesional de Minuë para ver la colección y hacer pedidos:",en:"Hi! Here is access to the Minuë trade space to see the collection and order:",it:"Ciao! Ecco l'accesso all'area professionale Minuë per vedere la collezione e ordinare:"},
+  msgCatalogo:{fr:"Bonjour ! Voici le catalogue trade Minuë :",es:"¡Hola! Te paso el catálogo trade de Minuë:",en:"Hi! Here is the Minuë trade catalogue:",it:"Ciao! Ecco il catalogo trade Minuë:"},
+  misCondiciones:{fr:"Mes conditions",es:"Mis condiciones",en:"My terms",it:"Le mie condizioni"},
+  condComision:{fr:"Commission",es:"Comisión",en:"Commission",it:"Commissione"},
+  condComisionDesc:{fr:"sur les ventes de vos boutiques",es:"sobre las ventas de tus tiendas",en:"on your stores' sales",it:"sulle vendite dei tuoi negozi"},
+  condZona:{fr:"Zone",es:"Zona",en:"Territory",it:"Zona"},
+  condZonaDesc:{fr:"zone de représentation",es:"zona de representación",en:"representation territory",it:"zona di rappresentanza"},
+  condEntrega:{fr:"7-8 jours",es:"7-8 días",en:"7-8 days",it:"7-8 giorni"},
+  condEntregaDesc:{fr:"livraison standard",es:"envío estándar",en:"standard delivery",it:"consegna standard"},
+  condRepo:{fr:"48-72 h",es:"48-72 h",en:"48-72 h",it:"48-72 h"},
+  condRepoDesc:{fr:"réassorts",es:"reposiciones",en:"restocks",it:"riassortimenti"},
+  condCalendario:{fr:"Déc-Jan",es:"Dic-Ene",en:"Dec-Jan",it:"Dic-Gen"},
+  condCalendarioDesc:{fr:"collection principale · capsules juin et sept.",es:"colección principal · cápsulas junio y sept.",en:"main collection · capsules June and Sept.",it:"collezione principale · capsule giugno e sett."},
+  condRotacion:{fr:"Rotation",es:"Rotación",en:"Rotation",it:"Rotazione"},
+  condRotacionDesc:{fr:"un modèle qui ne tourne pas s'échange à la commande suivante",es:"un diseño que no rota se cambia en el siguiente pedido",en:"a slow model can be swapped on the next order",it:"un modello che non ruota si cambia al prossimo ordine"},
+  condPrecios:{fr:"Prix protégés",es:"Precios protegidos",en:"Protected prices",it:"Prezzi protetti"},
+  condPreciosDesc:{fr:"pas de 2x1 ni de promos agressives en ligne",es:"sin 2x1 ni promociones agresivas en web",en:"no 2-for-1 or aggressive web promos",it:"niente 2x1 né promozioni aggressive online"},
+  condApoyo:{fr:"Soutien",es:"Apoyo",en:"Support",it:"Supporto"},
+  condApoyoDesc:{fr:"présentoirs, contenus, pubs locales et clients orientés",es:"expositores, contenido, anuncios locales y derivación de clientes",en:"displays, content, local ads and client referrals",it:"espositori, contenuti, annunci locali e clienti indirizzati"},
+  colecciones:{fr:"Collections",es:"Colecciones",en:"Collections",it:"Collezioni"},
   desdeLabel:{fr:"À partir de",es:"Desde",en:"From",it:"Da"},
   enPedidosDe:{fr:"pour les commandes de",es:"en pedidos de",en:"on orders of",it:"per ordini da"},
   unidadesLabel:{fr:"unités",es:"unidades",en:"units",it:"unità"},
@@ -1172,6 +1204,37 @@ const MARKET_DATA = {
   ],
 };
 
+/* Colecciones de temporada: viven en tags, no en `collection`, que fija el precio de cada línea. */
+const SEASONS = [
+  {k:"ss27", l:{fr:"Printemps-Été 27",es:"Primavera-Verano 27",en:"Spring-Summer 27",it:"Primavera-Estate 27"}, c:"#c4956a"},
+  {k:"inv26", l:{fr:"Hiver 26/27",es:"Invierno 26/27",en:"Winter 26/27",it:"Inverno 26/27"}, c:"#3d4f5c"},
+  {k:"ace27", l:{fr:"Acétate 27",es:"Acetato 27",en:"Acetate 27",it:"Acetato 27"}, c:"#722f37"},
+];
+
+const ICO = {
+  link:"M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71",
+  book:"M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5zM8 7h8M8 11h6",
+  share:"M18 8a3 3 0 100-6 3 3 0 000 6zM6 15a3 3 0 100-6 3 3 0 000 6zM18 22a3 3 0 100-6 3 3 0 000 6zM8.6 13.5l6.8 4M15.4 6.5l-6.8 4",
+  chat:"M21 11.5a8.4 8.4 0 01-12.3 7.4L3 21l2.1-5.7A8.4 8.4 0 1121 11.5z",
+  mail:"M4 4h16v16H4zM4 6l8 7 8-7",
+  copy:"M9 9h11v11H9zM5 15H4V4h11v1",
+  pin:"M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12zM12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",
+  percent:"M19 5L5 19M6.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM17.5 20a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",
+  truck:"M1 3h15v13H1zM16 8h4l3 3v5h-7zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",
+  refresh:"M23 4v6h-6M1 20v-6h6M3.5 9a9 9 0 0114.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0020.5 15",
+  cal:"M3 4h18v18H3zM16 2v4M8 2v4M3 10h18",
+  shield:"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
+  spark:"M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z",
+  grid:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",
+  cart:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",
+  users:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",
+  box:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
+  coins:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",
+  chart:"M3 3v18h18M7 14l4-4 4 4 5-5",
+};
+const ACC = {green:"#2d6b4f",gold:"#b8860b",wine:"#722f37",sea:"#1a5276",terra:"#c4956a",sage:"#6b8f71"};
+const ZONES = {ES:"España",FR:"France",IT:"Italia",DE:"Deutschland",PT:"Portugal",GR:"Ελλάδα",AU:"Australia",BE:"Belgique",CH:"Suisse",GB:"United Kingdom"};
+
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -1444,6 +1507,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [seasonFilter, setSeasonFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
   const [prepChecks, setPrepChecks] = useState({});
   const [expandedPrep, setExpandedPrep] = useState(null);
@@ -2118,6 +2182,7 @@ export default function App() {
     ? [["e-dash","dashboard"],["a-ord","commandes"],["e-comercial","commercial"],["e-almacen","almacen"]]
     : [["a-stats","stats"],["a-ord","commandes"],["a-comercial","commercial"],["a-cl","clients"]];
   const moreItems = navItems.filter(([v]) => !bottomItems.find(([bv]) => bv === v));
+  const IconChip = ({d, c=CL.gn, size=38}) => <div style={{width:size,height:size,borderRadius:size/3.2,background:c+"16",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><svg width={size*.5} height={size*.5} viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg></div>;
   const NavIcon = ({d, size=20, color="currentColor"}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
 
   const renderNav = () => {
@@ -2455,7 +2520,7 @@ export default function App() {
 
   /* ═══ MODEL CATALOG GRID ═══ */
   const renderModelCatalog = () => {
-    const filtered = products.filter(p => (role === "admin" || role === "team" || p.active !== false) && (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase())));
+    const filtered = products.filter(p => (role === "admin" || role === "team" || p.active !== false) && (favFilter ? favs.includes(p.id) : true) && (colFilter === "all" || p.col === colFilter) && (seasonFilter === "all" || (p.tags||[]).includes(seasonFilter)) && (shapeFilter === "all" || p.shape === shapeFilter) && (colorFilter === "all" || p.colorFamily === colorFilter) && (!filter || p.model.toLowerCase().includes(filter.toLowerCase()) || p.color.toLowerCase().includes(filter.toLowerCase())));
     const modelGroups = {};
     filtered.forEach(p => {
       if (!modelGroups[p.model]) modelGroups[p.model] = {model:p.model, col:p.col, colors:[], tags:new Set()};
@@ -2867,12 +2932,18 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
   };
 
 
-  const renderKPI = (label, value, accent, onClick) => (
-    <div onClick={onClick} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 14px",...(onClick?{cursor:"pointer"}:{})}}>
-      <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{label}</div>
+  const renderKPI = (label, value, accent, onClick, icon, tone) => {
+    const tn = tone || accent;
+    return (
+    <div className={"mn-lift"+(onClick?" mn-press":"")} onClick={onClick} style={{position:"relative",overflow:"hidden",background:tn?"linear-gradient(160deg,"+tn+"12,"+C.wh+" 62%)":C.wh,border:"1px solid "+(tn?tn+"30":C.ln),borderRadius:12,padding:"16px 14px 16px 17px",...(onClick?{cursor:"pointer"}:{})}}>
+      {tn && <div style={{position:"absolute",left:0,top:0,bottom:0,width:3,background:tn}} />}
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:6,marginBottom:6}}>
+        <div style={{fontSize:10,color:C.gr,fontFamily:BD,fontWeight:600,textTransform:"uppercase",letterSpacing:0.5}}>{label}</div>
+        {icon && <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={tn||C.gr} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:.85}}><path d={icon}/></svg>}
+      </div>
       <div style={{fontSize:"min(24px, 5.5vw)",fontWeight:600,fontFamily:BD,color:accent||C.dk,lineHeight:1.1}}>{value}</div>
-    </div>
-  );
+    </div>);
+  };
 
   /* ═══ MODAL ═══ */
   const renderModal = () => {
@@ -3204,7 +3275,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{marginBottom:16}}>
               <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:6}}>{t("etiquetas")}</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {[["top",t("topVenta"),"#c4956a"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),"#722f37"],["icons","Icons","#b8860b"],["privee","Privée","#18332f"]].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
+                {[["top",t("topVenta"),"#c4956a"],["new",t("nuevo"),"#8e44ad"],["rec",t("recomendado"),"#722f37"],["icons","Icons","#b8860b"],["privee","Privée","#18332f"],...SEASONS.map(se => [se.k, se.l[lang]||se.l.es, se.c])].map(([tg,lb,cl]) => { const tags = ed.tags||[]; const on = tags.includes(tg); return (
                   <button key={tg} onClick={() => setEd(p => ({...p, tags: on ? tags.filter(x=>x!==tg) : [...tags, tg]}))} style={{padding:"6px 12px",background:on?cl:"transparent",color:on?"#fff":cl,border:"1px solid "+(on?cl:C.ln),borderRadius:3,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",textTransform:"uppercase"}}>{lb}</button>
                 ); })}
               </div>
@@ -5972,7 +6043,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
         {/* ═══ COLLECTION + FILTER BUTTONS ═══ */}
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
+          {SEASONS.some(se => products.some(p => p.active!==false && (p.tags||[]).includes(se.k))) && <div style={{display:"flex",gap:6,width:"100%",overflowX:"auto",paddingBottom:4,marginBottom:2}}>
+            <button onClick={() => setSeasonFilter("all")} style={{flexShrink:0,padding:"8px 14px",background:seasonFilter==="all"?C.dk:C.wh,color:seasonFilter==="all"?C.bg:C.dk,border:"1px solid "+(seasonFilter==="all"?C.dk:C.ln),borderRadius:10,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600}}>{t("colecciones")} · {t("toutes")}</button>
+            {SEASONS.map(se => { const n = products.filter(p => p.active!==false && (p.tags||[]).includes(se.k)).length; if (!n) return null; const on = seasonFilter===se.k; return (
+              <button key={se.k} onClick={() => setSeasonFilter(on ? "all" : se.k)} style={{flexShrink:0,display:"flex",alignItems:"center",gap:8,padding:"8px 14px",background:on?se.c:C.wh,color:on?"#fff":C.dk,border:"1px solid "+(on?se.c:C.ln),borderRadius:10,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600}}>
+                <span style={{width:8,height:8,borderRadius:4,background:on?"#fff":se.c}} />{se.l[lang]||se.l.es}<span style={{fontWeight:400,opacity:.7}}>{n}</span>
+              </button>); })}
+          </div>}
+          {[["all",t("tous")],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
@@ -7090,7 +7168,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           if (newProsp.length === 0) return null;
           return <div style={{padding:"16px min(24px,4vw) 0"}}>
             <div onClick={() => setView("d-prospectos")} style={{background:"linear-gradient(135deg,#c4956a,#b8860b)",borderRadius:14,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,color:"#fff",boxShadow:"0 4px 16px rgba(184,134,11,0.25)"}}>
-              <div style={{fontSize:28}}>🎯</div>
+              <IconChip d={ICO.spark} c={ACC.gold} size={44} />
               <div style={{flex:1}}>
                 <div style={{fontSize:14,fontFamily:BD,fontWeight:700,marginBottom:2}}>{newProsp.length} {newProsp.length === 1 ? t("prospectoNuevoMinue") : t("prospectosNuevosMinue")}</div>
                 <div style={{fontSize:11,fontFamily:BD,opacity:0.9}}>{t("prospectosNuevosSub")}</div>
@@ -7103,7 +7181,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           const activeNews = news.filter(n => n.on).sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0)).slice(0,3);
           if (activeNews.length === 0) return null;
           return <div style={{padding:"16px min(24px,4vw) 0"}}>
-            <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:10}}>📣 {t("novedadesTendencias")}</div>
+            <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:10,display:"flex",alignItems:"center",gap:10}}><IconChip d={ICO.spark} c={ACC.terra} size={30} />{t("novedadesTendencias")}</div>
             <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
               {activeNews.map(n => <div key={n.id} onClick={() => n.url ? window.open(n.url,"_blank") : setView(role==="distributor"?"d-news":"c-news")} style={{minWidth:240,maxWidth:300,flexShrink:0,background:"linear-gradient(135deg,"+CL.dk+","+"#1d4435)",borderRadius:14,padding:"16px 18px",cursor:"pointer",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:-30,right:-30,width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle, rgba(196,149,106,0.25), transparent 70%)"}} />
@@ -7120,7 +7198,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           const pending = myP.filter(p => p.stage === "nuevo" || p.stage === "contactado").length;
           if (myP.length === 0) return null;
           return <div style={{margin:"14px min(24px,4vw) 0",background:"linear-gradient(135deg,#8e44ad12,#8e44ad06)",border:"1.5px solid #8e44ad35",borderRadius:12,padding:"14px 18px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",flexWrap:"wrap"}} onClick={() => setView("d-prospectos")}>
-            <div style={{fontSize:26}}>🎯</div>
+            <IconChip d={ICO.spark} c={ACC.gold} size={42} />
             <div style={{flex:1,minWidth:160}}>
               <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("prospectos")}: {myP.length}</div>
               <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{pending > 0 ? pending+" "+t("etapaNuevo").toLowerCase()+"/"+t("etapaContactado").toLowerCase() : "✓"}</div>
@@ -7129,29 +7207,89 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>;
         })()}
         <div style={{padding:"20px min(24px, 4vw)"}}>
-          {/* REFERRAL LINK */}
+          {/* ACCESOS RAPIDOS · COMPARTIR · CONDICIONES */}
           {(() => {
             const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
             const refUrl = (typeof window !== "undefined" ? window.location.origin : "https://b2b.minueopticians.com") + "/?ref=" + myRef;
-            return <div style={{background:"linear-gradient(135deg,"+CL.gn+"12,"+CL.gn+"06)",border:"1px solid "+CL.gn+"30",borderRadius:10,padding:"16px 18px",marginBottom:18}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                <div style={{fontSize:22}}>🔗</div>
-                <div>
-                  <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("miEnlaceInvitacion")}</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2,lineHeight:1.5}}>{t("miEnlaceDesc")}</div>
+            const tradeUrl = "https://trade.minueopticians.com/";
+            const zoneLine = (user.notes||"").split("\n").find(l => /^zona\s*:/i.test(l.trim()));
+            const zone = zoneLine ? zoneLine.split(":").slice(1).join(":").trim() : (ZONES[(user.country||"").toUpperCase()] || user.country || "—");
+            const copy = url => { try { navigator.clipboard.writeText(url); toast(t("enlaceCopiado")); } catch(e) {} };
+            const wa = (msg, url) => window.open("https://wa.me/?text=" + encodeURIComponent(msg + " " + url), "_blank", "noopener");
+            const mail = (msg, url) => { window.location.href = "mailto:?subject=" + encodeURIComponent("Minuë") + "&body=" + encodeURIComponent(msg + "\n\n" + url); };
+            const btn = (bg, fg, bd) => ({display:"inline-flex",alignItems:"center",gap:6,padding:"8px 12px",background:bg,color:fg,border:"1px solid "+(bd||bg),borderRadius:8,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"});
+            const svg = d => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+            const quick = [["d-cat",ICO.grid,t("qaCatalogo"),ACC.green],["d-cart",ICO.cart,t("qaNuevoPedido"),ACC.terra],["d-cl",ICO.users,t("qaClientes"),ACC.sea],["d-ord",ICO.box,t("qaPedidos"),ACC.wine],["a-mercado",ICO.chart,t("mercado"),ACC.gold]];
+            const shares = [[ICO.link,t("accesoPlataforma"),t("accesoPlataformaDesc"),refUrl,t("msgPlataforma"),ACC.green],[ICO.book,t("catalogoTrade"),t("catalogoTradeDesc"),tradeUrl,t("msgCatalogo"),ACC.terra]];
+            const conds = [
+              [ICO.percent,(user.commRate||15)+"%",t("condComision"),t("condComisionDesc"),ACC.green],
+              [ICO.pin,zone,t("condZona"),t("condZonaDesc"),ACC.sea],
+              [ICO.truck,t("condEntrega"),"",t("condEntregaDesc"),ACC.terra],
+              [ICO.refresh,t("condRepo"),"",t("condRepoDesc"),ACC.sage],
+              [ICO.cal,t("condCalendario"),"",t("condCalendarioDesc"),ACC.gold],
+              [ICO.spark,t("condRotacion"),"",t("condRotacionDesc"),ACC.wine],
+              [ICO.shield,t("condPrecios"),"",t("condPreciosDesc"),ACC.green],
+              [ICO.users,t("condApoyo"),"",t("condApoyoDesc"),ACC.sea],
+            ];
+            const head = (d,c,title,sub) => <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}><IconChip d={d} c={c} /><div><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>{sub && <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{sub}</div>}</div></div>;
+            return <>
+              <div className="mn-fade" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(110px,1fr))",gap:10,marginBottom:18}}>
+                {quick.map(([v,d,l,c]) => (
+                  <button key={v} className="mn-lift mn-press" onClick={() => setView(v)} style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:10,padding:"14px",background:"linear-gradient(160deg,"+c+"14,"+C.wh+" 70%)",border:"1px solid "+c+"30",borderRadius:12,cursor:"pointer",textAlign:"left"}}>
+                    <IconChip d={d} c={c} size={34} />
+                    <span style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk}}>{l}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px",marginBottom:18}}>
+                {head(ICO.share,ACC.terra,t("compartir"),t("compartirDesc"))}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:10}}>
+                  {shares.map(([d,title,desc,url,msg,c]) => (
+                    <div key={title} className="mn-lift" style={{border:"1px solid "+c+"35",background:c+"08",borderRadius:12,padding:"14px"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                        <IconChip d={d} c={c} size={32} />
+                        <div style={{minWidth:0}}>
+                          <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>
+                          <div style={{fontSize:10,fontFamily:BD,color:C.gr,lineHeight:1.4}}>{desc}</div>
+                        </div>
+                      </div>
+                      <div onClick={() => copy(url)} title={url} style={{fontSize:11,fontFamily:"monospace",color:C.dk,background:C.wh,border:"1px dashed "+c+"60",borderRadius:7,padding:"8px 10px",marginBottom:10,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"copy"}}>{url}</div>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                        <button className="mn-press" onClick={() => wa(msg,url)} style={btn("#25D366","#fff")}>{svg(ICO.chat)}WhatsApp</button>
+                        <button className="mn-press" onClick={() => mail(msg,url)} style={btn(C.wh,C.dk,C.ln)}>{svg(ICO.mail)}Email</button>
+                        <button className="mn-press" onClick={() => copy(url)} style={btn(C.wh,c,c+"60")}>{svg(ICO.copy)}{t("copiar")}</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div style={{display:"flex",gap:8,alignItems:"center",marginTop:10,flexWrap:"wrap"}}>
-                <input value={refUrl} readOnly onClick={e => e.target.select()} style={{flex:1,minWidth:200,padding:"9px 12px",border:"1px solid "+C.ln,borderRadius:5,fontFamily:"monospace",fontSize:11,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
-                <button onClick={() => { navigator.clipboard.writeText(refUrl); toast(t("enlaceCopiado")); }} style={{padding:"9px 16px",background:CL.gn,color:"#fff",border:"none",borderRadius:5,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>📋 {t("copiarEnlace")}</button>
+
+              <div className="mn-fade" style={{background:"linear-gradient(135deg,"+CL.dk+","+CL.dk+"ee)",borderRadius:14,padding:"18px",marginBottom:18,color:CL.bg}}>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
+                  <IconChip d={ICO.shield} c={"#d4a030"} />
+                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700}}>{t("misCondiciones")}</div>
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+                  {conds.map(([d,big,label,desc,c],i) => (
+                    <div key={i} className="mn-lift" style={{background:"rgba(248,239,230,0.07)",border:"1px solid rgba(248,239,230,0.12)",borderRadius:10,padding:"12px"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c==ACC.green||c==ACC.sea?"#8fc9a8":"#e0b25a"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
+                        {label && <span style={{fontSize:9,fontFamily:BD,letterSpacing:.8,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{label}</span>}
+                      </div>
+                      <div style={{fontSize:16,fontFamily:DP,fontWeight:600,lineHeight:1.2}}>{big}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,lineHeight:1.4}}>{desc}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>;
+            </>;
           })()}
 
           {/* GUIDE / ONBOARDING */}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,marginBottom:18,overflow:"hidden"}}>
             <button onClick={() => setGuideOpen(!guideOpen)} style={{width:"100%",padding:"14px 18px",background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
-              <div style={{fontSize:20}}>📚</div>
+              <IconChip d={ICO.book} c={ACC.terra} size={34} />
               <div style={{flex:1}}>
                 <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("guiaUsoTitulo")}</div>
                 <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("guiaPasosSub")}</div>
@@ -7195,10 +7333,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>}
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
-            {renderKPI(t("ventesTot"), fmt(distSales)+" €")}
-            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn)}
-            {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn)}
-            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn)}
+            {renderKPI(t("ventesTot"), fmt(distSales)+" €", null, () => setView("d-ord"), ICO.chart, ACC.sea)}
+            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn, null, ICO.percent, ACC.green)}
+            {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn, null, ICO.coins, ACC.sage)}
+            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn, null, ICO.cal, ACC.gold)}
           </div>
 
           {/* COMMISSIONS BREAKDOWN BY QUARTER */}
@@ -7319,7 +7457,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
         <div style={{display:"flex",gap:6,marginBottom:10,alignItems:"center",flexWrap:"wrap"}}>
-          {[["all","Tout"],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
+          {SEASONS.some(se => products.some(p => p.active!==false && (p.tags||[]).includes(se.k))) && <div style={{display:"flex",gap:6,width:"100%",overflowX:"auto",paddingBottom:4,marginBottom:2}}>
+            <button onClick={() => setSeasonFilter("all")} style={{flexShrink:0,padding:"8px 14px",background:seasonFilter==="all"?C.dk:C.wh,color:seasonFilter==="all"?C.bg:C.dk,border:"1px solid "+(seasonFilter==="all"?C.dk:C.ln),borderRadius:10,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600}}>{t("colecciones")} · {t("toutes")}</button>
+            {SEASONS.map(se => { const n = products.filter(p => p.active!==false && (p.tags||[]).includes(se.k)).length; if (!n) return null; const on = seasonFilter===se.k; return (
+              <button key={se.k} onClick={() => setSeasonFilter(on ? "all" : se.k)} style={{flexShrink:0,display:"flex",alignItems:"center",gap:8,padding:"8px 14px",background:on?se.c:C.wh,color:on?"#fff":C.dk,border:"1px solid "+(on?se.c:C.ln),borderRadius:10,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600}}>
+                <span style={{width:8,height:8,borderRadius:4,background:on?"#fff":se.c}} />{se.l[lang]||se.l.es}<span style={{fontWeight:400,opacity:.7}}>{n}</span>
+              </button>); })}
+          </div>}
+          {[["all",t("tous")],["Essential","Essential"],["Icons","Icons"],["Acetato","Acetato"]].map(([v,l]) => (
             <button key={v} onClick={() => { setColFilter(v); setFavFilter(false); }} style={{padding:"5px 14px",background:colFilter===v&&!favFilter?C.dk:"transparent",color:colFilter===v&&!favFilter?C.bg:C.gr,border:"1px solid "+(colFilter===v&&!favFilter?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           {favs.length > 0 && <button onClick={() => setFavFilter(!favFilter)} style={{padding:"5px 12px",background:favFilter?"#6b4c3b":"transparent",color:favFilter?"#fff":"#6b4c3b",border:"1px solid "+(favFilter?"#6b4c3b":C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,fontWeight:500,borderRadius:20,display:"flex",alignItems:"center",gap:4}}>
@@ -9716,12 +9861,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         )}
         {/* KPI ROW */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:22}}>
-          {renderKPI(t("ca"), fmt(orders.reduce((s,o) => s+o.total, 0))+" €", C.gn)}
-          {renderKPI(t("commandes"), String(orders.length))}
-          {renderKPI(t("unites"), String(orders.reduce((s,o) => s+o.items, 0)))}
-          {renderKPI(t("clients"), String(clients.length))}
-          {renderKPI(t("produits"), String(products.length))}
-          {renderKPI(t("panierMoyen"), orders.length ? fmt(orders.reduce((s,o) => s+o.total, 0)/orders.length)+" €" : "—")}
+          {renderKPI(t("ca"), fmt(orders.reduce((s,o) => s+o.total, 0))+" €", C.gn, null, ICO.coins, ACC.green)}
+          {renderKPI(t("commandes"), String(orders.length), null, () => setView("a-ord"), ICO.box, ACC.sea)}
+          {renderKPI(t("unites"), String(orders.reduce((s,o) => s+o.items, 0)), null, null, ICO.grid, ACC.terra)}
+          {renderKPI(t("clients"), String(clients.length), null, () => setView("a-cl"), ICO.users, ACC.wine)}
+          {renderKPI(t("produits"), String(products.length), null, () => setView("a-stock"), ICO.spark, ACC.gold)}
+          {renderKPI(t("panierMoyen"), orders.length ? fmt(orders.reduce((s,o) => s+o.total, 0)/orders.length)+" €" : "—", null, null, ICO.cart, ACC.sage)}
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))",gap:12,marginBottom:12}}>
