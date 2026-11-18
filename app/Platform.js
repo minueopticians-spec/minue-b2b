@@ -77,7 +77,7 @@ const T = {
   prontoPago:{fr:"Pronto pago −3%",es:"Pronto pago −3%",en:"Early payment −3%",it:"Pronto pagamento −3%"},
   prontoDesc:{fr:"Réduction si paiement anticipé",es:"Descuento por pago anticipado",en:"Discount for early payment",it:"Sconto per pagamento anticipato"},
   tarifVolume:{fr:"Tarifs par volume",es:"Tarifas por volumen",en:"Volume pricing",it:"Tariffe per volume"},
-  tarifVolSub:{fr:"Prix dégressifs · PVP 50-55 € · Envoi gratuit dès 20 uds",es:"Precios por volumen · PVP 50-55 € · Envío gratis desde 20 uds",en:"Volume pricing · RRP 50-55 € · Free shipping from 20 units",it:"Tariffe per volume · PVP 50-55 € · Spedizione gratuita da 20 unità"},
+  tarifVolSub:{fr:"Prix dégressifs · PVP 45-50 € · Envoi gratuit dès 20 uds",es:"Precios por volumen · PVP 45-50 € · Envío gratis desde 20 uds",en:"Volume pricing · RRP 45-50 € · Free shipping from 20 units",it:"Tariffe per volume · PVP 45-50 € · Spedizione gratuita da 20 unità"},
   votreTarif:{fr:"Votre tarif",es:"Tu tarifa",en:"Your tier",it:"La tua tariffa"},
   mesCmd:{fr:"Mes commandes",es:"Mis pedidos",en:"My orders",it:"I miei ordini"},
   aucuneCmd:{fr:"Aucune commande",es:"Sin pedidos",en:"No orders",it:"Nessun ordine"},
@@ -627,6 +627,28 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  pvpRecomendado:{fr:"PVC conseillé",es:"PVP recomendado",en:"Suggested retail",it:"Prezzo consigliato"},
+  margenTienda:{fr:"Votre marge",es:"Tu margen",en:"Your margin",it:"Il tuo margine"},
+  calComercial:{fr:"Calendrier commercial",es:"Calendario comercial",en:"Sales calendar",it:"Calendario commerciale"},
+  calComercialSub:{fr:"Les moments clés de l'année pour vendre Minuë",es:"Los momentos clave del año para vender Minuë",en:"The key moments of the year to sell Minuë",it:"I momenti chiave dell'anno per vendere Minuë"},
+  calLanzamiento:{fr:"Lancement",es:"Lanzamiento",en:"Launch",it:"Lancio"},
+  calFeria:{fr:"Salon",es:"Feria",en:"Trade fair",it:"Fiera"},
+  calVenta:{fr:"Vente",es:"Venta",en:"Selling",it:"Vendita"},
+  calPlanificar:{fr:"Préparer",es:"Preparar",en:"Plan",it:"Preparare"},
+  calProximo:{fr:"Prochain moment clé",es:"Próximo momento clave",en:"Next key moment",it:"Prossimo momento chiave"},
+  calAhora:{fr:"Maintenant",es:"Ahora",en:"Now",it:"Ora"},
+  calTips:{fr:"Conseils pour vendre",es:"Consejos para vender",en:"Selling tips",it:"Consigli per vendere"},
+  viaMinue:{fr:"Via Minuë",es:"Vía Minuë",en:"Via Minuë",it:"Via Minuë"},
+  contactosViaMinue:{fr:"Contacts envoyés par Minuë",es:"Contactos enviados por Minuë",en:"Contacts sent by Minuë",it:"Contatti inviati da Minuë"},
+  contactosViaMinueSub:{fr:"avec notre note et leurs infos",es:"con nuestra nota y su información",en:"with our note and their details",it:"con la nostra nota e i loro dati"},
+  misProspectos:{fr:"Mes prospects",es:"Mis prospectos",en:"My prospects",it:"I miei prospect"},
+  estadoLabel:{fr:"Statut",es:"Estado",en:"Status",it:"Stato"},
+  tarifasParaClientes:{fr:"Les tarifs que voient vos boutiques",es:"Las tarifas que ven tus tiendas",en:"The prices your stores see",it:"Le tariffe che vedono i tuoi negozi"},
+  tarifasExplica:{fr:"Plus il y a d'unités par commande, meilleur est le prix : la tranche se calcule sur toutes les unités de la commande. Dès 20 unités, livraison gratuite et présentoirs offerts. Envoyez-les en un clic.",es:"Cuantas más unidades por pedido, mejor precio: el tramo se calcula con todas las unidades del pedido. Desde 20 unidades, envío gratis y expositores incluidos. Envíaselas con un clic.",en:"The more units per order, the better the price: the tier uses all units in the order. From 20 units, free shipping and displays included. Send them in one click.",it:"Più unità per ordine, miglior prezzo: la fascia si calcola su tutte le unità dell'ordine. Da 20 unità, spedizione gratuita ed espositori inclusi. Inviale con un clic."},
+  msgTarifas:{fr:"Tarifs grossiste Minuë (par unité, selon le volume de la commande) :",es:"Tarifas mayoristas Minuë (por unidad, según el volumen del pedido):",en:"Minuë wholesale prices (per unit, by order volume):",it:"Tariffe all'ingrosso Minuë (per unità, secondo il volume dell'ordine):"},
+  compartirPromos:{fr:"Partagez les offres actives avec vos boutiques",es:"Comparte las ofertas activas con tus tiendas",en:"Share active offers with your stores",it:"Condividi le offerte attive con i tuoi negozi"},
+  msgPromos:{fr:"Offres Minuë en ce moment :",es:"Ofertas Minuë ahora mismo:",en:"Minuë offers right now:",it:"Offerte Minuë in questo momento:"},
+  compartirEsta:{fr:"Partager",es:"Compartir",en:"Share",it:"Condividi"},
   ocultarGuia:{fr:"Masquer",es:"Ocultar",en:"Hide",it:"Nascondi"},
   verGuia:{fr:"Voir",es:"Ver",en:"Show",it:"Mostra"},
   graficoVentas:{fr:"Ventes des 6 derniers mois",es:"Ventas de los últimos 6 meses",en:"Sales over the last 6 months",it:"Vendite degli ultimi 6 mesi"},
@@ -1257,6 +1279,27 @@ const ZONES = {ES:"España",FR:"France",IT:"Italia",DE:"Deutschland",PT:"Portuga
 // Las rutas /api/decisions-ai, /api/employee-help y /api/generate-note no existen en el despliegue:
 // el asistente queda oculto hasta que se monten (con la clave de IA en el servidor, nunca en el cliente).
 const AI_BACKEND = false;
+
+/* Calendario comercial del showroom: hitos de "Cómo trabajamos con showrooms" + ferias del sector. */
+const SELL_CAL = [
+  {m:0, k:"launch", l:{fr:"Lancement de la collection principale · salon opti (Munich, fin janvier)",es:"Lanzamiento de la colección principal · feria opti (Múnich, finales de enero)",en:"Main collection launch · opti fair (Munich, late January)",it:"Lancio della collezione principale · fiera opti (Monaco, fine gennaio)"}, tip:{fr:"Présentez la nouveauté et prenez les premières réservations.",es:"Presenta la novedad y toma las primeras reservas.",en:"Present the new line and take first bookings.",it:"Presenta la novità e raccogli le prime prenotazioni."}},
+  {m:1, k:"fair", l:{fr:"MIDO Milan · 6-8 février 2027",es:"MIDO Milán · 6-8 febrero 2027",en:"MIDO Milan · 6-8 February 2027",it:"MIDO Milano · 6-8 febbraio 2027"}, tip:{fr:"Bouclez les commandes de saison avant Pâques.",es:"Cierra los pedidos de temporada antes de Semana Santa.",en:"Close season orders before Easter.",it:"Chiudi gli ordini di stagione prima di Pasqua."}},
+  {m:2, k:"peak", l:{fr:"Avant Pâques · début de la saison solaire",es:"Pre-Semana Santa · arranca la temporada de sol",en:"Pre-Easter · sun season starts",it:"Pre-Pasqua · inizia la stagione del sole"}, tip:{fr:"Vitrines prêtes ; renforcez les best-sellers.",es:"Escaparates listos; refuerza los más vendidos.",en:"Windows ready; push the best-sellers.",it:"Vetrine pronte; spingi i più venduti."}},
+  {m:3, k:"peak", l:{fr:"Haute saison solaire",es:"Temporada alta de sol",en:"Peak sun season",it:"Alta stagione del sole"}, tip:{fr:"Réassorts en 48-72 h : la boutique n'a pas besoin de surstocker.",es:"Reposición en 48-72 h: la tienda no necesita sobrestockearse.",en:"Restocks in 48-72 h: stores needn't overstock.",it:"Riassortimenti in 48-72 h: il negozio non deve fare scorte eccessive."}},
+  {m:4, k:"peak", l:{fr:"Haute saison solaire",es:"Temporada alta de sol",en:"Peak sun season",it:"Alta stagione del sole"}, tip:{fr:"Relancez les boutiques qui n'ont pas réassorti.",es:"Llama a las tiendas que no han repuesto.",en:"Call stores that haven't restocked.",it:"Chiama i negozi che non hanno riassortito."}},
+  {m:5, k:"launch", l:{fr:"Pic des ventes · capsule de juin",es:"Pico de ventas · cápsula de junio",en:"Sales peak · June capsule",it:"Picco di vendite · capsula di giugno"}, tip:{fr:"Proposez la capsule pour relancer la vitrine d'été.",es:"Propón la cápsula para renovar el escaparate de verano.",en:"Offer the capsule to refresh summer windows.",it:"Proponi la capsula per rinnovare la vetrina estiva."}},
+  {m:6, k:"peak", l:{fr:"Fin de la haute saison",es:"Final de temporada alta",en:"End of peak season",it:"Fine dell'alta stagione"}, tip:{fr:"Repérez les modèles qui ne tournent pas : on les échange.",es:"Detecta los modelos que no rotan: se cambian en el siguiente pedido.",en:"Spot slow models: they're swapped on the next order.",it:"Individua i modelli che non ruotano: si cambiano al prossimo ordine."}},
+  {m:8, k:"fair", l:{fr:"Capsule automne · SILMO Paris (24-27 sept. 2027)",es:"Cápsula de otoño · SILMO París (24-27 sept. 2027)",en:"Autumn capsule · SILMO Paris (24-27 Sept 2027)",it:"Capsula autunno · SILMO Parigi (24-27 sett. 2027)"}, tip:{fr:"Visitez les boutiques premium : c'est notre segment.",es:"Visita tiendas premium y boutiques: es nuestro segmento.",en:"Visit premium boutiques: that's our segment.",it:"Visita le boutique premium: è il nostro segmento."}},
+  {m:10, k:"plan", l:{fr:"Collection Hiver 26/27 · pré-commande",es:"Colección Invierno 26/27 · pre-pedido",en:"Winter 26/27 collection · pre-order",it:"Collezione Inverno 26/27 · pre-ordine"}, tip:{fr:"Préparez la pré-commande de la collection principale.",es:"Prepara el pre-pedido de la colección principal.",en:"Prepare the main collection pre-order.",it:"Prepara il pre-ordine della collezione principale."}},
+  {m:11, k:"launch", l:{fr:"Lancement de la collection principale",es:"Lanzamiento de la colección principal",en:"Main collection launch",it:"Lancio della collezione principale"}, tip:{fr:"Envoyez la nouvelle collection et le catalogue trade.",es:"Envía la nueva colección y el catálogo trade.",en:"Send the new collection and the trade catalogue.",it:"Invia la nuova collezione e il catalogo trade."}},
+];
+const SELL_TIPS = [
+  {fr:"Placez le présentoir près de la caisse : la lunette solaire est un achat d'impulsion et de cross-selling.",es:"Coloca el expositor junto a la caja: la gafa de sol es compra de impulso y cross-selling.",en:"Put the display by the till: sunglasses are an impulse and cross-sell buy.",it:"Metti l'espositore vicino alla cassa: l'occhiale da sole è un acquisto d'impulso e cross-selling."},
+  {fr:"Commencez par les best-sellers (Bolden, Chastain, Hart, Maclaine) : moins de risque pour la boutique.",es:"Empieza por los más vendidos (Bolden, Chastain, Hart, Maclaine): menos riesgo para la tienda.",en:"Start with best-sellers (Bolden, Chastain, Hart, Maclaine): less risk for the store.",it:"Parti dai più venduti (Bolden, Chastain, Hart, Maclaine): meno rischio per il negozio."},
+  {fr:"Dès 20 unités : livraison gratuite et 2 présentoirs offerts.",es:"Desde 20 unidades: envío gratis y 2 expositores incluidos.",en:"From 20 units: free shipping and 2 displays included.",it:"Da 20 unità: spedizione gratuita e 2 espositori inclusi."},
+  {fr:"Rotation garantie : un modèle qui ne tourne pas s'échange à la commande suivante.",es:"Rotación garantizada: un diseño que no rota se cambia en el siguiente pedido.",en:"Guaranteed rotation: a slow model is swapped on the next order.",it:"Rotazione garantita: un modello che non ruota si cambia al prossimo ordine."},
+  {fr:"Prix protégés : Minuë ne fait ni 2x1 ni promos agressives en ligne.",es:"Precios protegidos: Minuë no hace 2x1 ni promociones agresivas en web.",en:"Protected prices: Minuë runs no 2-for-1 or aggressive web promos.",it:"Prezzi protetti: Minuë non fa 2x1 né promozioni aggressive online."},
+];
 
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
@@ -2048,8 +2091,8 @@ export default function App() {
   if (!user) {
     const inputStyle = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid #f8efe625",background:"transparent",fontFamily:BD,fontSize:13,color:"#f8efe6",boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
     const inputStyleLight = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid "+CL.dk+"18",background:"transparent",fontFamily:BD,fontSize:13,color:CL.dk,boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
-    const labelStyle = {fontSize:10,color:"#f8efe650",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
-    const labelStyleLight = {fontSize:10,color:CL.dk+"50",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
+    const labelStyle = {fontSize:11,color:"#f8efe650",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
+    const labelStyleLight = {fontSize:11,color:CL.dk+"50",fontFamily:BD,marginBottom:4,fontWeight:500,letterSpacing:2,textTransform:"uppercase"};
     return (
       <div style={{minHeight:"100vh",background:CL.dk,position:"relative",overflow:"hidden"}}>
         <style>{`
@@ -2247,11 +2290,11 @@ export default function App() {
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px min(16px, 3vw)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={() => setView(navItems[0][0])}>
           <img loading="lazy" src={LOGO} alt="Minuë" style={{height:"min(63px, 17vw)",borderRadius:4}} />
-          <span style={{fontSize:9,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
+          <span style={{fontSize:10,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
           {["fr","es","en","it"].map(l => (
-            <button key={l} onClick={() => setLang(l)} style={{width:22,height:22,borderRadius:11,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:10,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
+            <button key={l} onClick={() => setLang(l)} style={{width:22,height:22,borderRadius:11,background:lang===l?"rgba(248,239,230,0.15)":"transparent",border:"none",cursor:"pointer",fontSize:11,color:lang===l?C.bg:"rgba(248,239,230,0.3)",fontFamily:BD,fontWeight:600}}>{l.toUpperCase()}</button>
           ))}
           <div style={{width:1,height:12,background:"rgba(248,239,230,0.1)",margin:"0 2px"}} />
           {(() => {
@@ -2292,7 +2335,7 @@ export default function App() {
             return <>
               <button onClick={() => setNotifOpen(!notifOpen)} style={{width:26,height:26,borderRadius:13,background:count>0?"rgba(248,239,230,0.15)":"rgba(248,239,230,0.08)",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative"}}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.7)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                {count > 0 && <span style={{position:"absolute",top:-2,right:-4,minWidth:16,height:16,padding:"0 4px",borderRadius:8,background:"#e74c3c",fontSize:10,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
+                {count > 0 && <span style={{position:"absolute",top:-2,right:-4,minWidth:16,height:16,padding:"0 4px",borderRadius:8,background:"#e74c3c",fontSize:11,fontWeight:700,fontFamily:BD,color:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}>{count>9?"9+":count}</span>}
               </button>
               {notifOpen && <div style={{position:"fixed",top:48,right:12,width:"min(380px, 90vw)",maxHeight:"75vh",background:C.wh,borderRadius:10,border:"1px solid "+C.ln,boxShadow:"0 8px 30px rgba(24,51,47,0.18)",zIndex:200,overflow:"hidden"}} onClick={e => e.stopPropagation()}>
                 <div style={{padding:"14px 18px",borderBottom:"1px solid "+C.ln,display:"flex",justifyContent:"space-between",alignItems:"center",background:C.bg}}>
@@ -2318,7 +2361,7 @@ export default function App() {
               </div>}
             </>;
           })()}
-          {role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 7px",borderRadius:4,letterSpacing:1.5,border:"1px solid #d4a03040"}}>VIP</span>}
+          {role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 7px",borderRadius:4,letterSpacing:1.5,border:"1px solid #d4a03040"}}>VIP</span>}
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:26,height:26,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer"}}>{user.name[0]}</div>
           <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) {} }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -2339,10 +2382,10 @@ export default function App() {
             <button key={v} className="mn-press" onClick={() => { setView(v); setMoreOpen(false); }} style={{background:on?"rgba(255,255,255,0.14)":"none",border:"none",borderRadius:12,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"5px 12px",position:"relative",minWidth:0,transition:"background .2s"}}>
               <div style={{position:"relative"}}>
                 <NavIcon d={iconPath} size={22} color={on?"#ffffff":"rgba(248,239,230,0.78)"} />
-                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:9,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
-                {bottomBadge > 0 && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:9,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{bottomBadge}</span>}
+                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+                {bottomBadge > 0 && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{bottomBadge}</span>}
               </div>
-              <span style={{fontSize:10,fontFamily:BD,fontWeight:on?700:500,color:on?"#ffffff":"rgba(248,239,230,0.78)",letterSpacing:0.3}}>{t(k)}</span>
+              <span style={{fontSize:11,fontFamily:BD,fontWeight:on?700:500,color:on?"#ffffff":"rgba(248,239,230,0.78)",letterSpacing:0.3}}>{t(k)}</span>
               {on && <div style={{position:"absolute",top:0,left:"50%",transform:"translateX(-50%)",width:20,height:2,background:rc,borderRadius:1}} />}
             </button>
           );
@@ -2354,7 +2397,7 @@ export default function App() {
             <div style={{width:4,height:4,borderRadius:2,background:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)"}} />
             <div style={{width:4,height:4,borderRadius:2,background:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)"}} />
           </div>
-          <span style={{fontSize:10,fontFamily:BD,fontWeight:moreOpen?600:400,color:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)",letterSpacing:0.3}}>+</span>
+          <span style={{fontSize:11,fontFamily:BD,fontWeight:moreOpen?600:400,color:moreOpen?"#f8efe6":"rgba(248,239,230,0.35)",letterSpacing:0.3}}>+</span>
         </button>
       </div>
     </div>
@@ -2388,10 +2431,10 @@ export default function App() {
             <button key={v} onClick={() => { setView(v); setMoreOpen(false); setNavSearch(""); }} style={{background:on?"rgba(248,239,230,0.08)":"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 4px",borderRadius:8}}>
               <div style={{position:"relative"}}>
                 <NavIcon d={iconPath} size={20} color={on?"#f8efe6":"rgba(248,239,230,0.4)"} />
-                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:9,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
-                {wb && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:9,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{wb}</span>}
+                {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
+                {wb && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{wb}</span>}
               </div>
-              <span style={{fontSize:10,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
+              <span style={{fontSize:11,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
             </button>
           );
         };
@@ -2430,7 +2473,7 @@ export default function App() {
             const items = views.filter(v => moreSet.has(v)).map(v => navItems.find(([nv]) => nv === v)).filter(Boolean);
             if (items.length === 0) return null;
             return <div key={label} style={{marginBottom:6}}>
-              <div style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"rgba(248,239,230,0.45)",letterSpacing:1.5,textTransform:"uppercase",padding:"8px 6px 4px"}}>{label}</div>
+              <div style={{fontSize:11,fontFamily:BD,fontWeight:700,color:"rgba(248,239,230,0.45)",letterSpacing:1.5,textTransform:"uppercase",padding:"8px 6px 4px"}}>{label}</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4, 1fr)",gap:4}}>{items.map(renderTile)}</div>
             </div>;
           })}
@@ -2479,15 +2522,15 @@ export default function App() {
       <div key={modelName} className="mcard" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:12,overflow:"hidden",cursor:"pointer"}} onClick={() => { setModal("viewModel"); setEd({model:modelName, variants}); }}>
         <div style={{height:"min(192px, 45vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
           {first.imageUrl ? <img loading="lazy" src={first.imageUrl} alt={modelName} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(modelName)+")",transformOrigin:"center"}} /> : "MINUË"}
-          <span style={{position:"absolute",top:8,left:8,fontSize:10,color:isAcetato?"#7a5c3a":first.col==="Icons"?"#b8860b":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":first.col==="Icons"?"#f5ecd8":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{first.col}</span>
+          <span style={{position:"absolute",top:8,left:8,fontSize:11,color:isAcetato?"#7a5c3a":first.col==="Icons"?"#b8860b":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":first.col==="Icons"?"#f5ecd8":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{first.col}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
-            {tags.filter(tg => tg !== "icons").map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
+            {tags.filter(tg => tg !== "icons").map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
           </div>}
-          {inCartCount > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:10,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{inCartCount}</span>}
+          {inCartCount > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:11,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{inCartCount}</span>}
           {hasFav && <span style={{position:"absolute",top:8,right:38,fontSize:12}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#6b4c3b" stroke="#6b4c3b" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </span>}
-          <span style={{position:"absolute",top:8,right:8,fontSize:10,fontFamily:BD,color:totalStock<10?"#fff":C.dk,background:totalStock<10?C.rd:totalStock<20?C.yl+"30":"rgba(255,255,255,0.85)",padding:"3px 7px",borderRadius:10,fontWeight:600}}>{totalStock}</span>
+          <span style={{position:"absolute",top:8,right:8,fontSize:11,fontFamily:BD,color:totalStock<10?"#fff":C.dk,background:totalStock<10?C.rd:totalStock<20?C.yl+"30":"rgba(255,255,255,0.85)",padding:"3px 7px",borderRadius:10,fontWeight:600}}>{totalStock}</span>
         </div>
         <div style={{padding:"12px 14px",background:"#faf6f1"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
@@ -2496,7 +2539,7 @@ export default function App() {
           </div>
           <div style={{display:"flex",gap:4,marginTop:8,alignItems:"center",flexWrap:"wrap"}}>
             {variants.slice(0,7).map(v => <div key={v.id} title={v.color} style={{width:16,height:16,borderRadius:8,background:colorDot[v.color]||"#aaa",border:"2px solid "+(cart[v.id]>0?C.gn:v.stock<5?C.rd+"50":"#e0d8d0"),flexShrink:0}} />)}
-            {variants.length > 7 && <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>+{variants.length-7}</span>}
+            {variants.length > 7 && <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>+{variants.length-7}</span>}
           </div>
           <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:6}}>{variants.length} {t("couleurs")}</div>
         </div>
@@ -2516,12 +2559,12 @@ export default function App() {
         <div style={{height:"min(208px, 48vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",fontSize:36,position:"relative",color:C.ln,fontFamily:DP,letterSpacing:2,overflow:"hidden"}}>
           {p.imageUrl ? <img loading="lazy" src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale("+imgScale(p.model)+")",transformOrigin:"center"}} /> : "MINUË"}
           {p.stock === 0 && (role === "client" || role === "distributor") && <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,0.55)",display:"flex",alignItems:"center",justifyContent:"center"}}><span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:C.dk,background:"rgba(255,255,255,0.95)",padding:"5px 14px",borderRadius:20,letterSpacing:1.5,border:"1px solid "+C.ln}}>{t("agotadoLabel")}</span></div>}
-          <span style={{position:"absolute",top:8,left:8,fontSize:10,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
-          <span style={{position:"absolute",top:8,right:8,fontSize:10,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
+          <span style={{position:"absolute",top:8,left:8,fontSize:11,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.85)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{p.col}</span>
+          <span style={{position:"absolute",top:8,right:8,fontSize:11,fontFamily:BD,color:"#fff",background:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700}}>{p.stock}</span>
           {tags.length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
-            {tags.map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
+            {tags.map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.3}}>{tagConf[tg].l}</span> : null)}
           </div>}
-          {inCart && <span style={{position:"absolute",bottom:8,right:8,fontSize:10,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{cart[p.id]}</span>}
+          {inCart && <span style={{position:"absolute",bottom:8,right:8,fontSize:11,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3}}>x{cart[p.id]}</span>}
           {role !== "admin" && <button onClick={(e) => { e.stopPropagation(); setFavs(f => f.includes(p.id) ? f.filter(x => x!==p.id) : [...f, p.id]); dbToggleFav(p.id); }} style={{position:"absolute",top:8,right:role==="admin"?42:38,background:"rgba(255,255,255,0.85)",border:"none",cursor:"pointer",width:26,height:26,borderRadius:13,display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill={favs.includes(p.id)?"#6b4c3b":"none"} stroke={favs.includes(p.id)?"#6b4c3b":"#999"} strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>}
@@ -2533,7 +2576,7 @@ export default function App() {
           </div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginTop:2}}>
             <span style={{fontSize:12,color:C.gr,fontFamily:BD}}>{p.color}</span>
-            <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>PVP {isAcetato ? "70" : "45-50"} €</span>
+            <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>PVP {isAcetato ? "70" : "45-50"} €</span>
           </div>
           <div style={{fontSize:11,color:C.gr2,fontFamily:BD,marginTop:1}}>{p.sku}</div>
           <div style={{display:"flex",gap:6,marginTop:10,alignItems:"center"}}>
@@ -2579,22 +2622,22 @@ export default function App() {
             onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
             <div style={{height:"min(180px, 42vw)",background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
               {mainColor.imageUrl ? <img loading="lazy" src={mainColor.imageUrl} alt={mg.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:32,color:C.ln,fontFamily:DP}}>MINUË</span>}
-              <span style={{position:"absolute",top:8,left:8,fontSize:10,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{mg.col}</span>
+              <span style={{position:"absolute",top:8,left:8,fontSize:11,color:isAcetato?"#7a5c3a":C.gr,fontFamily:BD,background:isAcetato?"#e8d5c0":"rgba(255,255,255,0.9)",padding:"2px 7px",borderRadius:3,fontWeight:500}}>{mg.col}</span>
               {[...mg.tags].filter(tg => tagConf[tg]).length > 0 && <div style={{position:"absolute",bottom:8,left:8,display:"flex",gap:3}}>
-                {[...mg.tags].map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase"}}>{tagConf[tg].l}</span> : null)}
+                {[...mg.tags].map(tg => tagConf[tg] ? <span key={tg} style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:tagConf[tg].c,padding:"2px 6px",borderRadius:3,textTransform:"uppercase"}}>{tagConf[tg].l}</span> : null)}
               </div>}
-              {totalInCart > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:10,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3,fontWeight:700}}>x{totalInCart}</span>}
+              {totalInCart > 0 && <span style={{position:"absolute",bottom:8,right:8,fontSize:11,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:3,fontWeight:700}}>x{totalInCart}</span>}
             </div>
             <div style={{padding:"12px 14px",background:darkMode?C.bg2:"#faf6f1"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span style={{fontSize:15,fontWeight:500,fontFamily:DP,color:C.dk}}>{mg.model}</span>
-                {minStock > 0 && minStock < 5 && <span style={{fontSize:10,fontFamily:BD,color:"#c47a00",fontWeight:500,opacity:0.8}}>{t("stockBajoLabel")}: {minStock}</span>}
+                {minStock > 0 && minStock < 5 && <span style={{fontSize:11,fontFamily:BD,color:"#c47a00",fontWeight:500,opacity:0.8}}>{t("stockBajoLabel")}: {minStock}</span>}
               </div>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:4}}>
                 <span style={{fontSize:12,color:C.gr,fontFamily:BD}}>{mg.colors.length} {t("couleurs")}</span>
                 <span style={{fontFamily:BD,color:C.dk,display:"flex",flexDirection:"column",alignItems:"flex-end"}}>
                   <span style={{fontSize:12,fontWeight:600}}>{isAcetato ? fmt(mg.colors[0]?.fixedPrice||27.90) : fmt(customPrice>0?customPrice:essentialUnitPrice)} €</span>
-                  {!isAcetato && !(customPrice>0) && essentialUnitPrice > TIERS[TIERS.length-1].price && <span style={{fontSize:10,fontWeight:400,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</span>}
+                  {!isAcetato && !(customPrice>0) && essentialUnitPrice > TIERS[TIERS.length-1].price && <span style={{fontSize:11,fontWeight:400,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</span>}
                 </span>
               </div>
               {/* Color dots preview */}
@@ -2602,7 +2645,7 @@ export default function App() {
                 {mg.colors.slice(0,6).map((c,i) => <div key={i} style={{width:20,height:20,borderRadius:10,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
                   {c.imageUrl ? <img loading="lazy" src={c.imageUrl} style={{width:"100%",height:"100%",objectFit:"cover"}} /> : <div style={{width:"100%",height:"100%",background:C.bg}} />}
                 </div>)}
-                {mg.colors.length > 6 && <span style={{fontSize:10,fontFamily:BD,color:C.gr,display:"flex",alignItems:"center"}}>+{mg.colors.length-6}</span>}
+                {mg.colors.length > 6 && <span style={{fontSize:11,fontFamily:BD,color:C.gr,display:"flex",alignItems:"center"}}>+{mg.colors.length-6}</span>}
               </div>
             </div>
           </div>;
@@ -3040,7 +3083,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
                   {[[t("boutique"),"name"],[t("contact"),"contact"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"],[t("ville"),"city"],[t("pays"),"country"]].map(([l,k]) => (
                     <div key={k} style={{marginBottom:8}}>
-                      <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
                       <input value={ed[k]||""} onChange={e => setEd(p => ({...p,[k]:e.target.value}))} style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
                     </div>
                   ))}
@@ -3051,7 +3094,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
                   {[[t("direccion"),"shippingAddress"],[t("ville"),"shippingCity"],[t("codePostal"),"shippingPostal"],[t("pays"),"shippingCountry"]].map(([l,k]) => (
                     <div key={k} style={{marginBottom:8}}>
-                      <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
                       <input value={ed[k]||""} onChange={e => setEd(p => ({...p,[k]:e.target.value}))} style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
                     </div>
                   ))}
@@ -3062,7 +3105,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 10px"}}>
                   {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("codePostal"),"postalCode"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
                     <div key={k} style={{marginBottom:8}}>
-                      <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
                       <input value={ed[k]||""} onChange={e => setEd(p => ({...p,[k]:e.target.value}))} style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
                     </div>
                   ))}
@@ -3073,7 +3116,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:"0 10px"}}>
                   {[[t("titulaire"),"bankHolder"],[t("iban"),"iban"],[t("bic"),"bic"]].map(([l,k]) => (
                     <div key={k} style={{marginBottom:8}}>
-                      <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
+                      <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2}}>{l}</div>
                       <input value={ed[k]||""} onChange={e => setEd(p => ({...p,[k]:e.target.value}))} style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
                     </div>
                   ))}
@@ -3097,7 +3140,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
                 {ed.customPrice > 0
                   ? <>
-                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")} <span style={{fontSize:10,color:C.gr2}}>{t("oTarifaEstandar")}</span></div>
+                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("prixUnit")} <span style={{fontSize:11,color:C.gr2}}>{t("oTarifaEstandar")}</span></div>
                     <input type="number" step="0.10" value={ed.customPrice} onChange={e => setEd(p => ({...p, customPrice: parseFloat(e.target.value) || 0}))} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box",fontWeight:600}} />
                     <div style={{fontSize:11,fontFamily:BD,color:"#c47a00",background:"#fff8e6",border:"1px solid #f0a02030",padding:"6px 10px",borderRadius:4,marginTop:8}}>{t("precioGlobalAlerta")}</div>
                   </>
@@ -3204,13 +3247,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
                 {/* RIGHT: Info + colors */}
                 <div style={{flex:"1 1 240px",minWidth:200}}>
-                  <div style={{fontSize:10,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"3px 10px",borderRadius:10,display:"inline-block",marginBottom:8,fontWeight:500}}>{mg.col}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"3px 10px",borderRadius:10,display:"inline-block",marginBottom:8,fontWeight:500}}>{mg.col}</div>
                   <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:C.dk,marginBottom:2}}>{mg.model}</div>
                   <div style={{fontSize:13,fontFamily:BD,color:C.gr,marginBottom:4}}>{sel.color}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr2,marginBottom:12}}>{sel.sku}</div>
                   <div style={{display:"flex",gap:16,marginBottom:12}}>
                     <div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>Wholesale</div><div style={{fontSize:20,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</div>{!isAcetato && !(customPrice>0) && <div style={{fontSize:11,fontFamily:BD,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</div>}</div>
-                    <div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>PVP</div><div style={{fontSize:16,fontWeight:400,fontFamily:BD,color:C.gr,textDecoration:"line-through"}}>{isAcetato?"70":"50-55"} €</div><div style={{fontSize:11,fontFamily:BD,color:CL.gn,fontWeight:600}}>-{isAcetato?"60":Math.round(((52-displayPrice)/52)*100)}%</div></div>
+                    <div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{t("pvpRecomendado")}</div><div style={{fontSize:16,fontWeight:600,fontFamily:BD,color:C.dk}}>{isAcetato?"70":"45-50"} €</div></div>
                     <div><div style={{fontSize:11,color:C.gr,fontFamily:BD}}>Stock</div><div style={{fontSize:16,fontWeight:600,fontFamily:BD,color:sel.stock===0?C.rd:sel.stock<5?C.yl:C.gn}}>{sel.stock}</div></div>
                   </div>
                   {/* Pricing tiers info */}
@@ -3222,13 +3265,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         const isActive = totalCartUnits >= tier.min && totalCartUnits <= tier.max;
                         const isBest = tier.min === TIERS[TIERS.length-1].min;
                         return <div key={i} style={{flex:1,textAlign:"center",padding:"6px 2px",borderRadius:6,background:isActive?"rgba(45,107,79,0.12)":"transparent",border:isActive?"1px solid rgba(45,107,79,0.3)":"1px solid transparent",transition:"all .3s"}}>
-                          <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{tier.label}</div>
+                          <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{tier.label}</div>
                           <div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:isBest?CL.yl:isActive?CL.gn:C.dk}}>{fmt(tier.price)} €</div>
                           {isActive && <div style={{fontSize:7,fontFamily:BD,color:CL.gn,fontWeight:700,marginTop:1}}>TU PRECIO</div>}
                         </div>;
                       })}
                     </div>
-                    {(() => { const totalCartUnits = Object.values(cart||{}).reduce((s,q) => s+(parseInt(q)||0), 0); const nextT = getNextTier(Math.max(1, totalCartUnits)); return nextT ? <div style={{fontSize:10,fontFamily:BD,color:CL.gn,marginTop:6,textAlign:"center"}}>Añade {nextT.min - totalCartUnits} uds más → precio baja a {fmt(nextT.price)} €/ud</div> : null; })()}
+                    {(() => { const totalCartUnits = Object.values(cart||{}).reduce((s,q) => s+(parseInt(q)||0), 0); const nextT = getNextTier(Math.max(1, totalCartUnits)); return nextT ? <div style={{fontSize:11,fontFamily:BD,color:CL.gn,marginTop:6,textAlign:"center"}}>Añade {nextT.min - totalCartUnits} uds más → precio baja a {fmt(nextT.price)} €/ud</div> : null; })()}
                   </div>}
                   {/* Color list with add to cart */}
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:8}}>{mg.colors.length} {t("couleurs")} :</div>
@@ -3242,7 +3285,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         </div>
                         <div style={{flex:1}}>
                           <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:selectedColorIdx===i?600:400}}>{c.color}</div>
-                          <div style={{fontSize:10,fontFamily:BD,color:c.stock===0?C.rd:c.stock<5?C.yl:C.gr}}>Stock: {c.stock}{inCart?" · 🛒 x"+cart[c.id]:""}</div>
+                          <div style={{fontSize:11,fontFamily:BD,color:c.stock===0?C.rd:c.stock<5?C.yl:C.gr}}>Stock: {c.stock}{inCart?" · 🛒 x"+cart[c.id]:""}</div>
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:2,flexShrink:0}}>
                           <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
@@ -3275,11 +3318,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {modal === "editSt" && <>
             {ed.imageUrl && <div style={{height:118,background:C.wh,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14,border:"1px solid "+C.ln,overflow:"hidden",position:"relative"}}>
               <img loading="lazy" src={ed.imageUrl} alt={ed.model} style={{maxWidth:"100%",maxHeight:"100%",objectFit:"contain",padding:6,opacity:ed.active===false?0.4:1}} />
-              {ed.active === false && <div style={{position:"absolute",top:8,right:8,background:"#666",color:"#fff",padding:"3px 10px",borderRadius:3,fontSize:10,fontFamily:BD,fontWeight:700,letterSpacing:1}}>OCULTO</div>}
+              {ed.active === false && <div style={{position:"absolute",top:8,right:8,background:"#666",color:"#fff",padding:"3px 10px",borderRadius:3,fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:1}}>OCULTO</div>}
             </div>}
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
               <div style={{fontSize:15,fontFamily:DP,color:C.dk,fontWeight:500}}>{ed.model} - {ed.color}</div>
-              {ed.active === false && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#666",background:"#66666615",padding:"3px 10px",borderRadius:3,letterSpacing:1}}>OCULTO PARA TIENDAS</span>}
+              {ed.active === false && <span style={{fontSize:11,fontFamily:BD,fontWeight:700,color:"#666",background:"#66666615",padding:"3px 10px",borderRadius:3,letterSpacing:1}}>OCULTO PARA TIENDAS</span>}
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:16}}>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:14,textAlign:"center"}}>
@@ -3364,12 +3407,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   setEd(prev => ({...prev, lines:[newLine, ...(prev.lines||[])], _supSearch:""}));
                 }}>+ Añadir</Btn>
               </div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:6}}>💡 Útil para añadir diseños nuevos, productos sin sugerencia, o variantes que aún no tienen historial de ventas.</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,marginTop:6}}>💡 Útil para añadir diseños nuevos, productos sin sugerencia, o variantes que aún no tienen historial de ventas.</div>
             </div>
 
             <div style={{maxHeight:"45vh",overflowY:"auto",border:"1px solid "+C.ln,borderRadius:6,background:C.wh}}>
               {/* Header */}
-              <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 10px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.5,position:"sticky",top:0,zIndex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 10px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.5,position:"sticky",top:0,zIndex:1}}>
                 <span style={{width:32}}></span>
                 <span style={{flex:1}}>PRODUCTO</span>
                 <span style={{width:40,textAlign:"center"}}>STOCK</span>
@@ -3385,8 +3428,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{flex:1,minWidth:0}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{l.model} </span>
                   <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{l.color}</span>
-                  {l._manual && <span style={{fontSize:9,marginLeft:6,padding:"1px 5px",background:"#8e44ad20",color:"#8e44ad",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>MANUAL</span>}
-                  <div style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{l.sku} · {l.col}</div>
+                  {l._manual && <span style={{fontSize:10,marginLeft:6,padding:"1px 5px",background:"#8e44ad20",color:"#8e44ad",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>MANUAL</span>}
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{l.sku} · {l.col}</div>
                 </div>
                 <span style={{width:40,textAlign:"center",fontSize:12,fontFamily:BD,color:l.stock===0?C.rd:l.stock<5?C.yl:C.dk,fontWeight:600}}>{l.stock}</span>
                 <span style={{width:40,textAlign:"center",fontSize:11,fontFamily:BD,color:C.bl}}>{l._sold||0}</span>
@@ -3444,13 +3487,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <button onClick={() => setEd(p => ({...p, _newClient: !p._newClient, client:""}))} style={{padding:"5px 10px",background:ed._newClient?C.dk:"transparent",color:ed._newClient?C.bg:C.gn,border:"1px solid "+(ed._newClient?C.dk:C.gn),borderRadius:4,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{ed._newClient ? "← Elegir existente" : "+ Nuevo cliente"}</button>
               </div>
               {ed._newClient ? <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("boutique")} *</div><input value={ed._newClientName||""} onChange={e => setEd(p => ({...p, _newClientName: e.target.value, client: e.target.value}))} placeholder="Optique Paris" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("contact")}</div><input value={ed._newClientContact||""} onChange={e => setEd(p => ({...p, _newClientContact: e.target.value}))} placeholder="Marie Dupont" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("ville")}</div><input value={ed._newClientCity||""} onChange={e => setEd(p => ({...p, _newClientCity: e.target.value}))} placeholder="Paris" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("pays")}</div><input value={ed._newClientCountry||"FR"} onChange={e => setEd(p => ({...p, _newClientCountry: e.target.value}))} placeholder="FR" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("emailLabel")}</div><input value={ed._newClientEmail||""} onChange={e => setEd(p => ({...p, _newClientEmail: e.target.value}))} placeholder="contact@store.com" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div><div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("telephone")}</div><input value={ed._newClientPhone||""} onChange={e => setEd(p => ({...p, _newClientPhone: e.target.value}))} placeholder="+33 6 12 34 56 78" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
-                <div style={{gridColumn:"1 / -1",fontSize:10,fontFamily:BD,color:C.bl,padding:"4px 8px",background:C.bl+"10",borderRadius:3,fontWeight:500}}>ℹ️ Se creará en la lista de clientes (status: prospect) al guardar el pedido</div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("boutique")} *</div><input value={ed._newClientName||""} onChange={e => setEd(p => ({...p, _newClientName: e.target.value, client: e.target.value}))} placeholder="Optique Paris" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("contact")}</div><input value={ed._newClientContact||""} onChange={e => setEd(p => ({...p, _newClientContact: e.target.value}))} placeholder="Marie Dupont" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("ville")}</div><input value={ed._newClientCity||""} onChange={e => setEd(p => ({...p, _newClientCity: e.target.value}))} placeholder="Paris" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("pays")}</div><input value={ed._newClientCountry||"FR"} onChange={e => setEd(p => ({...p, _newClientCountry: e.target.value}))} placeholder="FR" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("emailLabel")}</div><input value={ed._newClientEmail||""} onChange={e => setEd(p => ({...p, _newClientEmail: e.target.value}))} placeholder="contact@store.com" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div><div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("telephone")}</div><input value={ed._newClientPhone||""} onChange={e => setEd(p => ({...p, _newClientPhone: e.target.value}))} placeholder="+33 6 12 34 56 78" style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} /></div>
+                <div style={{gridColumn:"1 / -1",fontSize:11,fontFamily:BD,color:C.bl,padding:"4px 8px",background:C.bl+"10",borderRadius:3,fontWeight:500}}>ℹ️ Se creará en la lista de clientes (status: prospect) al guardar el pedido</div>
               </div> : <>
                 <input value={ed._clSearch||""} onChange={e => setEd(p => ({...p, _clSearch: e.target.value}))} placeholder="🔍 Buscar cliente por nombre, ciudad..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box",marginBottom:6}} />
                 <select value={ed.client || ""} onChange={e => setEd(p => ({...p, client: e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}}>
@@ -3460,7 +3503,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 {ed.client && (() => { const sc = clients.find(c => c.name === ed.client); return sc ? <div style={{marginTop:6,fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>📞 {sc.phone||"—"} · ✉️ {sc.companyEmail||"—"} {sc.customPrice>0 && <span style={{color:C.bl,fontWeight:600,marginLeft:6}}>💰 Precio fijo: {fmt(sc.customPrice)} €</span>} {sc.status==="vip" && <span style={{color:C.yl,marginLeft:6}}>★ VIP</span>}</div> : null; })()}
               </>}
               <div style={{marginTop:10}}>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("canal")}</div>
+                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("canal")}</div>
                 <select value={ed.dist || "Direct"} onChange={e => setEd(p => ({...p, dist: e.target.value}))} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}}>
                   {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire",...users.filter(u => u.role === "distributor").map(u => u.co).filter(c => c && !["Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire"].includes(c))].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -3484,7 +3527,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   const linePrice = isAcetato ? 27.90 : edUp;
                   return <div key={i} style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD,flexWrap:"wrap"}}>
                     <span style={{fontWeight:600,color:C.dk,flex:"1 1 120px"}}>{l.model}</span>
-                    <span style={{color:C.gr,fontSize:11}}>{l.color}{isAcetato && <span style={{marginLeft:4,fontSize:9,padding:"1px 5px",background:"#e8d5c0",color:"#7a5c3a",borderRadius:2}}>Acetato</span>}</span>
+                    <span style={{color:C.gr,fontSize:11}}>{l.color}{isAcetato && <span style={{marginLeft:4,fontSize:10,padding:"1px 5px",background:"#e8d5c0",color:"#7a5c3a",borderRadius:2}}>Acetato</span>}</span>
                     <button onClick={() => setEd(prev => ({...prev, lines: prev.lines.map((x,j) => j===i ? {...x, qty: Math.max(1, x.qty-1)} : x)}))} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:12,fontFamily:BD,color:C.dk}}>-</button>
                     <span style={{fontWeight:600,minWidth:24,textAlign:"center"}}>{l.qty}</span>
                     <button onClick={() => setEd(prev => ({...prev, lines: prev.lines.map((x,j) => j===i ? {...x, qty: x.qty+1} : x)}))} style={{width:22,height:22,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:12,fontFamily:BD,color:C.dk}}>+</button>
@@ -3505,7 +3548,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:12}}>
                 <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:6}}>📅 Fecha preferente envío</div>
                 <input type="date" value={ed.preferredDate||""} onChange={e => setEd(p => ({...p, preferredDate: e.target.value}))} min={new Date(Date.now()+3*86400000).toISOString().split("T")[0]} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:4}}>Mín. 3-5 días laborables</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>Mín. 3-5 días laborables</div>
               </div>
             </div>
 
@@ -3614,7 +3657,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {ed.client && (() => {
                 const matches = clients.filter(c => c.name.toLowerCase().includes(ed.client.toLowerCase())).slice(0,5);
                 return matches.length > 0 ? <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr2,fontWeight:600}}>Coincidencias (click para usar):</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr2,fontWeight:600}}>Coincidencias (click para usar):</div>
                   {matches.map(c => <button key={c.id} onClick={() => setEd(p => ({...p, client:c.name, _matchedClient:c.id}))} style={{padding:"5px 10px",background:ed._matchedClient===c.id?CL.gn+"15":C.wh,border:"1px solid "+(ed._matchedClient===c.id?CL.gn:C.ln),borderRadius:3,fontSize:12,fontFamily:BD,color:C.dk,cursor:"pointer",textAlign:"left"}}>{c.name} · {c.city||"—"} · {c.channel}</button>)}
                 </div> : <div style={{fontSize:11,fontFamily:BD,color:"#f0a020",padding:"6px 10px",background:"#fff8e6",borderRadius:3}}>⚠️ Tienda no existe. Se creará nueva como canal "Faire" (sin acceso a la plataforma).</div>;
               })()}
@@ -3785,17 +3828,17 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div key={i} style={{padding:"8px 12px",borderBottom:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
                     <div style={{display:"flex",alignItems:"center",gap:4}}>
                       <span style={{fontWeight:600,color:C.dk,flex:1}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></span>
-                      <span style={{color:C.gr,fontSize:10}}>{t("pedido")}: {l.qty}</span>
+                      <span style={{color:C.gr,fontSize:11}}>{t("pedido")}: {l.qty}</span>
                       <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, qtyServed: Math.max(0, served-1)} : x); recalc(nl); }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:12,color:C.dk,padding:0}}>-</button>
                       <span style={{fontWeight:700,minWidth:40,textAlign:"center",color:pending>0?"#a06a2c":C.dk}} title={t("servido")}>{served}{pending>0?"/"+l.qty:""}</span>
                       <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, qtyServed: Math.min(l.qty, served+1)} : x); recalc(nl); }} style={{width:20,height:20,background:C.bg,border:"1px solid "+C.ln,borderRadius:2,cursor:"pointer",fontSize:12,color:C.dk,padding:0}}>+</button>
                       <span style={{fontWeight:600,minWidth:50,textAlign:"right"}}>{fmt(l.price * served)} €</span>
-                      <button onClick={() => { const removed = ed.lines[i]; const newLines = ed.lines.filter((_, j) => j !== i); const note = (ed.clientNotes ? ed.clientNotes + "\n" : "") + removed.model + " " + removed.color + " (x" + removed.qty + ") " + t("artSupprime"); const ni = newLines.reduce((s,x)=>s+(x.qtyServed==null?x.qty:x.qtyServed),0); const nt = newLines.reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0); setEd(p => ({...p, lines: newLines, items: ni, total: nt, clientNotes: note})); }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:10,fontWeight:600,padding:"2px 4px",flexShrink:0}}>✕</button>
+                      <button onClick={() => { const removed = ed.lines[i]; const newLines = ed.lines.filter((_, j) => j !== i); const note = (ed.clientNotes ? ed.clientNotes + "\n" : "") + removed.model + " " + removed.color + " (x" + removed.qty + ") " + t("artSupprime"); const ni = newLines.reduce((s,x)=>s+(x.qtyServed==null?x.qty:x.qtyServed),0); const nt = newLines.reduce((s,x)=>s+x.price*(x.qtyServed==null?x.qty:x.qtyServed),0); setEd(p => ({...p, lines: newLines, items: ni, total: nt, clientNotes: note})); }} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:11,fontWeight:600,padding:"2px 4px",flexShrink:0}}>✕</button>
                     </div>
                     {pending > 0 && <div style={{display:"flex",alignItems:"center",gap:6,marginTop:5,paddingLeft:2}}>
-                      <span style={{fontSize:10,color:"#a06a2c",fontWeight:600}}>{pending} {t("sinServir")}:</span>
-                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"pending"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="pending"?"#c47a00":C.ln),background:st==="pending"?"#c47a0015":"transparent",color:st==="pending"?"#c47a00":C.gr}}>{t("dejarPendiente")}</button>
-                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"cancelled"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="cancelled"?C.rd:C.ln),background:st==="cancelled"?C.rd+"15":"transparent",color:st==="cancelled"?C.rd:C.gr}}>{t("anularLinea")}</button>
+                      <span style={{fontSize:11,color:"#a06a2c",fontWeight:600}}>{pending} {t("sinServir")}:</span>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"pending"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="pending"?"#c47a00":C.ln),background:st==="pending"?"#c47a0015":"transparent",color:st==="pending"?"#c47a00":C.gr}}>{t("dejarPendiente")}</button>
+                      <button onClick={() => { const nl = ed.lines.map((x,j) => j===i ? {...x, lineStatus:"cancelled"} : x); recalc(nl); }} style={{padding:"2px 8px",borderRadius:10,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",border:"1px solid "+(st==="cancelled"?C.rd:C.ln),background:st==="cancelled"?C.rd+"15":"transparent",color:st==="cancelled"?C.rd:C.gr}}>{t("anularLinea")}</button>
                     </div>}
                   </div>
                 );})}
@@ -3853,15 +3896,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <input value={ed.trackUrl || ""} onChange={e => setEd(p => ({...p, trackUrl: e.target.value}))} placeholder="https://..." style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             <div style={{marginBottom:14}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("fraisEnvoi")} {(ed.items||0) >= 20 && <span style={{color:C.gn,fontSize:10,fontWeight:600}}>({t("envoiInclus")})</span>}</div>
+              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("fraisEnvoi")} {(ed.items||0) >= 20 && <span style={{color:C.gn,fontSize:11,fontWeight:600}}>({t("envoiInclus")})</span>}</div>
               <input type="number" step="0.01" value={ed.shippingCost === -1 ? "" : (ed.shippingCost || 0)} onChange={e => setEd(p => ({...p, shippingCost: parseFloat(e.target.value) || 0}))} placeholder="0.00" style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:13,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
             </div>
             <div style={{marginBottom:14}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4,display:"flex",alignItems:"center",gap:6}}>🔒 {t("notesInt")} <span style={{fontSize:10,color:C.rd,background:C.rd+"10",padding:"1px 6px",borderRadius:3,fontWeight:700}}>PRIVADO — solo admin/equipo</span></div>
+              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4,display:"flex",alignItems:"center",gap:6}}>🔒 {t("notesInt")} <span style={{fontSize:11,color:C.rd,background:C.rd+"10",padding:"1px 6px",borderRadius:3,fontWeight:700}}>PRIVADO — solo admin/equipo</span></div>
               <textarea value={ed.notes || ""} onChange={e => setEd(p => ({...p, notes: e.target.value}))} rows={3} placeholder="Notas privadas internas, no visibles para cliente ni distribuidor..." style={{width:"100%",padding:10,border:"1px solid "+C.rd+"30",borderRadius:3,fontFamily:BD,fontSize:12,background:"#fef5f5",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
             <div style={{marginBottom:14}}>
-              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesClient")} <span style={{color:C.gr2,fontSize:10}}>({t("client")} {t("voirPlus").toLowerCase()})</span></div>
+              <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("notesClient")} <span style={{color:C.gr2,fontSize:11}}>({t("client")} {t("voirPlus").toLowerCase()})</span></div>
               <textarea value={ed.clientNotes || ""} onChange={e => setEd(p => ({...p, clientNotes: e.target.value}))} rows={2} placeholder="..." style={{width:"100%",padding:10,border:"1px solid "+C.bl+"40",borderRadius:3,fontFamily:BD,fontSize:12,background:"#f0f6fa",color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
             </div>
 
@@ -3969,7 +4012,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       </div>
                       <button onClick={() => addToCart(v.id, cq)} style={{padding:"6px 12px",background:C.dk,color:C.bg,border:"none",fontSize:11,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>+</button>
                     </>}
-                    {v.stock === 0 && <span style={{fontSize:10,fontFamily:BD,color:"#fff",background:C.rd,padding:"2px 6px",borderRadius:3}}>{t("agotado")}</span>}
+                    {v.stock === 0 && <span style={{fontSize:11,fontFamily:BD,color:"#fff",background:C.rd,padding:"2px 6px",borderRadius:3}}>{t("agotado")}</span>}
                   </div>
                 );
               })}
@@ -4013,7 +4056,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     const current = i === stepIdx;
                     return <div key={key} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",position:"relative",zIndex:1}}>
                       <div style={{width:32,height:32,borderRadius:16,background:done?CL.gn:C.wh,border:"2.5px solid "+(done?CL.gn:C.ln),display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,boxShadow:current?"0 0 0 5px "+CL.gn+"20":"none",transition:"all 0.3s"}}>{done && i < stepIdx ? <span style={{color:"#fff",fontWeight:700,fontSize:14}}>✓</span> : <span style={{filter:done?"none":"grayscale(1) opacity(0.4)"}}>{icon}</span>}</div>
-                      <span style={{fontSize:10,fontFamily:BD,fontWeight:current?700:500,color:done?CL.gn:C.gr2,marginTop:6,textAlign:"center",letterSpacing:0.3}}>{label}</span>
+                      <span style={{fontSize:11,fontFamily:BD,fontWeight:current?700:500,color:done?CL.gn:C.gr2,marginTop:6,textAlign:"center",letterSpacing:0.3}}>{label}</span>
                     </div>;
                   })}
                 </div>
@@ -4065,7 +4108,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{width:34,height:34,borderRadius:7,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontWeight:600,color:C.dk}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></div>
-                      {isPartial && (pend>0||canc>0) && <div style={{fontSize:10,fontFamily:BD,marginTop:2}}>
+                      {isPartial && (pend>0||canc>0) && <div style={{fontSize:11,fontFamily:BD,marginTop:2}}>
                         <span style={{color:C.gn,fontWeight:600}}>{sv} {t("enviadoLower")}</span>
                         {pend>0 && <span style={{color:"#a06a2c",fontWeight:600}}> · {pend} {t("pendienteLower")}</span>}
                         {canc>0 && <span style={{color:C.gr,fontWeight:600}}> · {canc} {t("anuladoLower")}</span>}
@@ -4261,7 +4304,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <div style={{color:C.dk,fontWeight:600}}>{h.action}</div>
                       {h.details && <div style={{color:C.gr,fontSize:11,marginTop:1}}>{h.details}</div>}
                     </div>
-                    <span style={{fontSize:10,padding:"2px 6px",background:h.role==="admin"?C.dk:h.role==="team"?"#a8c8e8":h.role==="distributor"?C.bl:C.gn,color:"#fff",borderRadius:3,fontWeight:600,whiteSpace:"nowrap"}}>{h.user}</span>
+                    <span style={{fontSize:11,padding:"2px 6px",background:h.role==="admin"?C.dk:h.role==="team"?"#a8c8e8":h.role==="distributor"?C.bl:C.gn,color:"#fff",borderRadius:3,fontWeight:600,whiteSpace:"nowrap"}}>{h.user}</span>
                   </div>
                 ))}
               </div>
@@ -4333,8 +4376,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{width:30,height:30,borderRadius:6,background:C.bg,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{prod && prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.2)"}} /> : <span style={{fontSize:6,color:C.ln}}>M</span>}</div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontWeight:600,color:C.dk}}>{l.model} <span style={{color:C.gr,fontWeight:400}}>{l.color}</span></div>
-                    {prod && <div style={{fontSize:10,color:C.gr}}>{t("stockActual")}: {prod.stock} → <span style={{color:C.gn,fontWeight:700}}>{(prod.stock||0)+(parseInt(l.qty)||0)}</span></div>}
-                    {!prod && <div style={{fontSize:10,color:C.rd}}>⚠ {t("noEncontradoCatalogo")}</div>}
+                    {prod && <div style={{fontSize:11,color:C.gr}}>{t("stockActual")}: {prod.stock} → <span style={{color:C.gn,fontWeight:700}}>{(prod.stock||0)+(parseInt(l.qty)||0)}</span></div>}
+                    {!prod && <div style={{fontSize:11,color:C.rd}}>⚠ {t("noEncontradoCatalogo")}</div>}
                   </div>
                   <input type="number" min="0" value={l.qty} onChange={e => setEd(prev => ({...prev, recLines:prev.recLines.map((x,j) => j===i ? {...x, qty:parseInt(e.target.value)||0} : x)}))} style={{width:58,padding:6,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,fontWeight:700,background:C.bg,color:C.dk,textAlign:"center",boxSizing:"border-box"}} />
                   <button onClick={() => setEd(prev => ({...prev, recLines:prev.recLines.filter((_,j) => j!==i)}))} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:12,padding:"0 2px"}}>✕</button>
@@ -4857,7 +4900,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:8}}>
                 <div>
                   {ed._editMode ? <>
-                    <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:3}}>Número factura</div>
+                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>Número factura</div>
                     <input value={invNumber} onChange={e => setEd(p => ({...p, invoiceNumber: e.target.value}))} style={{padding:6,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,fontWeight:600,marginBottom:6}} />
                     <input type="date" value={invDate} onChange={e => setEd(p => ({...p, invoiceDate: e.target.value}))} style={{padding:6,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,marginLeft:8}} />
                   </> : <>
@@ -4869,12 +4912,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
                 <div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600,textTransform:"uppercase"}}>Emisor</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600,textTransform:"uppercase"}}>Emisor</div>
                   <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>Minuë Opticians</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>Alejandro Carrasco Díaz<br/>NIF: ES77843808D<br/>C/ Gutiérrez de Alba 2<br/>41010 Sevilla, España</div>
                 </div>
                 <div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600,textTransform:"uppercase"}}>Destinatario</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600,textTransform:"uppercase"}}>Destinatario</div>
                   <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600}}>{cl.companyName || ed.client}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>
                     {cl.contact && <>{cl.contact}<br/></>}
@@ -4886,7 +4929,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
               </div>
               {ed.lines && ed.lines.length > 0 && <div style={{borderTop:"1px solid "+C.ln,paddingTop:12}}>
-                <div style={{display:"flex",padding:"0 0 6px",fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600,textTransform:"uppercase"}}>
+                <div style={{display:"flex",padding:"0 0 6px",fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600,textTransform:"uppercase"}}>
                   <span style={{flex:1}}>Concepto</span><span style={{minWidth:35,textAlign:"center"}}>Uds</span><span style={{minWidth:55,textAlign:"right"}}>P.U.</span><span style={{minWidth:60,textAlign:"right"}}>Total</span>
                 </div>
                 {ed.lines.map((l,i) => (
@@ -4908,7 +4951,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"flex",justifyContent:"space-between",fontSize:14,fontFamily:DP,fontWeight:600,marginTop:6}}><span>TOTAL</span><span>{fmt(total)} €</span></div>
               </div>
               <div style={{marginTop:12,paddingTop:10,borderTop:"1px solid "+C.ln}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>IBAN: ES11 2100 8447 6202 0010 9299 · BIC: CAIXESBBXXX</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>IBAN: ES11 2100 8447 6202 0010 9299 · BIC: CAIXESBBXXX</div>
               </div>
             </div>
 
@@ -4931,7 +4974,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div key={i} onClick={() => setEd(prev => ({...prev, model:p.model, color:p.color, sku:p.sku, _search:""}))} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 12px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}} onMouseEnter={e => e.currentTarget.style.background=C.bg} onMouseLeave={e => e.currentTarget.style.background=""}>
                     <span style={{fontWeight:600,color:C.dk}}>{p.model}</span>
                     <span style={{color:C.gr}}>{p.color}</span>
-                    <span style={{fontSize:10,color:C.gr,marginLeft:"auto"}}>{p.sku} · {p.col}</span>
+                    <span style={{fontSize:11,color:C.gr,marginLeft:"auto"}}>{p.sku} · {p.col}</span>
                   </div>
                 ))}
               </div>
@@ -5139,8 +5182,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </div>
                   <div style={{padding:"6px 8px",background:"#faf6f1"}}>
                     <div style={{fontSize:11,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{p.color}</div>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.bl,marginTop:4,fontWeight:600}}>+ Añadir</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.bl,marginTop:4,fontWeight:600}}>+ Añadir</div>
                   </div>
                 </div>)}
               </div>
@@ -5238,7 +5281,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </select>
 
               <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4,fontWeight:600}}>{t("pegaCSV")}</div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,background:C.bg,borderRadius:6,padding:"7px 10px",marginBottom:6,lineHeight:1.5}}>{t("formatoCSV")}:<br/><code style={{fontSize:10,color:"#7a5c3a"}}>Nombre, Ciudad, País, Email, Teléfono, Web, Instagram, Nota</code></div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,background:C.bg,borderRadius:6,padding:"7px 10px",marginBottom:6,lineHeight:1.5}}>{t("formatoCSV")}:<br/><code style={{fontSize:11,color:"#7a5c3a"}}>Nombre, Ciudad, País, Email, Teléfono, Web, Instagram, Nota</code></div>
               <textarea value={ed.impText} onChange={e => setEd(p => ({...p, impText:e.target.value}))} placeholder={"Boutique Le Marais, Paris, FR, contact@lemarais.fr, +33612345678, lemarais.fr, @lemarais, Muy interesados en acetato\nConcept Store Lyon, Lyon, FR, hello@conceptlyon.fr, , conceptlyon.fr, @conceptlyon, "} rows={7} style={{width:"100%",padding:10,border:"1px solid "+C.ln,borderRadius:8,fontFamily:"monospace",fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical",marginBottom:12}} />
 
               {preview.length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,marginBottom:12,overflow:"hidden",maxHeight:200,overflowY:"auto"}}>
@@ -5419,7 +5462,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </div>
       <div style={{fontSize:24,fontWeight:300,fontFamily:DP,color:C.gn,marginBottom:6}}>{p.type==="percent"?"-"+p.disc+" %":t("cadeau")}</div>
       <div style={{fontSize:12,color:C.gr,fontFamily:BD}}>{(p.cond && p.cond[lang]) || (p.cond && p.cond.fr) || ""}</div>
-      {canEdit && <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>{(p.visible||[]).map(v => <Badge key={v} l={v==="distributor"?t("distributeur"):t("client")} c={v==="distributor"?C.bl:C.gn} />)}{p.targetClients && p.targetClients.length > 0 && <span style={{fontSize:10,fontFamily:BD,color:C.bl,padding:"2px 6px",background:C.bl+"15",borderRadius:3}}>{p.targetClients.join(", ")}</span>}</div>}
+      {canEdit && <div style={{display:"flex",gap:4,marginTop:8,flexWrap:"wrap"}}>{(p.visible||[]).map(v => <Badge key={v} l={v==="distributor"?t("distributeur"):t("client")} c={v==="distributor"?C.bl:C.gn} />)}{p.targetClients && p.targetClients.length > 0 && <span style={{fontSize:11,fontFamily:BD,color:C.bl,padding:"2px 6px",background:C.bl+"15",borderRadius:3}}>{p.targetClients.join(", ")}</span>}</div>}
     </div>
   );
 
@@ -5438,24 +5481,24 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{padding:"20px 20px 16px",background:darkMode?"#1e2d29":CL.dk,color:"#f8efe6"}}>
             <div style={{fontSize:18,fontFamily:DP,fontWeight:500}}>{user.name}</div>
             <div style={{fontSize:12,fontFamily:BD,opacity:0.6,marginTop:2}}>{user.email}</div>
-            <div style={{marginTop:8,display:"flex",gap:6,alignItems:"center"}}><Badge l={role==="admin"?"Admin":role==="team"?t("employe"):role==="distributor"?t("distributeur"):t("client")} c={role==="admin"?"#96a5a1":role==="team"?"#a8c8e8":role==="distributor"?C.bl:C.gn} />{role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#fdf6e3,#f5ecd8)",padding:"3px 10px",borderRadius:4,letterSpacing:2,border:"1px solid #d4a03050"}}>★ VIP</span>}</div>
+            <div style={{marginTop:8,display:"flex",gap:6,alignItems:"center"}}><Badge l={role==="admin"?"Admin":role==="team"?t("employe"):role==="distributor"?t("distributeur"):t("client")} c={role==="admin"?"#96a5a1":role==="team"?"#a8c8e8":role==="distributor"?C.bl:C.gn} />{role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#fdf6e3,#f5ecd8)",padding:"3px 10px",borderRadius:4,letterSpacing:2,border:"1px solid #d4a03050"}}>★ VIP</span>}</div>
           </div>
           <div style={{padding:"14px 20px"}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px 12px"}}>
               <div>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("entreprise")}</div>
+                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("entreprise")}</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.co || "—"}</div>
               </div>
               <div>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("langue")}</div>
+                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("langue")}</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{(user.lang||"fr").toUpperCase()}</div>
               </div>
               {user.city && <div>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("ville")}</div>
+                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("ville")}</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.city}{user.country ? " ("+user.country+")" : ""}</div>
               </div>}
               {user.phone && <div>
-                <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("telephone")}</div>
+                <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:2,textTransform:"uppercase"}}>{t("telephone")}</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.dk}}>{user.phone}</div>
               </div>}
             </div>
@@ -5546,7 +5589,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     return <div key={i} style={{flex:1,padding:"8px 0",textAlign:"center",background:isActive ? "rgba(248,239,230,0.1)" : "transparent",borderRadius:8,border:isBest ? "1px solid #d4a03060" : "1px solid transparent"}}>
                       <div style={{fontSize:11,fontFamily:BD,color:"rgba(248,239,230,0.5)",marginBottom:3}}>{tier.label} uds</div>
                       <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:isBest ? "#d4a030" : CL.bg}}>{fmt(tier.price)} €</div>
-                      {isActive && <div style={{fontSize:9,fontFamily:BD,color:CL.gn,marginTop:2,fontWeight:700}}>{t("tuNivel")}</div>}
+                      {isActive && <div style={{fontSize:10,fontFamily:BD,color:CL.gn,marginTop:2,fontWeight:700}}>{t("tuNivel")}</div>}
                     </div>;
                   })}
                 </div>
@@ -5573,17 +5616,17 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4}}>{t("tuPrecioUd")}</div>
                   <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(avgWholesalePrice)} €</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>Nivel {currentTier.label}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>Nivel {currentTier.label}</div>
                 </div>
                 <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4}}>PVP medio</div>
-                  <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:C.gr2,textDecoration:"line-through"}}>{PVP_RETAIL} €</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:CL.gn,fontWeight:700,marginTop:2}}>-{Math.round(((PVP_RETAIL - avgWholesalePrice) / PVP_RETAIL) * 100)}% dto.</div>
+                  <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:C.dk}}>{PVP_RETAIL} €</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:CL.gn,fontWeight:700,marginTop:2}}>{t("margenTienda")} {Math.round(((PVP_RETAIL - avgWholesalePrice) / PVP_RETAIL) * 100)}%</div>
                 </div>
                 <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4}}>Ahorro total</div>
                   <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:"#b8860b"}}>{fmt(totalSaved)} €</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>en {totalUnits} uds</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>en {totalUnits} uds</div>
                 </div>
               </div>
               {nextTier && <div style={{background:"linear-gradient(135deg,#d4a03008,#d4a03004)",border:"1px solid #d4a03025",borderRadius:8,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -5635,7 +5678,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       {(o.status==="shipped"||o.status==="partial") && <div style={{height:4,background:C.bg2,borderRadius:2,marginTop:8,overflow:"hidden"}}><div style={{height:4,width:((cur/3)*100)+"%",background:CL.gn,borderRadius:2}} /></div>}
                     </div>
                     <div style={{display:"flex",flexDirection:"column",gap:5,flexShrink:0}}>
-                      {o.pay !== "paid" && <button onClick={e => { e.stopPropagation(); downloadProforma(o); }} style={{padding:"5px 10px",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer",whiteSpace:"nowrap"}}>📄 {t("proforma")}</button>}
+                      {o.pay !== "paid" && <button onClick={e => { e.stopPropagation(); downloadProforma(o); }} style={{padding:"5px 10px",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer",whiteSpace:"nowrap"}}>📄 {t("proforma")}</button>}
                       <span style={{fontSize:11,color:C.gr,textAlign:"center"}}>{t("verPedido")} →</span>
                     </div>
                   </div>;
@@ -5663,7 +5706,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model} <span style={{color:C.gr,fontWeight:400}}>{d.color}</span></div>
                       <div style={{height:5,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:5,width:Math.max(12,(d.qty/maxQty)*100)+"%",background:"linear-gradient(90deg,#d4a030,#c4956a)",borderRadius:3}} /></div>
                     </div>
-                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a06a2c",flexShrink:0}}>{d.qty}<span style={{fontSize:10,color:C.gr,fontWeight:400}}> uds</span></div>
+                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:"#a06a2c",flexShrink:0}}>{d.qty}<span style={{fontSize:11,color:C.gr,fontWeight:400}}> uds</span></div>
                     {prod && <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{padding:"5px 10px",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
                   </div>
                 );})}
@@ -5710,7 +5753,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{prod.imageUrl ? <img loading="lazy" src={prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:11}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{prod.model}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{prod.color}</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:"#2471a3",marginTop:3,marginBottom:7}}>{t("haceTiempo").replace("%d", Math.floor(days/30))}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:"#2471a3",marginTop:3,marginBottom:7}}>{t("haceTiempo").replace("%d", Math.floor(days/30))}</div>
                   <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("panier")}</button>
                 </div>)}
               </div>
@@ -5767,10 +5810,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
               {activeNews.map(n => <div key={n.id} onClick={() => n.url ? window.open(n.url,"_blank") : setView(role==="distributor"?"d-news":"c-news")} style={{minWidth:240,maxWidth:300,flexShrink:0,background:"linear-gradient(135deg,"+CL.dk+","+"#1d4435)",borderRadius:14,padding:"16px 18px",cursor:"pointer",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:-30,right:-30,width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle, rgba(196,149,106,0.25), transparent 70%)"}} />
-                {n.pinned && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
+                {n.pinned && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
                 <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:"#f8efe6",marginTop:4,lineHeight:1.3}}>{(n.title&&n.title[lang])||(n.title&&n.title.fr)||""}</div>
                 <div style={{fontSize:11,fontFamily:BD,color:"#f8efe690",marginTop:6,lineHeight:1.5,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{(n.content&&n.content[lang])||(n.content&&n.content.fr)||""}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
+                <div style={{fontSize:11,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
               </div>)}
             </div>
           </div>;
@@ -5787,7 +5830,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,marginBottom:10}}>✨ {t("nuevosDesdeVisita")}</div>
               <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:4}}>
                 {newSince.map(p => <div key={p.id} onClick={() => { setView("c-cat"); setFilter(p.model); }} style={{minWidth:150,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:10,flexShrink:0,cursor:"pointer",position:"relative"}}>
-                  <span style={{position:"absolute",top:8,left:8,fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:"#8e44ad",padding:"2px 7px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("nuevo").toUpperCase()}</span>
+                  <span style={{position:"absolute",top:8,left:8,fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:"#8e44ad",padding:"2px 7px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("nuevo").toUpperCase()}</span>
                   <div style={{height:80,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:18}}>MINUË</span>}</div>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{p.model}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</div>
@@ -5841,7 +5884,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12,marginBottom:24}}>
               {/* Next tier progress */}
               {next && customPrice === 0 && priceEssential === 0 && priceIcons === 0 && <div style={{background:"linear-gradient(135deg,"+CL.gn+"12,"+CL.gn+"06)",border:"1px solid "+CL.gn+"30",borderRadius:10,padding:"16px 18px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:CL.gn,letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("proximoTramoLbl")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:CL.gn,letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("proximoTramoLbl")}</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk,marginBottom:6}}>{next[0]-totalUnits} uds</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:10,lineHeight:1.4}}>{t("paraPrecio")} <span style={{fontWeight:700,color:CL.gn}}>{fmt(next[1])} €{t("porUd")}</span></div>
                 <div style={{height:6,background:CL.gn+"15",borderRadius:3,overflow:"hidden"}}>
@@ -5852,14 +5895,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               
               {/* Savings */}
               {savings > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"16px 18px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("hasAhorrado")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("hasAhorrado")}</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:CL.gn,marginBottom:6}}>{fmt(savings)} €</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.4}}>{t("vsRetail")}<br/>{t("enUnidadesCompradas").replace("%n",String(totalUnits))}</div>
               </div>}
 
               {/* Pronto pago opportunity */}
               {recentPending && <div style={{background:"linear-gradient(135deg,#f0a020 08,#f0a02004)",border:"1px solid #f0a02030",borderRadius:10,padding:"16px 18px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:"#c47a00",letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("prontoPagoLbl")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:"#c47a00",letterSpacing:1,fontWeight:600,marginBottom:4}}>{t("prontoPagoLbl")}</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk,marginBottom:6}}>−{fmt(recentPending.total * 0.03)} €</div>
                 <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:10,lineHeight:1.4}}>{t("prontoPagoDesc").replace("%id", recentPending.id)}</div>
                 <button onClick={() => { setModal("viewOrd"); setEd({...recentPending}); }} style={{width:"100%",padding:"7px 12px",background:"#f0a020",color:"#fff",border:"none",borderRadius:5,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{t("verPedido")} →</button>
@@ -5898,7 +5941,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{padding:"8px 10px",background:"#faf6f1"}}>
                   <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</div>
-                  {qty > 0 && <div style={{fontSize:10,fontFamily:BD,color:C.gn,marginTop:2,fontWeight:600}}>{qty} vendidos</div>}
+                  {qty > 0 && <div style={{fontSize:11,fontFamily:BD,color:C.gn,marginTop:2,fontWeight:600}}>{qty} vendidos</div>}
                 </div>
               </div>
             )); })()}
@@ -5931,7 +5974,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10,marginBottom:24}}>
               {recProds.map(p => <div key={p.id} style={{background:"linear-gradient(135deg,"+C.dk+"05,"+C.gn+"08)",border:"1px solid "+C.gn+"30",borderRadius:8,overflow:"hidden",position:"relative",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
-                <div style={{position:"absolute",top:6,left:6,fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("paraTi")}</div>
+                <div style={{position:"absolute",top:6,left:6,fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("paraTi")}</div>
                 <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
                   {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                 </div>
@@ -5996,12 +6039,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 return <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",position:"relative"}}>
                   <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
                     {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
-                    {inCart > 0 && <span style={{position:"absolute",top:6,right:6,fontSize:10,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:10}}>x{inCart}</span>}
+                    {inCart > 0 && <span style={{position:"absolute",top:6,right:6,fontSize:11,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 8px",borderRadius:10}}>x{inCart}</span>}
                   </div>
                   <div style={{padding:"10px 12px",background:"#faf6f1"}}>
                     <div style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div>
                     <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:2}}>{p.color}</div>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginBottom:8}}>Pediste {qty} uds</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr2,marginBottom:8}}>Pediste {qty} uds</div>
                     <button onClick={() => setQtyPick({productId:p.id, model:p.model, color:p.color, qty:suggestedQty})} style={{width:"100%",padding:"7px 0",background:C.dk,color:C.bg,border:"none",fontSize:11,cursor:"pointer",fontFamily:BD,borderRadius:4,fontWeight:600}}>+ {t("reorder")||"Repetir"} 🛒</button>
                   </div>
                 </div>;
@@ -6058,7 +6101,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{height:120,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",position:"relative",overflow:"hidden"}}>
                     {p.imageUrl ? <img loading="lazy" src={p.imageUrl} alt={p.model} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,color:C.ln,fontFamily:DP}}>M</span>}
                     <span style={{position:"absolute",top:6,left:6,fontSize:7,fontFamily:BD,fontWeight:700,color:"#fff",background:"#8e44ad",padding:"2px 6px",borderRadius:3,textTransform:"uppercase",letterSpacing:0.5}}>{t("nuevo")}</span>
-                    {inCart > 0 && <span style={{position:"absolute",bottom:6,right:6,fontSize:9,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 6px",borderRadius:3,fontWeight:700}}>x{inCart}</span>}
+                    {inCart > 0 && <span style={{position:"absolute",bottom:6,right:6,fontSize:10,fontFamily:BD,color:C.bg,background:C.gn,padding:"2px 6px",borderRadius:3,fontWeight:700}}>x{inCart}</span>}
                   </div>
                   <div style={{padding:"8px 10px",background:darkMode?C.bg2:"#faf6f1"}}>
                     <div style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.model}</div>
@@ -6073,7 +6116,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
         {/* ═══ COLOR PALETTE QUICK FILTER ═══ */}
         <div style={{display:"flex",gap:5,marginBottom:12,alignItems:"center",flexWrap:"nowrap",overflowX:"auto",paddingBottom:4}}>
-          <button onClick={() => setColorFilter("all")} style={{padding:"3px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:14,whiteSpace:"nowrap",flexShrink:0}}>{t("tous")}</button>
+          <button onClick={() => setColorFilter("all")} style={{padding:"3px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,borderRadius:14,whiteSpace:"nowrap",flexShrink:0}}>{t("tous")}</button>
           {[["careyCol","#8B6914"],["noir","#1a1a1a"],["marron","#7B4B2A"],["vert","#2d6b4f"],["bleu","#3B6B9E"],["rose","#D4839A"],["dore","#C5A55A"],["cremeNude","#E8D5C0"],["rougeVin","#722f37"],["gris","#8C8C8C"],["orangeCol","#D4763A"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
             <button key={v} onClick={() => setColorFilter(colorFilter===v?"all":v)} title={t(v)} style={{width:22,height:22,borderRadius:11,background:bg,border:colorFilter===v?"2px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 3px "+C.dk:"none",padding:0,flexShrink:0,transition:"box-shadow 0.15s,border-color 0.15s"}} />
           ))}
@@ -6129,7 +6172,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); if (!p) return null; const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",gap:12,padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
                   <div style={{width:44,height:44,borderRadius:8,background:C.wh,border:"1px solid "+C.ln,flexShrink:0,overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>{p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.15)"}} /> : <span style={{fontSize:7,color:C.ln,fontFamily:DP}}>M</span>}</div>
-                  <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:12,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:10,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:3,marginLeft:4}}>Acetato</span> : ""} · {fmt(itemPrice)} €</div></div>
+                  <div style={{flex:1,minWidth:0}}><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:12,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:11,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:3,marginLeft:4}}>Acetato</span> : ""} · {fmt(itemPrice)} €</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
                     <div style={{display:"flex",alignItems:"center",border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
                       <button onClick={() => updateQty(id, q-1)} style={{width:28,height:30,background:C.bg,border:"none",cursor:"pointer",color:C.dk,fontFamily:BD,fontSize:14}}>−</button>
@@ -6172,7 +6215,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         <div style={{width:18,height:18,borderRadius:9,background:color,border:"1px solid "+C.ln,flexShrink:0}}></div>
                         <span>{label}</span>
                         {isSelected && <span style={{fontSize:12,fontWeight:700}}>✓</span>}
-                        {!isAvail && <span style={{fontSize:9,color:C.rd,fontWeight:600}}>{t("sinStockBtn")}</span>}
+                        {!isAvail && <span style={{fontSize:10,color:C.rd,fontWeight:600}}>{t("sinStockBtn")}</span>}
                       </button>;
                     })}
                   </div>
@@ -6263,9 +6306,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         <div style={{display:"flex",flexDirection:"column",gap:14}}>
           {/* KPI summary */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:8,marginBottom:8}}>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.dk}}>{myOrders.length}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("commandes")}</div></div>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.dk}}>{myOrders.reduce((s,o)=>s+o.items,0)}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("unites")}</div></div>
-            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.gn}}>{fmt(myOrders.reduce((s,o)=>s+o.total,0))} €</div><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>Total</div></div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.dk}}>{myOrders.length}</div><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("commandes")}</div></div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.dk}}>{myOrders.reduce((s,o)=>s+o.items,0)}</div><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("unites")}</div></div>
+            <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 10px",textAlign:"center"}}><div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.gn}}>{fmt(myOrders.reduce((s,o)=>s+o.total,0))} €</div><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>Total</div></div>
           </div>
           {/* Order cards */}
           {myOrders.map((o,i) => {
@@ -6275,7 +6318,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{padding:"16px 18px",display:"flex",alignItems:"center",gap:14}}>
                 <div style={{background:C.dk+"08",borderRadius:8,padding:"10px 14px",textAlign:"center",flexShrink:0}}>
                   <div style={{fontSize:15,fontFamily:BD,color:C.dk,fontWeight:700}}>{o.id}</div>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{o.date}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{o.date}</div>
                 </div>
                 <div style={{flex:1}}>
                   <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:600}}>{o.items} {t("unites")} · {fmt(o.total)} €</div>
@@ -6288,7 +6331,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{padding:"0 18px 14px",display:"flex",alignItems:"center",gap:0}}>
                 {steps.map((s,si) => <div key={s} style={{display:"flex",alignItems:"center",flex:si<3?"1":"0 0 auto"}}>
                   <div style={{width:20,height:20,borderRadius:10,background:si<=currentStep?SC[s]||C.gn:C.ln+"60",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                    {si<=currentStep && <span style={{fontSize:9,color:"#fff"}}>✓</span>}
+                    {si<=currentStep && <span style={{fontSize:10,color:"#fff"}}>✓</span>}
                   </div>
                   {si<3 && <div style={{flex:1,height:2,background:si<currentStep?SC[steps[si+1]]||C.gn:C.ln+"40"}} />}
                 </div>)}
@@ -6303,7 +6346,19 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         </div>; })()}
       </Sec>}
 
-      {view === "c-tarifs" && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
+      {(view === "c-tarifs" || view === "d-tarifs") && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
+        {role === "distributor" && (() => {
+          const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
+          const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
+          const txt = t("msgTarifas") + "\n" + TIERS.map(x => "• " + x.label + " uds: " + fmt(x.price) + " €").join("\n") + "\n" + refUrl;
+          return <div className="mn-fade" style={{background:"linear-gradient(150deg,"+ACC.green+"12,"+C.wh+" 60%)",border:"1px solid "+ACC.green+"35",borderRadius:14,padding:"16px 18px",marginBottom:18}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:8}}><IconChip d={ICO.coins} c={ACC.green} /><div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("tarifasParaClientes")}</div></div>
+            <div style={{fontSize:13,fontFamily:BD,color:C.gr,lineHeight:1.6,marginBottom:12}}>{t("tarifasExplica")}</div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              <button className="mn-press" onClick={() => window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener")} style={{padding:"9px 14px",background:"#25D366",color:"#fff",border:"none",borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>WhatsApp</button>
+              <button className="mn-press" onClick={() => { try { navigator.clipboard.writeText(txt); toast(t("enlaceCopiado")); } catch(e) {} }} style={{padding:"9px 14px",background:C.wh,color:C.dk,border:"1px solid "+C.ln,borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{t("copiar")}</button>
+            </div>
+          </div>; })()}
         {customPrice > 0 && <div style={{background:"linear-gradient(135deg,"+CL.dk+"08,"+CL.gn+"10)",border:"2px solid "+CL.gn+"40",borderRadius:10,padding:"18px 22px",marginBottom:20,display:"flex",alignItems:"center",gap:16,flexWrap:"wrap"}}>
           <div style={{fontSize:30}}>⭐</div>
           <div style={{flex:1,minWidth:200}}>
@@ -6349,7 +6404,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,opacity:(customPrice>0||priceEssential>0||priceIcons>0)?0.55:1}}>
           {TIERS.map((tier, i) => { const isA = cartCount >= tier.min && cartCount <= tier.max && customPrice === 0; return (
             <div key={i} style={{background:C.wh,border:"2px solid "+(isA?C.gn:C.ln),borderRadius:6,padding:18,position:"relative"}}>
-              {isA && <div style={{position:"absolute",top:-10,right:12,background:C.gn,color:C.bg,fontSize:10,fontFamily:BD,padding:"2px 8px",borderRadius:3,fontWeight:600}}>{t("votreTarif")}</div>}
+              {isA && <div style={{position:"absolute",top:-10,right:12,background:C.gn,color:C.bg,fontSize:11,fontFamily:BD,padding:"2px 8px",borderRadius:3,fontWeight:600}}>{t("votreTarif")}</div>}
               <div style={{fontSize:22,fontWeight:300,fontFamily:DP,color:C.dk,marginBottom:4}}>{tier.label} uds</div>
               <div style={{fontSize:26,fontWeight:500,fontFamily:DP,color:isA?C.gn:C.dk}}>{fmt(tier.price)} €</div>
               <div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{t("parUnite")}</div>
@@ -6384,8 +6439,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{padding:"8px 10px"}}>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.model} <span style={{color:C.gr,fontWeight:400}}>{p.color}</span></div>
                   <div style={{display:"flex",gap:4,marginTop:6}}>
-                    <button onClick={async () => { try { const r = await fetch(p.imageUrl); const b = await r.blob(); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "MINUE_"+p.model+"_"+p.color.replace(/\s+/g,"-")+".jpg"; a.click(); URL.revokeObjectURL(u); toast(t("fotoDescargada")); } catch(e) { window.open(p.imageUrl, "_blank"); } }} style={{flex:1,padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>⬇ {t("telecharger")}</button>
-                    <button onClick={() => window.open(p.imageUrl, "_blank")} title="HD" style={{padding:"6px 9px",background:"transparent",color:C.gr,border:"1px solid "+C.ln,borderRadius:6,fontSize:10,fontFamily:BD,cursor:"pointer"}}>👁</button>
+                    <button onClick={async () => { try { const r = await fetch(p.imageUrl); const b = await r.blob(); const u = URL.createObjectURL(b); const a = document.createElement("a"); a.href = u; a.download = "MINUE_"+p.model+"_"+p.color.replace(/\s+/g,"-")+".jpg"; a.click(); URL.revokeObjectURL(u); toast(t("fotoDescargada")); } catch(e) { window.open(p.imageUrl, "_blank"); } }} style={{flex:1,padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>⬇ {t("telecharger")}</button>
+                    <button onClick={() => window.open(p.imageUrl, "_blank")} title="HD" style={{padding:"6px 9px",background:"transparent",color:C.gr,border:"1px solid "+C.ln,borderRadius:6,fontSize:11,fontFamily:BD,cursor:"pointer"}}>👁</button>
                   </div>
                 </div>
               </div>
@@ -6415,71 +6470,6 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {/* TARIFS DISTRIBUTOR */}
-      {view === "d-tarifs" && <Sec title={t("tarifVolume")} sub={t("tarifVolSub")}>
-        {(() => {
-          const tierConditions = [
-            ["Paiement unique / Pago único","Envoi payant / Envío de pago","Présentoir en option / Expositor opcional","PVP 45-50 €"],
-            ["Paiement unique / Pago único","Envoi payant / Envío de pago","1 présentoir inclus / 1 expositor incluido","PVP 45-50 €"],
-            ["2 paiements à 30 jours / 2 pagos a 30 días","Envoi gratuit / Envío gratuito","2 présentoirs inclus / 2 expositores incluidos","PVP 45-50 €"],
-            ["2 paiements à 30 jours / 2 pagos a 30 días","Envoi gratuit / Envío gratuito","3 présentoirs inclus / 3 expositores incluidos","PVP 45-50 €"],
-            ["2 paiements 15/45 jours / 2 pagos 15/45 días","Envoi gratuit / Envío gratuito","3 présentoirs inclus / 3 expositores incluidos","Meilleur tarif / Mejor tarifa","PVP 45-50 €"]
-          ];
-          return <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
-            <div style={{padding:"14px 16px",background:C.dk,color:C.bg}}>
-              <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Essential & Icons</div>
-            </div>
-            {TIERS.map((tier, i) => {
-              const isActive = essentialCount >= tier.min && essentialCount <= tier.max;
-              const isOpen = expandedTier === i;
-              return (
-                <div key={i}>
-                  <div onClick={() => setExpandedTier(isOpen ? -1 : i)} style={{display:"flex",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid "+C.bg2,background:isActive?C.gn+"08":"transparent",cursor:"pointer",transition:"background 0.15s"}} onMouseEnter={e => {if(!isActive) e.currentTarget.style.background=C.bg}} onMouseLeave={e => {if(!isActive) e.currentTarget.style.background="transparent"}}>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tier.label} {t("unites")}</div>
-                      <div style={{fontSize:11,fontFamily:BD,color:C.bl,marginTop:3,cursor:"pointer"}}>{isOpen ? "▲ Masquer" : "▼ Voir conditions"}</div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:isActive?C.gn:C.dk}}>{fmt(tier.price)} €</div>
-                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>/ ud</div>
-                    </div>
-                    {isActive && <span style={{marginLeft:8,fontSize:10,fontFamily:BD,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:10,fontWeight:600}}>{t("votreTarif")}</span>}
-                  </div>
-                  {isOpen && <div style={{padding:"10px 16px 14px",background:isActive?C.gn+"05":C.bg,borderBottom:"1px solid "+C.ln}}>
-                    {(tierConditions[i]||[]).map((cond, j) => (
-                      <div key={j} style={{display:"flex",alignItems:"center",gap:8,padding:"4px 0",fontSize:12,fontFamily:BD,color:C.dk}}>
-                        <span style={{color:C.gn,fontSize:11}}>✓</span> {cond}
-                      </div>
-                    ))}
-                  </div>}
-                </div>
-              );
-            })}
-          </div>;
-        })()}
-        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden",marginBottom:16}}>
-          <div style={{padding:"14px 16px",background:"#7a5c3a",color:C.bg}}>
-            <div style={{fontSize:14,fontFamily:DP,fontWeight:600}}>{t("tarifs")} Acetato</div>
-          </div>
-          <div style={{display:"flex",alignItems:"center",padding:"14px 16px"}}>
-            <div style={{flex:1}}>
-              <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>Prix unique / Precio único</div>
-              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>PVP 70 €</div>
-            </div>
-            <div style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.dk}}>{fmt(ACETATO_PRICE)} €</div>
-            <span style={{marginLeft:8,fontSize:10,fontFamily:BD,color:C.gr}}>/ ud</span>
-          </div>
-        </div>
-        <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-          <div style={{fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.6}}>
-            • PVP Essential & Icons: 45-50 €<br/>
-            • PVP Acetato: 70 €<br/>
-            • {t("gratuit")} ≥ 20 {t("unites")}<br/>
-            • Early pay: -3%
-          </div>
-        </div>
-      </Sec>}
-
-      {/* ═══ MESSAGES — Client/Distributor side ═══ */}
       {(view === "c-msg" || view === "d-msg") && <Sec title={"💬 "+t("atencionCliente")}>
         {(() => {
           const myConvs = conversations.filter(c => c.clientEmail === user.email || c.clientCompany === user.co);
@@ -6549,7 +6539,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {conv.messages.map(m => {
                     const isMine = m.from === user.email;
                     return <div key={m.id} style={{alignSelf:isMine?"flex-end":"flex-start",maxWidth:"75%"}}>
-                      <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,textAlign:isMine?"right":"left",fontWeight:600}}>{isMine ? t("yo") : (m.fromRole === "admin" || m.fromRole === "team" ? t("equipoMinue") : m.fromName)} · {new Date(m.date).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,textAlign:isMine?"right":"left",fontWeight:600}}>{isMine ? t("yo") : (m.fromRole === "admin" || m.fromRole === "team" ? t("equipoMinue") : m.fromName)} · {new Date(m.date).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
                       <div style={{background:isMine?C.dk:C.wh,color:isMine?C.bg:C.dk,padding:"10px 14px",borderRadius:isMine?"12px 12px 4px 12px":"12px 12px 12px 4px",fontSize:12,fontFamily:BD,lineHeight:1.5,border:isMine?"none":"1px solid "+C.ln,whiteSpace:"pre-line"}}>{m.text}</div>
                     </div>;
                   })}
@@ -6591,8 +6581,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{lastMsg ? lastMsg.text.substring(0,80) : ""}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                    <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{new Date(c.updatedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</span>
-                    {unread > 0 && <span style={{minWidth:18,height:18,padding:"0 6px",borderRadius:9,background:"#e74c3c",color:"#fff",fontSize:10,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</span>}
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{new Date(c.updatedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</span>
+                    {unread > 0 && <span style={{minWidth:18,height:18,padding:"0 6px",borderRadius:9,background:"#e74c3c",color:"#fff",fontSize:11,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</span>}
                     {c.status === "closed" && <Badge l={t("cerradas")} c={C.gr} />}
                   </div>
                 </div>;
@@ -6632,7 +6622,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 {conv.messages.map(m => {
                   const isMine = m.fromRole === "admin" || m.fromRole === "team";
                   return <div key={m.id} style={{alignSelf:isMine?"flex-end":"flex-start",maxWidth:"75%"}}>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,textAlign:isMine?"right":"left",fontWeight:600}}>{isMine ? t("equipoMinue") : m.fromName} · {new Date(m.date).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,textAlign:isMine?"right":"left",fontWeight:600}}>{isMine ? t("equipoMinue") : m.fromName} · {new Date(m.date).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
                     <div style={{background:isMine?C.dk:C.wh,color:isMine?C.bg:C.dk,padding:"10px 14px",borderRadius:isMine?"12px 12px 4px 12px":"12px 12px 12px 4px",fontSize:12,fontFamily:BD,lineHeight:1.5,border:isMine?"none":"1px solid "+C.ln,whiteSpace:"pre-line"}}>{m.text}</div>
                   </div>;
                 })}
@@ -6682,8 +6672,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{lastMsg ? lastMsg.text.substring(0,90) : ""}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                    <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{new Date(c.updatedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</span>
-                    {unread > 0 && <span style={{minWidth:18,height:18,padding:"0 6px",borderRadius:9,background:"#e74c3c",color:"#fff",fontSize:10,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</span>}
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{new Date(c.updatedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</span>
+                    {unread > 0 && <span style={{minWidth:18,height:18,padding:"0 6px",borderRadius:9,background:"#e74c3c",color:"#fff",fontSize:11,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</span>}
                     {c.status === "closed" && <Badge l={t("cerradas")} c={C.gr} />}
                   </div>
                 </div>;
@@ -6721,7 +6711,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:10}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                   </div>
                   <div style={{padding:"10px 14px",background:"#faf6f1"}}>
-                    <div style={{fontSize:10,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"2px 7px",borderRadius:10,display:"inline-block",marginBottom:4}}>{p.col}</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:isAcetato?"#7a5c3a":C.gr,background:isAcetato?"#e8d5c0":C.bg,padding:"2px 7px",borderRadius:10,display:"inline-block",marginBottom:4}}>{p.col}</div>
                     <div style={{fontSize:13,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div>
                     <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:8}}>{p.color}</div>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -6737,12 +6727,53 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {/* ═══ ADMIN ANALYTICS ═══ */}
-      {view === "a-mercado" && <Sec title={t("mercado")} sub={t("mercadoSub")}>
+      {view === "a-mercado" && role === "distributor" && <Sec title={t("calComercial")} sub={t("calComercialSub")}>
+        {(() => {
+          const cm = new Date().getMonth();
+          const KC = {launch:ACC.terra, fair:ACC.sea, peak:ACC.green, plan:ACC.gold};
+          const KL = {launch:t("calLanzamiento"), fair:t("calFeria"), peak:t("calVenta"), plan:t("calPlanificar")};
+          const mName = m => new Date(2026, m, 1).toLocaleDateString(({fr:"fr-FR",es:"es-ES",en:"en-GB",it:"it-IT"})[lang]||"es-ES",{month:"long"});
+          const next = SELL_CAL.find(e => e.m >= cm) || SELL_CAL[0];
+          return <>
+            <div className="mn-fade" style={{background:"linear-gradient(135deg,"+CL.dk+","+CL.dk+"ee)",color:CL.bg,borderRadius:14,padding:"18px",marginBottom:18,display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
+              <IconChip d={ICO.cal} c={"#e0b25a"} size={44} />
+              <div style={{flex:1,minWidth:200}}>
+                <div style={{fontSize:11,fontFamily:BD,letterSpacing:1,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{t("calProximo")} · {mName(next.m)}</div>
+                <div style={{fontSize:17,fontFamily:DP,fontWeight:600,marginTop:4}}>{next.l[lang]||next.l.es}</div>
+                <div style={{fontSize:13,fontFamily:BD,color:"rgba(248,239,230,0.75)",marginTop:4}}>{next.tip[lang]||next.tip.es}</div>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+              {Object.keys(KC).map(k => <span key={k} style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:11,fontFamily:BD,fontWeight:600,color:KC[k]}}><span style={{width:9,height:9,borderRadius:5,background:KC[k]}} />{KL[k]}</span>)}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))",gap:10,marginBottom:22}}>
+              {SELL_CAL.map((e,i) => { const c = KC[e.k]; const now = e.m === cm; return (
+                <div key={i} className="mn-lift" style={{background:now?c+"18":C.wh,border:(now?"2px":"1px")+" solid "+(now?c:c+"35"),borderRadius:12,padding:"14px"}}>
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:6}}>
+                    <span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,textTransform:"capitalize"}}>{mName(e.m)}</span>
+                    <span style={{fontSize:11,fontFamily:BD,fontWeight:700,color:"#fff",background:c,padding:"3px 8px",borderRadius:9}}>{now ? t("calAhora") : KL[e.k]}</span>
+                  </div>
+                  <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk,lineHeight:1.4}}>{e.l[lang]||e.l.es}</div>
+                  <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:6,lineHeight:1.5}}>→ {e.tip[lang]||e.tip.es}</div>
+                </div>); })}
+            </div>
+            <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}><IconChip d={ICO.spark} c={ACC.gold} /><div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("calTips")}</div></div>
+              {SELL_TIPS.map((tp,i) => <div key={i} style={{display:"flex",gap:12,padding:"10px 0",borderTop:i?"1px solid "+C.bg2:"none"}}>
+                <span style={{width:24,height:24,borderRadius:12,background:ACC.gold+"20",color:ACC.gold,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontFamily:BD,fontWeight:700,flexShrink:0}}>{i+1}</span>
+                <span style={{fontSize:13,fontFamily:BD,color:C.dk,lineHeight:1.5}}>{tp[lang]||tp.es}</span>
+              </div>)}
+            </div>
+          </>;
+        })()}
+      </Sec>}
+
+      {view === "a-mercado" && role !== "distributor" && <Sec title={t("mercado")} sub={t("mercadoSub")}>
         {(() => {
           const FLAG_C = {dated:"#f0a020", outlier:"#f0a020", proxy:"#f0a020", soft:C.gr2};
           const flagLabel = f => f==="dated" ? t("mktDatado") : f==="proxy" ? t("mktProxy") : f==="soft" ? t("mktNoVerificado") : t("mktNoVerificado");
-          const Src = ({d}) => <a href={d.url} target="_blank" rel="noopener noreferrer" style={{fontSize:10,fontFamily:BD,color:C.gr2,textDecoration:"none",borderBottom:"1px dotted "+C.ln}}>{d.src} · {d.year}</a>;
-          const Flag = ({f}) => f ? <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:FLAG_C[f],background:FLAG_C[f]+"18",padding:"2px 6px",borderRadius:8,letterSpacing:.3,textTransform:"uppercase"}}>{flagLabel(f)}</span> : null;
+          const Src = ({d}) => <a href={d.url} target="_blank" rel="noopener noreferrer" style={{fontSize:11,fontFamily:BD,color:C.gr2,textDecoration:"none",borderBottom:"1px dotted "+C.ln}}>{d.src} · {d.year}</a>;
+          const Flag = ({f}) => f ? <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:FLAG_C[f],background:FLAG_C[f]+"18",padding:"2px 6px",borderRadius:8,letterSpacing:.3,textTransform:"uppercase"}}>{flagLabel(f)}</span> : null;
           const card = {background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"16px 18px",display:"flex",flexDirection:"column",gap:6};
           const grid = {display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10,marginBottom:18};
           return <>
@@ -6815,7 +6846,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <Flag f={d.flag} />
                   </div>
                   <div style={{fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{d.d[lang]||d.d.es}</div>
-                  <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{d.src} · {d.year}</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{d.src} · {d.year}</span>
                 </div>
               ))}
             </div>
@@ -6872,27 +6903,27 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             {/* KPIs */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:24}}>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CA TOTAL</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CA TOTAL</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.gn}}>{fmt(totalRevenue)} €</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>PEDIDOS</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>PEDIDOS</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{totalOrders}</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>UDS VENDIDAS</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>UDS VENDIDAS</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{totalUnits}</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CESTA MEDIA</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CESTA MEDIA</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{fmt(avgOrder)} €</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>{t("udsPorPedido")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>{t("udsPorPedido")}</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{avgUnits.toFixed(1)}</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CLIENTES</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>CLIENTES</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{totalClients}</div>
               </div>
             </div>
@@ -6914,7 +6945,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     </div>
                     <div style={{textAlign:"right",flexShrink:0}}>
                       <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.gn}}>{qty}</div>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("unidadesVendidas")}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("unidadesVendidas")}</div>
                     </div>
                   </div>)}
                 </div>
@@ -6935,7 +6966,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     </div>
                     <div style={{textAlign:"right",flexShrink:0}}>
                       <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:"#6b4c3b"}}>{cnt}</div>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("porClientes")}</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("porClientes")}</div>
                     </div>
                   </div>)}
                 </div>
@@ -7021,7 +7052,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <span style={{fontSize:16,fontWeight:500,fontFamily:DP,color:C.dk}}>{(n.title&&n.title[lang])||n.title?.fr||""}</span>
                 <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                  {n.pinned && <span style={{fontSize:10,fontFamily:BD,color:C.yl,fontWeight:600}}>PINNED</span>}
+                  {n.pinned && <span style={{fontSize:11,fontFamily:BD,color:C.yl,fontWeight:600}}>PINNED</span>}
                   <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{n.date}</span>
                 </div>
               </div>
@@ -7062,7 +7093,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{height:70,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",marginBottom:6}}>{d.prod.imageUrl ? <img loading="lazy" src={d.prod.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",transform:"scale(1.18)"}} /> : <span style={{fontFamily:DP,color:C.ln,fontSize:11}}>MINUË</span>}</div>
                 <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{d.model}</div>
                 <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{d.color}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:"#a93226",marginTop:3,marginBottom:7}}>{t("pedisteAntes").replace("%d", d.qty)}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:"#a93226",marginTop:3,marginBottom:7}}>{t("pedisteAntes").replace("%d", d.qty)}</div>
                 <button onClick={() => setQtyPick({productId:d.prod.id, model:d.prod.model, color:d.prod.color, qty:2})} style={{width:"100%",padding:"6px 0",background:C.dk,color:C.bg,border:"none",borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ {t("reorder")||"Repetir"}</button>
               </div>)}
             </div>
@@ -7116,7 +7147,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{height:6,background:C.bg2,borderRadius:3,marginTop:4,overflow:"hidden"}}><div style={{height:6,width:Math.max(4,(d.qty/maxQty)*100)+"%",background:i<3?"linear-gradient(90deg,#d4a030,#c4956a)":CL.dk,borderRadius:3}} /></div>
                   </div>
                   <span style={{fontSize:14,fontFamily:DP,fontWeight:600,color:C.dk,minWidth:34,textAlign:"right"}}>{d.qty}</span>
-                  {inStock && <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{padding:"5px 9px",background:CL.dk,color:CL.bg,border:"none",borderRadius:6,fontSize:10,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
+                  {inStock && <button onClick={() => setQtyPick({productId:prod.id, model:prod.model, color:prod.color, qty:2})} style={{padding:"5px 9px",background:CL.dk,color:CL.bg,border:"none",borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",flexShrink:0}}>+ {t("reorder")||"Repetir"}</button>}
                 </div>
               );})}
             </div>
@@ -7223,10 +7254,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"flex",gap:10,overflowX:"auto",paddingBottom:8,WebkitOverflowScrolling:"touch"}}>
               {activeNews.map(n => <div key={n.id} onClick={() => n.url ? window.open(n.url,"_blank") : setView(role==="distributor"?"d-news":"c-news")} style={{minWidth:240,maxWidth:300,flexShrink:0,background:"linear-gradient(135deg,"+CL.dk+","+"#1d4435)",borderRadius:14,padding:"16px 18px",cursor:"pointer",position:"relative",overflow:"hidden"}}>
                 <div style={{position:"absolute",top:-30,right:-30,width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle, rgba(196,149,106,0.25), transparent 70%)"}} />
-                {n.pinned && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
+                {n.pinned && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#c4956a",letterSpacing:1.5,textTransform:"uppercase"}}>★ {t("nuevo")}</span>}
                 <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:"#f8efe6",marginTop:4,lineHeight:1.3}}>{(n.title&&n.title[lang])||(n.title&&n.title.fr)||""}</div>
                 <div style={{fontSize:11,fontFamily:BD,color:"#f8efe690",marginTop:6,lineHeight:1.5,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{(n.content&&n.content[lang])||(n.content&&n.content.fr)||""}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
+                <div style={{fontSize:11,fontFamily:BD,color:"#c4956a",marginTop:8,fontWeight:600}}>{n.date} →</div>
               </div>)}
             </div>
           </div>;
@@ -7248,7 +7279,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {/* ACCESOS RAPIDOS · COMPARTIR · CONDICIONES */}
           {(() => {
             const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
-            const refUrl = (typeof window !== "undefined" ? window.location.origin : "https://b2b.minueopticians.com") + "/?ref=" + myRef;
+            const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
             const tradeUrl = "https://trade.minueopticians.com/";
             const zoneLine = (user.notes||"").split("\n").find(l => /^zona\s*:/i.test(l.trim()));
             const zone = zoneLine ? zoneLine.split(":").slice(1).join(":").trim() : (ZONES[(user.country||"").toUpperCase()] || user.country || "—");
@@ -7313,7 +7344,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div key={i} className="mn-lift" style={{background:"rgba(248,239,230,0.07)",border:"1px solid rgba(248,239,230,0.12)",borderRadius:10,padding:"12px"}}>
                       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c==ACC.green||c==ACC.sea?"#8fc9a8":"#e0b25a"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
-                        {label && <span style={{fontSize:10,fontFamily:BD,letterSpacing:.8,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{label}</span>}
+                        {label && <span style={{fontSize:11,fontFamily:BD,letterSpacing:.8,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{label}</span>}
                       </div>
                       <div style={{fontSize:16,fontFamily:DP,fontWeight:600,lineHeight:1.2}}>{big}</div>
                       <div style={{fontSize:11,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,lineHeight:1.4}}>{desc}</div>
@@ -7406,7 +7437,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"flex",alignItems:"flex-end",gap:"min(14px,2.5vw)",height:150,padding:"0 4px"}}>
                   {months.map((b,i) => { const h = b.total>0 ? Math.max(8, Math.round(b.total/max*120)) : 4; const last = i===5; return (
                     <div key={i} title={b.n+" "+t("pedidosLabel")+" · "+fmt(b.total)+" €"} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6,minWidth:0}}>
-                      <div style={{fontSize:10,fontFamily:BD,fontWeight:600,color:b.total>0?C.dk:C.gr2,whiteSpace:"nowrap"}}>{b.total>0 ? (b.total>=1000 ? (b.total/1000).toFixed(1).replace(".",",")+"k" : Math.round(b.total)) : ""}</div>
+                      <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:b.total>0?C.dk:C.gr2,whiteSpace:"nowrap"}}>{b.total>0 ? (b.total>=1000 ? (b.total/1000).toFixed(1).replace(".",",")+"k" : Math.round(b.total)) : ""}</div>
                       <div className="mn-lift" style={{width:"100%",maxWidth:44,height:h,borderRadius:"8px 8px 3px 3px",background:b.total>0?(last?"linear-gradient(180deg,"+ACC.terra+","+ACC.gold+")":"linear-gradient(180deg,"+ACC.sea+"cc,"+ACC.green+")"):C.bg2}} />
                       <div style={{fontSize:11,fontFamily:BD,color:last?C.dk:C.gr,fontWeight:last?700:400,textTransform:"capitalize"}}>{b.label}</div>
                     </div>); })}
@@ -7419,7 +7450,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{display:"flex",alignItems:"center",gap:12}}>
                     <IconChip d={ICO.users} c={ACC.wine} />
                     <div>
-                      <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:8}}>{t("seguimientoComercial")}{nNew > 0 && <span style={{fontSize:10,fontWeight:800,color:"#fff",background:"#8e44ad",padding:"3px 8px",borderRadius:10}}>{nNew} {t("etapaNuevo").toUpperCase()}</span>}</div>
+                      <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:8}}>{t("seguimientoComercial")}{nNew > 0 && <span style={{fontSize:11,fontWeight:800,color:"#fff",background:"#8e44ad",padding:"3px 8px",borderRadius:10}}>{nNew} {t("etapaNuevo").toUpperCase()}</span>}</div>
                       <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{t("seguimientoDesc")}</div>
                     </div>
                   </div>
@@ -7437,7 +7468,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                           <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</div>
                           <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(" · ")||"—"}</div>
                         </div>
-                        <span style={{fontSize:9,fontFamily:BD,fontWeight:800,letterSpacing:.5,color:"#fff",background:st[2],padding:"3px 7px",borderRadius:8,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
+                        <span style={{fontSize:10,fontFamily:BD,fontWeight:800,letterSpacing:.5,color:"#fff",background:st[2],padding:"3px 7px",borderRadius:8,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
                       </div>
                       {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.wh,border:"1px dashed "+st[2]+"50",borderRadius:7,padding:"6px 8px",marginTop:8,lineHeight:1.4}}>💬 {p.noteAdmin}</div>}
                       <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:10}}>
@@ -7464,7 +7495,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div key={p.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px 6px 6px",background:C.wh,border:"1px solid "+C.ln,borderRadius:10}}>
                       {p.imageUrl ? <img loading="lazy" src={p.imageUrl} alt="" style={{width:34,height:34,objectFit:"contain",borderRadius:6,background:C.bg}} /> : <span style={{width:34,height:34,borderRadius:6,background:C.bg}} />}
                       <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600,lineHeight:1.2}}>{p.model}<div style={{fontWeight:400,color:C.gr,fontSize:11}}>{p.color}</div></div>
-                      {al ? <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:ACC.green}}>✓ {t("avisoActivo")}</span>
+                      {al ? <span style={{fontSize:11,fontFamily:BD,fontWeight:700,color:ACC.green}}>✓ {t("avisoActivo")}</span>
                           : <button className="mn-press" onClick={() => { dbAddAlert(p.id); toast(t("alertaCreada")); }} style={mini(ACC.sage,"#fff")}>{t("avisarme")}</button>}
                     </div>); })}
                   {out.length > 8 && <span style={{alignSelf:"center",fontSize:11,fontFamily:BD,color:C.gr}}>+{out.length-8}</span>}
@@ -7503,14 +7534,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   return <div key={key} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:isCurrent?CL.gn+"10":C.bg,borderRadius:6,border:isCurrent?"1px solid "+CL.gn+"30":"1px solid "+C.ln,flexWrap:"wrap"}}>
                     <div style={{minWidth:90}}>
                       <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk}}>Q{q.quarter} {q.year}</div>
-                      {isCurrent && <div style={{fontSize:10,fontFamily:BD,color:CL.gn,fontWeight:600}}>{t("enCurso")}</div>}
+                      {isCurrent && <div style={{fontSize:11,fontFamily:BD,color:CL.gn,fontWeight:600}}>{t("enCurso")}</div>}
                     </div>
                     <div style={{flex:"1 1 130px",fontSize:11,fontFamily:BD,color:C.gr}}>{q.orders} {t("pedidosLabel")} · {fmt(q.sales)} € {t("ventasLabel")}</div>
                     <div style={{textAlign:"right",minWidth:90}}>
-                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("comisionLabel")}</div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("comisionLabel")}</div>
                       <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:CL.gn}}>{fmt(q.comm)} €</div>
                     </div>
-                    {q.pending > 0 && <div style={{fontSize:10,fontFamily:BD,color:"#f0a020",padding:"3px 7px",background:"#fff8e6",borderRadius:3,fontWeight:600}}>{fmt(q.pending)} € {t("pendienteLabel")}</div>}
+                    {q.pending > 0 && <div style={{fontSize:11,fontFamily:BD,color:"#f0a020",padding:"3px 7px",background:"#fff8e6",borderRadius:3,fontWeight:600}}>{fmt(q.pending)} € {t("pendienteLabel")}</div>}
                     <button onClick={() => {
                       // Generate PDF/print
                       const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Comisión Q${q.quarter} ${q.year} — ${user.co}</title><style>
@@ -7618,7 +7649,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           ))}
         </div>}
         {filterPanel==="color"&&<div style={{display:"flex",gap:6,marginBottom:10,flexWrap:"wrap",padding:"10px 14px",background:C.wh,borderRadius:6,border:"1px solid "+C.ln,alignItems:"center"}}>
-          <button onClick={() => { setColorFilter("all"); setFilterPanel(null); }} style={{padding:"4px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:10,fontFamily:BD,borderRadius:20}}>{t("tous")}</button>
+          <button onClick={() => { setColorFilter("all"); setFilterPanel(null); }} style={{padding:"4px 10px",background:colorFilter==="all"?C.dk:"transparent",color:colorFilter==="all"?C.bg:C.gr,border:"1px solid "+(colorFilter==="all"?C.dk:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,borderRadius:20}}>{t("tous")}</button>
           {[["noir","#1a1a1a"],["careyCol","#8B6914"],["marron","#7B4B2A"],["vert","#2d6b4f"],["dore","#C5A55A"],["rose","#D4839A"],["bleu","#3B6B9E"],["rougeVin","#722f37"],["orangeCol","#D4763A"],["cremeNude","#E8D5C0"],["gris","#8C8C8C"],["transparentCol","#f5f5f5"],["multicolore","conic-gradient(#e74c3c,#f1c40f,#2ecc71,#3498db,#e74c3c)"]].map(([v,bg]) => (
             <button key={v} onClick={() => { setColorFilter(v); setFilterPanel(null); }} title={t(v)} style={{width:26,height:26,borderRadius:13,background:bg,border:colorFilter===v?"3px solid "+C.dk:"2px solid "+C.ln,cursor:"pointer",boxShadow:colorFilter===v?"0 0 0 2px "+C.bg+", 0 0 0 4px "+C.dk:"none",padding:0}} />
           ))}
@@ -7649,7 +7680,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {customPrice === 0 && essentialCount > 0 && nextTier && <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:"8px 14px",marginBottom:14,fontSize:12,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{t("astucePrix")}</div>}
               {cartEntries.map(([id, q]) => { const p = products.find(x => String(x.id) === String(id)); if (!p) return null; const itemPrice = p.col === "Acetato" ? p.fixedPrice : essentialUnitPrice; return (
                 <div key={id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 0",borderBottom:"1px solid "+C.bg2}}>
-                  <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:12,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:10,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
+                  <div><div style={{fontSize:14,fontWeight:500,fontFamily:DP,color:C.dk}}>{p.model}</div><div style={{fontSize:12,color:C.gr,fontFamily:BD}}>{p.color} {p.col === "Acetato" ? <span style={{fontSize:11,color:"#7a5c3a",background:"#e8d5c0",padding:"1px 5px",borderRadius:2,marginLeft:4}}>Acetato</span> : ""}</div></div>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{fmt(itemPrice)} €</span>
                     <button onClick={() => updateQty(id, q-1)} style={{width:26,height:26,background:C.bg,border:"1px solid "+C.ln,cursor:"pointer",borderRadius:3,color:C.dk}}>-</button>
@@ -7685,7 +7716,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div>
                     <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>📅 Fecha preferente envío</div>
                     <input type="date" value={preferredDate||""} onChange={e => setPreferredDate(e.target.value)} min={new Date(Date.now()+3*86400000).toISOString().split("T")[0]} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:3}}>Mín. 3-5 días laborables</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:3}}>Mín. 3-5 días laborables</div>
                   </div>
                   <div>
                     <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>💳 Método de pago (si se sabe)</div>
@@ -7708,7 +7739,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   const fundas = [["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"]];
                   return <div style={{marginBottom:14,padding:"12px 14px",background:C.bg,borderRadius:6,border:"1px solid "+C.ln}}>
                     <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:4}}>🎁 Color de funda preferido</div>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8}}>Sujeto a disponibilidad</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:8}}>Sujeto a disponibilidad</div>
                     <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                       {fundas.map(([k,label,color]) => {
                         const stock = packStock[k]||0;
@@ -7746,19 +7777,19 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           const pendingAmount = pendingOrders.reduce((s,o) => s+(o.total||0), 0);
           return <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10,marginBottom:16}}>
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 14px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>{t("commandes").toUpperCase()}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>{t("commandes").toUpperCase()}</div>
               <div style={{fontSize:22,fontFamily:DP,color:C.dk,marginTop:4,lineHeight:1}}>{distOrders.length}</div>
             </div>
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"12px 14px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>{t("ventesTotal").toUpperCase()}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>{t("ventesTotal").toUpperCase()}</div>
               <div style={{fontSize:20,fontFamily:DP,color:C.dk,marginTop:4,lineHeight:1}}>{fmt(totalSales)} €</div>
             </div>
             <div style={{background:CL.gn+"0a",border:"1px solid "+CL.gn+"30",borderRadius:8,padding:"12px 14px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:CL.gn,letterSpacing:1,fontWeight:600}}>{t("commission").toUpperCase()} ({user.commRate||0}%)</div>
+              <div style={{fontSize:11,fontFamily:BD,color:CL.gn,letterSpacing:1,fontWeight:600}}>{t("commission").toUpperCase()} ({user.commRate||0}%)</div>
               <div style={{fontSize:20,fontFamily:DP,color:CL.gn,marginTop:4,lineHeight:1,fontWeight:600}}>{fmt(myComm)} €</div>
             </div>
             {pendingOrders.length > 0 && <div style={{background:"#fff8e6",border:"1px solid #f0a02040",borderRadius:8,padding:"12px 14px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:"#c47a00",letterSpacing:1,fontWeight:600}}>{t("enAttente").toUpperCase()}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:"#c47a00",letterSpacing:1,fontWeight:600}}>{t("enAttente").toUpperCase()}</div>
               <div style={{fontSize:20,fontFamily:DP,color:"#c47a00",marginTop:4,lineHeight:1}}>{fmt(pendingAmount)} €</div>
             </div>}
           </div>;
@@ -7795,7 +7826,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
               {clOrders.length > 0 && <div style={{textAlign:"right",marginRight:4}}>
                 <div style={{fontSize:12,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(clTotal)} €</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{clOrders.length} {t("commandes").toLowerCase()}{lastOrd ? " · "+lastOrd.date : ""}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{clOrders.length} {t("commandes").toLowerCase()}{lastOrd ? " · "+lastOrd.date : ""}</div>
               </div>}
               <Badge l={c.status==="prospect"?t("prospect"):t("actif")} c={c.status==="prospect"?C.yl:C.gn} />
             </div>
@@ -7807,7 +7838,25 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {view === "d-promo" && <Sec title={t("promosActives")} sub={t("promosSub")}>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:12}}>
-          {promos.filter(p => p.on && (p.visible||[]).includes("distributor")).map((p,i) => renderPromoCard(p, i, false))}
+          {(() => {
+            const act = promos.filter(p => p.on && (p.visible||[]).includes("distributor"));
+            const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
+            const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
+            const line = p => "• " + p.name + ": " + (p.type==="percent" ? "-"+p.disc+" %" : t("cadeau")) + ((p.cond||{})[lang] ? " — " + p.cond[lang] : "");
+            const wa = txt => window.open("https://wa.me/?text="+encodeURIComponent(txt),"_blank","noopener");
+            const sb = {padding:"8px 12px",borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"};
+            return <>
+              {act.length > 0 && <div style={{gridColumn:"1 / -1",display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",padding:"12px 14px",background:ACC.terra+"12",border:"1px solid "+ACC.terra+"35",borderRadius:12}}>
+                <span style={{flex:1,minWidth:180,fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{t("compartirPromos")}</span>
+                <button className="mn-press" onClick={() => wa(t("msgPromos")+"\n"+act.map(line).join("\n")+"\n"+refUrl)} style={{...sb,background:"#25D366",color:"#fff",border:"none"}}>WhatsApp</button>
+                <button className="mn-press" onClick={() => { try { navigator.clipboard.writeText(t("msgPromos")+"\n"+act.map(line).join("\n")+"\n"+refUrl); toast(t("enlaceCopiado")); } catch(e) {} }} style={{...sb,background:C.wh,color:C.dk,border:"1px solid "+C.ln}}>{t("copiar")}</button>
+              </div>}
+              {act.map((p,i) => <div key={p.id||i} style={{display:"flex",flexDirection:"column",gap:8}}>
+                {renderPromoCard(p, i, false)}
+                <button className="mn-press" onClick={() => wa(t("msgPromos")+"\n"+line(p)+"\n"+refUrl)} style={{...sb,alignSelf:"flex-start",background:C.wh,color:"#1a9e52",border:"1px solid #25D36660"}}>{t("compartirEsta")} · WhatsApp</button>
+              </div>)}
+            </>;
+          })()}
           {promos.filter(p => p.on && (p.visible||[]).includes("distributor")).length === 0 && <p style={{color:C.gr,fontFamily:BD,fontSize:12}}>{t("aucuneCmd")}</p>}
         </div>
       </Sec>}
@@ -7819,7 +7868,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
                 <span style={{fontSize:16,fontWeight:500,fontFamily:DP,color:C.dk}}>{(n.title&&n.title[lang])||n.title?.fr||""}</span>
                 <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                  {n.pinned && <span style={{fontSize:10,fontFamily:BD,color:C.yl,fontWeight:600}}>PINNED</span>}
+                  {n.pinned && <span style={{fontSize:11,fontFamily:BD,color:C.yl,fontWeight:600}}>PINNED</span>}
                   <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{n.date}</span>
                 </div>
               </div>
@@ -7844,19 +7893,19 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             return <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
               <div style={{background:"#3498db10",border:"1px solid #3498db30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#3498db"}}>{nuevo.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
               </div>
               <div style={{background:"#f39c1210",border:"1px solid #f39c1230",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#f39c12"}}>{contactado.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
               </div>
               <div style={{background:"#8e44ad10",border:"1px solid #8e44ad30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#8e44ad"}}>{negociacion.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
               </div>
               <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:C.gn}}>{ganados.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
               </div>
             </div>;
           })()}
@@ -7879,7 +7928,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <Badge l={stLabel} c={stColor} />
-                    {tk.dueDate && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
+                    {tk.dueDate && <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
                   </div>
                 </div>
               );
@@ -7919,7 +7968,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <div style={{fontSize:12,fontFamily:BD,color:cOrds.length===0?C.rd:C.yl,fontWeight:600}}>{cOrds.length === 0 ? t("sinPedidos") : cOrds.length+" cmd · "+fmt(cTotal)+" €"}</div>
-                    {cOrds.length > 0 && <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("ultimoContacto")}: {lastDate}</div>}
+                    {cOrds.length > 0 && <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("ultimoContacto")}: {lastDate}</div>}
                   </div>
                   <Btn small ghost onClick={() => { setModal("newTask"); setEd({title:t("seguimiento")+": "+c.name,desc:c.contact+" · "+(c.companyEmail||c.phone||"")+" · "+c.city,priority:"moyenne",area:"commercial",status:"aFaire",dueDate:"",assignee:user.name}); }}>{t("seguimiento")}</Btn>
                 </div>
@@ -8020,7 +8069,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {/* ADMIN VIEWS */}
-      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn>{(role === "admin" || role === "team") && <><Btn small ghost onClick={() => { setModal("importFaire"); setEd({faireRef:"",client:"",faireDate:new Date().toISOString().split("T")[0],lines:[],faireCommission:17,subtotal:0}); }} style={{borderColor:"#000",color:"#000"}}><span style={{display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:16,height:16,borderRadius:8,background:"#000",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD}}>F</span> Faire</span></Btn><Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn></>}</div>}>
+      {view === "a-ord" && <Sec title={t("commandes")} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={exportOrders}>{t("exporterCSV")}</Btn>{(role === "admin" || role === "team") && <><Btn small ghost onClick={() => { setModal("importFaire"); setEd({faireRef:"",client:"",faireDate:new Date().toISOString().split("T")[0],lines:[],faireCommission:17,subtotal:0}); }} style={{borderColor:"#000",color:"#000"}}><span style={{display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:16,height:16,borderRadius:8,background:"#000",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD}}>F</span> Faire</span></Btn><Btn small onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }}>{t("nouvelleCmd")}</Btn></>}</div>}>
         {/* KPI HEADER PEDIDOS */}
         {(() => {
           const toPrep = orders.filter(o => o.status === "confirmed").length;
@@ -8050,7 +8099,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <button key={v} onClick={() => setOrdPayFilter(v)} style={{padding:"5px 12px",background:ordPayFilter===v?C.bl:"transparent",color:ordPayFilter===v?"#fff":C.gr,border:"1px solid "+(ordPayFilter===v?C.bl:C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l}</button>
           ))}
           <span style={{width:1,height:16,background:C.ln,margin:"0 2px"}} />
-          <button onClick={() => setOrdChannelFilter(ordChannelFilter==="faire"?"all":"faire")} style={{padding:"5px 12px",background:ordChannelFilter==="faire"?"#000":"transparent",color:ordChannelFilter==="faire"?"#fff":"#000",border:"1px solid #000",cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20,display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:14,height:14,borderRadius:7,background:ordChannelFilter==="faire"?"#fff":"#000",color:ordChannelFilter==="faire"?"#000":"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,fontFamily:BD}}>F</span>Faire{orders.filter(o => o.dist === "Faire").length > 0 && " ("+orders.filter(o => o.dist === "Faire").length+")"}</button>
+          <button onClick={() => setOrdChannelFilter(ordChannelFilter==="faire"?"all":"faire")} style={{padding:"5px 12px",background:ordChannelFilter==="faire"?"#000":"transparent",color:ordChannelFilter==="faire"?"#fff":"#000",border:"1px solid #000",cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:20,display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:14,height:14,borderRadius:7,background:ordChannelFilter==="faire"?"#fff":"#000",color:ordChannelFilter==="faire"?"#000":"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD}}>F</span>Faire{orders.filter(o => o.dist === "Faire").length > 0 && " ("+orders.filter(o => o.dist === "Faire").length+")"}</button>
           <span style={{flex:1}} />
           <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{orders.filter(o => (ordStatusFilter==="all"||o.status===ordStatusFilter) && (ordPayFilter==="all"||o.pay===ordPayFilter) && (ordChannelFilter==="all"||(ordChannelFilter==="faire"&&o.dist==="Faire"))).length} / {orders.length}</span>
         </div>
@@ -8079,7 +8128,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     </div>
                     <div style={{textAlign:"right",minWidth:60}}>
                       <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:pct===100?C.gn:C.dk}}>{pct}%</div>
-                      <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{doneChecks}/{totalChecks}</div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{doneChecks}/{totalChecks}</div>
                     </div>
                     <span style={{fontSize:12,color:C.gr}}>{isOpen ? "▲" : "▼"}</span>
                   </div>
@@ -8104,7 +8153,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         <label key={pk} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:"1px solid "+C.bg2,cursor:"pointer",fontSize:12,fontFamily:BD}}>
                           <input type="checkbox" checked={!!checks[ck]} onChange={() => setPrepChecks(p => ({...p, [o.id]:{...(p[o.id]||{}), [ck]:!checks[ck]}}))} style={{accentColor:C.bl,width:16,height:16,flexShrink:0}} />
                           <span style={{color:checks[ck]?C.gr:C.dk,textDecoration:checks[ck]?"line-through":"none"}}>{labels[pk]||pk}</span>
-                          <span style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"10",padding:"1px 6px",borderRadius:3}}>📦</span>
+                          <span style={{fontSize:11,fontFamily:BD,color:C.bl,background:C.bl+"10",padding:"1px 6px",borderRadius:3}}>📦</span>
                         </label>
                       );
                     })}
@@ -8241,7 +8290,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <button key={f} onClick={() => setClientFilter(f)} style={{background:clientFilter===f?col+"15":C.wh,border:"1.5px solid "+(clientFilter===f?col:C.ln),borderRadius:8,padding:"12px 10px",textAlign:"center",cursor:"pointer",transition:"all 0.15s"}}>
                 <div style={{fontSize:18,marginBottom:2}}>{icon}</div>
                 <div style={{fontSize:22,fontWeight:400,fontFamily:DP,color:col,lineHeight:1.1}}>{v}</div>
-                <div style={{fontSize:10,color:col+"90",fontFamily:BD,letterSpacing:1,fontWeight:600,marginTop:2}}>{l.toUpperCase()}</div>
+                <div style={{fontSize:11,color:col+"90",fontFamily:BD,letterSpacing:1,fontWeight:600,marginTop:2}}>{l.toUpperCase()}</div>
               </button>
             )}
           </div>
@@ -8266,7 +8315,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",flexDirection:"column",gap:5}}>
                 {sleepingVips.map(c => { const s = clientStats[c.name]; const d = daysSince(s.lastTs); return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{padding:"6px 8px",background:C.wh,borderRadius:4,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>
                   <span style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</span>
-                  <span style={{fontSize:10,fontFamily:BD,color:"#c47a00",fontWeight:700,background:"#f0a020"+"20",padding:"2px 6px",borderRadius:3}}>{d}d</span>
+                  <span style={{fontSize:11,fontFamily:BD,color:"#c47a00",fontWeight:700,background:"#f0a020"+"20",padding:"2px 6px",borderRadius:3}}>{d}d</span>
                 </div>; })}
               </div>
             </div>}
@@ -8279,9 +8328,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {topClients.filter(c => clientStats[c.name]?.total > 0).map((c,i) => { const s = clientStats[c.name]; return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,padding:"10px 12px",cursor:"pointer",position:"relative"}}>
                 <div style={{position:"absolute",top:-6,left:-6,width:22,height:22,borderRadius:11,background:i===0?"#d4a030":i===1?"#aaa":i===2?"#c08552":C.dk,color:"#fff",fontSize:11,fontWeight:700,fontFamily:BD,display:"flex",alignItems:"center",justifyContent:"center"}}>{i+1}</div>
                 <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:6}}>{flags[c.country]||"🌍"} {c.city||"—"}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:6}}>{flags[c.country]||"🌍"} {c.city||"—"}</div>
                 <div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(s.total)} €</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginTop:2}}>{s.orders} pedidos</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr2,marginTop:2}}>{s.orders} pedidos</div>
               </div>; })}
             </div>
           </div>}
@@ -8295,9 +8344,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               ["faire","Faire",faireC]
             ].map(([v,l,count]) =>
               <button key={v} onClick={() => { setClientChannelFilter(v); setSelectedDistChannel(null); }} style={{padding:"6px 14px",background:clientChannelFilter===v?C.dk:"transparent",color:clientChannelFilter===v?C.bg:C.gr,border:"1px solid "+(clientChannelFilter===v?C.dk:"transparent"),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:600,borderRadius:20,display:"inline-flex",alignItems:"center",gap:6}}>
-                {v === "faire" && <span style={{width:14,height:14,borderRadius:7,background:clientChannelFilter===v?"#fff":"#000",color:clientChannelFilter===v?"#000":"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:700,fontFamily:BD}}>F</span>}
+                {v === "faire" && <span style={{width:14,height:14,borderRadius:7,background:clientChannelFilter===v?"#fff":"#000",color:clientChannelFilter===v?"#000":"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD}}>F</span>}
                 {l}
-                {count !== null && <span style={{fontSize:10,opacity:0.7,fontWeight:500}}>({count})</span>}
+                {count !== null && <span style={{fontSize:11,opacity:0.7,fontWeight:500}}>({count})</span>}
               </button>
             )}
           </div>
@@ -8306,7 +8355,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {clientChannelFilter === "distributor" && distributorList.length > 0 && <div style={{display:"flex",gap:4,marginBottom:12,flexWrap:"wrap",padding:"8px 12px",background:C.bl+"05",borderRadius:6}}>
             <span style={{fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600,letterSpacing:0.5,alignSelf:"center",marginRight:6}}>POR DISTRIBUIDOR:</span>
             <button onClick={() => setSelectedDistChannel(null)} style={{padding:"4px 10px",background:!selectedDistChannel?C.bl:"transparent",color:!selectedDistChannel?"#fff":C.bl,border:"1px solid "+C.bl,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:3}}>Todos</button>
-            {distributorList.map(d => { const cnt = clients.filter(c => channelBucket(c) === "dist:"+d).length; return <button key={d} onClick={() => setSelectedDistChannel(d)} style={{padding:"4px 10px",background:selectedDistChannel===d?C.bl:"transparent",color:selectedDistChannel===d?"#fff":C.bl,border:"1px solid "+C.bl,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:3,display:"inline-flex",alignItems:"center",gap:5}}>{d} <span style={{fontSize:10,opacity:0.7}}>({cnt})</span></button>; })}
+            {distributorList.map(d => { const cnt = clients.filter(c => channelBucket(c) === "dist:"+d).length; return <button key={d} onClick={() => setSelectedDistChannel(d)} style={{padding:"4px 10px",background:selectedDistChannel===d?C.bl:"transparent",color:selectedDistChannel===d?"#fff":C.bl,border:"1px solid "+C.bl,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600,borderRadius:3,display:"inline-flex",alignItems:"center",gap:5}}>{d} <span style={{fontSize:11,opacity:0.7}}>({cnt})</span></button>; })}
           </div>}
 
           {/* SEARCH + SORT + VIEW MODE + COUNTRY */}
@@ -8344,7 +8393,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 const statusCol = c.status === "vip" ? "#d4a030" : c.status === "prospect" ? C.bl : s.orders > 0 ? C.gn : C.gr2;
                 const sleeping = s.orders > 0 && d !== null && d > 60;
                 return <div key={c.id} onClick={() => { setModal("editCl"); setEd({...c}); }} style={{background:C.wh,border:"1.5px solid "+(c.status==="vip"?"#d4a03040":isFaire?"#00000020":isDist?C.bl+"20":C.ln),borderRadius:8,padding:"14px",cursor:"pointer",position:"relative",transition:"all 0.15s",display:"flex",flexDirection:"column",gap:8}}>
-                  {sleeping && <div style={{position:"absolute",top:8,right:8,fontSize:10,fontFamily:BD,fontWeight:700,background:"#fff8e6",color:"#c47a00",padding:"2px 7px",borderRadius:3,border:"1px solid #f0a02040"}}>💤 {d}d</div>}
+                  {sleeping && <div style={{position:"absolute",top:8,right:8,fontSize:11,fontFamily:BD,fontWeight:700,background:"#fff8e6",color:"#c47a00",padding:"2px 7px",borderRadius:3,border:"1px solid #f0a02040"}}>💤 {d}d</div>}
                   <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
                     <div style={{width:40,height:40,borderRadius:20,background:statusCol+"20",color:statusCol,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:700,fontFamily:BD,flexShrink:0}}>{(c.name||"?")[0]?.toUpperCase()}</div>
                     <div style={{flex:1,minWidth:0}}>
@@ -8357,32 +8406,32 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     </div>
                   </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
-                    {c.status === "vip" && <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 6px",borderRadius:3,letterSpacing:1,border:"1px solid #d4a03040"}}>⭐ VIP</span>}
-                    {c.status === "prospect" && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌱 PROSPECTO</span>}
-                    {isFaire && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:"#fff",background:"#000",padding:"2px 6px",borderRadius:3,letterSpacing:0.5,display:"inline-flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:5,background:"#fff",color:"#000",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:7,fontWeight:700}}>F</span> FAIRE</span>}
-                    {isDist && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.3}}>🤝 {distName.toUpperCase()}</span>}
-                    {bucket === "direct" && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:C.gn,background:C.gn+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌐 DIRECTO</span>}
-                    {c.customPrice > 0 && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:C.dk,background:C.bg,padding:"2px 6px",borderRadius:3}}>{fmt(c.customPrice)} €</span>}
-                    {c.earlyPay && <span style={{fontSize:9,fontFamily:BD,fontWeight:700,color:CL.gn,background:CL.gn+"15",padding:"2px 6px",borderRadius:3}}>-3%</span>}
+                    {c.status === "vip" && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 6px",borderRadius:3,letterSpacing:1,border:"1px solid #d4a03040"}}>⭐ VIP</span>}
+                    {c.status === "prospect" && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌱 PROSPECTO</span>}
+                    {isFaire && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:"#000",padding:"2px 6px",borderRadius:3,letterSpacing:0.5,display:"inline-flex",alignItems:"center",gap:3}}><span style={{width:10,height:10,borderRadius:5,background:"#fff",color:"#000",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:7,fontWeight:700}}>F</span> FAIRE</span>}
+                    {isDist && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.3}}>🤝 {distName.toUpperCase()}</span>}
+                    {bucket === "direct" && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.gn,background:C.gn+"15",padding:"2px 6px",borderRadius:3,letterSpacing:0.5}}>🌐 DIRECTO</span>}
+                    {c.customPrice > 0 && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:C.dk,background:C.bg,padding:"2px 6px",borderRadius:3}}>{fmt(c.customPrice)} €</span>}
+                    {c.earlyPay && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:CL.gn,background:CL.gn+"15",padding:"2px 6px",borderRadius:3}}>-3%</span>}
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginTop:4,paddingTop:8,borderTop:"1px solid "+C.bg2}}>
                     <div style={{textAlign:"left"}}>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>TOTAL</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>TOTAL</div>
                       <div style={{fontSize:12,fontFamily:DP,color:s.total>0?CL.gn:C.gr,fontWeight:600,lineHeight:1.1}}>{s.total>0?fmt(s.total)+" €":"—"}</div>
                     </div>
                     <div style={{textAlign:"center",borderLeft:"1px solid "+C.bg2,borderRight:"1px solid "+C.bg2}}>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>PEDIDOS</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>PEDIDOS</div>
                       <div style={{fontSize:12,fontFamily:DP,color:C.dk,fontWeight:600,lineHeight:1.1}}>{s.orders||"—"}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>ÚLTIMO</div>
+                      <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:0.5,fontWeight:600}}>ÚLTIMO</div>
                       <div style={{fontSize:11,fontFamily:BD,color:sleeping?"#c47a00":C.dk,fontWeight:600,lineHeight:1.1}}>{s.lastDate ? (d===0?"hoy":d===1?"1d":d<30?d+"d":d<365?Math.floor(d/30)+"m":"+1a") : "—"}</div>
                     </div>
                   </div>
                   <div style={{display:"flex",gap:4,marginTop:4,paddingTop:6,borderTop:"1px dashed "+C.bg2}}>
-                    {c.companyEmail && <button onClick={(e) => { e.stopPropagation(); window.location.href="mailto:"+c.companyEmail; }} title={c.companyEmail} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600}}>✉ Email</button>}
-                    {c.phone && <button onClick={(e) => { e.stopPropagation(); window.location.href="tel:"+c.phone; }} title={c.phone} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600}}>📞 Tel</button>}
-                    {s.orders > 0 && <button onClick={(e) => { e.stopPropagation(); setOrdChannelFilter("all"); setClientSearch(c.name); setView("a-ord"); }} title="Ver pedidos" style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:10,fontFamily:BD,color:C.gr,fontWeight:600}}>🛒 {s.orders}</button>}
+                    {c.companyEmail && <button onClick={(e) => { e.stopPropagation(); window.location.href="mailto:"+c.companyEmail; }} title={c.companyEmail} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600}}>✉ Email</button>}
+                    {c.phone && <button onClick={(e) => { e.stopPropagation(); window.location.href="tel:"+c.phone; }} title={c.phone} style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600}}>📞 Tel</button>}
+                    {s.orders > 0 && <button onClick={(e) => { e.stopPropagation(); setOrdChannelFilter("all"); setClientSearch(c.name); setView("a-ord"); }} title="Ver pedidos" style={{flex:1,padding:"5px 6px",background:"transparent",border:"1px solid "+C.ln,borderRadius:3,cursor:"pointer",fontSize:11,fontFamily:BD,color:C.gr,fontWeight:600}}>🛒 {s.orders}</button>}
                   </div>
                 </div>;
               })}
@@ -8393,7 +8442,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {clientViewMode === "table" && <>
             {filtered.length === 0 ? <div style={{textAlign:"center",padding:40,fontSize:12,fontFamily:BD,color:C.gr2}}>—</div> :
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:10,fontFamily:BD,color:C.gr,fontWeight:700,letterSpacing:0.5,textTransform:"uppercase"}}>
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:"8px 14px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:11,fontFamily:BD,color:C.gr,fontWeight:700,letterSpacing:0.5,textTransform:"uppercase"}}>
                 <span style={{flex:"1 1 180px",minWidth:120}}>Cliente</span>
                 <span style={{width:90,display:"none","@media (min-width: 700px)":{display:"inline"}}}>Canal</span>
                 <span style={{width:80,textAlign:"right"}}>Total</span>
@@ -8409,14 +8458,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{flex:"1 1 180px",minWidth:120,display:"flex",alignItems:"center",gap:8}}>
                     <span style={{fontSize:12}}>{flags[c.country]||"🌍"}</span>
                     <div style={{minWidth:0,flex:1}}>
-                      <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}{c.status==="vip" && <span style={{marginLeft:6,fontSize:9,fontWeight:800,color:"#d4a030"}}>⭐VIP</span>}</div>
-                      <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:1}}>{c.city||"—"}{c.country?" · "+c.country:""}</div>
+                      <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}{c.status==="vip" && <span style={{marginLeft:6,fontSize:10,fontWeight:800,color:"#d4a030"}}>⭐VIP</span>}</div>
+                      <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:1}}>{c.city||"—"}{c.country?" · "+c.country:""}</div>
                     </div>
                   </div>
-                  <span style={{width:90,fontSize:10,fontFamily:BD,color:bucket==="faire"?"#000":bucket.startsWith("dist:")?C.bl:bucket==="direct"?C.gn:C.gr2,fontWeight:600}}>{bucket==="faire"?"FAIRE":bucket.startsWith("dist:")?bucket.substring(5):bucket==="direct"?"DIRECTO":(c.channel||"—")}</span>
+                  <span style={{width:90,fontSize:11,fontFamily:BD,color:bucket==="faire"?"#000":bucket.startsWith("dist:")?C.bl:bucket==="direct"?C.gn:C.gr2,fontWeight:600}}>{bucket==="faire"?"FAIRE":bucket.startsWith("dist:")?bucket.substring(5):bucket==="direct"?"DIRECTO":(c.channel||"—")}</span>
                   <span style={{width:80,fontSize:12,fontFamily:DP,fontWeight:600,color:s.total>0?CL.gn:C.gr,textAlign:"right"}}>{s.total>0?fmt(s.total)+" €":"—"}</span>
                   <span style={{width:50,fontSize:12,fontFamily:BD,color:C.dk,fontWeight:600,textAlign:"center"}}>{s.orders||"—"}</span>
-                  <span style={{width:60,fontSize:10,fontFamily:BD,color:sleeping?"#c47a00":C.gr,textAlign:"right",fontWeight:sleeping?700:500}}>{s.lastDate ? (d===0?"hoy":d===1?"1d":d<30?d+"d":d<365?Math.floor(d/30)+"m":"+1a") : "—"}</span>
+                  <span style={{width:60,fontSize:11,fontFamily:BD,color:sleeping?"#c47a00":C.gr,textAlign:"right",fontWeight:sleeping?700:500}}>{s.lastDate ? (d===0?"hoy":d===1?"1d":d<30?d+"d":d<365?Math.floor(d/30)+"m":"+1a") : "—"}</span>
                 </div>;
               })}
             </div>}
@@ -8446,15 +8495,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <div style={{flex:1,minWidth:0}}>
                         <div style={{display:"flex",alignItems:"center",gap:8}}>
                           <span style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700}}>{d.co || d.name}</span>
-                          <span style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 8px",borderRadius:10}}>{d.commRate||15}%</span>
-                          {d.country && <span style={{fontSize:10,fontFamily:BD,color:C.gr,background:C.bg,padding:"2px 8px",borderRadius:10}}>{d.country}</span>}
+                          <span style={{fontSize:11,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 8px",borderRadius:10}}>{d.commRate||15}%</span>
+                          {d.country && <span style={{fontSize:11,fontFamily:BD,color:C.gr,background:C.bg,padding:"2px 8px",borderRadius:10}}>{d.country}</span>}
                         </div>
                         <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{d.name} · {d.email}{d.phone?" · "+d.phone:""}{d.city?" · "+d.city:""}</div>
                       </div>
                       <div style={{display:"flex",gap:16,alignItems:"center",flexShrink:0}}>
-                        <div style={{textAlign:"center"}}><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("clients")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dClients.length}</div></div>
-                        <div style={{textAlign:"center"}}><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("commandes")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dOrders.length}</div></div>
-                        <div style={{textAlign:"center"}}><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("ventesTotal")}</div><div style={{fontSize:16,fontFamily:BD,color:C.gn,fontWeight:700}}>{fmt(dSales)} €</div></div>
+                        <div style={{textAlign:"center"}}><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("clients")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dClients.length}</div></div>
+                        <div style={{textAlign:"center"}}><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("commandes")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dOrders.length}</div></div>
+                        <div style={{textAlign:"center"}}><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("ventesTotal")}</div><div style={{fontSize:16,fontFamily:BD,color:C.gn,fontWeight:700}}>{fmt(dSales)} €</div></div>
                       </div>
                     </div>
                   </div>
@@ -8512,7 +8561,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             {[[totalStock,"STOCK TOTAL",C.dk,"all"],[outOfStock.length,"AGOTADOS",C.rd,"out"],[lowStock.length,"< 5 UDS",C.yl,"low"],[alertStock.length,"< 10 UDS","#e67e22","alert"],[needRestock.length,"REPONER",C.bl,"restock"]].map(([val,label,color,fk]) =>
               <div key={fk} onClick={() => { setStockFilter(fk); if(fk!=="all") setStockShowAll(true); }} style={{background:stockFilter===fk?color+"12":C.wh,border:"1px solid "+(stockFilter===fk?color+"40":C.ln),borderRadius:8,padding:"10px 8px",textAlign:"center",cursor:"pointer"}}>
                 <div style={{fontSize:22,fontWeight:300,fontFamily:DP,color}}>{val}</div>
-                <div style={{fontSize:9,color:color+"90",fontFamily:BD,letterSpacing:0.5,fontWeight:600}}>{label}</div>
+                <div style={{fontSize:10,color:color+"90",fontFamily:BD,letterSpacing:0.5,fontWeight:600}}>{label}</div>
               </div>
             )}
           </div>
@@ -8524,9 +8573,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {topSold.map(p => <div key={p.sku} style={{minWidth:120,background:C.wh,border:"1px solid "+(p.stock<5?C.rd+"40":C.ln),borderRadius:6,padding:"8px 10px",flexShrink:0}}>
                 <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
                   {p.imageUrl && <img loading="lazy" src={p.imageUrl} style={{width:24,height:24,objectFit:"contain",borderRadius:2}} />}
-                  <div><div style={{fontSize:11,fontWeight:600,fontFamily:BD}}>{p.model}</div><div style={{fontSize:9,color:C.gr,fontFamily:BD}}>{p.color}</div></div>
+                  <div><div style={{fontSize:11,fontWeight:600,fontFamily:BD}}>{p.model}</div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>{p.color}</div></div>
                 </div>
-                <div style={{display:"flex",justifyContent:"space-between",fontSize:10,fontFamily:BD}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:11,fontFamily:BD}}>
                   <span style={{color:C.bl}}>Vend: {velocity[p.sku]||0}</span>
                   <span style={{color:p.stock<5?C.rd:p.stock<10?C.yl:C.gn,fontWeight:700}}>St: {p.stock}</span>
                 </div>
@@ -8560,7 +8609,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{flex:1,minWidth:0}}>
                     <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span>
                     <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{p.sku} · {p.col}</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{p.sku} · {p.col}</div>
                   </div>
                   <span style={{fontSize:11,fontFamily:BD,color:C.bl,minWidth:45,textAlign:"center"}}>Vend: {sold}</span>
                   <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":C.rd,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:40,textAlign:"center"}}>{p.stock===0?"AGOTADO":p.stock}</span>
@@ -8579,8 +8628,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0,position:"relative"}}>
                     {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",opacity:p.active===false?0.5:1}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
-                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span>{p.active===false && <span style={{fontSize:9,marginLeft:6,padding:"1px 5px",background:"#66666625",color:"#666",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>OCULTO</span>}<div style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
-                  <span style={{fontSize:10,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
+                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span>{p.active===false && <span style={{fontSize:10,marginLeft:6,padding:"1px 5px",background:"#66666625",color:"#666",borderRadius:3,fontWeight:700,letterSpacing:0.3}}>OCULTO</span>}<div style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
                   <span style={{fontSize:11,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
                   <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:35,textAlign:"center"}}>{p.stock===0?"AGT":p.stock}</span>
                 </div>;
@@ -8606,7 +8655,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       <span style={{fontSize:13,fontWeight:700,fontFamily:BD,color:C.dk}}>{mg.model}</span>
                       <span style={{fontSize:11,fontFamily:BD,color:C.gr,marginLeft:6}}>{mg.colors.length} colores</span>
                     </div>
-                    <span style={{fontSize:10,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{mg.col}</span>
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{mg.col}</span>
                     <span style={{fontSize:11,fontFamily:BD,color:C.bl,minWidth:45,textAlign:"center"}}>Vend: {mg.totalSold}</span>
                     <span style={{fontSize:14,fontWeight:700,fontFamily:BD,color:minStock===0?C.rd:minStock<5?C.yl:minStock<10?"#e67e22":C.gn,minWidth:35,textAlign:"center"}}>{mg.totalStock}</span>
                     <span style={{fontSize:13}}>{minStock===0?"🔴":minStock<5?"🟡":"🟢"}</span>
@@ -8618,8 +8667,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : null}
                       </div>
                       <span style={{fontSize:12,fontFamily:BD,color:C.dk,flex:1}}>{p.color}</span>
-                      <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{p.sku}</span>
-                      <span style={{fontSize:10,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{p.sku}</span>
+                      <span style={{fontSize:11,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
                       <span style={{fontSize:12,fontWeight:700,fontFamily:BD,color:p.stock===0?C.rd:p.stock<5?C.yl:C.gn,minWidth:30,textAlign:"center"}}>{p.stock}</span>
                       <span style={{fontSize:12}}>{p.stock===0?"🔴":p.stock<5?"🟡":"🟢"}</span>
                     </div>;
@@ -8638,8 +8687,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{width:36,height:36,borderRadius:4,background:C.wh,border:"1px solid "+C.ln,overflow:"hidden",flexShrink:0}}>
                     {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /> : <span style={{fontSize:7,color:C.ln}}>—</span>}
                   </div>
-                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
-                  <span style={{fontSize:10,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
+                  <div style={{flex:1}}><span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model} </span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</span><div style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{p.sku}</div></div>
+                  <span style={{fontSize:11,fontFamily:BD,color:C.gr2,background:C.bg,padding:"2px 6px",borderRadius:10}}>{p.col}</span>
                   <span style={{fontSize:11,fontFamily:BD,color:C.bl}}>Vend: {sold}</span>
                   <span style={{fontSize:p.stock===0?9:14,fontWeight:700,fontFamily:BD,color:p.stock===0?"#fff":p.stock<5?C.rd:p.stock<10?C.yl:C.gn,background:p.stock===0?C.rd:"transparent",padding:p.stock===0?"3px 8px":"0",borderRadius:10,minWidth:35,textAlign:"center"}}>{p.stock===0?"AGT":p.stock}</span>
                 </div>;
@@ -8741,11 +8790,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                       </div>
                       {tk.desc && <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:6,lineHeight:1.4}}>{tk.desc}</div>}
                       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                        <span style={{fontSize:10,fontFamily:BD,color:"#fff",background:areaColor[tk.area]||C.gr,padding:"2px 8px",borderRadius:3}}>{t(tk.area)}</span>
+                        <span style={{fontSize:11,fontFamily:BD,color:"#fff",background:areaColor[tk.area]||C.gr,padding:"2px 8px",borderRadius:3}}>{t(tk.area)}</span>
                         <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                          {tk.assignee && <span style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3}}>👤 {tk.assignee}</span>}
-                          {tk.dueDate && (() => { const d = new Date(tk.dueDate); const overdue = d < new Date() && tk.status !== "fait"; return <span style={{fontSize:10,fontFamily:BD,color:overdue?C.rd:C.gr2,fontWeight:overdue?600:400}}>{overdue?"⚠ ":""}{d.toLocaleDateString()}</span>; })()}
-                          {!tk.dueDate && <span style={{fontSize:10,fontFamily:BD,color:C.gr2}}>{tk.date}</span>}
+                          {tk.assignee && <span style={{fontSize:11,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:3}}>👤 {tk.assignee}</span>}
+                          {tk.dueDate && (() => { const d = new Date(tk.dueDate); const overdue = d < new Date() && tk.status !== "fait"; return <span style={{fontSize:11,fontFamily:BD,color:overdue?C.rd:C.gr2,fontWeight:overdue?600:400}}>{overdue?"⚠ ":""}{d.toLocaleDateString()}</span>; })()}
+                          {!tk.dueDate && <span style={{fontSize:11,fontFamily:BD,color:C.gr2}}>{tk.date}</span>}
                         </div>
                       </div>
                     </div>
@@ -8934,15 +8983,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {/* SUMMARY BAR */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:10,marginBottom:18}}>
             <div style={{background:visible.length>0?C.dk:CL.gn+"15",border:"1px solid "+(visible.length>0?C.dk:CL.gn),borderRadius:8,padding:"14px 16px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:allVisible.length>0?C.bg+"90":CL.gn,letterSpacing:1,fontWeight:600}}>DECISIONES ABIERTAS</div>
+              <div style={{fontSize:11,fontFamily:BD,color:allVisible.length>0?C.bg+"90":CL.gn,letterSpacing:1,fontWeight:600}}>DECISIONES ABIERTAS</div>
               <div style={{fontSize:26,fontFamily:DP,fontWeight:400,color:allVisible.length>0?C.bg:CL.gn,lineHeight:1,marginTop:4}}>{allVisible.length}</div>
             </div>
             <div style={{background:C.wh,border:"1px solid "+(highCount>0?C.rd:C.ln),borderRadius:8,padding:"14px 16px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>PRIORITARIAS</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>PRIORITARIAS</div>
               <div style={{fontSize:26,fontFamily:DP,fontWeight:400,color:highCount>0?C.rd:C.gr,lineHeight:1,marginTop:4}}>{highCount}</div>
             </div>
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>IMPACTO ESTIMADO</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>IMPACTO ESTIMADO</div>
               <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:CL.gn,lineHeight:1,marginTop:6}}>{fmt(totalImpact)} €</div>
             </div>
           </div>
@@ -8964,8 +9013,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:24,flexShrink:0}}>{d.icon}</div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:4}}>
-                    <span style={{fontSize:9,fontFamily:BD,fontWeight:800,color:sevColor[d.severity],background:sevColor[d.severity]+"15",padding:"2px 7px",borderRadius:3,letterSpacing:1}}>{sevLabel[d.severity]}</span>
-                    <span style={{fontSize:10,fontFamily:BD,color:C.gr2,fontWeight:600,letterSpacing:0.5,textTransform:"uppercase"}}>{d.lever}</span>
+                    <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:sevColor[d.severity],background:sevColor[d.severity]+"15",padding:"2px 7px",borderRadius:3,letterSpacing:1}}>{sevLabel[d.severity]}</span>
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr2,fontWeight:600,letterSpacing:0.5,textTransform:"uppercase"}}>{d.lever}</span>
                   </div>
                   <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,lineHeight:1.3}}>{d.title}</div>
                   <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:6,lineHeight:1.6}}>{d.detail}</div>
@@ -9019,7 +9068,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <input value={aiInput} onChange={e => setAiInput(e.target.value)} onKeyDown={e => { if(e.key==="Enter") askAI(aiInput); }} placeholder="Pregunta algo sobre tu negocio…" disabled={aiLoading} style={{flex:1,padding:"12px 16px",border:"none",borderRadius:8,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
               <button onClick={() => askAI(aiInput)} disabled={aiLoading || !aiInput.trim()} style={{padding:"12px 20px",background:aiInput.trim()&&!aiLoading?"linear-gradient(135deg,#c4956a,#d4a030)":C.bg+"40",color:aiInput.trim()&&!aiLoading?C.dk:C.bg+"60",border:"none",borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:700,cursor:aiInput.trim()&&!aiLoading?"pointer":"default"}}>Enviar</button>
             </div>
-            <div style={{fontSize:10,fontFamily:BD,color:C.bg+"50",marginTop:8,lineHeight:1.4}}>La IA analiza un resumen de tus datos reales. Las cifras son estimaciones para decidir, no contabilidad. No compartas las respuestas fuera de tu equipo.</div>
+            <div style={{fontSize:11,fontFamily:BD,color:C.bg+"50",marginTop:8,lineHeight:1.4}}>La IA analiza un resumen de tus datos reales. Las cifras son estimaciones para decidir, no contabilidad. No compartas las respuestas fuera de tu equipo.</div>
           </div>
 
         </Sec>
@@ -9074,32 +9123,46 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             {[["all",t("tous")+" ("+myProspects.length+")"], ...PSTAGES.map(([v,k,col]) => [v, t(k)+" ("+myProspects.filter(p => p.stage===v).length+")"])].map(([v,l]) =>
               <button key={v} onClick={() => setEd(p => ({...p, _pStage:v}))} style={{padding:"6px 14px",background:fStage===v?C.dk:"transparent",color:fStage===v?C.bg:C.gr,border:"1px solid "+(fStage===v?C.dk:C.ln),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
           </div>
-          {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:10,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> :
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
-            {list.map(p => { const st = stageOf(p.stage); return (
-              <div key={p.id} style={{background:C.wh,border:"1px solid "+C.ln,borderLeft:"4px solid "+st[2],borderRadius:10,padding:"14px 16px"}}>
-                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
-                  <div style={{minWidth:0}}>
-                    <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{p.name}</div>
-                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(", ")||"—"}</div>
+          {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12,fontSize:13,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> : (() => {
+            const open = ed._pOpen || {};
+            const toggle = id => setEd(x => ({...x, _pOpen:{...(x._pOpen||{}), [id]:!(x._pOpen||{})[id]}}));
+            const setStage = (p, v) => { const np = {...p, stage:v}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); };
+            const chip = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,fontSize:12,fontFamily:BD,fontWeight:600,color:fg,background:bg,padding:"7px 11px",borderRadius:8,textDecoration:"none",border:"1px solid "+(bd||bg)});
+            const viaMinue = list.filter(p => (p.noteAdmin||"").trim());
+            const mine = list.filter(p => !(p.noteAdmin||"").trim());
+            const renderCard = p => { const st = stageOf(p.stage); const isOpen = !!open[p.id]; const phone = (p.phone||"").replace(/[^0-9+]/g,""); return (
+              <div key={p.id} className="mn-lift" style={{background:"linear-gradient(150deg,"+st[2]+"0d,"+C.wh+" 60%)",border:"1px solid "+st[2]+"35",borderLeft:"4px solid "+st[2],borderRadius:12,overflow:"hidden"}}>
+                <button onClick={() => toggle(p.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left"}}>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>{p.name}{(p.noteAdmin||"").trim() && <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:"#fff",background:CL.dk,padding:"2px 7px",borderRadius:8}}>{t("viaMinue").toUpperCase()}</span>}</div>
+                    <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:3}}>{[p.city,p.country].filter(Boolean).join(" · ")||"—"}</div>
                   </div>
-                  <select value={p.stage} onChange={e => { const np = {...p, stage:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); }} style={{padding:"4px 8px",border:"1.5px solid "+st[2],borderRadius:14,fontFamily:BD,fontSize:11,fontWeight:700,background:st[2]+"12",color:st[2],cursor:"pointer"}}>
-                    {PSTAGES.map(([v,k]) => <option key={v} value={v}>{t(k)}</option>)}
-                  </select>
-                </div>
-                <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
-                  {p.email && <a href={"mailto:"+p.email} style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>✉ Email</a>}
-                  {p.phone && <a href={"tel:"+p.phone} style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📞 {p.phone}</a>}
-                  {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noreferrer" style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>🌐 Web</a>}
-                  {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noreferrer" style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📷 IG</a>}
-                </div>
-                {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c030",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginTop:10,lineHeight:1.5}}>📝 {t("notaMinue")}: {p.noteAdmin}</div>}
-                <div style={{marginTop:8}}>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>{t("misNotas").toUpperCase()}</div>
-                  <textarea defaultValue={p.noteDist} onBlur={e => { if(e.target.value !== p.noteDist){ const np = {...p, noteDist:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); } }} rows={2} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
-                </div>
-              </div>); })}
-          </div>}
+                  <span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:"#fff",background:st[2],padding:"4px 9px",borderRadius:9,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
+                  <span style={{fontSize:14,color:C.gr,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
+                </button>
+                {isOpen && <div className="mn-fade" style={{padding:"0 16px 16px"}}>
+                  {p.noteAdmin && <div style={{fontSize:13,fontFamily:BD,color:CL.dk,background:ACC.terra+"14",border:"1px solid "+ACC.terra+"40",borderRadius:10,padding:"10px 12px",marginBottom:12,lineHeight:1.55}}><div style={{fontSize:11,fontWeight:800,letterSpacing:.8,color:ACC.terra,marginBottom:4}}>{t("notaMinue").toUpperCase()}</div>{p.noteAdmin}</div>}
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+                    {phone && <a href={"https://wa.me/"+phone.replace("+","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip("#25D366","#fff")}>WhatsApp</a>}
+                    {phone && <a href={"tel:"+phone} className="mn-press" style={chip(C.wh,C.dk,C.ln)}>📞 {p.phone}</a>}
+                    {p.email && <a href={"mailto:"+p.email} className="mn-press" style={chip(C.wh,C.dk,C.ln)}>✉ {p.email}</a>}
+                    {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip(C.wh,C.dk,C.ln)}>🌐 Web</a>}
+                    {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip(C.wh,C.dk,C.ln)}>📷 {p.instagram}</a>}
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("estadoLabel").toUpperCase()}</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+                    {PSTAGES.map(([v,k,col]) => { const on = p.stage===v; return <button key={v} className="mn-press" onClick={() => setStage(p, v)} style={{padding:"7px 12px",borderRadius:16,border:"1.5px solid "+col,background:on?col:"transparent",color:on?"#fff":col,fontSize:12,fontFamily:BD,fontWeight:700,cursor:"pointer"}}>{t(k)}</button>; })}
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("misNotas").toUpperCase()}</div>
+                  <textarea defaultValue={p.noteDist} onBlur={e => { if(e.target.value !== p.noteDist){ const np = {...p, noteDist:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); } }} rows={3} style={{width:"100%",padding:"10px 12px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+                </div>}
+              </div>); };
+            const block = (title, sub, arr, c) => arr.length > 0 && <div style={{marginBottom:20}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><span style={{width:10,height:10,borderRadius:5,background:c}} /><span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{title} · {arr.length}</span>{sub && <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{sub}</span>}</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:10,alignItems:"start"}}>{arr.map(renderCard)}</div>
+            </div>;
+            return <>{block(t("contactosViaMinue"), t("contactosViaMinueSub"), viaMinue, ACC.terra)}{block(t("misProspectos"), "", mine, ACC.sea)}</>;
+          })()}
         </Sec>;
       })()}
 
@@ -9199,7 +9262,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 ["Costes fijos/mes",monthlyFixed>0?fmt(monthlyFixed)+" €":"Sin datos",fixedCosts.length+" partidas",monthlyFixed>0?C.dk:"#c47a00"]
               ].map(([label,val,sub,col],i) =>
                 <div key={i} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600,textTransform:"uppercase"}}>{label}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600,textTransform:"uppercase"}}>{label}</div>
                   <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:col,marginTop:6,lineHeight:1}}>{val}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>{sub}</div>
                 </div>
@@ -9234,7 +9297,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
             <input placeholder="🔍 Buscar modelo, color, SKU..." value={ed._costSearch||""} onChange={e => setEd(p => ({...p, _costSearch:e.target.value}))} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:20,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(260px,50vw)",marginBottom:14}} />
             <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,overflow:"hidden"}}>
-              <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:10,fontFamily:BD,color:C.gr,fontWeight:700,letterSpacing:0.5,textTransform:"uppercase"}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 14px",borderBottom:"2px solid "+C.ln,background:C.bg,fontSize:11,fontFamily:BD,color:C.gr,fontWeight:700,letterSpacing:0.5,textTransform:"uppercase"}}>
                 <span style={{flex:"1 1 140px",minWidth:100}}>Producto</span>
                 <span style={{width:62,textAlign:"center"}}>Proveedor</span>
                 <span style={{width:55,textAlign:"center"}}>Flete</span>
@@ -9253,7 +9316,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 return <div key={p.id} style={{display:"flex",alignItems:"center",gap:6,padding:"7px 14px",borderBottom:"1px solid "+C.bg2,background:i%2?C.bg:C.wh}}>
                   <div style={{flex:"1 1 140px",minWidth:100,display:"flex",alignItems:"center",gap:8}}>
                     {p.imageUrl && <div style={{width:28,height:28,borderRadius:3,overflow:"hidden",background:C.wh,border:"1px solid "+C.ln,flexShrink:0}}><img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain"}} /></div>}
-                    <div style={{minWidth:0}}><div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.model}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{p.color}</div></div>
+                    <div style={{minWidth:0}}><div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.model}</div><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{p.color}</div></div>
                   </div>
                   {["supplier","freight","customs","packaging"].map((f,fi) => <input key={f} type="number" step="0.01" value={c[f]||""} onChange={e => upd(f,e.target.value)} onBlur={save} placeholder="0" style={{width:fi===0||fi===3?62:55,padding:"5px 4px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,textAlign:"center",boxSizing:"border-box"}} />)}
                   <span style={{width:60,textAlign:"center",fontSize:12,fontFamily:DP,fontWeight:600,color:tot>0?C.dk:C.gr2}}>{tot>0?fmt(tot)+"€":"—"}</span>
@@ -9281,18 +9344,18 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:12}}>
                   {key==="faire" ? <>
-                    <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN CLIENTE NUEVO (%)</div><input type="number" step="0.1" value={cfg.commissionNew||""} onChange={e => upd("commissionNew",parseFloat(e.target.value)||0)} placeholder="17" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
-                    <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN RECURRENTE (%)</div><input type="number" step="0.1" value={cfg.commissionRecurring||""} onChange={e => upd("commissionRecurring",parseFloat(e.target.value)||0)} placeholder="10" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
-                  </> : <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN (%)</div><input type="number" step="0.1" value={cfg.commission||""} onChange={e => upd("commission",parseFloat(e.target.value)||0)} placeholder={key==="distributor"?"15":"0"} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>}
+                    <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN CLIENTE NUEVO (%)</div><input type="number" step="0.1" value={cfg.commissionNew||""} onChange={e => upd("commissionNew",parseFloat(e.target.value)||0)} placeholder="17" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                    <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN RECURRENTE (%)</div><input type="number" step="0.1" value={cfg.commissionRecurring||""} onChange={e => upd("commissionRecurring",parseFloat(e.target.value)||0)} placeholder="10" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                  </> : <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>COMISIÓN (%)</div><input type="number" step="0.1" value={cfg.commission||""} onChange={e => upd("commission",parseFloat(e.target.value)||0)} placeholder={key==="distributor"?"15":"0"} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>}
                   <div>
-                    <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>QUIÉN PAGA ENVÍO</div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>QUIÉN PAGA ENVÍO</div>
                     <select value={cfg.whoPaysShipping||"minue"} onChange={e => upd("whoPaysShipping",e.target.value)} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
                       <option value="minue">Minuë (coste mío)</option>
                       <option value="client">Cliente/Tienda</option>
                     </select>
                   </div>
-                  <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>ENVÍO MEDIO UE (€)</div><input type="number" step="0.01" value={cfg.avgShippingEU||""} onChange={e => upd("avgShippingEU",parseFloat(e.target.value)||0)} placeholder="0" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
-                  <div><div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>ENVÍO MEDIO INTL (€)</div><input type="number" step="0.01" value={cfg.avgShippingIntl||""} onChange={e => upd("avgShippingIntl",parseFloat(e.target.value)||0)} placeholder="0" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                  <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>ENVÍO MEDIO UE (€)</div><input type="number" step="0.01" value={cfg.avgShippingEU||""} onChange={e => upd("avgShippingEU",parseFloat(e.target.value)||0)} placeholder="0" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
+                  <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:3,fontWeight:600}}>ENVÍO MEDIO INTL (€)</div><input type="number" step="0.01" value={cfg.avgShippingIntl||""} onChange={e => upd("avgShippingIntl",parseFloat(e.target.value)||0)} placeholder="0" style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
                 </div>
               </div>
             ); })}
@@ -9309,8 +9372,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               {fixedCosts.map((fc,i) => { const monthly = fc.frequency==="yearly" ? fc.amount/12 : fc.frequency==="quarterly" ? fc.amount/3 : fc.amount; const catColors = {COGS:"#722f37",operacion:C.bl,tecnologia:"#8e44ad",marketing:"#c47a00",personal:CL.gn,fijos:C.dk,impuestos:C.rd,otros:C.gr2}; return (
                 <div key={fc.id} style={{display:"flex",alignItems:"center",gap:10,padding:"11px 14px",borderBottom:i<fixedCosts.length-1?"1px solid "+C.bg2:"none",background:i%2?C.bg:C.wh}}>
                   <div style={{width:8,height:8,borderRadius:4,background:catColors[fc.category]||C.gr2,flexShrink:0}} />
-                  <div style={{flex:1}}><div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{fc.name}</div><div style={{fontSize:10,fontFamily:BD,color:C.gr,textTransform:"capitalize"}}>{fc.category} · {fc.frequency==="monthly"?"Mensual":fc.frequency==="quarterly"?"Trimestral":"Anual"}</div></div>
-                  <div style={{textAlign:"right"}}><div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:C.dk}}>{fmt(fc.amount)} €</div>{fc.frequency!=="monthly" && <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{fmt(monthly)} €/mes</div>}</div>
+                  <div style={{flex:1}}><div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{fc.name}</div><div style={{fontSize:11,fontFamily:BD,color:C.gr,textTransform:"capitalize"}}>{fc.category} · {fc.frequency==="monthly"?"Mensual":fc.frequency==="quarterly"?"Trimestral":"Anual"}</div></div>
+                  <div style={{textAlign:"right"}}><div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:C.dk}}>{fmt(fc.amount)} €</div>{fc.frequency!=="monthly" && <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{fmt(monthly)} €/mes</div>}</div>
                   <button onClick={() => askConfirm("¿Eliminar este coste fijo?", () => { setFixedCosts(p => p.filter(x => x.id !== fc.id)); dbDeleteFixedCost(fc.id); })} style={{background:"none",border:"none",color:C.rd,cursor:"pointer",fontSize:16,padding:"0 4px"}}>×</button>
                 </div>
               ); })}
@@ -9361,7 +9424,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {[["all",t("tous")],["client",t("client")],["distributor",t("distributeur")],["pending",t("pendientes")]].map(([v,l]) => {
             const count = v === "pending" ? users.filter(u => u.role !== "admin" && u.active === false).length : v === "all" ? 0 : users.filter(u => u.role === v).length;
             return (
-            <button key={v} onClick={() => setUserFilter(v)} style={{padding:"5px 14px",background:userFilter===v?C.dk:v==="pending"&&count>0?"#f39c1215":"transparent",color:userFilter===v?C.bg:v==="pending"&&count>0?"#f39c12":C.gr,border:"1px solid "+(userFilter===v?C.dk:v==="pending"&&count>0?"#f39c12":C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l} {(v!=="all"&&count>0) && <span style={{fontSize:10,color:userFilter===v?C.bg+"99":C.gr2}}>({count})</span>}</button>
+            <button key={v} onClick={() => setUserFilter(v)} style={{padding:"5px 14px",background:userFilter===v?C.dk:v==="pending"&&count>0?"#f39c1215":"transparent",color:userFilter===v?C.bg:v==="pending"&&count>0?"#f39c12":C.gr,border:"1px solid "+(userFilter===v?C.dk:v==="pending"&&count>0?"#f39c12":C.ln),cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:500,borderRadius:20}}>{l} {(v!=="all"&&count>0) && <span style={{fontSize:11,color:userFilter===v?C.bg+"99":C.gr2}}>({count})</span>}</button>
             );
           })}
         </div>
@@ -9381,7 +9444,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {u.email}{u.city ? " · "+u.city : ""}{u.country ? " ("+u.country+")" : ""}{u.phone ? " · "+u.phone : ""}
                 </div>
               </div>
-              {u.notes && <span style={{fontSize:10,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:10}}>📝</span>}
+              {u.notes && <span style={{fontSize:11,fontFamily:BD,color:C.bl,background:C.bl+"15",padding:"2px 6px",borderRadius:10}}>📝</span>}
               {u.commRate > 0 && <span style={{fontSize:11,fontFamily:BD,color:C.yl}}>{u.commRate}%</span>}
               {u.role === "client" && (clientEntry ? <button onClick={(e) => { e.stopPropagation(); setModal("editClient"); setEd({...clientEntry, _tab:"resume"}); }} style={{padding:"4px 10px",background:C.gn+"15",color:C.gn,border:"1px solid "+C.gn+"30",borderRadius:4,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>👤 Ver perfil</button>
                 : <button onClick={async (e) => {
@@ -9482,7 +9545,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{display:"flex",gap:6,marginTop:14,flexWrap:"wrap"}}>
                 <button onClick={() => setView("e-fichaje")} style={{padding:"8px 14px",background:C.dk,color:C.bg,border:"none",borderRadius:5,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>⏱ Fichar</button>
                 <button onClick={() => { setModal("newOrd"); setEd({client:"",dist:"Direct",lines:[]}); }} style={{padding:"8px 14px",background:"transparent",color:C.dk,border:"1px solid "+C.dk,borderRadius:5,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>+ Crear pedido</button>
-                <button onClick={() => { setModal("importFaire"); setEd({faireRef:"",client:"",faireDate:new Date().toISOString().split("T")[0],lines:[],faireCommission:17,subtotal:0}); }} style={{padding:"8px 14px",background:"transparent",color:"#000",border:"1px solid #000",borderRadius:5,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:16,height:16,borderRadius:8,background:"#000",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:700,fontFamily:BD}}>F</span> Importar Faire</button>
+                <button onClick={() => { setModal("importFaire"); setEd({faireRef:"",client:"",faireDate:new Date().toISOString().split("T")[0],lines:[],faireCommission:17,subtotal:0}); }} style={{padding:"8px 14px",background:"transparent",color:"#000",border:"1px solid #000",borderRadius:5,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6}}><span style={{width:16,height:16,borderRadius:8,background:"#000",color:"#fff",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,fontFamily:BD}}>F</span> Importar Faire</button>
               </div>
             </div>;
           })()}
@@ -9590,15 +9653,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:12}}>
             <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
               <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.gn}}>{products.filter(p => p.stock >= 10).length}</div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("enStock")}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("enStock")}</div>
             </div>
             <div style={{background:C.yl+"10",border:"1px solid "+C.yl+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
               <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.yl}}>{products.filter(p => p.stock > 0 && p.stock < 10).length}</div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("stockAlerta")}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("stockAlerta")}</div>
             </div>
             <div style={{background:C.rd+"10",border:"1px solid "+C.rd+"30",borderRadius:8,padding:"10px",textAlign:"center"}}>
               <div style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.rd}}>{products.filter(p => p.stock === 0).length}</div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("sinStock")}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("sinStock")}</div>
             </div>
           </div>
           {products.filter(p => p.stock < 5).length > 0 && <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:6,overflow:"hidden"}}>
@@ -9816,14 +9879,14 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </div>
                   <div style={{background:C.rd+"15",borderRadius:20,padding:"4px 12px"}}>
                     <span style={{fontSize:16,fontFamily:BD,fontWeight:700,color:C.rd}}>{g.total}</span>
-                    <span style={{fontSize:10,fontFamily:BD,color:C.rd,marginLeft:3}}>uds</span>
+                    <span style={{fontSize:11,fontFamily:BD,color:C.rd,marginLeft:3}}>uds</span>
                   </div>
                 </div>
                 {g.items.map((d, j) => (
                   <div key={j} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 14px 6px 42px",borderTop:"1px solid "+C.bg2,fontSize:12,fontFamily:BD}}>
                     <span style={{color:C.gr,flex:1}}>{d.description || "Sin descripción"}</span>
                     <span style={{color:C.gr}}>x{d.quantity}</span>
-                    <span style={{fontSize:10,color:C.gr}}>{d.created_by} · {d.created_at ? new Date(d.created_at).toLocaleDateString("es") : ""}</span>
+                    <span style={{fontSize:11,color:C.gr}}>{d.created_by} · {d.created_at ? new Date(d.created_at).toLocaleDateString("es") : ""}</span>
                     <button onClick={() => dbUpdateDefective({...d, status:"resolved"})} style={{background:"none",border:"none",color:C.gn,cursor:"pointer",fontSize:11,fontFamily:BD,fontWeight:600}}>✓ Resolver</button>
                   </div>
                 ))}
@@ -9894,19 +9957,19 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             return <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:20}}>
               <div style={{background:"#3498db10",border:"1px solid #3498db30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#3498db"}}>{nuevo.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("nuevoLead")}</div>
               </div>
               <div style={{background:"#f39c1210",border:"1px solid #f39c1230",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#f39c12"}}>{contactado.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("contactado")}</div>
               </div>
               <div style={{background:"#8e44ad10",border:"1px solid #8e44ad30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:"#8e44ad"}}>{negociacion.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("enNegociacion")}</div>
               </div>
               <div style={{background:C.gn+"10",border:"1px solid "+C.gn+"30",borderRadius:8,padding:"12px 10px",textAlign:"center"}}>
                 <div style={{fontSize:20,fontFamily:BD,fontWeight:700,color:C.gn}}>{ganados.length}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("ganado")}</div>
               </div>
             </div>;
           })()}
@@ -9924,11 +9987,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{flex:1}}>
                     <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:C.dk}}>{tk.title}</div>
                     {tk.desc && <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2,lineHeight:1.4}}>{tk.desc.substring(0,120)}</div>}
-                    {tk.assignee && <div style={{fontSize:10,fontFamily:BD,color:C.bl,marginTop:3}}>→ {tk.assignee}</div>}
+                    {tk.assignee && <div style={{fontSize:11,fontFamily:BD,color:C.bl,marginTop:3}}>→ {tk.assignee}</div>}
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <Badge l={stLabel} c={stColor} />
-                    {tk.dueDate && <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
+                    {tk.dueDate && <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>{t("proximaAccion")}: {tk.dueDate}</div>}
                   </div>
                 </div>
               );
@@ -10296,7 +10359,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <div style={{padding:"8px 12px",background:"#faf6f1"}}>
                       <div style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{p.model}</div>
                       <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:6}}>{p.color}</div>
-                      <button onClick={() => dbRemoveRecommendation(selectedClient, p.id)} style={{width:"100%",padding:"5px 0",background:"transparent",color:C.rd,border:"1px solid "+C.rd+"30",fontSize:10,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>× Quitar</button>
+                      <button onClick={() => dbRemoveRecommendation(selectedClient, p.id)} style={{width:"100%",padding:"5px 0",background:"transparent",color:C.rd,border:"1px solid "+C.rd+"30",fontSize:11,cursor:"pointer",fontFamily:BD,borderRadius:3,fontWeight:500}}>× Quitar</button>
                     </div>
                   </div>)}
                 </div>}
@@ -10328,7 +10391,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr 1fr",gap:10,marginBottom:16}}>
-              {[["horasHoy",hToday.toFixed(1)+"h"],["horasSemana",hWeek.toFixed(1)+"h"],["horasMes",hMonth.toFixed(1)+"h"],["diasTrabajados",uniqueDays],["mediaHoras",uniqueDays>0?(hMonth/uniqueDays).toFixed(1)+"h":"—"]].map(([k,v]) => <div key={k} style={{textAlign:"center",padding:"10px 4px",background:"#18332f04",borderRadius:6}}><div style={{fontSize:18,fontWeight:300,fontFamily:DP}}>{v}</div><div style={{fontSize:10,color:CL.dk+"60",letterSpacing:0.3}}>{t(k)}</div></div>)}
+              {[["horasHoy",hToday.toFixed(1)+"h"],["horasSemana",hWeek.toFixed(1)+"h"],["horasMes",hMonth.toFixed(1)+"h"],["diasTrabajados",uniqueDays],["mediaHoras",uniqueDays>0?(hMonth/uniqueDays).toFixed(1)+"h":"—"]].map(([k,v]) => <div key={k} style={{textAlign:"center",padding:"10px 4px",background:"#18332f04",borderRadius:6}}><div style={{fontSize:18,fontWeight:300,fontFamily:DP}}>{v}</div><div style={{fontSize:11,color:CL.dk+"60",letterSpacing:0.3}}>{t(k)}</div></div>)}
             </div>
             <div style={{fontSize:12,fontWeight:600,marginBottom:8}}>{t("historialFichajes")}</div>
             <div style={{maxHeight:200,overflow:"auto"}}>
@@ -10404,7 +10467,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{width:32,height:32,borderRadius:16,background:"linear-gradient(135deg,#c4956a,#d4a030)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16}}>✨</div>
             <div style={{flex:1}}>
               <div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:C.bg}}>{role === "admin" ? "Minüe AI" : "Ayuda de la plataforma"}</div>
-              <div style={{fontSize:10,fontFamily:BD,color:C.bg+"80"}}>{role === "admin" ? "Análisis y decisiones de negocio" : "Dudas sobre cómo usar la plataforma"}</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.bg+"80"}}>{role === "admin" ? "Análisis y decisiones de negocio" : "Dudas sobre cómo usar la plataforma"}</div>
             </div>
             {floatChat.length > 0 && <button onClick={() => { setFloatChat([]); setFloatError(""); }} title="Limpiar" style={{background:"transparent",border:"none",color:C.bg+"90",cursor:"pointer",fontSize:14,padding:"2px 6px"}}>↺</button>}
             <button onClick={() => setAiFloatOpen(false)} style={{background:"transparent",border:"none",color:C.bg,cursor:"pointer",fontSize:20,padding:"0 4px",lineHeight:1}}>×</button>
@@ -10438,7 +10501,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
       {/* FLOATING CART BUTTON - hide on cart page */}
       {role !== "admin" && role !== "team" && cartCount > 0 && view !== "c-cart" && view !== "d-cart" && <button onClick={() => setView(role === "distributor" ? "d-cart" : "c-cart")} style={{position:"fixed",bottom:78,right:16,height:56,borderRadius:28,background:"linear-gradient(135deg,#1d4435,"+C.dk+")",color:"#f8efe6",border:"1.5px solid rgba(196,149,106,0.5)",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:700,boxShadow:"0 6px 24px rgba(24,51,47,0.45)",zIndex:160,display:"flex",alignItems:"center",gap:10,padding:"0 20px 0 16px",animation:"toastIn 0.3s ease"}}>
-        <span style={{position:"relative",fontSize:20}}>🛒<span style={{position:"absolute",top:-7,right:-10,background:"#c4956a",color:C.dk,fontSize:10,fontWeight:800,padding:"1px 5px",borderRadius:8,fontFamily:BD}}>{cartCount}</span></span>
+        <span style={{position:"relative",fontSize:20}}>🛒<span style={{position:"absolute",top:-7,right:-10,background:"#c4956a",color:C.dk,fontSize:11,fontWeight:800,padding:"1px 5px",borderRadius:8,fontFamily:BD}}>{cartCount}</span></span>
         <span style={{display:"flex",flexDirection:"column",alignItems:"flex-start",lineHeight:1.15}}><span style={{fontSize:12}}>{t("voirPanier")}</span><span style={{fontSize:11,opacity:0.75,fontWeight:500}}>{fmt(finalTotal)} €</span></span>
       </button>}
     </div>
