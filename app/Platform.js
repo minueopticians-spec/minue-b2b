@@ -1311,22 +1311,6 @@ const SELL_TIPS = [
   {fr:"Prix protégés : Minuë ne fait ni 2x1 ni promos agressives en ligne.",es:"Precios protegidos: Minuë no hace 2x1 ni promociones agresivas en web.",en:"Protected prices: Minuë runs no 2-for-1 or aggressive web promos.",it:"Prezzi protetti: Minuë non fa 2x1 né promozioni aggressive online."},
 ];
 
-/* Frases para el panel del distribuidor: se elige una distinta en cada entrada. */
-const DIST_QUOTES = [
-  {es:"Cada gafa que colocas lleva un poco de la luz de Sevilla a una ciudad nueva.",fr:"Chaque lunette que vous placez emporte un peu de la lumière de Séville vers une nouvelle ville.",en:"Every pair you place carries a little Seville light to a new city.",it:"Ogni occhiale che piazzi porta un po' della luce di Siviglia in una nuova città."},
-  {es:"Las tiendas no compran gafas: compran una historia que contar. Tú se la das.",fr:"Les boutiques n'achètent pas des lunettes : elles achètent une histoire à raconter. C'est vous qui la donnez.",en:"Stores don't buy sunglasses: they buy a story to tell. You give it to them.",it:"I negozi non comprano occhiali: comprano una storia da raccontare. Sei tu a dargliela."},
-  {es:"Hoy es un buen día para abrir una tienda nueva a Minuë.",fr:"Aujourd'hui est un bon jour pour ouvrir une nouvelle boutique à Minuë.",en:"Today is a good day to open a new store to Minuë.",it:"Oggi è un buon giorno per aprire un nuovo negozio a Minuë."},
-  {es:"El sol vuelve cada año. Las buenas relaciones con las tiendas, también.",fr:"Le soleil revient chaque année. Les bonnes relations avec les boutiques aussi.",en:"The sun comes back every year. So do good relationships with stores.",it:"Il sole torna ogni anno. Anche i buoni rapporti con i negozi."},
-  {es:"Detrás de cada pedido hay una conversación tuya que funcionó.",fr:"Derrière chaque commande, il y a une de vos conversations qui a fonctionné.",en:"Behind every order there's a conversation of yours that worked.",it:"Dietro ogni ordine c'è una tua conversazione che ha funzionato."},
-  {es:"Diseño mediterráneo, mirada local: tú eres la mitad de la ecuación.",fr:"Design méditerranéen, regard local : vous êtes la moitié de l'équation.",en:"Mediterranean design, local eye: you're half of the equation.",it:"Design mediterraneo, sguardo locale: tu sei metà dell'equazione."},
-  {es:"Una llamada más puede ser la tienda que más venda esta temporada.",fr:"Un appel de plus peut être la boutique qui vendra le plus cette saison.",en:"One more call could be this season's best-selling store.",it:"Una chiamata in più può essere il negozio che vende di più questa stagione."},
-  {es:"Precios protegidos y rotación garantizada: vendes con la tranquilidad de una marca que te cuida.",fr:"Prix protégés et rotation garantie : vous vendez avec la sérénité d'une marque qui prend soin de vous.",en:"Protected prices and guaranteed rotation: you sell with a brand that has your back.",it:"Prezzi protetti e rotazione garantita: vendi con la serenità di un marchio che ti protegge."},
-  {es:"Pequeñas tiendas, grandes historias: así crece Minuë, y así creces tú.",fr:"Petites boutiques, grandes histoires : c'est ainsi que Minuë grandit, et vous aussi.",en:"Small stores, big stories: that's how Minuë grows, and so do you.",it:"Piccoli negozi, grandi storie: così cresce Minuë, e così cresci tu."},
-  {es:"Cada escaparate con Minuë es un poco más soleado gracias a ti.",fr:"Chaque vitrine avec Minuë est un peu plus ensoleillée grâce à vous.",en:"Every window with Minuë is a little sunnier thanks to you.",it:"Ogni vetrina con Minuë è un po' più soleggiata grazie a te."},
-  {es:"La temporada se gana antes de que salga el sol: hoy es buen día para preparar pedidos.",fr:"La saison se gagne avant le lever du soleil : c'est le bon jour pour préparer les commandes.",en:"The season is won before the sun comes out: a good day to prepare orders.",it:"La stagione si vince prima che sorga il sole: buon giorno per preparare gli ordini."},
-  {es:"Juntos llevamos el Mediterráneo a las mejores tiendas. Gracias por ser parte.",fr:"Ensemble, nous portons la Méditerranée dans les meilleures boutiques. Merci d'en faire partie.",en:"Together we bring the Mediterranean to the best stores. Thanks for being part of it.",it:"Insieme portiamo il Mediterraneo nei negozi migliori. Grazie di farne parte."},
-];
-
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -1610,7 +1594,6 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
-  const [quoteIdx] = useState(() => { let last = -1; try { last = parseInt(localStorage.getItem("minue_quote")||"-1"); } catch(e) {} let i = Math.floor(Math.random()*DIST_QUOTES.length); if (i === last) i = (i+1) % DIST_QUOTES.length; try { localStorage.setItem("minue_quote", String(i)); } catch(e) {} return i; });
   const [distClFilter, setDistClFilter] = useState("all");
   const [seasonFilter, setSeasonFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
@@ -7275,7 +7258,6 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,letterSpacing:.3}}>{t("showroomOficial")}</div>
               </div>
             </div>
-            <div className="mn-fade" style={{position:"relative",marginTop:16,padding:"12px 14px",borderLeft:"3px solid #e0b25a",background:"rgba(248,239,230,0.06)",borderRadius:"0 10px 10px 0",fontSize:14,fontFamily:DP,fontStyle:"italic",lineHeight:1.5,color:"#f3e6d3"}}>“{DIST_QUOTES[quoteIdx][lang] || DIST_QUOTES[quoteIdx].es}”</div>
             <div className="mn-fade" style={{position:"relative",display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
               {user.co && <span style={{...pill("linear-gradient(135deg,#e0b25a,#c4956a)",CL.dk),boxShadow:"0 4px 14px rgba(212,160,48,0.3)",fontWeight:700}}>{ic(ICO.spark, CL.dk)}{user.co}</span>}
               {zone && <span style={pill("rgba(248,239,230,0.1)","#f8efe6","rgba(248,239,230,0.22)")}>{ic(ICO.pin,"#8fc9a8")}{zone}</span>}
