@@ -33,6 +33,7 @@ const T = {
   catalogue:{fr:"Catalogue",es:"Catálogo",en:"Catalog",it:"Catalogo"},
   panier:{fr:"Panier",es:"Carrito",en:"Cart",it:"Carrello"},
   commandes:{fr:"Commandes",es:"Pedidos",en:"Orders",it:"Ordini"},
+  commandesRecentes:{fr:"Commandes récentes",es:"Pedidos recientes",en:"Recent orders",it:"Ordini recenti"},
   tarifs:{fr:"Tarifs",es:"Tarifas",en:"Pricing",it:"Tariffe"},
   ressources:{fr:"Ressources",es:"Recursos",en:"Resources",it:"Risorse"},
   dashboard:{fr:"Dashboard",es:"Dashboard",en:"Dashboard",it:"Dashboard"},
@@ -208,6 +209,14 @@ const T = {
   direccionEnvio:{fr:"Adresse de livraison",es:"Dirección de envío",en:"Shipping address",it:"Indirizzo di consegna"},
   miDireccion:{fr:"📌 Mon adresse enregistrée",es:"📌 Mi dirección guardada",en:"📌 My saved address",it:"📌 Il mio indirizzo salvato"},
   nuevaDireccion:{fr:"➕ Nouvelle adresse",es:"➕ Nueva dirección",en:"➕ New address",it:"➕ Nuovo indirizzo"},
+  seleccionadoParaTi:{fr:"Sélectionné pour vous par Minuë",es:"Seleccionado para ti por Minuë",en:"Selected for you by Minuë",it:"Selezionato per te da Minuë"},
+  tusModelosMasPedidos:{fr:"Vos modèles les plus commandés",es:"Tus modelos más pedidos",en:"Your most ordered models",it:"I tuoi modelli più ordinati"},
+  tuPerfil:{fr:"votre profil",es:"tu perfil",en:"your profile",it:"il tuo profilo"},
+  direccionIncompleta:{fr:"Votre adresse enregistrée est incomplète",es:"Tu dirección guardada está incompleta",en:"Your saved address is incomplete",it:"Il tuo indirizzo salvato è incompleto"},
+  direccionVacia:{fr:"vide",es:"vacía",en:"empty",it:"vuoto"},
+  vaA:{fr:"Rendez-vous sur",es:"Ve a",en:"Go to",it:"Vai a"},
+  paraCompletarla:{fr:"pour la compléter, ou utilisez « Nouvelle adresse ».",es:"para completarla, o usa \"Nueva dirección\".",en:"to complete it, or use \"New address\".",it:"per completarlo, o usa \"Nuovo indirizzo\"."},
+  direccionSoloPedido:{fr:"💡 Cette adresse ne sera utilisée que pour cette commande. Elle ne remplace pas celle de votre profil.",es:"💡 Esta dirección se usará solo para este pedido. No reemplaza la guardada en tu perfil.",en:"💡 This address will only be used for this order. It does not replace the one saved in your profile.",it:"💡 Questo indirizzo sarà usato solo per questo ordine. Non sostituisce quello salvato nel tuo profilo."},
   calleNum:{fr:"Rue et numéro",es:"Calle y número",en:"Street and number",it:"Via e numero"},
   codigoPostal:{fr:"Code postal",es:"Código postal",en:"Postal code",it:"Codice postale"},
   ciudadInput:{fr:"Ville",es:"Ciudad",en:"City",it:"Città"},
@@ -617,6 +626,17 @@ const T = {
   exploraCatalogo:{fr:"Explorer le catalogue",es:"Explorar catálogo",en:"Browse catalog",it:"Esplora catalogo"},
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
+  mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  mercadoSub:{fr:"Données du marché européen de la lunette solaire",es:"Datos del mercado europeo de gafas de sol",en:"European sunglasses market data",it:"Dati del mercato europeo degli occhiali da sole"},
+  mktTamano:{fr:"Taille du marché",es:"Tamaño de mercado",en:"Market size",it:"Dimensione del mercato"},
+  mktIndep:{fr:"Indépendants vs chaînes",es:"Independientes vs cadenas",en:"Independents vs chains",it:"Indipendenti vs catene"},
+  mktTemporada:{fr:"Saisonnalité et salons",es:"Estacionalidad y ferias",en:"Seasonality and trade shows",it:"Stagionalità e fiere"},
+  mktTendencias:{fr:"Tendances",es:"Tendencias",en:"Trends",it:"Tendenze"},
+  mktFuente:{fr:"Source",es:"Fuente",en:"Source",it:"Fonte"},
+  mktAviso:{fr:"Les estimations de taille de marché varient du simple au double selon le périmètre de l'éditeur. Chaque chiffre porte sa source et son année : vérifiez-la avant de l'utiliser en clientèle.",es:"Las estimaciones de tamaño de mercado varían hasta el doble según el alcance de cada editorial. Cada cifra lleva su fuente y año: compruébalo antes de usarla con un cliente.",en:"Market-size estimates vary by up to 2× depending on each publisher's scope. Every figure carries its source and year: check it before using it with a client.",it:"Le stime sulla dimensione del mercato variano fino al doppio a seconda del perimetro di ogni editore. Ogni cifra riporta fonte e anno: verificala prima di usarla con un cliente."},
+  mktDatado:{fr:"Donnée datée",es:"Dato antiguo",en:"Dated figure",it:"Dato datato"},
+  mktNoVerificado:{fr:"Non vérifié",es:"Sin verificar",en:"Unverified",it:"Non verificato"},
+  mktProxy:{fr:"Proxy US",es:"Proxy EE.UU.",en:"US proxy",it:"Proxy USA"},
   datosNegocio:{fr:"Données business",es:"Datos negocio",en:"Business data",it:"Dati business"},
   decisiones:{fr:"Décisions",es:"Decisiones",en:"Decisions",it:"Decisioni"},
   confirmacion:{fr:"Confirmation",es:"Confirmación",en:"Confirmation",it:"Conferma"},
@@ -1082,13 +1102,44 @@ const INSIGHTS_INIT = [
   {id:3,icon:"💎",title:{fr:"Ticket moyen plus élevé",es:"Ticket medio más alto",en:"Higher average ticket",it:"Ticket medio più alto"},text:{fr:"Un client qui achète des lunettes de soleil dépense 35% de plus dans le panier complet (Statista 2024).",es:"Un cliente que compra gafas de sol gasta un 35% más en el ticket completo (Statista 2024).",en:"A customer buying sunglasses spends 35% more on total basket (Statista 2024).",it:"Un cliente che acquista occhiali da sole spende il 35% in più sul carrello totale (Statista 2024)."},on:false},
 ];
 
+/* ── MERCADO: cifras del sector. Cada dato lleva fuente y año; flag marca las que
+   no son directamente citables ante un cliente (datadas, sin verificar o proxy US). ── */
+const MARKET_DATA = {
+  size: [
+    {v:"6,64 B$", g:"+5,8%/año", l:{fr:"Marché européen du solaire",es:"Mercado europeo de gafas de sol",en:"European sunglasses market",it:"Mercato europeo occhiali da sole"}, src:"MarketDataForecast", year:"2025", url:"https://www.marketdataforecast.com/market-reports/europe-sunglasses-market"},
+    {v:"13,09 B$", g:"+9,2%/año", l:{fr:"Même marché, autre périmètre",es:"Mismo mercado, otro alcance",en:"Same market, different scope",it:"Stesso mercato, altro perimetro"}, src:"Grand View Research", year:"2025", url:"https://www.grandviewresearch.com/horizon/outlook/sunglasses-market/europe", flag:"outlier"},
+    {v:"28,6%", l:{fr:"Part du solaire dans l'optique européenne (42,9 B$)",es:"Peso del sol sobre la óptica europea (42,9 B$)",en:"Sunglasses share of European eyewear (42.9 B$)",it:"Peso del sole sull'ottica europea (42,9 B$)"}, src:"IMARC", year:"2025", url:"https://www.imarcgroup.com/europe-eyewear-market"},
+    {v:"7,3 B€", l:{fr:"Marché optique France",es:"Mercado óptico Francia",en:"French optical market",it:"Mercato ottico Francia"}, src:"NielsenIQ/GfK vía ENSAO", year:"2024", url:"https://ensao.fr/marche-de-loptique-2025-chiffres-cles-et-previsions/"},
+  ],
+  indep: [
+    {v:"47-53%", s:"~25%", l:{fr:"France : part des points de vente indépendants, mais seulement ~25% du chiffre d'affaires",es:"Francia: cuota de tiendas independientes, pero solo ~25% de la facturación",en:"France: independent store share, but only ~25% of revenue",it:"Francia: quota di negozi indipendenti, ma solo ~25% del fatturato"}, src:"Octika / Crédit Agricole", year:"2025", url:"https://www.octika.com/blog/les-chiffres-de-l-optique-avril-2025-n201"},
+    {v:"<10%", l:{fr:"Espagne : magasins totalement indépendants (>90% en réseau)",es:"España: tiendas totalmente independientes (>90% en red)",en:"Spain: fully independent stores (>90% in a network)",it:"Spagna: negozi totalmente indipendenti (>90% in rete)"}, src:"Acuité", year:"2025", url:"https://www.acuite.fr/actualites/marche/les-independants-reculent-les-enseignes-a332738"},
+    {v:"47%", l:{fr:"Italie : part des indépendants (vs 27% succursalistes)",es:"Italia: cuota de independientes (vs 27% cadenas)",en:"Italy: independent share (vs 27% multiples)",it:"Italia: quota indipendenti (vs 27% catene)"}, src:"GfK/Silmo", year:"2018", url:"https://www.acuite.fr/actualites/marche/les-independants-reculent-les-enseignes-a332738", flag:"dated"},
+    {v:"19%", l:{fr:"Allemagne : part des indépendants (60% chaînes)",es:"Alemania: cuota de independientes (60% cadenas)",en:"Germany: independent share (60% chains)",it:"Germania: quota indipendenti (60% catene)"}, src:"GfK/Silmo", year:"2018", url:"https://www.acuite.fr/actualites/marche/les-independants-reculent-les-enseignes-a332738", flag:"dated"},
+  ],
+  season: [
+    {v:{fr:"Juin",es:"Junio",en:"June",it:"Giugno"}, l:{fr:"Pic de ventes solaire ; avril-juin = meilleur trimestre, T4 <10% du CA montures",es:"Pico de ventas de sol; abril-junio = mejor trimestre, T4 <10% de la facturación de monturas",en:"Sunwear sales peak; April-June = strongest quarter, Q4 <10% of frame revenue",it:"Picco di vendite sole; aprile-giugno = miglior trimestre, Q4 <10% del fatturato montature"}, src:"Eyecare Business/GPN — 2.248 ópticas", year:"2024-25", url:"https://www.eyecarebusiness.com/issues/2026/business-intel/optometric-business-tracker-sunwear-sales-peak/", flag:"proxy"},
+  ],
+  fairs: [
+    {n:"opti", city:{fr:"Munich",es:"Múnich",en:"Munich",it:"Monaco"}, when:{fr:"fin janvier",es:"finales de enero",en:"late January",it:"fine gennaio"}},
+    {n:"MIDO", city:{fr:"Milan",es:"Milán",en:"Milan",it:"Milano"}, when:{fr:"6-8 fév. 2027",es:"6-8 feb. 2027",en:"6-8 Feb 2027",it:"6-8 feb. 2027"}},
+    {n:"SILMO", city:{fr:"Paris",es:"París",en:"Paris",it:"Parigi"}, when:{fr:"24-27 sept. 2027",es:"24-27 sept. 2027",en:"24-27 Sept 2027",it:"24-27 set. 2027"}, note:{fr:"profil premium/boutique — notre segment",es:"perfil premium/boutique — nuestro segmento",en:"premium/boutique profile — our segment",it:"profilo premium/boutique — il nostro segmento"}},
+  ],
+  trends: [
+    {i:"🌱", t:{fr:"Bio-acétate",es:"Bioacetato",en:"Bio-acetate",it:"Bioacetato"}, d:{fr:"Matériau consensuel pour 2026 : d'origine végétale, empreinte réduite.",es:"Material de consenso para 2026: de origen vegetal, huella reducida.",en:"Consensus material for 2026: plant-derived, lower footprint.",it:"Materiale di consenso per il 2026: di origine vegetale, impronta ridotta."}, src:"Visio-net / Coleman", year:"2026", flag:"soft"},
+    {i:"🕶", t:{fr:"Acétate sculptural",es:"Acetato escultural",en:"Sculptural acetate",it:"Acetato scultoreo"}, d:{fr:"Montures volumineuses et formes pilote épaisses de retour.",es:"Monturas voluminosas y formas piloto gruesas de vuelta.",en:"Oversized frames and thick pilot shapes returning.",it:"Montature voluminose e forme pilota spesse di ritorno."}, src:"Hermitin", year:"2026", flag:"soft"},
+    {i:"🎨", t:{fr:"Couleur",es:"Color",en:"Colour",it:"Colore"}, d:{fr:"Acétate translucide/cristal, lilas, sauge.",es:"Acetato translúcido/cristal, lila, salvia.",en:"Translucent/crystal acetate, lilac, sage.",it:"Acetato traslucido/cristallo, lilla, salvia."}, src:"Visio-net", year:"2026", flag:"soft"},
+    {i:"🤍", t:{fr:"Quiet luxury",es:"Quiet luxury",en:"Quiet luxury",it:"Quiet luxury"}, d:{fr:"Titane et lignes sobres en contrepoint de l'acétate audacieux.",es:"Titanio y líneas sobrias como contrapunto al acetato audaz.",en:"Titanium and understated lines as counterpoint to bold acetate.",it:"Titanio e linee sobrie come contrappunto all'acetato audace."}, src:"WeissOptix", year:"2026", flag:"soft"},
+  ],
+};
+
 const USERS_INIT = [
-  {email:"hola@minueopticians.com",pw:"minue2026",role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
-  {email:"showroom@agentsud.fr",pw:"agent2026",role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
-  {email:"agnes@lebruitdesvagues.fr",pw:"vagues2026",role:"client",name:"Agnès",co:"Le Bruit des Vagues",lang:"fr"},
-  {email:"claire@rivoli.fr",pw:"rivoli2026",role:"client",name:"Claire",co:"Optique Rivoli",lang:"fr"},
-  {email:"lucas@cslyon.fr",pw:"lyon2026",role:"client",name:"Lucas",co:"Concept Store Lyon",lang:"fr"},
-  {email:"anna@brillen.de",pw:"brillen2026",role:"client",name:"Anna",co:"Brillen Hamburg",lang:"en"},
+  {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
+  {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
+  {email:"agnes@lebruitdesvagues.fr",pw:"vagues2026",demo:true,role:"client",name:"Agnès",co:"Le Bruit des Vagues",lang:"fr"},
+  {email:"claire@rivoli.fr",pw:"rivoli2026",demo:true,role:"client",name:"Claire",co:"Optique Rivoli",lang:"fr"},
+  {email:"lucas@cslyon.fr",pw:"lyon2026",demo:true,role:"client",name:"Lucas",co:"Concept Store Lyon",lang:"fr"},
+  {email:"anna@brillen.de",pw:"brillen2026",demo:true,role:"client",name:"Anna",co:"Brillen Hamburg",lang:"en"},
 ];
 
 const FLAGS = {fr:"FR",es:"ES",en:"EN",it:"IT"};
@@ -1827,6 +1878,9 @@ export default function App() {
   const doLogin = async () => {
     const hashed = await hashPw(loginPw, loginEmail); const found = users.find(u => u.email.toLowerCase() === loginEmail.toLowerCase().trim() && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
     if (!found || found.active === false) { setLoginErr(t("errLogin")); return; }
+    // Las cuentas de demo solo valen sin base de datos (desarrollo local): con Supabase
+    // conectado los usuarios reales mandan, aunque alguien lea estas credenciales.
+    if (found.demo && dbReady) { setLoginErr(t("errLogin")); return; }
     setLoginErr("");
     if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
     setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
@@ -2007,13 +2061,13 @@ export default function App() {
   const navItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
     ? [["e-dash","dashboard"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
-    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
+    : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-mercado","mercado"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
 
   /* ═══ RENDERABLE SECTIONS ═══ */
-  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",miHistorico:"M3 3v18h18M7 14l4-4 4 4 5-5"};
+  const navIcons = {dashboard:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",accueil:"M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z",catalogue:"M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z",panier:"M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0",commandes:"M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",clients:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8",distributeurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",stock:"M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",commercial:"M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5",almacen:"M3 3h18v18H3zM12 8v8M8 12h8",logistica:"M1 3h15v13H1zM16 8h4l3 3v5h-7V8zM5.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM18.5 21a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",stats:"M18 20V10M12 20V4M6 20v-6",tareas:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",promos:"M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",nouveautes:"M19 4H5a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V6a2 2 0 00-2-2z",packaging:"M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z",faq:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM12 16v.01M12 8a2.5 2.5 0 012.5 2.5c0 1.5-2.5 2-2.5 3.5",monCompte:"M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8",factures:"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8",utilisateurs:"M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75",selectionPrivee:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",ressources:"M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z",tarifs:"M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6",fichaje:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",empleados:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",recomendaciones:"M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11",favoritos:"M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z",analytics:"M3 3v18h18M7 14l4-4 4 4 5-5",mensajes:"M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z",datosNegocio:"M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14M21 3v6h-6",decisiones:"M9.66 4.5h4.68l3.32 3.32v4.68l-3.32 3.32H9.66L6.34 12.5V7.82zM12 8v4M12 15v.5",prospectos:"M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 11l-3 3-2-2",pendientesServir:"M12 2a10 10 0 100 20 10 10 0 000-20zM12 6v6l4 2",miHistorico:"M3 3v18h18M7 14l4-4 4 4 5-5",mercado:"M2 12h4l3-9 4 18 3-9h6"};
   const bottomItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-ord","commandes"]]
     : role === "distributor"
@@ -2209,7 +2263,7 @@ export default function App() {
         }
         // Grouped layout for admin/team — flat grid for client/distributor
         const groups = role === "admin" ? [
-          ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats","a-decisiones","a-analytics","a-ord","a-inv"]],
+          ["💼 "+(t("grpVentas")||"Ventas"), ["a-stats","a-decisiones","a-analytics","a-mercado","a-ord","a-inv"]],
           ["👥 "+(t("grpClientes")||"Clientes"), ["a-cl","a-dist","a-prospectos","a-comercial","a-msg","a-recom"]],
           ["📦 "+(t("grpOperaciones")||"Operaciones"), ["a-stock","a-almacen","a-logistica","a-pack","a-tasks","a-empleados"]],
           ["📣 "+(t("grpContenido")||"Contenido"), ["a-promo","a-news","a-faq"]],
@@ -3003,11 +3057,28 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{fontSize:22,fontFamily:DP,fontWeight:400,color:C.dk,marginBottom:2}}>{mg.model}</div>
                   <div style={{fontSize:13,fontFamily:BD,color:C.gr,marginBottom:4}}>{sel.color}</div>
                   <div style={{fontSize:10,fontFamily:BD,color:C.gr2,marginBottom:12}}>{sel.sku}</div>
-                  <div style={{display:"flex",gap:16,marginBottom:16}}>
-                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>Wholesale</div><div style={{fontSize:20,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</div></div>
-                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>PVP</div><div style={{fontSize:16,fontWeight:400,fontFamily:BD,color:C.gr}}>{isAcetato?"70":"45-50"} €</div></div>
+                  <div style={{display:"flex",gap:16,marginBottom:12}}>
+                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>Wholesale</div><div style={{fontSize:20,fontWeight:600,fontFamily:BD,color:C.dk}}>{fmt(displayPrice)} €</div>{!isAcetato && !(customPrice>0) && <div style={{fontSize:10,fontFamily:BD,color:CL.gn,marginTop:1}}>desde {fmt(TIERS[TIERS.length-1].price)} €</div>}</div>
+                    <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>PVP</div><div style={{fontSize:16,fontWeight:400,fontFamily:BD,color:C.gr,textDecoration:"line-through"}}>{isAcetato?"70":"50-55"} €</div><div style={{fontSize:10,fontFamily:BD,color:CL.gn,fontWeight:600}}>-{isAcetato?"60":Math.round(((52-displayPrice)/52)*100)}%</div></div>
                     <div><div style={{fontSize:10,color:C.gr,fontFamily:BD}}>Stock</div><div style={{fontSize:16,fontWeight:600,fontFamily:BD,color:sel.stock===0?C.rd:sel.stock<5?C.yl:C.gn}}>{sel.stock}</div></div>
                   </div>
+                  {/* Pricing tiers info */}
+                  {!isAcetato && !(customPrice>0) && <div style={{background:"linear-gradient(135deg,"+CL.dk+"08,"+CL.gn+"06)",border:"1px solid "+CL.gn+"25",borderRadius:10,padding:"10px 12px",marginBottom:14}}>
+                    <div style={{fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:6}}>Precio por volumen — cuantas más, mejor precio</div>
+                    <div style={{display:"flex",gap:0}}>
+                      {TIERS.slice(1).map((tier, i) => {
+                        const totalCartUnits = Object.values(cart||{}).reduce((s,q) => s+(parseInt(q)||0), 0);
+                        const isActive = totalCartUnits >= tier.min && totalCartUnits <= tier.max;
+                        const isBest = tier.min === TIERS[TIERS.length-1].min;
+                        return <div key={i} style={{flex:1,textAlign:"center",padding:"6px 2px",borderRadius:6,background:isActive?"rgba(45,107,79,0.12)":"transparent",border:isActive?"1px solid rgba(45,107,79,0.3)":"1px solid transparent",transition:"all .3s"}}>
+                          <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{tier.label}</div>
+                          <div style={{fontSize:13,fontFamily:DP,fontWeight:600,color:isBest?CL.yl:isActive?CL.gn:C.dk}}>{fmt(tier.price)} €</div>
+                          {isActive && <div style={{fontSize:7,fontFamily:BD,color:CL.gn,fontWeight:700,marginTop:1}}>TU PRECIO</div>}
+                        </div>;
+                      })}
+                    </div>
+                    {(() => { const totalCartUnits = Object.values(cart||{}).reduce((s,q) => s+(parseInt(q)||0), 0); const nextT = getNextTier(Math.max(1, totalCartUnits)); return nextT ? <div style={{fontSize:9,fontFamily:BD,color:CL.gn,marginTop:6,textAlign:"center"}}>Añade {nextT.min - totalCartUnits} uds más → precio baja a {fmt(nextT.price)} €/ud</div> : null; })()}
+                  </div>}
                   {/* Color list with add to cart */}
                   <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:8}}>{mg.colors.length} {t("couleurs")} :</div>
                   <div style={{maxHeight:200,overflowY:"auto"}}>
@@ -5705,7 +5776,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {(() => { const myRecs = recommendations[user.email]||[]; const recProds = myRecs.map(id => products.find(p => p.id === id)).filter(p => p && p.active !== false); return recProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
               <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>✨ {t("diseñosRecomendados")}</div>
-              <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>Seleccionado para ti por Minuë</span>
+              <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("seleccionadoParaTi")}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10,marginBottom:24}}>
               {recProds.map(p => <div key={p.id} style={{background:"linear-gradient(135deg,"+C.dk+"05,"+C.gn+"08)",border:"1px solid "+C.gn+"30",borderRadius:8,overflow:"hidden",position:"relative",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
@@ -5765,7 +5836,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {(() => { const myOrders = orders.filter(o => (o.client === user.co || o.client === user.name) && o.dist !== "Faire"); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; if(!mySold[k]) mySold[k] = {qty:0, lastDate:o.date}; mySold[k].qty += (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1].qty-a[1].qty).slice(0,6); const myTopProds = myTop.map(([k,d]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c && x.active !== false); return p ? {p,qty:d.qty,lastDate:d.lastDate} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
               <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>🔄 Comprar de nuevo</div>
-              <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>Tus modelos más pedidos</span>
+              <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("tusModelosMasPedidos")}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10,marginBottom:24}}>
               {myTopProds.map(({p,qty,lastDate}) => {
@@ -5966,7 +6037,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   const shPostal = ac.shippingPostal || ac.postalCode || "";
                   const shCountry = ac.shippingCountry || ac.country || "";
                   const hasFullAddress = shStreet && shCity;
-                  if (!hasFullAddress) return <div style={{padding:"12px 14px",background:"#fff8e6",border:"1px solid #f0a02050",borderRadius:6,fontSize:11,fontFamily:BD,color:"#c47a00",lineHeight:1.5}}>⚠ Tu dirección guardada está incompleta ({[shStreet,shPostal,shCity,shCountry].filter(Boolean).join(", ")||"vacía"}).<br/>Ve a <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,textDecoration:"underline",cursor:"pointer",padding:0,fontFamily:BD,fontSize:11,fontWeight:600}}>tu perfil</button> para completarla, o usa "Nueva dirección".</div>;
+                  if (!hasFullAddress) return <div style={{padding:"12px 14px",background:"#fff8e6",border:"1px solid #f0a02050",borderRadius:6,fontSize:11,fontFamily:BD,color:"#c47a00",lineHeight:1.5}}>⚠ {t("direccionIncompleta")} ({[shStreet,shPostal,shCity,shCountry].filter(Boolean).join(", ")||t("direccionVacia")}).<br/>{t("vaA")} <button onClick={() => setView("c-account")} style={{background:"none",border:"none",color:C.bl,textDecoration:"underline",cursor:"pointer",padding:0,fontFamily:BD,fontSize:11,fontWeight:600}}>{t("tuPerfil")}</button> {t("paraCompletarla")}</div>;
                   return <div style={{padding:"12px 14px",background:C.bg,border:"1px solid "+C.ln,borderRadius:6,fontSize:11,fontFamily:BD,color:C.dk,lineHeight:1.6}}>
                     <div style={{fontWeight:700,color:C.dk,marginBottom:4,fontSize:12}}>{ac.companyName||ac.name||user.co}</div>
                     {ac.contact && <div style={{color:C.gr2,fontSize:10}}>A/A: {ac.contact}</div>}
@@ -5980,7 +6051,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   </div>;
                 })()}
                 {shippingAddr === "new" && <>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8}}>💡 Esta dirección se usará solo para este pedido. No reemplaza la guardada en tu perfil.</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:8}}>{t("direccionSoloPedido")}</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                     <input value={newShipAddr.street} onChange={e => setNewShipAddr(p => ({...p, street:e.target.value}))} placeholder={t("calleNum")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
                     <input value={newShipAddr.zip} onChange={e => setNewShipAddr(p => ({...p, zip:e.target.value}))} placeholder={t("codigoPostal")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
@@ -6508,6 +6579,92 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {/* ═══ ADMIN ANALYTICS ═══ */}
+      {view === "a-mercado" && <Sec title={t("mercado")} sub={t("mercadoSub")}>
+        {(() => {
+          const FLAG_C = {dated:"#f0a020", outlier:"#f0a020", proxy:"#f0a020", soft:C.gr2};
+          const flagLabel = f => f==="dated" ? t("mktDatado") : f==="proxy" ? t("mktProxy") : f==="soft" ? t("mktNoVerificado") : t("mktNoVerificado");
+          const Src = ({d}) => <a href={d.url} target="_blank" rel="noopener noreferrer" style={{fontSize:9,fontFamily:BD,color:C.gr2,textDecoration:"none",borderBottom:"1px dotted "+C.ln}}>{d.src} · {d.year}</a>;
+          const Flag = ({f}) => f ? <span style={{fontSize:8,fontFamily:BD,fontWeight:700,color:FLAG_C[f],background:FLAG_C[f]+"18",padding:"2px 6px",borderRadius:8,letterSpacing:.3,textTransform:"uppercase"}}>{flagLabel(f)}</span> : null;
+          const card = {background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"16px 18px",display:"flex",flexDirection:"column",gap:6};
+          const grid = {display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10,marginBottom:18};
+          return <>
+            <div style={{display:"flex",gap:10,padding:"12px 16px",background:C.bg,border:"1px solid "+C.ln,borderRadius:10,marginBottom:18}}>
+              <span style={{fontSize:16,lineHeight:1.2}}>ℹ️</span>
+              <span style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.6}}>{t("mktAviso")}</span>
+            </div>
+
+            <div style={{fontSize:11,fontFamily:BD,fontWeight:700,color:C.gr,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>{t("mktTamano")}</div>
+            <div style={grid}>
+              {MARKET_DATA.size.map((d,i) => (
+                <div key={i} style={card}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                    <span style={{fontSize:26,fontFamily:BD,fontWeight:700,color:C.dk,letterSpacing:-.5}}>{d.v}</span>
+                    {d.g && <span style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.gn}}>{d.g}</span>}
+                    <Flag f={d.flag} />
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{d.l[lang]||d.l.es}</div>
+                  <Src d={d} />
+                </div>
+              ))}
+            </div>
+
+            <div style={{fontSize:11,fontFamily:BD,fontWeight:700,color:C.gr,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>{t("mktIndep")}</div>
+            <div style={grid}>
+              {MARKET_DATA.indep.map((d,i) => (
+                <div key={i} style={card}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                    <span style={{fontSize:26,fontFamily:BD,fontWeight:700,color:C.dk,letterSpacing:-.5}}>{d.v}</span>
+                    {d.s && <span style={{fontSize:14,fontFamily:BD,fontWeight:600,color:C.rd}}>→ {d.s}</span>}
+                    <Flag f={d.flag} />
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{d.l[lang]||d.l.es}</div>
+                  <Src d={d} />
+                </div>
+              ))}
+            </div>
+
+            <div style={{fontSize:11,fontFamily:BD,fontWeight:700,color:C.gr,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>{t("mktTemporada")}</div>
+            <div style={grid}>
+              {MARKET_DATA.season.map((d,i) => (
+                <div key={i} style={{...card,gridColumn:"1 / -1"}}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                    <span style={{fontSize:26,fontFamily:BD,fontWeight:700,color:C.dk,letterSpacing:-.5}}>{d.v[lang]||d.v.es}</span>
+                    <Flag f={d.flag} />
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{d.l[lang]||d.l.es}</div>
+                  <Src d={d} />
+                </div>
+              ))}
+              {MARKET_DATA.fairs.map((f,i) => (
+                <div key={"f"+i} style={card}>
+                  <div style={{display:"flex",alignItems:"baseline",gap:8}}>
+                    <span style={{fontSize:18,fontFamily:BD,fontWeight:700,color:C.dk,letterSpacing:.5}}>{f.n}</span>
+                    <span style={{fontSize:11,fontFamily:BD,color:C.gr}}>{f.city[lang]||f.city.es}</span>
+                  </div>
+                  <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.bl}}>{f.when[lang]||f.when.es}</div>
+                  {f.note && <div style={{fontSize:10,fontFamily:BD,color:C.gr2,lineHeight:1.5}}>{f.note[lang]||f.note.es}</div>}
+                </div>
+              ))}
+            </div>
+
+            <div style={{fontSize:11,fontFamily:BD,fontWeight:700,color:C.gr,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>{t("mktTendencias")}</div>
+            <div style={grid}>
+              {MARKET_DATA.trends.map((d,i) => (
+                <div key={i} style={card}>
+                  <div style={{display:"flex",alignItems:"center",gap:8}}>
+                    <span style={{fontSize:18}}>{d.i}</span>
+                    <span style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{d.t[lang]||d.t.es}</span>
+                    <Flag f={d.flag} />
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.5}}>{d.d[lang]||d.d.es}</div>
+                  <span style={{fontSize:9,fontFamily:BD,color:C.gr2}}>{d.src} · {d.year}</span>
+                </div>
+              ))}
+            </div>
+          </>;
+        })()}
+      </Sec>}
+
       {view === "a-analytics" && <Sec title={t("analytics")} sub="Insights de productos y comportamiento de clientes">
         {(() => {
           // Compute global stats
@@ -9478,6 +9635,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </>}
 
       {view === "a-stats" && <Sec title={t("tableauBord")}>
+        {!dbReady && (
+          <div style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:"#fff0f0",border:"1px solid "+C.rd+"50",borderRadius:10,marginBottom:14}}>
+            <div style={{fontSize:22}}>🔌</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontFamily:BD,color:C.dk,fontWeight:700}}>Sin conexión a la base de datos</div>
+              <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>Pedidos, clientes y facturas aparecen vacíos porque faltan las credenciales de Supabase (.env.local). El catálogo se muestra desde el código.</div>
+            </div>
+          </div>
+        )}
         {/* PAYMENT ACTION BANNER */}
         {orders.filter(o => o.status === "confirmed" && !o.payMethod).length > 0 && (
           <div onClick={() => setView("a-ord")} style={{display:"flex",alignItems:"center",gap:12,padding:"14px 18px",background:"linear-gradient(135deg,#fff8e6,#ffe999)",border:"1px solid #f0a020"+"60",borderRadius:10,marginBottom:14,cursor:"pointer"}}>
@@ -9560,7 +9726,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {/* RECENT ORDERS */}
           <div style={{background:C.wh,borderRadius:8,padding:0,overflow:"hidden",border:"1px solid "+C.ln}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid "+C.ln}}>
-              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("commandes")} récentes</span>
+              <span style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700}}>{t("commandesRecentes")}</span>
               <Btn small ghost onClick={() => setView("a-ord")}>{t("voirTout")}</Btn>
             </div>
             <div style={{padding:"6px 16px"}}>
