@@ -1311,6 +1311,22 @@ const SELL_TIPS = [
   {fr:"Prix protégés : Minuë ne fait ni 2x1 ni promos agressives en ligne.",es:"Precios protegidos: Minuë no hace 2x1 ni promociones agresivas en web.",en:"Protected prices: Minuë runs no 2-for-1 or aggressive web promos.",it:"Prezzi protetti: Minuë non fa 2x1 né promozioni aggressive online."},
 ];
 
+/* Frases para el panel del distribuidor: se elige una distinta en cada entrada. */
+const DIST_QUOTES = [
+  {es:"Cada gafa que colocas lleva un poco de la luz de Sevilla a una ciudad nueva.",fr:"Chaque lunette que vous placez emporte un peu de la lumière de Séville vers une nouvelle ville.",en:"Every pair you place carries a little Seville light to a new city.",it:"Ogni occhiale che piazzi porta un po' della luce di Siviglia in una nuova città."},
+  {es:"Las tiendas no compran gafas: compran una historia que contar. Tú se la das.",fr:"Les boutiques n'achètent pas des lunettes : elles achètent une histoire à raconter. C'est vous qui la donnez.",en:"Stores don't buy sunglasses: they buy a story to tell. You give it to them.",it:"I negozi non comprano occhiali: comprano una storia da raccontare. Sei tu a dargliela."},
+  {es:"Hoy es un buen día para abrir una tienda nueva a Minuë.",fr:"Aujourd'hui est un bon jour pour ouvrir une nouvelle boutique à Minuë.",en:"Today is a good day to open a new store to Minuë.",it:"Oggi è un buon giorno per aprire un nuovo negozio a Minuë."},
+  {es:"El sol vuelve cada año. Las buenas relaciones con las tiendas, también.",fr:"Le soleil revient chaque année. Les bonnes relations avec les boutiques aussi.",en:"The sun comes back every year. So do good relationships with stores.",it:"Il sole torna ogni anno. Anche i buoni rapporti con i negozi."},
+  {es:"Detrás de cada pedido hay una conversación tuya que funcionó.",fr:"Derrière chaque commande, il y a une de vos conversations qui a fonctionné.",en:"Behind every order there's a conversation of yours that worked.",it:"Dietro ogni ordine c'è una tua conversazione che ha funzionato."},
+  {es:"Diseño mediterráneo, mirada local: tú eres la mitad de la ecuación.",fr:"Design méditerranéen, regard local : vous êtes la moitié de l'équation.",en:"Mediterranean design, local eye: you're half of the equation.",it:"Design mediterraneo, sguardo locale: tu sei metà dell'equazione."},
+  {es:"Una llamada más puede ser la tienda que más venda esta temporada.",fr:"Un appel de plus peut être la boutique qui vendra le plus cette saison.",en:"One more call could be this season's best-selling store.",it:"Una chiamata in più può essere il negozio che vende di più questa stagione."},
+  {es:"Precios protegidos y rotación garantizada: vendes con la tranquilidad de una marca que te cuida.",fr:"Prix protégés et rotation garantie : vous vendez avec la sérénité d'une marque qui prend soin de vous.",en:"Protected prices and guaranteed rotation: you sell with a brand that has your back.",it:"Prezzi protetti e rotazione garantita: vendi con la serenità di un marchio che ti protegge."},
+  {es:"Pequeñas tiendas, grandes historias: así crece Minuë, y así creces tú.",fr:"Petites boutiques, grandes histoires : c'est ainsi que Minuë grandit, et vous aussi.",en:"Small stores, big stories: that's how Minuë grows, and so do you.",it:"Piccoli negozi, grandi storie: così cresce Minuë, e così cresci tu."},
+  {es:"Cada escaparate con Minuë es un poco más soleado gracias a ti.",fr:"Chaque vitrine avec Minuë est un peu plus ensoleillée grâce à vous.",en:"Every window with Minuë is a little sunnier thanks to you.",it:"Ogni vetrina con Minuë è un po' più soleggiata grazie a te."},
+  {es:"La temporada se gana antes de que salga el sol: hoy es buen día para preparar pedidos.",fr:"La saison se gagne avant le lever du soleil : c'est le bon jour pour préparer les commandes.",en:"The season is won before the sun comes out: a good day to prepare orders.",it:"La stagione si vince prima che sorga il sole: buon giorno per preparare gli ordini."},
+  {es:"Juntos llevamos el Mediterráneo a las mejores tiendas. Gracias por ser parte.",fr:"Ensemble, nous portons la Méditerranée dans les meilleures boutiques. Merci d'en faire partie.",en:"Together we bring the Mediterranean to the best stores. Thanks for being part of it.",it:"Insieme portiamo il Mediterraneo nei negozi migliori. Grazie di farne parte."},
+];
+
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -1594,6 +1610,7 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [quoteIdx] = useState(() => { let last = -1; try { last = parseInt(localStorage.getItem("minue_quote")||"-1"); } catch(e) {} let i = Math.floor(Math.random()*DIST_QUOTES.length); if (i === last) i = (i+1) % DIST_QUOTES.length; try { localStorage.setItem("minue_quote", String(i)); } catch(e) {} return i; });
   const [distClFilter, setDistClFilter] = useState("all");
   const [seasonFilter, setSeasonFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
@@ -2066,6 +2083,9 @@ export default function App() {
   };
 
   /* ═══ LOGIN SCREEN ═══ */
+  // Recarga limpia: no queda en memoria nada del usuario anterior (carrito elegido, filtros, datos cargados).
+  const doLogout = () => { try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) {} window.location.replace(window.location.pathname); };
+
   const doLogin = async () => {
     const hashed = await hashPw(loginPw, loginEmail);
     const em = loginEmail.toLowerCase().trim();
@@ -2374,7 +2394,7 @@ export default function App() {
           })()}
           {role === "client" && activeClient && activeClient.status === "vip" && <span style={{fontSize:10,fontFamily:BD,fontWeight:800,color:"#d4a030",background:"linear-gradient(135deg,#d4a03020,#c4903a20)",padding:"2px 7px",borderRadius:4,letterSpacing:1.5,border:"1px solid #d4a03040"}}>VIP</span>}
           <div onClick={() => setProfileOpen(!profileOpen)} style={{width:26,height:26,borderRadius:13,background:rc+"25",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,fontFamily:BD,color:rc,flexShrink:0,cursor:"pointer"}}>{user.name[0]}</div>
-          <button onClick={() => { setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) {} }} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
+          <button onClick={doLogout} title={t("deconnexion")} aria-label={t("deconnexion")} style={{background:"none",border:"none",cursor:"pointer",padding:2,display:"flex",alignItems:"center",flexShrink:0}}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(248,239,230,0.35)" strokeWidth="2" strokeLinecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
         </div>
@@ -5515,7 +5535,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
             <div style={{borderTop:"1px solid "+C.ln,marginTop:12,paddingTop:12,display:"flex",gap:8}}>
               {role !== "admin" && <Btn small ghost onClick={() => { setProfileOpen(false); setView(role==="team"?"e-account":role==="distributor"?"d-account":"c-account"); }}>{t("monCompte")}</Btn>}
-              <Btn small ghost onClick={() => { setProfileOpen(false); setUser(null); setCart({}); setLoginEmail(""); setLoginPw(""); try { localStorage.removeItem("minue_session"); localStorage.removeItem("minue_view"); } catch(e) { console.log('DB error:', e); } }} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
+              <Btn small ghost onClick={doLogout} style={{color:C.rd,borderColor:C.rd}}>{t("deconnexion")}</Btn>
             </div>
           </div>
         </div>
@@ -7255,6 +7275,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,letterSpacing:.3}}>{t("showroomOficial")}</div>
               </div>
             </div>
+            <div className="mn-fade" style={{position:"relative",marginTop:16,padding:"12px 14px",borderLeft:"3px solid #e0b25a",background:"rgba(248,239,230,0.06)",borderRadius:"0 10px 10px 0",fontSize:14,fontFamily:DP,fontStyle:"italic",lineHeight:1.5,color:"#f3e6d3"}}>“{DIST_QUOTES[quoteIdx][lang] || DIST_QUOTES[quoteIdx].es}”</div>
             <div className="mn-fade" style={{position:"relative",display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
               {user.co && <span style={{...pill("linear-gradient(135deg,#e0b25a,#c4956a)",CL.dk),boxShadow:"0 4px 14px rgba(212,160,48,0.3)",fontWeight:700}}>{ic(ICO.spark, CL.dk)}{user.co}</span>}
               {zone && <span style={pill("rgba(248,239,230,0.1)","#f8efe6","rgba(248,239,230,0.22)")}>{ic(ICO.pin,"#8fc9a8")}{zone}</span>}
@@ -7759,7 +7780,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <option value="">{t("choisir")}</option>
               {distClients.map(c => <option key={c.id} value={c.name}>{c.name} · {c.city||"—"} {c.status==="vip"?"★":""}</option>)}
             </select>
-            <button onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:user.country||"FR",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:"",_fromCart:true}); }} style={{padding:"8px 14px",background:"transparent",color:C.dk,border:"1px solid "+C.dk,borderRadius:3,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>+ {t("nouveau")}</button>
+            <button onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:user.country||"FR",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:"",_fromCart:true}); }} style={{padding:"8px 14px",background:"transparent",color:C.dk,border:"1px solid "+C.dk,borderRadius:3,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>{t("nouveau")}</button>
           </> : <>
             <span style={{flex:1,fontSize:12,fontFamily:BD,color:C.gr,fontStyle:"italic"}}>{t("sinClientesAun")}</span>
             <button onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:user.country||"FR",postalCode:"",phone:"",companyEmail:"",companyName:"",taxId:"",address:"",shippingAddress:"",shippingCity:"",shippingPostal:"",shippingCountry:"",_fromCart:true}); }} style={{padding:"9px 16px",background:C.dk,color:C.bg,border:"none",borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"}}>+ {t("crearPrimerCliente")}</button>
@@ -8408,7 +8429,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         const allCountries = [...new Set(clients.map(c => c.country).filter(Boolean))].sort();
 
         return <>
-        <Sec title={t("clients")} sub={totalC+" "+t("clients")+" · "+fmt(totalRevenue)+" € total"} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>+ {t("nouveau")}</Btn></div>}>
+        <Sec title={t("clients")} sub={totalC+" "+t("clients")+" · "+fmt(totalRevenue)+" € total"} right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={exportClients}>{t("exporterCSV")}</Btn><Btn small onClick={() => { setModal("newCl"); setEd({name:"",contact:"",city:"",country:"FR",postalCode:""}); }}>{t("nouveau")}</Btn></div>}>
 
           {/* KPI CARDS */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:8,marginBottom:14}}>
