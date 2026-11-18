@@ -1601,6 +1601,14 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [landing] = useState(() => { try { return window.location.pathname.replace(/\/+$/,"") === "/invierno" ? "invierno" : null; } catch(e) { return null; } });
+  const [lpTab, setLpTab] = useState("top");
+  const [lpCart, setLpCart] = useState({});
+  const [lpCheckout, setLpCheckout] = useState(false);
+  const [lpForm, setLpForm] = useState({country:"France"});
+  const [lpErr, setLpErr] = useState("");
+  const [lpSending, setLpSending] = useState(false);
+  const [lpDone, setLpDone] = useState("");
   const [distClFilter, setDistClFilter] = useState("all");
   const [seasonFilter, setSeasonFilter] = useState("all");
   const [expandedTier, setExpandedTier] = useState(-1);
@@ -2115,6 +2123,160 @@ export default function App() {
   };
 
   if (!hydrated || (!user && loading)) { return (<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:CL.dk}}><img loading="lazy" src={LOGO} alt="Minue" style={{width:60,height:60,objectFit:"contain",borderRadius:8,marginBottom:12,opacity:0.8}} /><div style={{fontSize:12,fontFamily:BD,color:"#f8efe660",letterSpacing:2}}>LOADING</div></div>); }
+  /* ═══ LANDING PÚBLICA · /invierno: pedido sin registro ═══ */
+  if (landing === "invierno") {
+    const LT = {
+      kicker:{fr:"Sélection recommandée",es:"Selección recomendada",en:"Recommended selection",it:"Selezione consigliata"},
+      title:{fr:"Collection Hiver 26/27",es:"Colección Invierno 26/27",en:"Winter 26/27 Collection",it:"Collezione Inverno 26/27"},
+      sub:{fr:"Les meilleures ventes sur Faire ces derniers mois et les teintes de la saison : bordeaux, caramel, marron, écaille et noir. Commandez sans créer de compte.",es:"Lo más vendido en Faire estos meses y los tonos de la temporada: burdeos, caramelo, marrón, carey y negro. Pide sin registrarte.",en:"Faire best-sellers of recent months and the season's tones: burgundy, caramel, brown, tortoise and black. Order without an account.",it:"I più venduti su Faire negli ultimi mesi e i toni di stagione: bordeaux, caramello, marrone, tartaruga e nero. Ordina senza registrarti."},
+      top:{fr:"Meilleures ventes",es:"Top ventas",en:"Best-sellers",it:"Più venduti"},
+      burdeos:{fr:"Bordeaux",es:"Burdeos",en:"Burgundy",it:"Bordeaux"},
+      caramelo:{fr:"Caramel",es:"Caramelo",en:"Caramel",it:"Caramello"},
+      marron:{fr:"Marron",es:"Marrón",en:"Brown",it:"Marrone"},
+      carey:{fr:"Écaille",es:"Carey",en:"Tortoise",it:"Tartaruga"},
+      negro:{fr:"Noir",es:"Negro",en:"Black",it:"Nero"},
+      perUnit:{fr:"/u HT",es:"/ud sin IVA",en:"/unit ex. VAT",it:"/u IVA escl."},
+      tiers:{fr:"Prix dégressifs selon le nombre total d'unités · Livraison offerte dès 20 unités",es:"Precio por unidad según el total del pedido · Envío gratis desde 20 unidades",en:"Unit price by total order quantity · Free shipping from 20 units",it:"Prezzo unitario in base al totale dell'ordine · Spedizione gratuita da 20 unità"},
+      units:{fr:"unités",es:"unidades",en:"units",it:"unità"},
+      order:{fr:"Commander",es:"Hacer pedido",en:"Place order",it:"Ordina"},
+      yourOrder:{fr:"Votre commande",es:"Tu pedido",en:"Your order",it:"Il tuo ordine"},
+      shop:{fr:"Nom de la boutique",es:"Nombre de la tienda",en:"Store name",it:"Nome del negozio"},
+      contact:{fr:"Votre nom",es:"Tu nombre",en:"Your name",it:"Il tuo nome"},
+      email:{fr:"Email",es:"Email",en:"Email",it:"Email"},
+      phone:{fr:"Téléphone",es:"Teléfono",en:"Phone",it:"Telefono"},
+      address:{fr:"Adresse de livraison",es:"Dirección de envío",en:"Shipping address",it:"Indirizzo di consegna"},
+      zip:{fr:"Code postal",es:"Código postal",en:"Postcode",it:"CAP"},
+      city:{fr:"Ville",es:"Ciudad",en:"City",it:"Città"},
+      country:{fr:"Pays",es:"País",en:"Country",it:"Paese"},
+      vat:{fr:"N° TVA / SIRET (facultatif)",es:"NIF / IVA (opcional)",en:"VAT no. (optional)",it:"P. IVA (facoltativo)"},
+      notes:{fr:"Remarques (facultatif)",es:"Observaciones (opcional)",en:"Notes (optional)",it:"Note (facoltativo)"},
+      send:{fr:"Envoyer la commande",es:"Enviar pedido",en:"Send order",it:"Invia ordine"},
+      back:{fr:"← Continuer mes achats",es:"← Seguir eligiendo",en:"← Keep browsing",it:"← Continua a scegliere"},
+      required:{fr:"Merci de remplir les champs obligatoires.",es:"Completa los campos obligatorios.",en:"Please fill in the required fields.",it:"Compila i campi obbligatori."},
+      noUnits:{fr:"Ajoutez au moins un modèle.",es:"Añade al menos un modelo.",en:"Add at least one model.",it:"Aggiungi almeno un modello."},
+      okTitle:{fr:"Commande reçue, merci !",es:"¡Pedido recibido, gracias!",en:"Order received, thank you!",it:"Ordine ricevuto, grazie!"},
+      okText:{fr:"Nous vous envoyons la facture proforma sous 24-48 h. L'expédition part dès réception du paiement.",es:"Te enviamos la factura proforma en 24-48 h. El envío sale en cuanto recibimos el pago.",en:"We'll send the proforma invoice within 24-48 h. Shipping leaves as soon as payment is received.",it:"Ti inviamo la fattura proforma entro 24-48 h. La spedizione parte appena riceviamo il pagamento."},
+      err:{fr:"Une erreur est survenue. Écrivez-nous à minue.opticians@gmail.com",es:"Ha habido un error. Escríbenos a minue.opticians@gmail.com",en:"Something went wrong. Write to minue.opticians@gmail.com",it:"Si è verificato un errore. Scrivici a minue.opticians@gmail.com"},
+      sending:{fr:"Envoi…",es:"Enviando…",en:"Sending…",it:"Invio…"},
+      total:{fr:"Total HT",es:"Total sin IVA",en:"Total ex. VAT",it:"Totale IVA escl."},
+      freeShip:{fr:"Livraison offerte",es:"Envío gratis",en:"Free shipping",it:"Spedizione gratuita"},
+      toFree:{fr:"unités de plus pour la livraison offerte",es:"unidades más para envío gratis",en:"more units for free shipping",it:"unità in più per la spedizione gratuita"},
+    };
+    const L = k => (LT[k] && (LT[k][lang] || LT[k].es)) || k;
+    const RX = [["burdeos",/burdeos|bordeaux|burgundy|wine|vino|cherry|cereza|rouge|ruby|grenat|merlot/],["caramelo",/caramel|toffee|honey|miel|amber|ambar|ámbar|cognac|whisky/],["marron",/brown|marr[oó]n|choco|cocoa|coffee|mocha|kaffa|\btea\b|chestnut|bronze|sepia|camel|tabac/],["carey",/carey|havana|habana|tortoise|leopard|tiger|demi/],["negro",/black|negro|noir|nuit|ebony|carbon|onyx|midnight|dark/]];
+    const famOf = p => { const c = (p.color||"").toLowerCase(); const f = RX.find(([,rx]) => rx.test(c)); return f ? f[0] : null; };
+    const pool = products.filter(p => p.active !== false && (p.stock||0) > 0 && p.imageUrl);
+    const groups = {top: pool.filter(p => (p.tags||[]).includes("inv26"))};
+    RX.forEach(([k]) => { groups[k] = pool.filter(p => famOf(p) === k); });
+    const tabs = ["top","burdeos","caramelo","marron","carey","negro"].filter(k => groups[k].length);
+    const tab = tabs.includes(lpTab) ? lpTab : tabs[0];
+    const qty = id => lpCart[id] || 0;
+    const addQ = (id, d) => setLpCart(c => { const x = {...c}; const n = (x[id]||0) + d; if (n > 0) x[id] = n; else delete x[id]; return x; });
+    const units = Object.values(lpCart).reduce((s,n) => s+n, 0);
+    const tier = getTier(Math.max(1, units));
+    const unitPrice = p => p.fixedPrice > 0 ? p.fixedPrice : tier.price;
+    const lines = Object.entries(lpCart).map(([id,n]) => { const p = products.find(x => String(x.id) === String(id)); return p ? {p, n, price:unitPrice(p)} : null; }).filter(Boolean);
+    const total = lines.reduce((s,l) => s + l.n*l.price, 0);
+    const ref = (() => { try { return new URLSearchParams(window.location.search).get("ref")||""; } catch(e) { return ""; } })();
+    const refDist = ref ? users.find(u => u.role === "distributor" && ((u.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") === ref.toLowerCase() || (u.referralCode||"") === ref)) : null;
+    const field = {width:"100%",padding:"12px 14px",border:"1px solid "+C.ln,borderRadius:10,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box"};
+    const submit = async () => {
+      const f = lpForm;
+      if (f.website) return;
+      if (!units) { setLpErr(L("noUnits")); return; }
+      if (!f.shop || !f.contact || !f.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email) || !f.phone || !f.address || !f.zip || !f.city || !f.country) { setLpErr(L("required")); return; }
+      setLpErr(""); setLpSending(true);
+      try {
+        const dist = refDist ? refDist.co : "Direct";
+        const orderNumber = await getNextOrderNumber();
+        const {data:cl} = await supabase.from("clients").insert({name:f.shop, contact:f.contact, city:f.city, country:f.country, channel:dist, status:"prospect", company_email:f.email, phone:f.phone, address:f.address, postal_code:f.zip, tax_id:f.vat||null, notes:"Alta desde landing Invierno 26/27"}).select().single();
+        const note = ["Pedido web · Landing Invierno 26/27", f.contact+" · "+f.phone+" · "+f.email, f.address+", "+f.zip+" "+f.city+" ("+f.country+")", f.vat ? "IVA: "+f.vat : "", f.notes].filter(Boolean).join("\n");
+        const {data:ord, error} = await supabase.from("orders").insert({order_number:orderNumber, client_id:cl?.id||null, client_name:f.shop, distributor:dist, status:"pending", payment:"pending", total:Math.round(total*100)/100, items_count:units, commission: refDist ? Math.round(total*(refDist.commRate||15))/100 : 0, notes_client:note, notes_internal:"[landing:invierno]"}).select().single();
+        if (error || !ord) throw error || new Error("order");
+        await supabase.from("order_lines").insert(lines.map(l => ({order_id:ord.id, model:l.p.model, color:l.p.color, sku:l.p.sku, quantity:l.n, unit_price:l.price, collection:l.p.col||""})));
+        setLpDone(orderNumber); setLpCart({});
+      } catch(e) { setLpErr(L("err")); }
+      setLpSending(false);
+    };
+    const hero = <div style={{position:"relative",overflow:"hidden",background:"linear-gradient(135deg,"+CL.dk+" 0%,#1f3f39 60%,#24473f 100%)",color:"#f8efe6",padding:"min(48px,9vw) min(28px,5vw) min(36px,7vw)"}}>
+      <div style={{position:"absolute",top:-80,right:-60,width:280,height:280,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,160,48,0.22) 0%,transparent 70%)"}} />
+      <div style={{position:"relative",maxWidth:1100,margin:"0 auto"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:28}}>
+          <div style={{fontSize:22,letterSpacing:5,fontFamily:DP,fontWeight:600}}>MINUË</div>
+          <div style={{display:"flex",gap:4}}>{["fr","es","en","it"].map(l => <button key={l} onClick={() => _setLang(l)} style={{width:30,height:30,borderRadius:15,border:"none",cursor:"pointer",background:lang===l?"rgba(248,239,230,0.18)":"transparent",color:"#f8efe6",fontFamily:BD,fontSize:11,fontWeight:700}}>{l.toUpperCase()}</button>)}</div>
+        </div>
+        <div style={{fontSize:12,fontFamily:BD,letterSpacing:2,textTransform:"uppercase",color:"#e0b25a",marginBottom:8}}>✦ {L("kicker")}</div>
+        <div style={{fontSize:"min(42px, 9vw)",fontFamily:DP,fontWeight:500,lineHeight:1.05,marginBottom:12}}>{L("title")}</div>
+        <div style={{fontSize:15,fontFamily:BD,lineHeight:1.6,color:"rgba(248,239,230,0.8)",maxWidth:620}}>{L("sub")}</div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:22}}>
+          {TIERS.map(x => <div key={x.label} style={{padding:"8px 12px",borderRadius:10,background:x===tier&&units>0?"#e0b25a":"rgba(248,239,230,0.09)",color:x===tier&&units>0?CL.dk:"#f8efe6",border:"1px solid rgba(248,239,230,0.18)"}}><div style={{fontSize:11,fontFamily:BD,opacity:.8}}>{x.label} {L("units")}</div><div style={{fontSize:16,fontFamily:DP,fontWeight:600}}>{fmt(x.price)} €</div></div>)}
+        </div>
+        <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginTop:10}}>{L("tiers")}</div>
+      </div>
+    </div>;
+    if (lpDone) return <div style={{minHeight:"100vh",background:C.bg}}>{hero}
+      <div style={{maxWidth:560,margin:"40px auto",padding:"0 20px",textAlign:"center"}}>
+        <div style={{width:64,height:64,borderRadius:32,background:ACC.green,color:"#fff",fontSize:30,display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px"}}>✓</div>
+        <div style={{fontSize:26,fontFamily:DP,color:C.dk,marginBottom:8}}>{L("okTitle")}</div>
+        <div style={{fontSize:14,fontFamily:BD,color:C.gr,lineHeight:1.6}}>{lpDone} · {L("okText")}</div>
+      </div></div>;
+    return <div style={{minHeight:"100vh",background:C.bg,paddingBottom:110}}>
+      {hero}
+      {!lpCheckout ? <div style={{maxWidth:1100,margin:"0 auto",padding:"20px min(20px,4vw)"}}>
+        <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:6,marginBottom:16}}>
+          {tabs.map(k => <button key={k} className="mn-press" onClick={() => setLpTab(k)} style={{flexShrink:0,padding:"10px 16px",borderRadius:22,border:"1px solid "+(tab===k?CL.dk:C.ln),background:tab===k?CL.dk:C.wh,color:tab===k?"#f8efe6":C.dk,fontFamily:BD,fontSize:13,fontWeight:600,cursor:"pointer"}}>{k==="top"?"★ ":""}{L(k)} <span style={{opacity:.6,fontWeight:400}}>{groups[k].length}</span></button>)}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(165px,1fr))",gap:12}}>
+          {groups[tab].map(p => { const n = qty(p.id); return (
+            <div key={p.id} className="mn-lift" style={{background:C.wh,border:"1px solid "+(n?ACC.green:C.ln),borderRadius:14,overflow:"hidden",display:"flex",flexDirection:"column"}}>
+              <div style={{aspectRatio:"1 / 1",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center"}}><img loading="lazy" src={p.imageUrl} alt={p.model+" "+p.color} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /></div>
+              <div style={{padding:"10px 12px 12px",display:"flex",flexDirection:"column",gap:6,flex:1}}>
+                <div style={{fontSize:15,fontFamily:DP,fontWeight:600,color:C.dk}}>{p.model}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.gr}}>{p.color}</div>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:CL.gn}}>{fmt(unitPrice(p))} € <span style={{fontSize:11,fontWeight:400,color:C.gr}}>{L("perUnit")}</span></div>
+                <div style={{marginTop:"auto",display:"flex",alignItems:"center",justifyContent:"space-between",gap:6,background:C.bg,borderRadius:10,padding:4}}>
+                  <button className="mn-press" onClick={() => addQ(p.id, -1)} disabled={!n} style={{width:34,height:34,borderRadius:8,border:"none",background:n?C.wh:"transparent",color:C.dk,fontSize:18,cursor:n?"pointer":"default"}}>−</button>
+                  <span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{n}</span>
+                  <button className="mn-press" onClick={() => addQ(p.id, 1)} style={{width:34,height:34,borderRadius:8,border:"none",background:CL.dk,color:"#fff",fontSize:18,cursor:"pointer"}}>+</button>
+                </div>
+              </div>
+            </div>); })}
+        </div>
+      </div> :
+      <div style={{maxWidth:760,margin:"0 auto",padding:"20px min(20px,4vw)"}}>
+        <button onClick={() => setLpCheckout(false)} style={{background:"none",border:"none",color:C.gr,fontFamily:BD,fontSize:13,cursor:"pointer",padding:0,marginBottom:14}}>{L("back")}</button>
+        <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"16px 18px",marginBottom:16}}>
+          <div style={{fontSize:18,fontFamily:DP,color:C.dk,marginBottom:10}}>{L("yourOrder")}</div>
+          {lines.map(l => <div key={l.p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderTop:"1px solid "+C.bg2}}>
+            <img src={l.p.imageUrl} alt="" style={{width:44,height:44,objectFit:"contain",background:C.bg,borderRadius:8}} />
+            <div style={{flex:1,fontSize:13,fontFamily:BD,color:C.dk}}><b>{l.p.model}</b> {l.p.color}<div style={{fontSize:12,color:C.gr}}>{l.n} × {fmt(l.price)} €</div></div>
+            <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{fmt(l.n*l.price)} €</div>
+          </div>)}
+          <div style={{display:"flex",justifyContent:"space-between",paddingTop:10,borderTop:"1px solid "+C.ln,fontSize:16,fontFamily:BD,fontWeight:700,color:C.dk}}><span>{L("total")} · {units} {L("units")}</span><span>{fmt(total)} €</span></div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10}}>
+          {[["shop",1],["contact",1],["email",1],["phone",1],["address",1],["zip",1],["city",1],["country",1],["vat",0]].map(([k,req]) => <div key={k}>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:4}}>{L(k)}{req?" *":""}</div>
+            <input value={lpForm[k]||""} onChange={e => setLpForm(x => ({...x,[k]:e.target.value}))} type={k==="email"?"email":k==="phone"?"tel":"text"} style={field} />
+          </div>)}
+        </div>
+        <div style={{marginTop:10}}><div style={{fontSize:12,fontFamily:BD,color:C.gr,marginBottom:4}}>{L("notes")}</div><textarea rows={3} value={lpForm.notes||""} onChange={e => setLpForm(x => ({...x,notes:e.target.value}))} style={{...field,resize:"vertical"}} /></div>
+        <input tabIndex={-1} autoComplete="off" value={lpForm.website||""} onChange={e => setLpForm(x => ({...x,website:e.target.value}))} style={{position:"absolute",left:-9999,width:1,height:1,opacity:0}} aria-hidden="true" />
+        {lpErr && <div style={{marginTop:12,padding:"10px 14px",background:C.rd+"12",border:"1px solid "+C.rd+"40",borderRadius:10,color:C.rd,fontSize:13,fontFamily:BD}}>{lpErr}</div>}
+        <button className="mn-press" onClick={submit} disabled={lpSending} style={{marginTop:16,width:"100%",padding:"15px",borderRadius:12,border:"none",background:ACC.green,color:"#fff",fontSize:15,fontFamily:BD,fontWeight:700,cursor:"pointer",opacity:lpSending?.6:1}}>{lpSending ? L("sending") : L("send")+" · "+fmt(total)+" €"}</button>
+      </div>}
+      {!lpCheckout && <div style={{position:"fixed",left:0,right:0,bottom:0,zIndex:50,background:CL.dk,color:"#f8efe6",boxShadow:"0 -6px 24px rgba(24,51,47,0.25)",padding:"12px min(20px,4vw)",paddingBottom:"calc(12px + env(safe-area-inset-bottom, 0px))"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"center",gap:12}}>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontSize:16,fontFamily:BD,fontWeight:700}}>{units} {L("units")} · {fmt(total)} €</div>
+            <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.7)"}}>{units >= 20 ? "✓ "+L("freeShip") : (20-units)+" "+L("toFree")}</div>
+          </div>
+          <button className="mn-press" disabled={!units} onClick={() => { setLpCheckout(true); window.scrollTo(0,0); }} style={{padding:"13px 20px",borderRadius:12,border:"none",background:units?"#e0b25a":"rgba(248,239,230,0.15)",color:units?CL.dk:"rgba(248,239,230,0.5)",fontSize:14,fontFamily:BD,fontWeight:700,cursor:units?"pointer":"default",whiteSpace:"nowrap"}}>{L("order")} →</button>
+        </div>
+      </div>}
+    </div>;
+  }
+
   if (!user) {
     const inputStyle = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid #f8efe625",background:"transparent",fontFamily:BD,fontSize:13,color:"#f8efe6",boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
     const inputStyleLight = {width:"100%",padding:"14px 0",border:"none",borderBottom:"1px solid "+CL.dk+"18",background:"transparent",fontFamily:BD,fontSize:13,color:CL.dk,boxSizing:"border-box",outline:"none",transition:"border-color 0.3s",letterSpacing:0.3};
