@@ -627,6 +627,7 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  fechaPreferenteEnvio:{fr:"Date d'envoi souhaitée",es:"Fecha preferente de envío",en:"Preferred shipping date",it:"Data di spedizione preferita"},
   pvpRecomendado:{fr:"PVC conseillé",es:"PVP recomendado",en:"Suggested retail",it:"Prezzo consigliato"},
   margenTienda:{fr:"Votre marge",es:"Tu margen",en:"Your margin",it:"Il tuo margine"},
   calComercial:{fr:"Calendrier commercial",es:"Calendario comercial",en:"Sales calendar",it:"Calendario commerciale"},
@@ -2244,7 +2245,7 @@ export default function App() {
   const navItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],["c-selection","selectionPrivee"],["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],["d-selection","selectionPrivee"],["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],["d-msg","mensajes"],["d-promo","promos"],["d-news","nouveautes"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["d-selection","selectionPrivee"]] : []),["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],["d-msg","mensajes"],["d-promo","promos"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
     ? [["e-dash","dashboard"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
     : [["a-stats","stats"],["a-decisiones","decisiones"],["a-analytics","analytics"],["a-mercado","mercado"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
@@ -2430,11 +2431,11 @@ export default function App() {
           return (
             <button key={v} onClick={() => { setView(v); setMoreOpen(false); setNavSearch(""); }} style={{background:on?"rgba(248,239,230,0.08)":"transparent",border:"none",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,padding:"12px 4px",borderRadius:8}}>
               <div style={{position:"relative"}}>
-                <NavIcon d={iconPath} size={20} color={on?"#f8efe6":"rgba(248,239,230,0.4)"} />
+                <NavIcon d={iconPath} size={20} color={on?"#ffffff":"rgba(248,239,230,0.82)"} />
                 {isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{cartCount}</span>}
                 {wb && !isCart && <span style={{position:"absolute",top:-4,right:-8,background:"#e74c3c",color:"#fff",fontSize:10,fontWeight:700,padding:"1px 4px",borderRadius:6,fontFamily:BD}}>{wb}</span>}
               </div>
-              <span style={{fontSize:11,fontFamily:BD,fontWeight:on?600:400,color:on?"#f8efe6":"rgba(248,239,230,0.4)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
+              <span style={{fontSize:11,fontFamily:BD,fontWeight:on?600:400,color:on?"#ffffff":"rgba(248,239,230,0.82)",textAlign:"center",lineHeight:1.2}}>{t(k)}</span>
             </button>
           );
         };
@@ -3546,7 +3547,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <textarea value={ed.shippingOverride||""} onChange={e => setEd(p => ({...p, shippingOverride: e.target.value}))} rows={2} placeholder="Sobrescribir dirección (opcional)..." style={{width:"100%",padding:7,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.wh,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
               </div>
               <div style={{background:C.bg,border:"1px solid "+C.ln,borderRadius:6,padding:12}}>
-                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:6}}>📅 Fecha preferente envío</div>
+                <div style={{fontSize:11,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:6}}>📅 {t("fechaPreferenteEnvio")}</div>
                 <input type="date" value={ed.preferredDate||""} onChange={e => setEd(p => ({...p, preferredDate: e.target.value}))} min={new Date(Date.now()+3*86400000).toISOString().split("T")[0]} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}} />
                 <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:4}}>Mín. 3-5 días laborables</div>
               </div>
@@ -7276,7 +7277,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>;
         })()}
         <div style={{padding:"20px min(24px, 4vw)"}}>
-          {/* ACCESOS RAPIDOS · COMPARTIR · CONDICIONES */}
+          {/* ACCESOS RAPIDOS */}
           {(() => {
             const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
             const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
@@ -7311,50 +7312,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 ))}
               </div>
 
-              <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px",marginBottom:18}}>
-                {head(ICO.share,ACC.terra,t("compartir"),t("compartirDesc"))}
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:10}}>
-                  {shares.map(([d,title,desc,url,msg,c]) => (
-                    <div key={title} className="mn-lift" style={{border:"1px solid "+c+"35",background:c+"08",borderRadius:12,padding:"14px"}}>
-                      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-                        <IconChip d={d} c={c} size={32} />
-                        <div style={{minWidth:0}}>
-                          <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>
-                          <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.4}}>{desc}</div>
-                        </div>
-                      </div>
-                      <div onClick={() => copy(url)} title={url} style={{fontSize:12,fontFamily:"monospace",color:C.dk,background:C.wh,border:"1px dashed "+c+"60",borderRadius:7,padding:"8px 10px",marginBottom:10,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"copy"}}>{url}</div>
-                      <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                        <button className="mn-press" onClick={() => wa(msg,url)} style={btn("#25D366","#fff")}>{svg(ICO.chat)}WhatsApp</button>
-                        <button className="mn-press" onClick={() => mail(msg,url)} style={btn(C.wh,C.dk,C.ln)}>{svg(ICO.mail)}Email</button>
-                        <button className="mn-press" onClick={() => copy(url)} style={btn(C.wh,c,c+"60")}>{svg(ICO.copy)}{t("copiar")}</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mn-fade" style={{background:"linear-gradient(135deg,"+CL.dk+","+CL.dk+"ee)",borderRadius:14,padding:"18px",marginBottom:18,color:CL.bg}}>
-                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
-                  <IconChip d={ICO.shield} c={"#d4a030"} />
-                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700}}>{t("misCondiciones")}</div>
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
-                  {conds.map(([d,big,label,desc,c],i) => (
-                    <div key={i} className="mn-lift" style={{background:"rgba(248,239,230,0.07)",border:"1px solid rgba(248,239,230,0.12)",borderRadius:10,padding:"12px"}}>
-                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c==ACC.green||c==ACC.sea?"#8fc9a8":"#e0b25a"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
-                        {label && <span style={{fontSize:11,fontFamily:BD,letterSpacing:.8,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{label}</span>}
-                      </div>
-                      <div style={{fontSize:16,fontFamily:DP,fontWeight:600,lineHeight:1.2}}>{big}</div>
-                      <div style={{fontSize:11,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,lineHeight:1.4}}>{desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </>;
           })()}
-
           {/* GUIA: pasos visibles hasta que el distribuidor la oculte */}
           {(() => {
             const hidden = (() => { try { return localStorage.getItem("minue_guide_hidden_"+user.email) === "1"; } catch(e) { return false; } })();
@@ -7391,6 +7350,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>;
           })()}
 
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
+            {renderKPI(t("ventesTot"), fmt(distSales)+" €", null, () => setView("d-ord"), ICO.chart, ACC.sea)}
+            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn, null, ICO.percent, ACC.green)}
+            {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn, null, ICO.coins, ACC.sage)}
+            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn, null, ICO.cal, ACC.gold)}
+          </div>
+
           {/* ORDER NOTIFICATIONS */}
           {distOrders.length > 0 && <div style={{marginBottom:20}}>
             <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:10}}>{t("notifTitre")}</div>
@@ -7406,12 +7372,6 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
           </div>}
 
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
-            {renderKPI(t("ventesTot"), fmt(distSales)+" €", null, () => setView("d-ord"), ICO.chart, ACC.sea)}
-            {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn, null, ICO.percent, ACC.green)}
-            {renderKPI(t("percue"), fmt(distPaid)+" €", C.gn, null, ICO.coins, ACC.sage)}
-            {renderKPI(t("aPercevoir"), fmt(distInvoiced)+" €", distInvoiced > 0 ? C.yl : C.gn, null, ICO.cal, ACC.gold)}
-          </div>
 
           {/* GRAFICO DE VENTAS · SEGUIMIENTO COMERCIAL · REPOSICIONES */}
           {(() => {
@@ -7429,22 +7389,6 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             const mini = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,padding:"6px 10px",background:bg,color:fg,border:"1px solid "+(bd||bg),borderRadius:7,fontSize:11,fontFamily:BD,fontWeight:600,cursor:"pointer",textDecoration:"none"});
             const card = {background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px",marginBottom:18};
             return <>
-              <div className="mn-fade" style={card}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:16,flexWrap:"wrap"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:12}}><IconChip d={ICO.chart} c={ACC.sea} /><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("graficoVentas")}</div></div>
-                  <div style={{fontSize:18,fontFamily:DP,fontWeight:600,color:ACC.sea}}>{fmt(sum6)} €</div>
-                </div>
-                <div style={{display:"flex",alignItems:"flex-end",gap:"min(14px,2.5vw)",height:150,padding:"0 4px"}}>
-                  {months.map((b,i) => { const h = b.total>0 ? Math.max(8, Math.round(b.total/max*120)) : 4; const last = i===5; return (
-                    <div key={i} title={b.n+" "+t("pedidosLabel")+" · "+fmt(b.total)+" €"} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6,minWidth:0}}>
-                      <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:b.total>0?C.dk:C.gr2,whiteSpace:"nowrap"}}>{b.total>0 ? (b.total>=1000 ? (b.total/1000).toFixed(1).replace(".",",")+"k" : Math.round(b.total)) : ""}</div>
-                      <div className="mn-lift" style={{width:"100%",maxWidth:44,height:h,borderRadius:"8px 8px 3px 3px",background:b.total>0?(last?"linear-gradient(180deg,"+ACC.terra+","+ACC.gold+")":"linear-gradient(180deg,"+ACC.sea+"cc,"+ACC.green+")"):C.bg2}} />
-                      <div style={{fontSize:11,fontFamily:BD,color:last?C.dk:C.gr,fontWeight:last?700:400,textTransform:"capitalize"}}>{b.label}</div>
-                    </div>); })}
-                </div>
-                {sum6 === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr,textAlign:"center",marginTop:10}}>{t("graficoVacio")}</div>}
-              </div>
-
               <div className="mn-fade" style={card}>
                 <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:14,flexWrap:"wrap"}}>
                   <div style={{display:"flex",alignItems:"center",gap:12}}>
@@ -7481,6 +7425,22 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>}
               </div>
 
+              <div className="mn-fade" style={card}>
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:12}}><IconChip d={ICO.chart} c={ACC.sea} /><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("graficoVentas")}</div></div>
+                  <div style={{fontSize:18,fontFamily:DP,fontWeight:600,color:ACC.sea}}>{fmt(sum6)} €</div>
+                </div>
+                <div style={{display:"flex",alignItems:"flex-end",gap:"min(14px,2.5vw)",height:150,padding:"0 4px"}}>
+                  {months.map((b,i) => { const h = b.total>0 ? Math.max(8, Math.round(b.total/max*120)) : 4; const last = i===5; return (
+                    <div key={i} title={b.n+" "+t("pedidosLabel")+" · "+fmt(b.total)+" €"} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:6,minWidth:0}}>
+                      <div style={{fontSize:11,fontFamily:BD,fontWeight:600,color:b.total>0?C.dk:C.gr2,whiteSpace:"nowrap"}}>{b.total>0 ? (b.total>=1000 ? (b.total/1000).toFixed(1).replace(".",",")+"k" : Math.round(b.total)) : ""}</div>
+                      <div className="mn-lift" style={{width:"100%",maxWidth:44,height:h,borderRadius:"8px 8px 3px 3px",background:b.total>0?(last?"linear-gradient(180deg,"+ACC.terra+","+ACC.gold+")":"linear-gradient(180deg,"+ACC.sea+"cc,"+ACC.green+")"):C.bg2}} />
+                      <div style={{fontSize:11,fontFamily:BD,color:last?C.dk:C.gr,fontWeight:last?700:400,textTransform:"capitalize"}}>{b.label}</div>
+                    </div>); })}
+                </div>
+                {sum6 === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr,textAlign:"center",marginTop:10}}>{t("graficoVacio")}</div>}
+              </div>
+
               <div className="mn-fade" style={{...card,background:"linear-gradient(150deg,"+ACC.sage+"12,"+C.wh+" 60%)",border:"1px solid "+ACC.sage+"35"}}>
                 <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
                   <IconChip d={ICO.refresh} c={ACC.sage} />
@@ -7501,6 +7461,58 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {out.length > 8 && <span style={{alignSelf:"center",fontSize:11,fontFamily:BD,color:C.gr}}>+{out.length-8}</span>}
                 </div>}
               </div>
+            </>;
+          })()}
+
+          {/* COMPARTIR */}
+          {(() => {
+            const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
+            const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
+            const tradeUrl = "https://trade.minueopticians.com/";
+            const zoneLine = (user.notes||"").split("\n").find(l => /^zona\s*:/i.test(l.trim()));
+            const zone = zoneLine ? zoneLine.split(":").slice(1).join(":").trim() : (ZONES[(user.country||"").toUpperCase()] || user.country || "—");
+            const copy = url => { try { navigator.clipboard.writeText(url); toast(t("enlaceCopiado")); } catch(e) {} };
+            const wa = (msg, url) => window.open("https://wa.me/?text=" + encodeURIComponent(msg + " " + url), "_blank", "noopener");
+            const mail = (msg, url) => { window.location.href = "mailto:?subject=" + encodeURIComponent("Minuë") + "&body=" + encodeURIComponent(msg + "\n\n" + url); };
+            const btn = (bg, fg, bd) => ({display:"inline-flex",alignItems:"center",gap:6,padding:"8px 12px",background:bg,color:fg,border:"1px solid "+(bd||bg),borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"});
+            const svg = d => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+            const quick = [["d-cat",ICO.grid,t("qaCatalogo"),ACC.green],["d-cart",ICO.cart,t("qaNuevoPedido"),ACC.terra],["d-cl",ICO.users,t("qaClientes"),ACC.sea],["d-ord",ICO.box,t("qaPedidos"),ACC.wine],["a-mercado",ICO.chart,t("mercado"),ACC.gold]];
+            const shares = [[ICO.link,t("accesoPlataforma"),t("accesoPlataformaDesc"),refUrl,t("msgPlataforma"),ACC.green],[ICO.book,t("catalogoTrade"),t("catalogoTradeDesc"),tradeUrl,t("msgCatalogo"),ACC.terra]];
+            const conds = [
+              [ICO.percent,(user.commRate||15)+"%",t("condComision"),t("condComisionDesc"),ACC.green],
+              [ICO.pin,zone,t("condZona"),t("condZonaDesc"),ACC.sea],
+              [ICO.truck,t("condEntrega"),"",t("condEntregaDesc"),ACC.terra],
+              [ICO.refresh,t("condRepo"),"",t("condRepoDesc"),ACC.sage],
+              [ICO.cal,t("condCalendario"),"",t("condCalendarioDesc"),ACC.gold],
+              [ICO.spark,t("condRotacion"),"",t("condRotacionDesc"),ACC.wine],
+              [ICO.shield,t("condPrecios"),"",t("condPreciosDesc"),ACC.green],
+              [ICO.users,t("condApoyo"),"",t("condApoyoDesc"),ACC.sea],
+            ];
+            const head = (d,c,title,sub) => <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}><IconChip d={d} c={c} /><div><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>{sub && <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{sub}</div>}</div></div>;
+            return <>
+              <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,padding:"18px",marginBottom:18}}>
+                {head(ICO.share,ACC.terra,t("compartir"),t("compartirDesc"))}
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))",gap:10}}>
+                  {shares.map(([d,title,desc,url,msg,c]) => (
+                    <div key={title} className="mn-lift" style={{border:"1px solid "+c+"35",background:c+"08",borderRadius:12,padding:"14px"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                        <IconChip d={d} c={c} size={32} />
+                        <div style={{minWidth:0}}>
+                          <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>
+                          <div style={{fontSize:11,fontFamily:BD,color:C.gr,lineHeight:1.4}}>{desc}</div>
+                        </div>
+                      </div>
+                      <div onClick={() => copy(url)} title={url} style={{fontSize:12,fontFamily:"monospace",color:C.dk,background:C.wh,border:"1px dashed "+c+"60",borderRadius:7,padding:"8px 10px",marginBottom:10,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",cursor:"copy"}}>{url}</div>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                        <button className="mn-press" onClick={() => wa(msg,url)} style={btn("#25D366","#fff")}>{svg(ICO.chat)}WhatsApp</button>
+                        <button className="mn-press" onClick={() => mail(msg,url)} style={btn(C.wh,C.dk,C.ln)}>{svg(ICO.mail)}Email</button>
+                        <button className="mn-press" onClick={() => copy(url)} style={btn(C.wh,c,c+"60")}>{svg(ICO.copy)}{t("copiar")}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
             </>;
           })()}
 
@@ -7618,6 +7630,58 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
           </div>
         </div>
+          {/* MIS CONDICIONES (plegadas) */}
+          {(() => {
+            const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
+            const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
+            const tradeUrl = "https://trade.minueopticians.com/";
+            const zoneLine = (user.notes||"").split("\n").find(l => /^zona\s*:/i.test(l.trim()));
+            const zone = zoneLine ? zoneLine.split(":").slice(1).join(":").trim() : (ZONES[(user.country||"").toUpperCase()] || user.country || "—");
+            const copy = url => { try { navigator.clipboard.writeText(url); toast(t("enlaceCopiado")); } catch(e) {} };
+            const wa = (msg, url) => window.open("https://wa.me/?text=" + encodeURIComponent(msg + " " + url), "_blank", "noopener");
+            const mail = (msg, url) => { window.location.href = "mailto:?subject=" + encodeURIComponent("Minuë") + "&body=" + encodeURIComponent(msg + "\n\n" + url); };
+            const btn = (bg, fg, bd) => ({display:"inline-flex",alignItems:"center",gap:6,padding:"8px 12px",background:bg,color:fg,border:"1px solid "+(bd||bg),borderRadius:8,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap"});
+            const svg = d => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
+            const quick = [["d-cat",ICO.grid,t("qaCatalogo"),ACC.green],["d-cart",ICO.cart,t("qaNuevoPedido"),ACC.terra],["d-cl",ICO.users,t("qaClientes"),ACC.sea],["d-ord",ICO.box,t("qaPedidos"),ACC.wine],["a-mercado",ICO.chart,t("mercado"),ACC.gold]];
+            const shares = [[ICO.link,t("accesoPlataforma"),t("accesoPlataformaDesc"),refUrl,t("msgPlataforma"),ACC.green],[ICO.book,t("catalogoTrade"),t("catalogoTradeDesc"),tradeUrl,t("msgCatalogo"),ACC.terra]];
+            const conds = [
+              [ICO.percent,(user.commRate||15)+"%",t("condComision"),t("condComisionDesc"),ACC.green],
+              [ICO.pin,zone,t("condZona"),t("condZonaDesc"),ACC.sea],
+              [ICO.truck,t("condEntrega"),"",t("condEntregaDesc"),ACC.terra],
+              [ICO.refresh,t("condRepo"),"",t("condRepoDesc"),ACC.sage],
+              [ICO.cal,t("condCalendario"),"",t("condCalendarioDesc"),ACC.gold],
+              [ICO.spark,t("condRotacion"),"",t("condRotacionDesc"),ACC.wine],
+              [ICO.shield,t("condPrecios"),"",t("condPreciosDesc"),ACC.green],
+              [ICO.users,t("condApoyo"),"",t("condApoyoDesc"),ACC.sea],
+            ];
+            const head = (d,c,title,sub) => <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:14}}><IconChip d={d} c={c} /><div><div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{title}</div>{sub && <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:2}}>{sub}</div>}</div></div>;
+            const condOpen = (() => { try { return localStorage.getItem("minue_cond_open_"+user.email) === "1"; } catch(e) { return false; } })();
+            const toggleCond = () => { try { localStorage.setItem("minue_cond_open_"+user.email, condOpen ? "0" : "1"); } catch(e) {} setGuideOpen(g => !g); };
+            return <>
+              <div className="mn-fade" style={{background:"linear-gradient(135deg,"+CL.dk+","+CL.dk+"ee)",borderRadius:14,padding:"18px",marginBottom:18,color:CL.bg}}>
+                <button onClick={toggleCond} style={{width:"100%",display:"flex",alignItems:"center",gap:12,marginBottom:condOpen?14:0,background:"transparent",border:"none",color:CL.bg,cursor:"pointer",textAlign:"left",padding:0}}>
+                  <IconChip d={ICO.shield} c={"#d4a030"} />
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:15,fontFamily:BD,fontWeight:700}}>{t("misCondiciones")}</div>
+                    {!condOpen && <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.7)",marginTop:2}}>{(user.commRate||15)}% · {zone} · {t("condEntrega")} · {t("condRepo")}</div>}
+                  </div>
+                  <span style={{fontSize:14,transform:condOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
+                </button>
+                {condOpen && <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:8}}>
+                  {conds.map(([d,big,label,desc,c],i) => (
+                    <div key={i} className="mn-lift" style={{background:"rgba(248,239,230,0.07)",border:"1px solid rgba(248,239,230,0.12)",borderRadius:10,padding:"12px"}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={c==ACC.green||c==ACC.sea?"#8fc9a8":"#e0b25a"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>
+                        {label && <span style={{fontSize:11,fontFamily:BD,letterSpacing:.8,textTransform:"uppercase",color:"rgba(248,239,230,0.6)"}}>{label}</span>}
+                      </div>
+                      <div style={{fontSize:16,fontFamily:DP,fontWeight:600,lineHeight:1.2}}>{big}</div>
+                      <div style={{fontSize:11,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,lineHeight:1.4}}>{desc}</div>
+                    </div>
+                  ))}
+                </div>}
+              </div>
+            </>;
+          })()}
       </>}
 
       {view === "d-cat" && <Sec title={t("collSS26")} sub={t("collSub")} right={<input placeholder={t("rechercher")} value={filter} onChange={e => setFilter(e.target.value)} style={{padding:"8px 14px",border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,width:"min(200px, 40vw)"}} />}>
@@ -7714,7 +7778,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 {/* PREFERRED DATE */}
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
                   <div>
-                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>📅 Fecha preferente envío</div>
+                    <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>📅 {t("fechaPreferenteEnvio")}</div>
                     <input type="date" value={preferredDate||""} onChange={e => setPreferredDate(e.target.value)} min={new Date(Date.now()+3*86400000).toISOString().split("T")[0]} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
                     <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:3}}>Mín. 3-5 días laborables</div>
                   </div>
