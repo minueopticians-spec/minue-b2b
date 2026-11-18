@@ -627,6 +627,45 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  desdeLabel:{fr:"À partir de",es:"Desde",en:"From",it:"Da"},
+  enPedidosDe:{fr:"pour les commandes de",es:"en pedidos de",en:"on orders of",it:"per ordini da"},
+  unidadesLabel:{fr:"unités",es:"unidades",en:"units",it:"unità"},
+  tuPrecioActual:{fr:"Votre prix actuel :",es:"Tu precio actual:",en:"Your current price:",it:"Il tuo prezzo attuale:"},
+  siguienteNivel:{fr:"Niveau suivant :",es:"Siguiente nivel:",en:"Next tier:",it:"Livello successivo:"},
+  mejorPrecioAlcanzado:{fr:"Meilleur prix atteint !",es:"¡Mejor precio alcanzado!",en:"Best price reached!",it:"Miglior prezzo raggiunto!"},
+  desbloqueaPrecio:{fr:"Débloquez le meilleur prix ✦",es:"Desbloquea el mejor precio ✦",en:"Unlock the best price ✦",it:"Sblocca il miglior prezzo ✦"},
+  anade:{fr:"Ajoutez",es:"Añade",en:"Add",it:"Aggiungi"},
+  unidadesMasPara:{fr:"unités de plus pour obtenir",es:"unidades más para conseguir",en:"more units to reach",it:"unità in più per ottenere"},
+  mejorPrecioMayorista:{fr:"— le meilleur prix de gros.",es:"— el mejor precio mayorista.",en:"— the best wholesale price.",it:"— il miglior prezzo all ingrosso."},
+  yaAlcanzas:{fr:"Vous avez déjà le meilleur prix :",es:"¡Ya alcanzas el mejor precio:",en:"You already have the best price:",it:"Hai già il miglior prezzo:"},
+  tuNivel:{fr:"VOTRE NIVEAU",es:"TU NIVEL",en:"YOUR TIER",it:"IL TUO LIVELLO"},
+  primerPedido:{fr:"Passer ma première commande",es:"Hacer mi primer pedido",en:"Place my first order",it:"Fai il mio primo ordine"},
+  anadirMasModelos:{fr:"Ajouter plus de modèles",es:"Añadir más modelos",en:"Add more models",it:"Aggiungi altri modelli"},
+  tuVentajaPrecio:{fr:"Votre avantage tarifaire",es:"Tu ventaja de precio",en:"Your pricing advantage",it:"Il tuo vantaggio di prezzo"},
+  resumenCondiciones:{fr:"Résumé de vos conditions de gros",es:"Resumen de tus condiciones mayoristas",en:"Summary of your wholesale terms",it:"Riepilogo delle tue condizioni all ingrosso"},
+  tuPrecioUd:{fr:"Votre prix/u",es:"Tu precio/ud",en:"Your price/unit",it:"Il tuo prezzo/u"},
+  paraTi:{fr:"✨ POUR VOUS",es:"✨ PARA TI",en:"✨ FOR YOU",it:"✨ PER TE"},
+  comprarDeNuevo:{fr:"🔄 Commander à nouveau",es:"🔄 Comprar de nuevo",en:"🔄 Buy again",it:"🔄 Acquista di nuovo"},
+  vaciarCarrito:{fr:"🗑 Vider le panier",es:"🗑 Vaciar carrito",en:"🗑 Empty cart",it:"🗑 Svuota carrello"},
+  copiarDireccionGuardada:{fr:"↩ Copier depuis mon adresse enregistrée",es:"↩ Copiar desde mi dirección guardada",en:"↩ Copy from my saved address",it:"↩ Copia dal mio indirizzo salvato"},
+  udsPorPedido:{fr:"U/COMMANDE",es:"UDS/PEDIDO",en:"UNITS/ORDER",it:"U/ORDINE"},
+  topCincoClientes:{fr:"👑 Top 5 clients",es:"👑 Top 5 clientes",en:"👑 Top 5 clients",it:"👑 Top 5 clienti"},
+  numPedido:{fr:"N° Commande",es:"Nº Pedido",en:"Order no.",it:"N. Ordine"},
+  ventasTotalesLabel:{fr:"Ventes totales",es:"Ventas totales",en:"Total sales",it:"Vendite totali"},
+  comisionCobrada:{fr:"Commission encaissée",es:"Comisión cobrada",en:"Commission received",it:"Commissione incassata"},
+  comisionPendiente:{fr:"Commission en attente",es:"Comisión pendiente",en:"Commission pending",it:"Commissione in attesa"},
+  instruccionesFacturar:{fr:"Instructions pour facturer Minuë Opticians :",es:"Instrucciones para facturar a Minuë Opticians:",en:"How to invoice Minuë Opticians:",it:"Istruzioni per fatturare a Minuë Opticians:"},
+  decidirMasTarde:{fr:"⏱ Décider plus tard",es:"⏱ Decidir más tarde",en:"⏱ Decide later",it:"⏱ Decidi più tardi"},
+  todosClientesActivos:{fr:"Tous les clients sont actifs",es:"Todos los clientes están activos",en:"All clients are active",it:"Tutti i clienti sono attivi"},
+  guiaPasosSub:{fr:"5 étapes clés pour gérer votre portefeuille",es:"5 pasos clave para gestionar tu cartera",en:"5 key steps to manage your portfolio",it:"5 passi chiave per gestire il tuo portafoglio"},
+  resumenComisiones:{fr:"💰 Résumé des commissions par trimestre",es:"💰 Resumen de comisiones por trimestre",en:"💰 Commission summary by quarter",it:"💰 Riepilogo commissioni per trimestre"},
+  actualQ:{fr:"Actuel",es:"Actual",en:"Current",it:"Attuale"},
+  aunNoPedidos:{fr:"Pas encore de commandes",es:"Aún no hay pedidos",en:"No orders yet",it:"Nessun ordine ancora"},
+  enCurso:{fr:"EN COURS",es:"EN CURSO",en:"ONGOING",it:"IN CORSO"},
+  pedidosLabel:{fr:"commandes",es:"pedidos",en:"orders",it:"ordini"},
+  ventasLabel:{fr:"ventes",es:"ventas",en:"sales",it:"vendite"},
+  comisionLabel:{fr:"Commission",es:"Comisión",en:"Commission",it:"Commissione"},
+  pendienteLabel:{fr:"en attente",es:"pendiente",en:"pending",it:"in attesa"},
   mercadoSub:{fr:"Données du marché européen de la lunette solaire",es:"Datos del mercado europeo de gafas de sol",en:"European sunglasses market data",it:"Dati del mercato europeo degli occhiali da sole"},
   mktTamano:{fr:"Taille du marché",es:"Tamaño de mercado",en:"Market size",it:"Dimensione del mercato"},
   mktIndep:{fr:"Indépendants vs chaînes",es:"Independientes vs cadenas",en:"Independents vs chains",it:"Indipendenti vs catene"},
@@ -5338,10 +5377,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               const tier = getTier(Math.max(1, totalUnits));
               const nextTier = getNextTier(Math.max(1, totalUnits));
               if (totalUnits === 0) return <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginBottom:4,lineHeight:1.5}}>
-                {/* TODO: i18n */}Desde 17,90 €/ud en pedidos de 40+ unidades
+                {t("desdeLabel")} {fmt(TIERS[TIERS.length-1].price)} €/ud {t("enPedidosDe")} {TIERS[TIERS.length-1].min}+ {t("unidadesLabel")}
               </div>;
               return <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.6)",marginBottom:4,lineHeight:1.5}}>
-                {/* TODO: i18n */}Tu precio actual: {fmt(tier.price)} €/ud {nextTier ? " · Siguiente nivel: " + fmt(nextTier.price) + " €/ud desde " + nextTier.min + " uds" : " · ¡Mejor precio alcanzado!"}
+                {t("tuPrecioActual")} {fmt(tier.price)} €/ud {nextTier ? " · " + t("siguienteNivel") + " " + fmt(nextTier.price) + " €/ud " + t("desdeLabel").toLowerCase() + " " + nextTier.min + " " + t("unidadesLabel") : " · " + t("mejorPrecioAlcanzado")}
               </div>;
             })()}
             <div style={{fontSize:13,fontFamily:BD,color:"rgba(248,239,230,0.7)",maxWidth:500,lineHeight:1.5}}>{t("bienvenidaSub")}</div>
@@ -5369,11 +5408,11 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{position:"absolute",top:"-30%",right:"-8%",width:200,height:200,borderRadius:"50%",background:"radial-gradient(circle,rgba(212,160,48,0.12) 0%,transparent 70%)",pointerEvents:"none"}} />
               <div style={{position:"relative"}}>
                 {/* TODO: i18n */}
-                <div style={{fontSize:15,fontFamily:DP,fontWeight:500,marginBottom:4,letterSpacing:0.3}}>Desbloquea el mejor precio ✦</div>
+                <div style={{fontSize:15,fontFamily:DP,fontWeight:500,marginBottom:4,letterSpacing:0.3}}>{t("desbloqueaPrecio")}</div>
                 <div style={{fontSize:11.5,fontFamily:BD,color:"rgba(248,239,230,0.7)",lineHeight:1.6,marginBottom:14}}>
                   {unitsToGo > 0
-                    ? <>Añade <strong style={{color:"#d4a030"}}>{unitsToGo} unidades</strong> más para conseguir <strong style={{color:CL.bg}}>{fmt(bestTier.price)} €/ud</strong> — el mejor precio mayorista.</>
-                    : <>¡Ya alcanzas el mejor precio: <strong style={{color:"#d4a030"}}>{fmt(bestTier.price)} €/ud</strong>!</>}
+                    ? <>{t("anade")} <strong style={{color:"#d4a030"}}>{unitsToGo}</strong> {t("unidadesMasPara")} <strong style={{color:CL.bg}}>{fmt(bestTier.price)} €/ud</strong> {t("mejorPrecioMayorista")}</>
+                    : <>{t("yaAlcanzas")} <strong style={{color:"#d4a030"}}>{fmt(bestTier.price)} €/ud</strong></>}
                 </div>
 
                 {/* Progress bar */}
@@ -5395,12 +5434,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     return <div key={i} style={{flex:1,padding:"8px 0",textAlign:"center",background:isActive ? "rgba(248,239,230,0.1)" : "transparent",borderRadius:8,border:isBest ? "1px solid #d4a03060" : "1px solid transparent"}}>
                       <div style={{fontSize:10,fontFamily:BD,color:"rgba(248,239,230,0.5)",marginBottom:3}}>{tier.label} uds</div>
                       <div style={{fontSize:14,fontFamily:DP,fontWeight:600,color:isBest ? "#d4a030" : CL.bg}}>{fmt(tier.price)} €</div>
-                      {isActive && <div style={{fontSize:8,fontFamily:BD,color:CL.gn,marginTop:2,fontWeight:700}}>TU NIVEL</div>}
+                      {isActive && <div style={{fontSize:8,fontFamily:BD,color:CL.gn,marginTop:2,fontWeight:700}}>{t("tuNivel")}</div>}
                     </div>;
                   })}
                 </div>
 
-                <Btn onClick={() => setView("c-cat")} style={{background:CL.bg,color:CL.dk,border:"none",width:"100%"}}>{totalUnits === 0 ? "Hacer mi primer pedido" : "Añadir más modelos"} →</Btn>
+                <Btn onClick={() => setView("c-cat")} style={{background:CL.bg,color:CL.dk,border:"none",width:"100%"}}>{totalUnits === 0 ? t("primerPedido") : t("anadirMasModelos")} →</Btn>
               </div>
             </div>;
           }
@@ -5414,13 +5453,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:26}}>💎</div>
                 <div>
                   {/* TODO: i18n */}
-                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>Tu ventaja de precio</div>
-                  <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>Resumen de tus condiciones mayoristas</div>
+                  <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("tuVentajaPrecio")}</div>
+                  <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("resumenCondiciones")}</div>
                 </div>
               </div>
               <div style={{display:"flex",gap:10,marginBottom:12}}>
                 <div style={{flex:1,background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px",textAlign:"center"}}>
-                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4}}>Tu precio/ud</div>
+                  <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginBottom:4}}>{t("tuPrecioUd")}</div>
                   <div style={{fontSize:20,fontFamily:DP,fontWeight:600,color:CL.gn}}>{fmt(avgWholesalePrice)} €</div>
                   <div style={{fontSize:9,fontFamily:BD,color:C.gr,marginTop:2}}>Nivel {currentTier.label}</div>
                 </div>
@@ -5780,7 +5819,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10,marginBottom:24}}>
               {recProds.map(p => <div key={p.id} style={{background:"linear-gradient(135deg,"+C.dk+"05,"+C.gn+"08)",border:"1px solid "+C.gn+"30",borderRadius:8,overflow:"hidden",position:"relative",cursor:"pointer"}} onClick={() => { const mg = {model:p.model,col:p.col,colors:products.filter(x=>x.model===p.model),tags:new Set(p.tags||[])}; setSelectedModel(mg); setSelectedColorIdx(mg.colors.findIndex(c=>c.id===p.id)||0); setModal("viewModel"); }}>
-                <div style={{position:"absolute",top:6,left:6,fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>✨ PARA TI</div>
+                <div style={{position:"absolute",top:6,left:6,fontSize:8,fontFamily:BD,fontWeight:700,color:"#fff",background:C.gn,padding:"2px 8px",borderRadius:3,letterSpacing:0.5,zIndex:1}}>{t("paraTi")}</div>
                 <div style={{height:110,background:C.wh,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
                   {p.imageUrl ? <img loading="lazy" src={p.imageUrl} style={{width:"100%",height:"100%",objectFit:"contain",padding:8}} /> : <span style={{fontSize:24,fontFamily:DP,color:C.ln}}>MINUË</span>}
                 </div>
@@ -5835,7 +5874,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           {/* COMPRAR DE NUEVO - quick reorder with direct add to cart */}
           {(() => { const myOrders = orders.filter(o => (o.client === user.co || o.client === user.name) && o.dist !== "Faire"); const mySold = {}; myOrders.forEach(o => (o.lines||[]).forEach(l => { const k = l.model+"|"+l.color; if(!mySold[k]) mySold[k] = {qty:0, lastDate:o.date}; mySold[k].qty += (l.qty||0); })); const myTop = Object.entries(mySold).sort((a,b) => b[1].qty-a[1].qty).slice(0,6); const myTopProds = myTop.map(([k,d]) => { const [m,c] = k.split("|"); const p = products.find(x => x.model === m && x.color === c && x.active !== false); return p ? {p,qty:d.qty,lastDate:d.lastDate} : null; }).filter(Boolean); return myTopProds.length > 0 ? <>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
-              <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>🔄 Comprar de nuevo</div>
+              <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:500}}>{t("comprarDeNuevo")}</div>
               <span style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("tusModelosMasPedidos")}</span>
             </div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(180px,1fr))",gap:10,marginBottom:24}}>
@@ -5950,7 +5989,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         {renderModelCatalog()}
       </Sec>}
 
-      {view === "c-cart" && <Sec title={t("panier")} right={cartEntries.length > 0 ? <Btn small ghost onClick={() => askConfirm(t("confirmVaciarCarrito"), () => { setCart({}); setCartNotes(""); setFundaPref([]); setPreferredDate(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setCartPayMethod(""); try { localStorage.removeItem("minue_cart_"+user.email); } catch(e){} toast(t("carritoVaciado")); })} style={{color:C.rd,borderColor:C.rd+"60"}}>🗑 Vaciar carrito</Btn> : null}>
+      {view === "c-cart" && <Sec title={t("panier")} right={cartEntries.length > 0 ? <Btn small ghost onClick={() => askConfirm(t("confirmVaciarCarrito"), () => { setCart({}); setCartNotes(""); setFundaPref([]); setPreferredDate(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setCartPayMethod(""); try { localStorage.removeItem("minue_cart_"+user.email); } catch(e){} toast(t("carritoVaciado")); })} style={{color:C.rd,borderColor:C.rd+"60"}}>{t("vaciarCarrito")}</Btn> : null}>
         {/* SAVED DRAFTS */}
         {(() => { let drafts = savedCarts; if(!drafts || drafts.length === 0) { try { drafts = JSON.parse(localStorage.getItem("minue_drafts_"+user.email) || "[]"); if(drafts.length > 0 && (!savedCarts || savedCarts.length === 0)) setSavedCarts(drafts); } catch(e) { drafts = []; } } return drafts && drafts.length > 0 ? <div style={{marginBottom:18,padding:"14px 16px",background:"#fff8e6",border:"1px solid #f0a020"+"30",borderRadius:8}}>
           <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:8}}>{t("borradoresGuardados")} ({drafts.length})</div>
@@ -6058,7 +6097,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     <input value={newShipAddr.city} onChange={e => setNewShipAddr(p => ({...p, city:e.target.value}))} placeholder={t("ciudadInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}} />
                     <input value={newShipAddr.country} onChange={e => setNewShipAddr(p => ({...p, country:e.target.value}))} placeholder={t("paisInput")} style={{padding:9,border:"1px solid "+C.ln,borderRadius:4,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,gridColumn:"1/-1",boxSizing:"border-box"}} />
                   </div>
-                  {activeClient && (activeClient.shippingAddress || activeClient.address) && <button onClick={() => { const ac = activeClient; setNewShipAddr({street:ac.shippingAddress||ac.address||"",zip:ac.shippingPostal||ac.postalCode||"",city:ac.shippingCity||ac.city||"",country:ac.shippingCountry||ac.country||""}); }} style={{marginTop:8,padding:"6px 12px",background:"transparent",border:"1px dashed "+C.ln,borderRadius:4,fontSize:10,fontFamily:BD,color:C.gr,cursor:"pointer"}}>↩ Copiar desde mi dirección guardada</button>}
+                  {activeClient && (activeClient.shippingAddress || activeClient.address) && <button onClick={() => { const ac = activeClient; setNewShipAddr({street:ac.shippingAddress||ac.address||"",zip:ac.shippingPostal||ac.postalCode||"",city:ac.shippingCity||ac.city||"",country:ac.shippingCountry||ac.country||""}); }} style={{marginTop:8,padding:"6px 12px",background:"transparent",border:"1px dashed "+C.ln,borderRadius:4,fontSize:10,fontFamily:BD,color:C.gr,cursor:"pointer"}}>{t("copiarDireccionGuardada")}</button>}
                 </>}
               </div>
 
@@ -6730,7 +6769,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{fmt(avgOrder)} €</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
-                <div style={{fontSize:9,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>UDS/PEDIDO</div>
+                <div style={{fontSize:9,fontFamily:BD,color:C.gr,letterSpacing:0.5,fontWeight:600,marginBottom:4}}>{t("udsPorPedido")}</div>
                 <div style={{fontSize:22,fontFamily:DP,fontWeight:300,color:C.dk}}>{avgUnits.toFixed(1)}</div>
               </div>
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px"}}>
@@ -6826,7 +6865,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
 
               <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"16px 20px"}}>
-                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:14}}>👑 Top 5 clientes</div>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:14}}>{t("topCincoClientes")}</div>
                 {topClients.length === 0 ? <div style={{textAlign:"center",fontSize:11,color:C.gr,fontFamily:BD,padding:20}}>—</div> :
                 topClients.map(([client,sales], i) => <div key={client} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:i<topClients.length-1?"1px solid "+C.bg2:"none"}}>
                   <div style={{width:22,height:22,borderRadius:11,background:"#d4a030"+(i<3?"":"30"),color:i<3?"#fff":C.gr,fontSize:11,fontFamily:BD,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{i+1}</div>
@@ -7112,7 +7151,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:20}}>📚</div>
               <div style={{flex:1}}>
                 <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("guiaUsoTitulo")}</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>5 pasos clave para gestionar tu cartera</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr,marginTop:2}}>{t("guiaPasosSub")}</div>
               </div>
               <span style={{fontSize:18,color:C.gr,transform:guideOpen?"rotate(180deg)":"none",transition:"transform 0.2s"}}>▾</span>
             </button>
@@ -7180,23 +7219,23 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             const sortedQs = Object.entries(quarters).sort(([a],[b]) => b.localeCompare(a)).slice(0,4);
             return <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"14px 16px",marginBottom:20}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:6}}>
-                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>💰 Resumen de comisiones por trimestre</div>
-                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>Actual: Q{currQuarter} {currYear}</div>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{t("resumenComisiones")}</div>
+                <div style={{fontSize:10,fontFamily:BD,color:C.gr}}>{t("actualQ")}: Q{currQuarter} {currYear}</div>
               </div>
-              {sortedQs.length === 0 ? <div style={{fontSize:11,fontFamily:BD,color:C.gr,padding:16,textAlign:"center"}}>Aún no hay pedidos</div> : <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {sortedQs.length === 0 ? <div style={{fontSize:11,fontFamily:BD,color:C.gr,padding:16,textAlign:"center"}}>{t("aunNoPedidos")}</div> : <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 {sortedQs.map(([key, q]) => {
                   const isCurrent = q.year === currYear && q.quarter === currQuarter;
                   return <div key={key} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",background:isCurrent?CL.gn+"10":C.bg,borderRadius:6,border:isCurrent?"1px solid "+CL.gn+"30":"1px solid "+C.ln,flexWrap:"wrap"}}>
                     <div style={{minWidth:90}}>
                       <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk}}>Q{q.quarter} {q.year}</div>
-                      {isCurrent && <div style={{fontSize:9,fontFamily:BD,color:CL.gn,fontWeight:600}}>EN CURSO</div>}
+                      {isCurrent && <div style={{fontSize:9,fontFamily:BD,color:CL.gn,fontWeight:600}}>{t("enCurso")}</div>}
                     </div>
-                    <div style={{flex:"1 1 130px",fontSize:10,fontFamily:BD,color:C.gr}}>{q.orders} pedidos · {fmt(q.sales)} € ventas</div>
+                    <div style={{flex:"1 1 130px",fontSize:10,fontFamily:BD,color:C.gr}}>{q.orders} {t("pedidosLabel")} · {fmt(q.sales)} € {t("ventasLabel")}</div>
                     <div style={{textAlign:"right",minWidth:90}}>
-                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>Comisión</div>
+                      <div style={{fontSize:9,fontFamily:BD,color:C.gr}}>{t("comisionLabel")}</div>
                       <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:CL.gn}}>{fmt(q.comm)} €</div>
                     </div>
-                    {q.pending > 0 && <div style={{fontSize:9,fontFamily:BD,color:"#f0a020",padding:"3px 7px",background:"#fff8e6",borderRadius:3,fontWeight:600}}>{fmt(q.pending)} € pendiente</div>}
+                    {q.pending > 0 && <div style={{fontSize:9,fontFamily:BD,color:"#f0a020",padding:"3px 7px",background:"#fff8e6",borderRadius:3,fontWeight:600}}>{fmt(q.pending)} € {t("pendienteLabel")}</div>}
                     <button onClick={() => {
                       // Generate PDF/print
                       const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Comisión Q${q.quarter} ${q.year} — ${user.co}</title><style>
@@ -7228,21 +7267,21 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         </div>
 
                         <table>
-                          <thead><tr><th>Nº Pedido</th><th>Fecha</th><th>Cliente</th><th style="text-align:right">Importe</th><th style="text-align:right">Comisión</th><th>Estado</th></tr></thead>
+                          <thead><tr><th>{t("numPedido")}</th><th>Fecha</th><th>Cliente</th><th style="text-align:right">Importe</th><th style="text-align:right">Comisión</th><th>Estado</th></tr></thead>
                           <tbody>
                             ${distOrders.filter(o => { const d = o.date?.split("/"); if(!d) return false; const m = parseInt(d[1]); const y = parseInt(d[2]); return y === q.year && Math.floor((m-1)/3)+1 === q.quarter; }).map(o => `<tr><td>${o.id}</td><td>${o.date}</td><td>${o.client}</td><td style="text-align:right">${fmt(o.total)} €</td><td style="text-align:right;color:#18332f;font-weight:600">${fmt(o.comm)} €</td><td>${o.pay==="paid"?"✓ Pagado":"⏱ Pendiente"}</td></tr>`).join("")}
                           </tbody>
                         </table>
 
                         <div class="totals">
-                          <div class="totals-row"><span>Ventas totales</span><span><strong>${fmt(q.sales)} €</strong></span></div>
-                          <div class="totals-row"><span>Comisión cobrada</span><span style="color:#1f9e6e"><strong>${fmt(q.paid)} €</strong></span></div>
-                          <div class="totals-row"><span>Comisión pendiente</span><span style="color:#f0a020"><strong>${fmt(q.pending)} €</strong></span></div>
+                          <div class="totals-row"><span>{t("ventasTotalesLabel")}</span><span><strong>${fmt(q.sales)} €</strong></span></div>
+                          <div class="totals-row"><span>{t("comisionCobrada")}</span><span style="color:#1f9e6e"><strong>${fmt(q.paid)} €</strong></span></div>
+                          <div class="totals-row"><span>{t("comisionPendiente")}</span><span style="color:#f0a020"><strong>${fmt(q.pending)} €</strong></span></div>
                           <div class="totals-row grand"><span>TOTAL COMISIÓN Q${q.quarter}</span><span>${fmt(q.comm)} €</span></div>
                         </div>
 
                         <div class="footer">
-                          <strong>Instrucciones para facturar a Minuë Opticians:</strong><br>
+                          <strong>{t("instruccionesFacturar")}</strong><br>
                           Emite tu factura por importe de <strong>${fmt(q.comm)} €</strong> + IVA correspondiente.<br>
                           Concepto: "Comisión comercial Q${q.quarter} ${q.year} — Minuë Opticians"<br>
                           Envío: hola@minueopticians.com<br>
@@ -7306,7 +7345,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         {renderModelCatalog()}
       </Sec>}
 
-      {view === "d-cart" && <Sec title={t("panier")} right={cartEntries.length > 0 ? <Btn small ghost onClick={() => askConfirm(t("confirmVaciarCarrito"), () => { setCart({}); setCartCl(""); setCartNotes(""); setFundaPref([]); setPreferredDate(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setCartPayMethod(""); try { localStorage.removeItem("minue_cart_"+user.email); } catch(e){} toast(t("carritoVaciado")); })} style={{color:C.rd,borderColor:C.rd+"60"}}>🗑 Vaciar carrito</Btn> : null}>
+      {view === "d-cart" && <Sec title={t("panier")} right={cartEntries.length > 0 ? <Btn small ghost onClick={() => askConfirm(t("confirmVaciarCarrito"), () => { setCart({}); setCartCl(""); setCartNotes(""); setFundaPref([]); setPreferredDate(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setCartPayMethod(""); try { localStorage.removeItem("minue_cart_"+user.email); } catch(e){} toast(t("carritoVaciado")); })} style={{color:C.rd,borderColor:C.rd+"60"}}>{t("vaciarCarrito")}</Btn> : null}>
         <div style={{marginBottom:14,padding:"12px 16px",background:C.wh,border:"1px solid "+C.ln,borderRadius:4,display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
           <span style={{fontSize:11,color:C.gr,fontFamily:BD,fontWeight:500}}>{t("cmdPour")}</span>
           {distClients.length > 0 ? <>
@@ -7369,7 +7408,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div>
                     <div style={{fontSize:10,color:C.gr,fontFamily:BD,marginBottom:4}}>💳 Método de pago (si se sabe)</div>
                     <select value={cartPayMethod||""} onChange={e => setCartPayMethod(e.target.value)} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:11,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                      <option value="">⏱ Decidir más tarde</option>
+                      <option value="">{t("decidirMasTarde")}</option>
                       <option value="stripe">💳 Stripe (tarjeta)</option>
                       <option value="sepa">🏦 SEPA</option>
                       <option value="transfer">🏧 Transferencia</option>
@@ -7585,7 +7624,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               return orders.filter(o => o.client === c.name).length <= 1 && total < 500;
             });
             const toRecover = [...inactive, ...withOldOrders].slice(0, 10);
-            if (toRecover.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>Todos los clientes están activos</div>;
+            if (toRecover.length === 0) return <div style={{textAlign:"center",padding:20,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("todosClientesActivos")}</div>;
             return toRecover.map((c, i) => {
               const cOrds = orders.filter(o => o.client === c.name);
               const lastDate = cOrds.length > 0 ? cOrds[0].date : "—";
