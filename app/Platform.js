@@ -1254,6 +1254,10 @@ const ICO = {
 const ACC = {green:"#2d6b4f",gold:"#b8860b",wine:"#722f37",sea:"#1a5276",terra:"#c4956a",sage:"#6b8f71"};
 const ZONES = {ES:"España",FR:"France",IT:"Italia",DE:"Deutschland",PT:"Portugal",GR:"Ελλάδα",AU:"Australia",BE:"Belgique",CH:"Suisse",GB:"United Kingdom"};
 
+// Las rutas /api/decisions-ai, /api/employee-help y /api/generate-note no existen en el despliegue:
+// el asistente queda oculto hasta que se monten (con la clave de IA en el servidor, nunca en el cliente).
+const AI_BACKEND = false;
+
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -1348,6 +1352,19 @@ export default function App() {
           setLoading(false);
         } else {
           setUser(sess.user);
+          // El rol y el estado salen de la BD, nunca de lo guardado en el navegador (editable por cualquiera).
+          if (supabase && sess.user?.email) {
+            const em = sess.user.email.toLowerCase();
+            supabase.from("users").select("*").ilike("email", em).then(({data}) => {
+              const row = (data||[]).find(r => (r.email||"").toLowerCase() === em);
+              if (!row || row.active !== true || (row.password_hash||"") !== (sess.user.pw||"")) {
+                try { localStorage.removeItem("minue_session"); } catch(e) {}
+                setUser(null); return;
+              }
+              const fresh = dbToUser(row);
+              setUser(u => u ? {...u, ...fresh} : u);
+            });
+          }
           _setLang(sess.user?.lang || "fr");
         }
       } else {
@@ -10375,7 +10392,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </div>}
 
       {/* FLOATING AI BUTTON (admin + team) */}
-      {(role === "admin" || role === "team") && <>
+      {(role === "admin" || role === "team") && AI_BACKEND && <>
         {!aiFloatOpen && <button onClick={() => setAiFloatOpen(true)} style={{position:"fixed",bottom:76,right:20,height:52,borderRadius:26,background:"linear-gradient(135deg,#c4956a,#d4a030)",color:C.dk,border:"none",cursor:"pointer",fontSize:13,fontFamily:BD,fontWeight:700,boxShadow:"0 4px 20px rgba(196,149,106,0.45)",zIndex:170,display:"flex",alignItems:"center",gap:8,padding:"0 20px"}}>
           <span style={{fontSize:18}}>✨</span>
           <span>{role === "admin" ? "Minüe AI" : "Ayuda IA"}</span>
