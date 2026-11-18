@@ -1915,11 +1915,14 @@ export default function App() {
 
   /* ═══ LOGIN SCREEN ═══ */
   const doLogin = async () => {
-    const hashed = await hashPw(loginPw, loginEmail); const found = users.find(u => u.email.toLowerCase() === loginEmail.toLowerCase().trim() && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
+    const hashed = await hashPw(loginPw, loginEmail);
+    const em = loginEmail.toLowerCase().trim();
+    // Con Supabase conectado se valida siempre contra la BD: las cuentas de demo del
+    // código nunca cuentan, y no dependemos de que la lista de usuarios haya terminado de cargar.
+    let pool = users;
+    if (dbReady) { try { const {data} = await supabase.from("users").select("*").ilike("email", em); pool = (data||[]).map(dbToUser); } catch(e) { pool = []; } }
+    const found = pool.find(u => u.email.toLowerCase() === em && (u.pw === hashed || (u.pw.length !== 64 && u.pw === loginPw)));
     if (!found || found.active === false) { setLoginErr(t("errLogin")); return; }
-    // Las cuentas de demo solo valen sin base de datos (desarrollo local): con Supabase
-    // conectado los usuarios reales mandan, aunque alguien lea estas credenciales.
-    if (found.demo && dbReady) { setLoginErr(t("errLogin")); return; }
     setLoginErr("");
     if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
     setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
