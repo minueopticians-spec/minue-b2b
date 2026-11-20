@@ -20,6 +20,10 @@ const applyDiscount = (subtotal, type, value) => {
   if (type === "amount") return Math.max(0, subtotal - v);
   return subtotal;
 };
+/* La BD solo admite fr/es/en en users.lang: otros idiomas (it) se guardan como [lang:xx] en notas */
+const LANG_DB = l => (["fr","es","en"].includes(l) ? l : "en");
+const withLangTag = (notes, l) => { const base = String(notes || "").replace(/\s*\[lang:[a-z]{2}\]/g, "").trim(); return ["fr","es","en"].includes(l) ? base : (base + "\n[lang:" + l + "]").trim(); };
+const langOf = r => ((String((r && r.notes) || "").match(/\[lang:(fr|es|en|it)\]/) || [])[1]) || (r && r.lang) || "fr";
 const hashPw = async (plain, email) => { const data = new TextEncoder().encode("minue_" + (email||"").toLowerCase().trim() + "_" + plain); const buf = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join(""); };
 
 /* ═══ i18n DICTIONARY ═══ */
@@ -249,8 +253,8 @@ const T = {
   paso3Desc:{fr:"Vous pouvez passer commande au nom de vos boutiques depuis Catalogue → ajouter au panier → sélectionner la boutique → valider.",es:"Puedes hacer pedidos en nombre de tus tiendas desde Catálogo → añadir al carrito → seleccionar tienda → confirmar.",en:"You can place orders for your stores from Catalog → add to cart → select store → confirm.",it:"Puoi effettuare ordini per i tuoi negozi da Catalogo → aggiungi al carrello → seleziona negozio → conferma."},
   paso4Titulo:{fr:"Suivi de vos commissions",es:"Sigue tus comisiones",en:"Track your commissions",it:"Monitora le tue commissioni"},
   paso4Desc:{fr:"Toutes les commandes de vos boutiques génèrent une commission. Consultez Tableau de bord → KPIs et l'onglet Commandes.",es:"Todos los pedidos de tus tiendas generan comisión. Consulta Dashboard → KPIs y la pestaña Pedidos.",en:"All orders from your stores generate commission. Check Dashboard → KPIs and the Orders tab.",it:"Tutti gli ordini dei tuoi negozi generano commissioni. Controlla Dashboard → KPI e la scheda Ordini."},
-  paso5Titulo:{fr:"Pas de gestion de paiements",es:"Sin gestión de pagos",en:"No payment management",it:"Nessuna gestione pagamenti"},
-  paso5Desc:{fr:"Vous ne gérez pas les paiements: les boutiques paient directement Minuë. Vous voyez seulement le statut.",es:"Tú no gestionas los pagos: las tiendas pagan directamente a Minuë. Tú solo ves el estado.",en:"You don't handle payments: stores pay Minuë directly. You only see the status.",it:"Non gestisci i pagamenti: i negozi pagano direttamente a Minuë. Vedi solo lo stato."},
+  paso5Titulo:{fr:"Suivi des paiements",es:"Seguimiento de cobros",en:"Payment follow-up",it:"Controllo dei pagamenti"},
+  paso5Desc:{fr:"Minuë envoie la proforma ou la facture et la boutique paie Minuë. Vous suivez chaque paiement de vos boutiques (en attente, payé, en retard) et relancez si besoin : cela fait partie de votre travail commercial.",es:"Minuë envía la proforma o la factura y la tienda paga a Minuë. Tú supervisas los cobros de tus tiendas (pendiente, pagado o con retraso) y haces el seguimiento cuando hace falta: es parte de tu labor comercial.",en:"Minuë sends the proforma or invoice and the shop pays Minuë. You keep track of your shops' payments (pending, paid, late) and follow up when needed: it is part of your sales role.",it:"Minuë invia la proforma o la fattura e il negozio paga Minuë. Tu controlli i pagamenti dei tuoi negozi (in attesa, pagato, in ritardo) e solleciti se serve: fa parte del tuo lavoro commerciale."},
   registrarManualmente:{fr:"Enregistrer manuellement une boutique",es:"Dar de alta una tienda manualmente",en:"Manually register a store",it:"Registrare manualmente un negozio"},
   bienvenidaDistribuidor:{fr:"Bienvenue sur votre espace partenaire",es:"Bienvenido a tu espacio de partner",en:"Welcome to your partner space",it:"Benvenuto nel tuo spazio partner"},
   vide:{fr:"vide",es:"vacío",en:"empty",it:"vuoto"},
@@ -627,6 +631,88 @@ const T = {
   añadirTodoCarrito:{fr:"Tout ajouter au panier",es:"Añadir todos al carrito",en:"Add all to cart",it:"Aggiungi tutti al carrello"},
   analytics:{fr:"Analytique",es:"Analítica",en:"Analytics",it:"Analitiche"},
   mercado:{fr:"Marché",es:"Mercado",en:"Market",it:"Mercato"},
+  pgCartera:{fr:"Portefeuille Minuë · à confirmer",es:"Cartera Minuë · por confirmar",en:"Minuë portfolio · to confirm",it:"Portafoglio Minuë · da confermare"},
+  pgCarteraSub:{fr:"Clientes actuelles de Minuë : confirmez avec Minuë avant de les contacter",es:"Clientes actuales de Minuë: confirma con Minuë antes de contactar",en:"Current Minuë customers: check with Minuë before contacting",it:"Clienti attuali di Minuë: conferma con Minuë prima di contattare"},
+  pgGanados:{fr:"Clientes du showroom",es:"Clientes del showroom",en:"Showroom customers",it:"Clienti dello showroom"},
+  pgGanadosSub:{fr:"Boutiques qui travaillent déjà avec vous",es:"Tiendas que ya trabajan con vosotros",en:"Shops already working with you",it:"Negozi che lavorano già con voi"},
+  carteraAviso:{fr:"Cliente actuelle de Minuë. Parlez-en avec Minuë avant de la contacter.",es:"Cliente actual de Minuë. Habla con Minuë antes de contactarla.",en:"Current Minuë customer. Talk to Minuë before contacting.",it:"Cliente attuale di Minuë. Parlane con Minuë prima di contattarla."},
+  añadirNota:{fr:"Ajouter une note",es:"Añadir nota",en:"Add note",it:"Aggiungi nota"},
+  notaPh:{fr:"Appel, visite, réponse, prochaine étape…",es:"Llamada, visita, respuesta, siguiente paso…",en:"Call, visit, reply, next step…",it:"Chiamata, visita, risposta, prossimo passo…"},
+  historial:{fr:"Historique",es:"Historial",en:"History",it:"Storico"},
+  proxSeguimiento:{fr:"Prochain suivi",es:"Próximo seguimiento",en:"Next follow-up",it:"Prossimo follow-up"},
+  tocaHoy:{fr:"À faire",es:"Toca seguimiento",en:"Follow-up due",it:"Da seguire"},
+  editarDatos:{fr:"Modifier les données",es:"Editar datos",en:"Edit details",it:"Modifica dati"},
+  sinAsignar:{fr:"Non attribués",es:"Sin asignar",en:"Unassigned",it:"Non assegnati"},
+  enviarA:{fr:"Envoyer à",es:"Enviar a",en:"Send to",it:"Invia a"},
+  enviarVisibles:{fr:"Envoyer les contacts affichés",es:"Enviar los contactos mostrados",en:"Send the contacts shown",it:"Invia i contatti mostrati"},
+  carritoAntiguo:{fr:"Ancien panier",es:"Carrito antiguo",en:"Old cart",it:"Carrello vecchio"},
+  pgInactivos:{fr:"Inactives",es:"Inactivos",en:"Inactive",it:"Inattivi"},
+  pgInactivosSub:{fr:"Commande il y a 6 mois à 3 ans",es:"Pidieron hace entre 6 meses y 3 años",en:"Ordered 6 months to 3 years ago",it:"Ordine da 6 mesi a 3 anni fa"},
+  pgAntiguos:{fr:"Anciennes clientes",es:"Clientes antiguos",en:"Former customers",it:"Clienti storici"},
+  pgAntiguosSub:{fr:"Dernière commande il y a plus de 3 ans",es:"Último pedido hace más de 3 años",en:"Last order over 3 years ago",it:"Ultimo ordine oltre 3 anni fa"},
+  pgInteres:{fr:"Contacts intéressés",es:"Contactos con interés",en:"Interested contacts",it:"Contatti interessati"},
+  pgInteresSub:{fr:"Panier Faire cette année, réponse intéressée ou message Instagram",es:"Carrito en Faire este año, respondieron con interés o escribieron por Instagram",en:"Interested or saved cart",it:"Interessati o carrello salvato"},
+  pgInfo:{fr:"Information envoyée",es:"Información enviada",en:"Info sent",it:"Info inviate"},
+  pgInfoSub:{fr:"Contactés, en attente de réponse",es:"Ya contactados, a la espera de respuesta",en:"Contacted, awaiting reply",it:"Contattati, in attesa di risposta"},
+  pgPorContactar:{fr:"À contacter",es:"Por contactar",en:"To contact",it:"Da contattare"},
+  pgPorContactarSub:{fr:"Nouveaux contacts sans historique",es:"Contactos nuevos sin historial",en:"New contacts, no history",it:"Nuovi contatti senza storico"},
+  pgNoContactar:{fr:"Ne pas contacter",es:"No contactar",en:"Do not contact",it:"Non contattare"},
+  pgNoContactarSub:{fr:"Désinscription ou incident : référence uniquement",es:"Baja o incidencia: solo referencia",en:"Unsubscribed or issue: reference only",it:"Disiscritti o problema: solo riferimento"},
+  ultPedido:{fr:"Dernière commande",es:"Último pedido",en:"Last order",it:"Ultimo ordine"},
+  pedidosN:{fr:"commandes",es:"pedidos",en:"orders",it:"ordini"},
+  carritoLbl:{fr:"Panier",es:"Carrito",en:"Cart",it:"Carrello"},
+  buscarContacto:{fr:"Rechercher boutique, ville…",es:"Buscar tienda, ciudad…",en:"Search shop, city…",it:"Cerca negozio, città…"},
+  notaGuardada:{fr:"Note enregistrée",es:"Nota guardada",en:"Note saved",it:"Nota salvata"},
+  fundaBurdeos:{fr:"Bordeaux",es:"Burdeos",en:"Burgundy",it:"Bordeaux"},
+  fundaVerdeBotella:{fr:"Vert bouteille",es:"Verde botella",en:"Bottle green",it:"Verde bottiglia"},
+  expoTitulo:{fr:"Présentoir",es:"Expositor",en:"Display stand",it:"Espositore"},
+  expoDesc:{fr:"Offert selon la promo en cours ou pour une première commande ; sinon il peut s'ajouter en extra.",es:"Sin coste según la promo vigente o en el pedido de apertura; si no, se puede añadir como extra.",en:"Free with the current promo or on a first order; otherwise it can be added as an extra.",it:"Gratuito con la promo in corso o al primo ordine; altrimenti si può aggiungere come extra."},
+  expoNo:{fr:"Pas besoin",es:"No lo necesito",en:"Not needed",it:"Non serve"},
+  expoPromo:{fr:"Inclus (promo / 1ère commande)",es:"Incluido (promo / pedido de apertura)",en:"Included (promo / first order)",it:"Incluso (promo / primo ordine)"},
+  expoExtra:{fr:"En extra",es:"Como extra",en:"As an extra",it:"Come extra"},
+  expoSinStock:{fr:"sous réserve de disponibilité",es:"sujeto a disponibilidad",en:"subject to availability",it:"soggetto a disponibilità"},
+  argTitulo:{fr:"Arguments pour vendre Minuë",es:"Argumentos para vender Minuë",en:"Why shops should stock Minuë",it:"Argomenti per vendere Minuë"},
+  argSub:{fr:"Ce que vous pouvez dire à chaque boutique",es:"Lo que puedes contar a cada tienda",en:"What you can tell every shop",it:"Cosa puoi dire a ogni negozio"},
+  arg1T:{fr:"Le prix en boutique est toujours le meilleur",es:"En tienda siempre compensa más",en:"Buying in store always pays off",it:"In negozio conviene sempre"},
+  arg1D:{fr:"Minuë ne fait jamais plus de 15 % de remise, et seulement à des moments précis de l'année. En ligne, la livraison est en plus : la cliente n'a aucun intérêt à attendre une promo web.",es:"Minuë nunca hace descuentos de más del 15 %, y solo en momentos puntuales del año. Online el envío se paga aparte: a la clienta final le compensa comprar en la tienda.",en:"Minuë never discounts more than 15 %, and only at specific moments of the year. Online, shipping is extra: the end customer is better off buying in store.",it:"Minuë non fa mai sconti oltre il 15 %, e solo in momenti precisi dell'anno. Online la spedizione è a parte: alla cliente conviene comprare in negozio."},
+  arg2T:{fr:"Publicité locale qui envoie vers la boutique",es:"Publicidad local que lleva a la tienda",en:"Local ads that send people to the shop",it:"Pubblicità locale che porta al negozio"},
+  arg2D:{fr:"Nous lançons des campagnes sur les réseaux sociaux par code postal autour des boutiques, et notre équipe commerciale renvoie les clientes intéressées vers leur point de vente.",es:"Hacemos campañas de anuncios en redes sociales por código postal alrededor de las tiendas, y nuestro equipo comercial deriva a las clientas interesadas a su tienda.",en:"We run social media ad campaigns by postcode around stockists, and our sales team sends interested customers to their nearest shop.",it:"Facciamo campagne social per CAP intorno ai negozi e il nostro team commerciale indirizza le clienti interessate al loro punto vendita."},
+  arg3T:{fr:"Remplacement sans frais",es:"Reposición sin coste",en:"Free replacements",it:"Sostituzione senza costi"},
+  arg3D:{fr:"Les pièces défectueuses sont remplacées gratuitement, et nous prenons aussi en charge les éventuelles casses des clientes. La boutique ne prend aucun risque.",es:"Reponemos sin coste las gafas defectuosas y asumimos también las posibles roturas de las clientas. La tienda no corre ningún riesgo.",en:"We replace defective pieces free of charge and also cover possible customer breakages. The shop takes no risk.",it:"Sostituiamo gratis i pezzi difettosi e copriamo anche eventuali rotture delle clienti. Il negozio non corre rischi."},
+  arg5T:{fr:"Catalogue trade : commande sans inscription",es:"Catálogo trade: pedido sin registro",en:"Trade catalogue: order without signing up",it:"Catalogo trade: ordine senza registrazione"},
+  arg5D:{fr:"Envoyez trade.minueopticians.com par WhatsApp ou e-mail : la boutique voit la collection avec les prix pro et passe commande en 2 minutes, sans créer de compte. Idéal pour un premier achat ou un réassort rapide.",es:"Envía trade.minueopticians.com por WhatsApp o email: la tienda ve la colección con precios profesionales y hace su pedido en 2 minutos, sin crear cuenta. Ideal para un primer pedido o una reposición rápida.",en:"Send trade.minueopticians.com by WhatsApp or email: the shop sees the collection at trade prices and orders in 2 minutes without an account. Ideal for a first order or a quick restock.",it:"Invia trade.minueopticians.com via WhatsApp o email: il negozio vede la collezione con i prezzi professionali e ordina in 2 minuti, senza account. Ideale per un primo ordine o un riassortimento veloce."},
+  enviarTrade:{fr:"Envoyer le catalogue trade",es:"Enviar catálogo trade",en:"Send trade catalogue",it:"Invia catalogo trade"},
+  tradeEnviado:{fr:"Catalogue trade envoyé par",es:"Catálogo trade enviado por",en:"Trade catalogue sent by",it:"Catalogo trade inviato via"},
+  arg4T:{fr:"Sans minimum, présentoir offert",es:"Sin mínimo y con expositor",en:"No minimum, free display",it:"Senza minimo, espositore incluso"},
+  arg4D:{fr:"Pas de commande minimum, envoi dans la semaine, présentoir offert et un packaging complet (étui, chiffon, carte) pour chaque paire.",es:"Sin pedido mínimo, envío en la misma semana, expositor sin coste y packaging completo (funda, gamuza y tarjeta) en cada gafa.",en:"No minimum order, shipped the same week, free display and full packaging (case, cloth and card) with every pair.",it:"Nessun ordine minimo, spedizione in settimana, espositore gratuito e packaging completo (custodia, panno e scheda) per ogni occhiale."},
+  canalMarca:{fr:"Contact avec Minuë",es:"Contacto con Minuë",en:"Contact with Minuë",it:"Contatto con Minuë"},
+  canalMarcaSub:{fr:"Canal officiel entre la marque et le showroom (responsable). Pour les commandes, conditions, campagnes, incidents et réassorts.",es:"Canal formal entre la marca y el showroom (responsable del equipo). Para pedidos, condiciones, campañas, incidencias y reposiciones.",en:"Formal channel between the brand and the showroom lead. For orders, terms, campaigns, issues and replacements.",it:"Canale formale tra il marchio e lo showroom (responsabile). Per ordini, condizioni, campagne, problemi e sostituzioni."},
+  equipoExplica:{fr:"Votre équipe voit les boutiques, commandes, contacts et factures de vos clientes. Elle ne voit ni commissions, ni conditions, ni paiements. Tout ce qu'elle fait apparaît dans votre compte et chez Minuë.",es:"Tu equipo ve tiendas, pedidos, contactos y facturas de vuestras clientas. No ve comisiones, condiciones ni pagos. Todo lo que hace aparece en tu cuenta y en Minuë.",en:"Your team sees shops, orders, contacts and invoices of your customers. It does not see commissions, conditions or payments. Everything it does shows in your account and at Minuë.",it:"Il tuo team vede negozi, ordini, contatti e fatture dei vostri clienti. Non vede commissioni, condizioni né pagamenti. Tutto ciò che fa appare nel tuo account e a Minuë."},
+  equipoSinEmpresa:{fr:"Ajoutez d'abord le nom de la société de ce distributeur",es:"Primero pon el nombre de empresa de este distribuidor",en:"Add this distributor's company name first",it:"Prima inserisci il nome dell'azienda di questo distributore"},
+  ordenarPor:{fr:"Trier :",es:"Ordenar:",en:"Sort:",it:"Ordina:"},
+  ordTop:{fr:"Meilleures ventes",es:"Top ventas",en:"Best sellers",it:"Più venduti"},
+  ordNuevo:{fr:"Nouveautés",es:"Novedades",en:"New in",it:"Novità"},
+  modifier:{fr:"Modifier",es:"Editar",en:"Edit",it:"Modifica"},
+  carteraNoSeEnvia:{fr:"clientes du portefeuille Minuë non envoyées (réservé admin)",es:"clientas de la cartera Minuë no se envían (solo admin)",en:"Minuë portfolio customers not sent (admin only)",it:"clienti del portafoglio Minuë non inviate (solo admin)"},
+  abrirInstagram:{fr:"Ouvrir la conversation Instagram",es:"Abrir conversación de Instagram",en:"Open Instagram conversation",it:"Apri conversazione Instagram"},
+  abrirEnlace:{fr:"Ouvrir le lien",es:"Abrir enlace",en:"Open link",it:"Apri link"},
+  equipoVacio:{fr:"Pas encore de membres.",es:"Todavía no hay nadie en el equipo.",en:"No team members yet.",it:"Nessun membro ancora."},
+  equipoAñadir:{fr:"Ajouter un membre",es:"Añadir persona",en:"Add member",it:"Aggiungi membro"},
+  equipoNombre:{fr:"Nom",es:"Nombre",en:"Name",it:"Nome"},
+  equipoPw:{fr:"Mot de passe (6+)",es:"Contraseña (mín. 6)",en:"Password (6+)",it:"Password (min. 6)"},
+  equipoFaltan:{fr:"Nom, utilisateur et mot de passe de 6 caractères minimum",es:"Nombre, usuario y contraseña de al menos 6 caracteres",en:"Name, username and a 6+ character password",it:"Nome, utente e password di almeno 6 caratteri"},
+  equipoUsuarioExiste:{fr:"Cet utilisateur existe déjà",es:"Ese usuario ya existe",en:"That username already exists",it:"Questo utente esiste già"},
+  equipoCreado:{fr:"Accès créé",es:"Acceso creado",en:"Access created",it:"Accesso creato"},
+  equipoNuevaPw:{fr:"Nouveau mot de passe (6+)",es:"Nueva contraseña (mín. 6)",en:"New password (6+)",it:"Nuova password (min. 6)"},
+  equipoPwCambiada:{fr:"Mot de passe changé",es:"Contraseña cambiada",en:"Password changed",it:"Password cambiata"},
+  equipoCambiarPw:{fr:"Mot de passe",es:"Contraseña",en:"Password",it:"Password"},
+  equipoPausar:{fr:"Suspendre",es:"Pausar",en:"Pause",it:"Sospendi"},
+  equipoActivar:{fr:"Activer",es:"Activar",en:"Activate",it:"Attiva"},
+  equipoPausado:{fr:"suspendu",es:"pausado",en:"paused",it:"sospeso"},
+  equipoEliminar:{fr:"Supprimer l'accès de",es:"¿Eliminar el acceso de",en:"Remove access for",it:"Eliminare l'accesso di"},
+  usuario:{fr:"Utilisateur",es:"Usuario",en:"Username",it:"Utente"},
+  equipoShowroom:{fr:"Équipe",es:"Equipo",en:"Team",it:"Team"},
+  verFactura:{fr:"Voir la facture",es:"Ver factura",en:"View invoice",it:"Vedi fattura"},
   cuentaPendiente:{fr:"Votre demande est en cours de validation par Minuë. Vous recevrez vos accès très bientôt.",es:"Tu solicitud está pendiente de aprobación por Minuë. Recibirás tus accesos muy pronto.",en:"Your request is awaiting approval by Minuë. You'll receive your access very soon.",it:"La tua richiesta è in attesa di approvazione da Minuë. Riceverai presto i tuoi accessi."},
   nuevaPw:{fr:"Nouveau mot de passe",es:"Nueva contraseña",en:"New password",it:"Nuova password"},
   dejarVacioPw:{fr:"Laisser vide pour ne pas changer",es:"Déjalo vacío para no cambiarla",en:"Leave empty to keep it",it:"Lascia vuoto per non cambiarla"},
@@ -1329,6 +1415,30 @@ const SELL_TIPS = [
   {fr:"Prix protégés : Minuë ne fait ni 2x1 ni promos agressives en ligne.",es:"Precios protegidos: Minuë no hace 2x1 ni promociones agresivas en web.",en:"Protected prices: Minuë runs no 2-for-1 or aggressive web promos.",it:"Prezzi protetti: Minuë non fa 2x1 né promozioni aggressive online."},
 ];
 
+/* Prospectos: datos estructurados guardados como etiquetas en note_admin: [ult:AAAA-MM] [ped:N] [carrito:AAAA-MM] */
+const ptag = (p, k) => { const m = String((p && p.noteAdmin) || "").match(new RegExp("\\[" + k + ":([^\\]]*)\\]")); return m ? m[1] : ""; };
+const pnote = s => String(s || "").replace(/\s*\[(?:ult|ped|carrito|cartera|interes|info|src):[^\]]*\]\s*/g, " ").replace(/^\s*·\s*/, "").trim();
+/* Historial de notas del showroom en note_dist: líneas "[dd/mm/aa · Nombre] texto"; seguimiento como [seg:AAAA-MM-DD] */
+const dtag = (p, k) => { const m = String((p && p.noteDist) || "").match(new RegExp("\\[" + k + ":([^\\]]*)\\]")); return m ? m[1] : ""; };
+const setDtag = (txt, k, v) => { const base = String(txt || "").replace(new RegExp("\\s*\\[" + k + ":[^\\]]*\\]", "g"), "").trim(); return v ? ("[" + k + ":" + v + "] " + base).trim() : base; };
+const plog = p => String((p && p.noteDist) || "").replace(/\[seg:[^\]]*\]/g, "").split("\n").map(l => l.trim()).filter(Boolean).map(l => { const m = /^\[([^\]·]+)·([^\]]+)\]\s*(.*)$/.exec(l); return m ? {d:m[1].trim(), who:m[2].trim(), txt:m[3]} : {d:"", who:"", txt:l}; });
+const monthsSince = ym => { const m = /^(\d{4})-(\d{2})/.exec(ym || ""); if (!m) return null; const n = new Date(); return (n.getFullYear() - +m[1]) * 12 + (n.getMonth() + 1 - +m[2]); };
+const fmtYM = ym => { const m = /^(\d{4})-(\d{2})/.exec(ym || ""); return m ? m[2] + "/" + m[1] : ""; };
+const PGROUP = p => {
+  if (p.stage === "descartado") return "nocontactar";
+  if (p.stage === "cliente") return "ganados";
+  if (ptag(p, "cartera")) return "cartera";
+  if (p.stage === "interesado" || ptag(p, "interes")) return "interes";
+  if (p.stage === "contactado") return "info";
+  const ms = monthsSince(ptag(p, "ult"));
+  if (ms != null) return ms <= 36 ? "inactivos" : "antiguos";
+  const cm = monthsSince(ptag(p, "carrito"));
+  if (cm != null && cm <= 12) return "interes";
+  if (ptag(p, "info")) return "info";
+  return "porcontactar";
+};
+const PGROUPS = [["cartera","pgCartera","pgCarteraSub","#1f4e79"],["ganados","pgGanados","pgGanadosSub","#1d6e4e"],["inactivos","pgInactivos","pgInactivosSub","#c8902a"],["antiguos","pgAntiguos","pgAntiguosSub","#b0643c"],["interes","pgInteres","pgInteresSub","#8e44ad"],["info","pgInfo","pgInfoSub","#2980b9"],["porcontactar","pgPorContactar","pgPorContactarSub","#5f8a78"],["nocontactar","pgNoContactar","pgNoContactarSub","#9aa4a0"]];
+
 const USERS_INIT = [
   {email:"hola@minueopticians.com",pw:"minue2026",demo:true,role:"admin",name:"Alejandro",co:"Minuë Opticians",lang:"es"},
   {email:"showroom@agentsud.fr",pw:"agent2026",demo:true,role:"distributor",name:"Marc",co:"Agent Sud Showroom",commRate:15,lang:"fr"},
@@ -1520,8 +1630,8 @@ export default function App() {
   // Match referral to distributor once users loaded
   useEffect(() => {
     if (referralCode && users.length > 0) {
-      const dist = users.find(u => u.role === "distributor" && (u.referralCode === referralCode || (u.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") === referralCode.toLowerCase().replace(/[^a-z0-9]/g,"")));
-      if (dist) setReferralDist(dist);
+      const dist = users.find(u => u.role === "distributor" && !/\[equipo\]/i.test(u.notes||"") && (u.referralCode === referralCode || (u.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") === referralCode.toLowerCase().replace(/[^a-z0-9]/g,"")));
+      if (dist) { const first = !referralDist; setReferralDist(dist); let saved = null; try { saved = localStorage.getItem("minue_lang"); } catch(e) {} if (first && !user && !saved && dist.lang) _setLang(dist.lang); }
     }
   }, [referralCode, users]);
   const [promos, setPromos] = useState(PROMOS_INIT);
@@ -1598,7 +1708,7 @@ export default function App() {
   const dbToggleFav = async (productId) => { if (!dbReady || !user) return; try { const isFav = favs.includes(productId); if (isFav) { await supabase.from("user_favorites").delete().eq("user_email", user.email).eq("product_id", productId); } else { await supabase.from("user_favorites").insert({user_email: user.email, product_id: productId}); } } catch(e) { console.log("Fav error:", e); } };
   const dbAddDefective = async (d) => { if (!dbReady) return; try { const {data} = await supabase.from("defective_products").insert({model:d.model,color:d.color,sku:d.sku,quantity:d.quantity||1,description:d.description||"",status:"pending",created_by:user?.name||""}).select().single(); if (data) setDefectives(p => [data, ...p]); } catch(e) { console.log("Defective error:", e); } };
   const dbUpdateDefective = async (d) => { if (!dbReady) return; try { await supabase.from("defective_products").update({quantity:d.quantity,description:d.description,status:d.status}).eq("id",d.id); setDefectives(p => p.map(x => x.id === d.id ? {...x,...d} : x)); } catch(e) { console.log("Defective error:", e); } };
-  const dbUpdatePackInv = async (itemType, qty, note) => { if (!dbReady) return; try { await supabase.from("packaging_inventory").update({quantity:qty,updated_at:new Date().toISOString(),updated_by:user?.name||""}).eq("item_type",itemType); await supabase.from("packaging_log").insert({item_type:itemType,change:qty-packStock[itemType],note:note||"",created_by:user?.name||""}); setPackStock(p => ({...p,[itemType]:qty})); } catch(e) { console.log("Pack inv error:", e); } };
+  const dbUpdatePackInv = async (itemType, qty, note) => { if (!dbReady) return; try { const {data:upd} = await supabase.from("packaging_inventory").update({quantity:qty,updated_at:new Date().toISOString(),updated_by:user?.name||""}).eq("item_type",itemType).select(); if (!upd || !upd.length) await supabase.from("packaging_inventory").insert({item_type:itemType,quantity:qty,updated_by:user?.name||""}); await supabase.from("packaging_log").insert({item_type:itemType,change:qty-(packStock[itemType]||0),note:note||"",created_by:user?.name||""}); setPackStock(p => ({...p,[itemType]:qty})); } catch(e) { console.log("Pack inv error:", e); } };
   const [favFilter, setFavFilter] = useState(false);
   const [privateNotes, setPrivateNotes] = useState({});
   const [packItems, setPackItems] = useState([
@@ -1612,7 +1722,9 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [filter, setFilter] = useState("");
   const [colFilter, setColFilter] = useState("all");
+  const [catSort, setCatSort] = useState("top");
   const [pwForm, setPwForm] = useState({cur:"",n1:"",n2:"",msg:"",ok:false});
+  const [teamForm, setTeamForm] = useState({name:"",login:"",pw:"",msg:"",open:""});
   const [landing] = useState(() => { try { return window.location.pathname.replace(/\/+$/,"") === "/invierno" ? "invierno" : null; } catch(e) { return null; } });
   const [lpTab, setLpTab] = useState("top");
   const [lpCart, setLpCart] = useState({});
@@ -1632,6 +1744,7 @@ export default function App() {
   const [packStock, setPackStock] = useState({fundas:0,gamuzas:0,cajasEnvio:0,cajitasGafa:0,tarjetasTecnicas:0,expositores:0,fundaCrema:0,fundaPistacho:0,fundaBabyBlue:0,fundaYellowAmalfi:0,fundaNaranja:0});
   const [recommendations, setRecommendations] = useState({});
   const [fundaPref, setFundaPref] = useState([]);
+  const [expoPref, setExpoPref] = useState("");
   const [shippingAddr, setShippingAddr] = useState("saved");
   const [newShipAddr, setNewShipAddr] = useState({street:"",city:"",zip:"",country:""});
   const [preferredDate, setPreferredDate] = useState("");
@@ -1658,7 +1771,7 @@ export default function App() {
   /* ═══ SUPABASE DATA LAYER ═══ */
   const dbReady = !!supabase;
   const dbToProduct = r => ({id:r.id,model:r.model,color:r.color,sku:r.sku,col:r.collection,cat:r.category||r.collection,stock:r.stock,fixedPrice:Number(r.fixed_price)||0,tags:r.tags||[],imageUrl:r.image_url,shape:r.shape||"",colorFamily:r.color_family||"",active:r.active!==false});
-  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:r.lang||"fr",commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
+  const dbToUser = r => ({id:r.id,email:r.email,pw:r.password_hash||"",role:r.role,name:r.name,co:r.company||"",lang:langOf(r),commRate:r.comm_rate||0,active:r.active===true,phone:r.phone||"",city:r.city||"",country:r.country||"",notes:r.notes||""});
   const dbToClient = r => ({id:r.id,userId:r.user_id,name:r.name,contact:r.contact,city:r.city,country:r.country||"FR",channel:r.channel||"Direct",customPrice:Number(r.custom_price)||0,priceEssential:Number(r.price_essential)||0,priceIcons:Number(r.price_icons)||0,priceAcetato:Number(r.price_acetato)||0,earlyPay:!!r.early_pay,status:r.status||"prospect",notes:r.notes||"",orders:0,total:0,companyName:r.company_name||"",taxId:r.tax_id||"",address:r.address||"",postalCode:r.postal_code||"",phone:r.phone||"",companyEmail:r.company_email||"",bankHolder:r.bank_holder||"",iban:r.iban||"",bic:r.bic||"",shippingAddress:r.shipping_address||"",shippingCity:r.shipping_city||"",shippingPostal:r.shipping_postal||"",shippingCountry:r.shipping_country||""});
   const dbToOrder = (r, lines) => ({id:r.order_number,dbId:r.id,client:r.client_name,dist:r.distributor||"Direct",date:r.created_at?new Date(r.created_at).toLocaleDateString("fr-FR"):"-",_rawDate:r.created_at||null,status:r.status,pay:r.payment,shippingCost:Number(r.shipping_cost)||0,carrier:r.carrier||"",track:r.track_number||"",trackUrl:r.track_url||"",notes:r.notes_internal||"",clientNotes:r.notes_client||"",total:Number(r.total)||0,items:r.items_count||0,comm:Number(r.commission)||0,invoiceNumber:r.invoice_number||"",invoiceDate:r.invoice_date||"",taxRate:(() => { const m = String(r.notes_internal||"").match(/\[iva:(\d+(?:\.\d+)?)\]/); return m ? Number(m[1]) : undefined; })(),lines:lines||[],payMethod:r.payment_method||"",paymentLink:r.payment_link||"",payDueDate:r.payment_due_date||"",payReminderDays:r.payment_reminder_days||7,paySplit1Amount:Number(r.pay_split1_amount)||0,paySplit1Date:r.pay_split1_date||"",paySplit1Done:r.pay_split1_done||false,paySplit2Amount:Number(r.pay_split2_amount)||0,paySplit2Date:r.pay_split2_date||"",paySplit2Done:r.pay_split2_done||false,discountType:r.discount_type||"",discountValue:Number(r.discount_value)||0});
   const dbToPromo = r => ({id:r.id,name:r.name,type:r.type,disc:r.discount,cond:{fr:r.condition_fr||"",es:r.condition_es||"",en:r.condition_en||"",it:r.condition_it||""},visible:r.visible_to||[],on:r.active!==false,targetClients:r.target_clients||[]});
@@ -1695,7 +1808,7 @@ export default function App() {
         }
         const {data:prms} = await supabase.from("promos").select("*");
         if (prms) setPromos(prms.map(dbToPromo));
-        try { const {data:prosp} = await supabase.from("prospects").select("*").order("created_at",{ascending:false}); if (prosp) setProspects(prosp.map(dbToProspect)); } catch(e) { console.log("prospects load:", e); }
+
         // Product alerts (waitlist)
         try {
           if (user && (user.role === "admin" || user.role === "team")) { const {data:als} = await supabase.from("product_alerts").select("*"); if (als) setProductAlerts(als); }
@@ -1790,7 +1903,19 @@ export default function App() {
       return 0;
     } catch(e) { console.log("bulk prospect:", e); return 0; }
   };
-  const dbUpdateProspect = async (p) => { if (!dbReady) return; try { await supabase.from("prospects").update({name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo", updated_at:new Date().toISOString()}).eq("id",p.id); } catch(e) { console.log('DB prospect upd:', e); } };
+  const dbUpdateProspect = async (p) => { if (!dbReady) return; try { await supabase.from("prospects").update({distributor:p.distributor||"", name:p.name, city:p.city||"", country:p.country||"", email:p.email||"", phone:p.phone||"", web:p.web||"", instagram:p.instagram||"", note_admin:p.noteAdmin||"", note_dist:p.noteDist||"", stage:p.stage||"nuevo", updated_at:new Date().toISOString()}).eq("id",p.id); } catch(e) { console.log('DB prospect upd:', e); } };
+  // Prospectos: se cargan según el rol. Admin/equipo Minuë: todos. Showroom: solo los suyos y nunca la cartera Minuë.
+  useEffect(() => {
+    if (!supabase || !user) { setProspects([]); return; }
+    (async () => { try {
+      let q = supabase.from("prospects").select("*").order("created_at",{ascending:false});
+      if (user.role === "distributor") { if (!String(user.co||"").trim()) { setProspects([]); return; } q = q.eq("distributor", user.co).not("note_admin","like","%[cartera:1]%"); }
+      else if (user.role !== "admin" && user.role !== "team") { setProspects([]); return; }
+      const {data} = await q; if (data) setProspects(data.map(dbToProspect));
+    } catch(e) { console.log("prospects load:", e); } })();
+  }, [user?.email, user?.role, user?.co]);
+  // Escritura parcial: solo los campos que cambian, para no pisar cambios hechos por otra persona
+  const dbPatchProspect = async (id, fields) => { if (!dbReady || String(id).startsWith("tmp-")) return; try { await supabase.from("prospects").update({...fields, updated_at:new Date().toISOString()}).eq("id", id); } catch(e) { console.log('DB prospect patch:', e); } };
   const dbDeleteProspect = async (id) => { if (!dbReady) return; try { await supabase.from("prospects").delete().eq("id",id); } catch(e) { console.log('DB prospect del:', e); } };
   const dbSaveProductCost = async (productId, costs) => { if (!dbReady) return; try { await supabase.from("product_costs").upsert({product_id:productId, supplier_cost:costs.supplier||0, freight_cost:costs.freight||0, customs_cost:costs.customs||0, packaging_cost:costs.packaging||0, updated_at:new Date().toISOString()}, {onConflict:"product_id"}); } catch(e) { console.log('DB error:', e); } };
   const dbSaveChannelConfig = async (cfg) => { if (!dbReady) return; try { await supabase.from("business_config").upsert({key:"channel_config", value:cfg, updated_at:new Date().toISOString()}, {onConflict:"key"}); } catch(e) { console.log('DB error:', e); } };
@@ -1881,8 +2006,8 @@ export default function App() {
     }
     setFloatLoading(false);
   };
-  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:u.lang,comm_rate:u.commRate||0,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}); } catch(e) { console.log('DB error:', e); } };
-  const dbUpdateUser = async (u) => { if (!dbReady) return; try { const pwh = u.newPw ? await hashPw(u.newPw, u.origEmail||u.email) : u.pw; await supabase.from("users").update({name:u.name,company:u.co,password_hash:pwh,lang:u.lang||"fr",comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:u.notes||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
+  const dbSaveUser = async (u) => { if (!dbReady) return; try { const hpw = await hashPw(u.pw, u.email); await supabase.from("users").insert({email:u.email,password_hash:hpw,role:u.role,name:u.name,company:u.co,lang:LANG_DB(u.lang),comm_rate:u.commRate||0,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:withLangTag(u.notes,u.lang)||null}); } catch(e) { console.log('DB error:', e); } };
+  const dbUpdateUser = async (u) => { if (!dbReady) return; try { const pwh = u.newPw ? await hashPw(u.newPw, u.origEmail||u.email) : u.pw; await supabase.from("users").update({name:u.name,company:u.co,password_hash:pwh,lang:LANG_DB(u.lang||"fr"),comm_rate:u.commRate,active:u.active!==false,phone:u.phone||null,city:u.city||null,country:u.country||null,notes:withLangTag(u.notes,u.lang||"fr")||null}).eq("email",u.origEmail||u.email); } catch(e) { console.log('DB error:', e); } };
   const dbSaveClient = async (c) => { if (!dbReady) return null; try { const {data} = await supabase.from("clients").insert({name:c.name,contact:c.contact||null,city:c.city||null,country:c.country||"FR",channel:c.channel||"Direct",status:c.status||"prospect",company_email:c.companyEmail||null,phone:c.phone||null,notes:c.notes||null}).select().single(); return data?.id || null; } catch(e) { console.log('DB error:', e); return null; } };
   const dbUpdateClient = async (c) => {
     if (!dbReady) return;
@@ -2035,6 +2160,11 @@ export default function App() {
   const isMyChannel = (ch) => { if (!ch || !distCo) return false; const a = ch.toLowerCase().trim(); const b = distCo.toLowerCase().trim(); const bClean = b.replace(/ showroom$/i,"").replace(/ diffusion$/i,"").trim(); const aClean = a.replace(/ showroom$/i,"").replace(/ diffusion$/i,"").trim(); return a === b || aClean === bClean || b.includes(aClean) || a.includes(bClean); };
   const distClients = clients.filter(c => isMyChannel(c.channel));
   const distLabel = distCo.replace(/ Showroom$/i,"").trim() || "Direct";
+  // Equipo de un showroom: usuario distributor con [equipo] en notas. Ve clientes/pedidos del showroom, sin comisiones ni condiciones.
+  const isTeamUser = u => !!u && /\[equipo\]/i.test(u.notes||"");
+  const isDistTeam = !!user && user.role === "distributor" && isTeamUser(user);
+  const distLead = isDistTeam ? (users.find(u => u.role === "distributor" && !isTeamUser(u) && String(u.co||"").toLowerCase().trim() === distCo.toLowerCase().trim()) || null) : user;
+  const distCommRate = (distLead && distLead.commRate) || 15;
 
   /* Distributor dashboard KPIs (pre-calculated, no IIFE needed) */
   const distOrders = orders.filter(o => isMyChannel(o.dist));
@@ -2079,25 +2209,26 @@ export default function App() {
       const price = unitPriceFor(p);
       return {model: p.model, color: p.color, sku: p.sku, qty: q, price, col: p.col};
     }).filter(Boolean);
-    const fundaNames = {fundaCrema:"Crema",fundaPistacho:"Pistacho",fundaBabyBlue:"Baby Blue",fundaYellowAmalfi:"Amalfi",fundaNaranja:"Naranja"};
+    const fundaNames = {fundaCrema:"Crema",fundaPistacho:"Pistacho",fundaBabyBlue:"Baby Blue",fundaYellowAmalfi:"Amalfi",fundaNaranja:"Naranja",fundaBurdeos:"Burdeos",fundaVerdeBotella:"Verde botella"};
     const fundaArr = Array.isArray(fundaPref) ? fundaPref : (fundaPref ? [fundaPref] : []);
     const fundaNote = fundaArr.length > 0 ? "Fundas: "+fundaArr.map(f => fundaNames[f]||f).join(", ") : "";
     const dateNote = preferredDate ? "Fecha preferente: "+new Date(preferredDate).toLocaleDateString("es-ES") : "";
     const addrNote = shippingAddr === "new" && newShipAddr.street ? "Dirección nueva: "+newShipAddr.street+", "+newShipAddr.zip+" "+newShipAddr.city+(newShipAddr.country?", "+newShipAddr.country:"") : "";
-    const fullNotes = [cartNotes, fundaNote, dateNote, addrNote].filter(Boolean).join(" · ");
+    const expoNote = expoPref === "promo" ? "Expositor: incluido (promo / pedido de apertura, sin coste)" : expoPref === "extra" ? "Expositor: añadir como extra (presupuestar)" : "";
+    const fullNotes = [cartNotes, fundaNote, expoNote, dateNote, addrNote].filter(Boolean).join(" · ");
     const newOrder = {
       id: await getNextOrderNumber(),
       client: activeClientName || "—",
       dist: user.role === "distributor" ? distLabel : "Direct",
       date: new Date().toLocaleDateString("fr-FR"),
       items: cartCount, total: finalTotal,
-      comm: user.role === "distributor" ? finalTotal * (user.commRate||15) / 100 : 0,
+      comm: user.role === "distributor" ? finalTotal * distCommRate / 100 : 0,
       status: "confirmed", pay: "pending", shippingCost: cartCount >= 20 ? 0 : 0, track: "", carrier: "", trackUrl: "", notes: "", clientNotes: fullNotes, fundaPref, lines, preferredDate, payMethod: cartPayMethod||""
     };
     setOrders(p => [newOrder, ...p]);
     dbSaveOrder(newOrder, lines);
-    logOrderChange(newOrder.id, "Pedido creado", "Cliente: "+newOrder.client+" · "+cartCount+" uds · "+fmt(finalTotal)+" €");
-    setCart({}); setCartCl(""); setCartNotes(""); setFundaPref([]); setPreferredDate(""); setCartPayMethod(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setSubmitted(true);
+    logOrderChange(newOrder.id, "Pedido creado"+(isDistTeam?" por "+user.name+" (equipo "+distCo+")":""), "Cliente: "+newOrder.client+" · "+cartCount+" uds · "+fmt(finalTotal)+" €");
+    setCart({}); setCartCl(""); setCartNotes(""); setFundaPref([]); setExpoPref(""); setPreferredDate(""); setCartPayMethod(""); setShippingAddr("saved"); setNewShipAddr({street:"",city:"",zip:"",country:""}); setSubmitted(true);
     setTimeout(() => { setSubmitted(false); setView(user.role === "distributor" ? "d-ord" : "c-ord"); }, 1500);
   };
 
@@ -2114,6 +2245,61 @@ export default function App() {
     setUser(u => ({...u, pw:nh}));
     try { const ss = JSON.parse(localStorage.getItem("minue_session")||"null"); if (ss) { ss.user.pw = nh; localStorage.setItem("minue_session", JSON.stringify(ss)); } } catch(e) {}
     setPwForm({cur:"",n1:"",n2:"",msg:t("pwCambiada"),ok:true});
+  };
+  /* Equipo de un showroom/distribuidor: usuarios con rol distributor, misma empresa y [equipo] en notas.
+     Ven clientes, pedidos y contactos del showroom, sin comisiones ni condiciones. Idioma = el del jefe. */
+  const EXPO_OPTS = [["","expoNo"],["promo","expoPromo"],["extra","expoExtra"]];
+  const renderExpoPick = () => <div style={{marginBottom:14,padding:"12px 14px",background:C.bg,borderRadius:8,border:"1px solid "+C.ln}}>
+    <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:3}}>🪞 {t("expoTitulo")}</div>
+    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:8}}>{t("expoDesc")}{packStock.expositores === 0 ? " · "+t("expoSinStock") : ""}</div>
+    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+      {EXPO_OPTS.map(([v,k]) => <button key={k} type="button" onClick={() => setExpoPref(v)} style={{padding:"7px 12px",borderRadius:16,border:"1.5px solid "+(expoPref===v?C.dk:C.ln),background:expoPref===v?C.dk:C.wh,color:expoPref===v?C.bg:C.dk,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{t(k)}</button>)}
+    </div>
+  </div>;
+  const linkify = txt => String(txt||"").split(/(https?:\/\/[^\s)]+)/g).map((x,i) => /^https?:\/\//.test(x) ? <a key={i} href={x} target="_blank" rel="noopener noreferrer" style={{color:"inherit",fontWeight:700,textDecoration:"underline"}}>{/instagram\.com/.test(x) ? "📷 "+t("abrirInstagram") : "🔗 "+t("abrirEnlace")}</a> : x);
+  const teamOf = lead => !String(lead.co||"").trim() ? [] : users.filter(u => u.role === "distributor" && isTeamUser(u) && String(u.co||"").toLowerCase().trim() === String(lead.co||"").toLowerCase().trim());
+  const renderTeam = lead => {
+    const members = teamOf(lead);
+    const f = teamForm;
+    const inp = {padding:"9px 10px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",minWidth:0};
+    const addMember = async () => {
+      if (f.saving) return;
+      const login = f.login.toLowerCase().trim().replace(/\s+/g,".");
+      if (!String(lead.co||"").trim()) return setTeamForm(x => ({...x, msg:"⚠ "+t("equipoSinEmpresa")}));
+      if (!f.name.trim() || !login || f.pw.length < 6) return setTeamForm(x => ({...x, msg:"⚠ "+t("equipoFaltan")}));
+      if (users.some(u => (u.email||"").toLowerCase() === login)) return setTeamForm(x => ({...x, msg:"⚠ "+t("equipoUsuarioExiste")}));
+      const nu = {email:login, pw:f.pw, role:"distributor", name:f.name.trim(), co:lead.co, lang:lead.lang||"es", commRate:0, active:true, notes:"[equipo] Equipo de "+lead.co+" (creado por "+user.name+")"};
+      setTeamForm(x => ({...x, saving:true}));
+      if (dbReady) { const hpw0 = await hashPw(nu.pw, login); const {error} = await supabase.from("users").insert({email:login,password_hash:hpw0,role:"distributor",name:nu.name,company:nu.co,lang:LANG_DB(nu.lang),comm_rate:0,active:true,notes:withLangTag(nu.notes,nu.lang)}); if (error) return setTeamForm(x => ({...x, saving:false, msg:"⚠ "+error.message})); }
+      const hpw = await hashPw(f.pw, login);
+      setUsers(x => [...x, {...nu, pw:hpw}]);
+      setTeamForm({name:"",login:"",pw:"",msg:"✓ "+t("equipoCreado")+": "+login, open:f.open});
+    };
+    const toggle = m => { const nu = {...m, active:!m.active}; setUsers(x => x.map(u => u.email===m.email?nu:u)); dbUpdateUser(nu); };
+    const resetPw = m => { const np = window.prompt(t("equipoNuevaPw")+" — "+m.name); if (!np || np.length < 6) return; const nu = {...m, newPw:np}; dbUpdateUser(nu); hashPw(np, m.email).then(h => setUsers(x => x.map(u => u.email===m.email?{...u, pw:h}:u))); toast("✓ "+t("equipoPwCambiada")); };
+    const remove = m => askConfirm(t("equipoEliminar")+" "+m.name+"?", async () => { setUsers(x => x.filter(u => u.email !== m.email)); if (dbReady) { try { await supabase.from("users").delete().eq("email", m.email); } catch(e) {} } });
+    return <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"16px 18px",marginBottom:16}} onClick={e => e.stopPropagation()}>
+      <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700}}>👥 {t("equipoShowroom")} · {lead.co}</div>
+      <div style={{fontSize:12,fontFamily:BD,color:C.gr,margin:"4px 0 12px",lineHeight:1.5}}>{t("equipoExplica")}</div>
+      {members.length === 0 && <div style={{fontSize:12,fontFamily:BD,color:C.gr2,padding:"6px 0 10px"}}>{t("equipoVacio")}</div>}
+      {members.map(m => <div key={m.email} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderTop:"1px solid "+C.ln,flexWrap:"wrap"}}>
+        <div style={{width:32,height:32,borderRadius:16,background:(m.active?C.gn:C.gr)+"20",color:m.active?C.gn:C.gr,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:BD,fontWeight:700,fontSize:13,flexShrink:0}}>{(m.name||"?")[0]}</div>
+        <div style={{flex:"1 1 140px",minWidth:0}}>
+          <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{m.name}{!m.active && <span style={{fontSize:10,color:C.rd,marginLeft:6}}>{t("equipoPausado").toUpperCase()}</span>}</div>
+          <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("usuario")}: <b>{m.email}</b> · {(m.lang||"es").toUpperCase()}</div>
+        </div>
+        <button onClick={() => resetPw(m)} style={{padding:"6px 10px",borderRadius:6,border:"1px solid "+C.ln,background:"transparent",fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>🔑 {t("equipoCambiarPw")}</button>
+        <button onClick={() => toggle(m)} style={{padding:"6px 10px",borderRadius:6,border:"1px solid "+C.ln,background:"transparent",fontSize:11,fontFamily:BD,fontWeight:600,color:m.active?"#c47a00":C.gn,cursor:"pointer"}}>{m.active ? "⏸ "+t("equipoPausar") : "▶ "+t("equipoActivar")}</button>
+        <button onClick={() => remove(m)} style={{padding:"6px 10px",borderRadius:6,border:"1px solid "+C.rd+"50",background:"transparent",fontSize:11,fontFamily:BD,color:C.rd,cursor:"pointer"}}>✕</button>
+      </div>)}
+      {f.open === lead.co ? <div style={{borderTop:"1px solid "+C.ln,paddingTop:12,marginTop:4,display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))",gap:8}}>
+        <input value={f.name} onChange={e => { const v = e.target.value; setTeamForm(x => ({...x, name:v})); }} placeholder={t("equipoNombre")} style={inp} />
+        <input value={f.login} onChange={e => { const v = e.target.value; setTeamForm(x => ({...x, login:v})); }} placeholder={t("usuario")+" (ej. angela.concept)"} autoCapitalize="none" style={inp} />
+        <input value={f.pw} onChange={e => { const v = e.target.value; setTeamForm(x => ({...x, pw:v})); }} placeholder={t("equipoPw")} style={inp} />
+        <Btn small onClick={addMember}>＋ {t("equipoAñadir")}</Btn>
+      </div> : <button onClick={() => setTeamForm({name:"",login:"",pw:"",msg:"",open:lead.co})} style={{marginTop:8,padding:"8px 14px",borderRadius:8,border:"1.5px dashed "+C.ln,background:"transparent",fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk,cursor:"pointer"}}>＋ {t("equipoAñadir")}</button>}
+      {f.msg && f.open === lead.co && <div style={{fontSize:12,fontFamily:BD,marginTop:8,color:f.msg[0]==="⚠"?C.rd:C.gn}}>{f.msg}</div>}
+    </div>;
   };
   const renderPwChange = () => <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
     <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>🔒 {t("cambiarPw")}</div>
@@ -2142,7 +2328,9 @@ export default function App() {
     setLoginErr("");
     if (found.pw.length !== 64 && dbReady) { supabase.from("users").update({password_hash: hashed}).eq("email", found.email); found.pw = hashed; }
     setUser(found); try { localStorage.setItem("minue_session", JSON.stringify({user:found,ts:Date.now()})); } catch(e) { console.log('DB error:', e); }
-    setLang(found.lang || "fr");
+    let lg = found.lang || "fr";
+    if (isTeamUser(found) && dbReady) { try { const {data:ld} = await supabase.from("users").select("lang,notes").eq("role","distributor").eq("company", found.co); const lead = (ld||[]).find(r => !/\[equipo\]/i.test(r.notes||"")); if (lead) lg = langOf(lead); } catch(e) {} }
+    setLang(lg);
     setView(found.role === "admin" ? "a-stats" : found.role === "team" ? "e-dash" : found.role === "distributor" ? "d-dash" : "c-home");
   };
 
@@ -2218,7 +2406,7 @@ export default function App() {
     const lines = Object.entries(lpCart).map(([id,n]) => { const p = products.find(x => String(x.id) === String(id)); return p ? {p, n, price:unitPrice(p)} : null; }).filter(Boolean);
     const total = lines.reduce((s,l) => s + l.n*l.price, 0);
     const ref = (() => { try { return new URLSearchParams(window.location.search).get("ref")||""; } catch(e) { return ""; } })();
-    const refDist = ref ? users.find(u => u.role === "distributor" && ((u.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") === ref.toLowerCase() || (u.referralCode||"") === ref)) : null;
+    const refDist = ref ? users.find(u => u.role === "distributor" && !isTeamUser(u) && ((u.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") === ref.toLowerCase() || (u.referralCode||"") === ref)) : null;
     const field = {width:"100%",padding:"12px 14px",border:"1px solid "+C.ln,borderRadius:10,fontFamily:BD,fontSize:14,background:C.wh,color:C.dk,boxSizing:"border-box"};
     const submit = async () => {
       const f = lpForm;
@@ -2374,7 +2562,7 @@ export default function App() {
             <div style={{width:"min(360px, 85vw)"}}>
               <div style={{marginBottom:24}}>
                 <div style={labelStyle}>{t("email")}</div>
-                <input type="email" value={loginEmail} onChange={e => { setLoginEmail(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="you@store.com" style={inputStyle} onFocus={e => e.target.style.borderBottomColor="#f8efe660"} onBlur={e => e.target.style.borderBottomColor="#f8efe625"} />
+                <input type="text" autoCapitalize="none" autoCorrect="off" autoComplete="username" value={loginEmail} onChange={e => { setLoginEmail(e.target.value); setLoginErr(""); }} onKeyDown={e => e.key === "Enter" && doLogin()} placeholder="email / usuario" style={inputStyle} onFocus={e => e.target.style.borderBottomColor="#f8efe660"} onBlur={e => e.target.style.borderBottomColor="#f8efe625"} />
               </div>
               <div style={{marginBottom:36}}>
                 <div style={labelStyle}>{t("motDePasse")}</div>
@@ -2406,7 +2594,7 @@ export default function App() {
                 </div>
               </div>}
               <div style={{textAlign:"center",marginBottom:36}}>
-                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300,fontStyle:"italic"}}>Enter Minuë world</div>
+                <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,color:CL.dk,fontWeight:300,fontStyle:"italic"}}>{({fr:"Entrez dans l'univers Minuë",es:"Entra en el mundo Minuë",en:"Enter the Minuë world",it:"Entra nel mondo Minuë"})[lang]||"Enter the Minuë world"}</div>
                 <div style={{width:30,height:1,background:CL.dk+"18",margin:"14px auto"}} />
                 <div style={{fontSize:12,fontFamily:BD,color:CL.dk+"50",lineHeight:1.6}}>{t("solicitudSub")}</div>
               </div>
@@ -2473,7 +2661,7 @@ export default function App() {
   const navItems = role === "client"
     ? [["c-home","accueil"],["c-cat","catalogue"],["c-cart","panier"],["c-fav","favoritos"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["c-selection","selectionPrivee"]] : []),["c-ord","commandes"],["c-historico","miHistorico"],["c-msg","mensajes"],["c-tarifs","tarifs"],["c-promo","promos"],["c-news","nouveautes"],["c-pack","packaging"],["c-res","ressources"],["c-help","faq"],["c-account","monCompte"]]
     : role === "distributor"
-    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["d-selection","selectionPrivee"]] : []),["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],["d-msg","mensajes"],["d-promo","promos"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
+    ? [["d-dash","dashboard"],["d-cat","catalogue"],["d-cart","panier"],["d-fav","favoritos"],["d-tarifs","tarifs"],...(products.some(p => p.active!==false && (p.tags||[]).includes("privee")) ? [["d-selection","selectionPrivee"]] : []),["d-ord","commandes"],["d-cl","clients"],["d-prospectos","prospectos"],["a-mercado","mercado"],...(isDistTeam ? [] : [["d-msg","mensajes"]]),["d-promo","promos"],["d-pack","packaging"],["d-help","faq"],["d-account","monCompte"]]
     : role === "team"
     ? [["e-dash","dashboard"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["e-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-stock","stock"],["e-almacen","almacen"],["e-logistica","logistica"],["a-tasks","tareas"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-faq","faq"],["e-fichaje","fichaje"],["e-account","monCompte"]]
     : [["a-stats","stats"],...(AI_BACKEND?[["a-decisiones","decisiones"]]:[]),["a-analytics","analytics"],["a-mercado","mercado"],["a-ord","commandes"],["a-pendientes","pendientesServir"],["a-msg","mensajes"],["a-comercial","commercial"],["a-cl","clients"],["a-dist","distributeurs"],["a-prospectos","prospectos"],["a-recom","recomendaciones"],["a-stock","stock"],["a-almacen","almacen"],["a-logistica","logistica"],["a-inv","factures"],["a-promo","promos"],["a-news","nouveautes"],["a-pack","packaging"],["a-tasks","tareas"],["a-negocio","datosNegocio"],["a-users","utilisateurs"],["a-empleados","empleados"],["a-faq","faq"]];
@@ -2519,7 +2707,7 @@ export default function App() {
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px min(16px, 3vw)"}}>
         <div style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}} onClick={() => setView(navItems[0][0])}>
           <img loading="lazy" src={LOGO} alt="Minuë" style={{height:"min(63px, 17vw)",borderRadius:4}} />
-          <span style={{fontSize:10,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?"distributeur":role==="team"?"employe":role)}</span>
+          <span style={{fontSize:10,padding:"2px 7px",fontFamily:BD,color:rc,background:"rgba(248,239,230,0.08)",fontWeight:600,borderRadius:8,textTransform:"uppercase",letterSpacing:0.3}}>{t(role==="distributor"?(isDistTeam?"equipoShowroom":"distributeur"):role==="team"?"employe":role)}</span>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:4,flexShrink:0}}>
           {["fr","es","en","it"].map(l => (
@@ -2534,10 +2722,10 @@ export default function App() {
                 ...orders.filter(o => o.status === "confirmed" && !o.payMethod).slice(0,5).map(o => ({id:"pay-"+o.id,type:"order",text:"🆕 "+o.id+" · "+o.client+" · "+fmt(o.total)+"€ — "+t("notifConfigPago"),go:"a-ord",time:o.date,ord:o.id})),
                 ...orders.filter(o => o.pay === "overdue").slice(0,3).map(o => ({id:"overdue-"+o.id,type:"task",text:t("notifPagoVencido")+" "+o.id+" ("+o.client+")",go:"a-ord",time:o.date,ord:o.id})),
                 ...orders.filter(o => o.pay === "paid" && o.status !== "delivered").slice(0,3).map(o => ({id:"paid-"+o.id,type:"order",text:t("notifCobrado")+" "+o.id+" · "+o.client,go:"a-ord",time:o.date,ord:o.id})),
-                ...users.filter(u => u.active === false && u.role !== "admin").map(u => ({id:"access-"+u.email,type:"access",text:"🔑 "+u.name+" — "+t("notifSolicitaAcceso"),go:"a-users"})),
+                ...users.filter(u => u.active === false && u.role !== "admin").map(u => ({id:"access-"+u.email,type:"access",text:"🔑 "+u.name+" — "+t("notifSolicitaAcceso"),go:"a-users",uf:"pending"})),
                 ...tasks.filter(tk => tk.priority === "haute" && tk.status !== "fait").map(tk => ({id:"task-"+tk.id,type:"task",text:"⚠ "+tk.title,go:"a-tasks"})),
-                ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({id:"stock0-"+p.id,type:"stock",text:t("notifAgotado")+" "+p.model+" "+p.color,go:"a-stock"})),
-                ...products.filter(p => p.stock > 0 && p.stock < 5).slice(0,3).map(p => ({id:"stocklow-"+p.id,type:"stock",text:t("notifStockBajo")+" "+p.model+" "+p.color+" ("+p.stock+")",go:"a-stock"}))
+                ...products.filter(p => p.stock === 0).slice(0,3).map(p => ({id:"stock0-"+p.id,type:"stock",text:t("notifAgotado")+" "+p.model+" "+p.color,go:"a-stock",sq:p.model})),
+                ...products.filter(p => p.stock > 0 && p.stock < 5).slice(0,3).map(p => ({id:"stocklow-"+p.id,type:"stock",text:t("notifStockBajo")+" "+p.model+" "+p.color+" ("+p.stock+")",go:"a-stock",sq:p.model}))
               ]
               : role === "distributor"
               ? [
@@ -2545,10 +2733,10 @@ export default function App() {
                 ...myOrders.filter(o => o.status === "delivered" && o.pay !== "paid").slice(0,3).map(o => ({id:"distpay-"+o.id,type:"task",text:t("notifPendienteCobro")+" "+o.id+" ("+o.client+")",go:"d-ord",ord:o.id})),
                 // Direct orders from my clients (without me)
                 ...orders.filter(o => o.dist === "Direct" && distClients.some(c => c.name === o.client)).slice(0,5).map(o => ({id:"direct-"+o.id,type:"task",text:"⚠️ "+o.client+" "+t("notifPidioDirecto")+" ("+o.id+")",go:"d-ord",ord:o.id})),
-                ...prospects.filter(p => p.distributor === user.co && p.stage === "nuevo").slice(0,5).map(p => ({id:"pros-"+p.id,type:"task",text:"🎯 "+t("notifNuevaTienda")+" "+p.name+(p.city?" ("+p.city+")":""),go:"d-prospectos"})),
-                ...prospects.filter(p => p.distributor === user.co && p.stage === "interesado").slice(0,3).map(p => ({id:"prosint-"+p.id,type:"task",text:"🔥 "+t("notifTiendaInteresada")+" "+p.name,go:"d-prospectos"})),
+                ...prospects.filter(p => (!!user.co && p.distributor === user.co) && p.stage === "nuevo" && !ptag(p,"cartera")).slice(0,5).map(p => ({id:"pros-"+p.id,type:"task",text:"🎯 "+t("notifNuevaTienda")+" "+p.name+(p.city?" ("+p.city+")":""),go:"d-prospectos",pid:p.id,pq:p.name})),
+                ...prospects.filter(p => (!!user.co && p.distributor === user.co) && p.stage === "interesado" && !ptag(p,"cartera")).slice(0,3).map(p => ({id:"prosint-"+p.id,type:"task",text:"🔥 "+t("notifTiendaInteresada")+" "+p.name,go:"d-prospectos",pid:p.id,pq:p.name})),
                 ...news.filter(n => n.on !== false && n.createdAt && (Date.now()-new Date(n.createdAt).getTime()) < 30*86400000).slice(0,3).map(n => ({id:"news-"+n.id,type:"promo",text:"✨ "+t("notifNovedad")+" "+((n.title||{})[lang]||(n.title||{}).es||""),go:"d-dash"})),
-                ...productAlerts.filter(a => a.client_email === user.email).map(a => products.find(p => p.id === a.product_id)).filter(p => p && p.stock > 0).slice(0,3).map(p => ({id:"back-"+p.id,type:"promo",text:"📦 "+t("notifRepuesto")+" "+p.model+" "+p.color,go:"d-cat"}))
+                ...productAlerts.filter(a => a.client_email === user.email).map(a => products.find(p => p.id === a.product_id)).filter(p => p && p.stock > 0).slice(0,3).map(p => ({id:"back-"+p.id,type:"promo",text:"📦 "+t("notifRepuesto")+" "+p.model+" "+p.color,go:"d-cat",cq:p.model}))
               ]
               : [
                 ...conversations.filter(c => (c.clientEmail === user.email || c.clientCompany === user.co) && c.messages.some(m => m.from !== user.email && !m.read)).slice(0,3).map(c => ({id:"msg-"+c.id,type:"task",text:"💬 "+t("equipoMinue")+": "+c.subject,go:"c-msg",time:c.updatedAt,conv:c.id})),
@@ -2556,7 +2744,7 @@ export default function App() {
                 ...myOrders.filter(o => o.status === "shipped").slice(0,3).map(o => ({id:"ship-"+o.id,type:"order",text:t("notifEnviado").replace("%id",o.id),go:"c-ord",ord:o.id})),
                 ...myOrders.filter(o => o.status === "preparing").slice(0,3).map(o => ({id:"prep-"+o.id,type:"order",text:t("notifEnPrepa").replace("%id",o.id),go:"c-ord",ord:o.id})),
                 ...myOrders.filter(o => o.status === "delivered").slice(0,2).map(o => ({id:"deliv-"+o.id,type:"order",text:t("notifEntregado").replace("%id",o.id),go:"c-ord",ord:o.id})),
-                ...(recommendations[user.email]||[]).slice(0,2).map(id => { const p = products.find(x => x.id === id); return p ? {id:"rec-"+id,type:"promo",text:t("notifRecoParaTi")+" "+p.model+" "+p.color,go:"c-cat"} : null; }).filter(Boolean),
+                ...(recommendations[user.email]||[]).slice(0,2).map(id => { const p = products.find(x => x.id === id); return p ? {id:"rec-"+id,type:"promo",text:t("notifRecoParaTi")+" "+p.model+" "+p.color,go:"c-cat",cq:p.model} : null; }).filter(Boolean),
                 ...promos.filter(p => p.on && (p.visible||[]).includes("client") && (!p.targetClients || p.targetClients.length === 0 || p.targetClients.includes(user.co))).slice(0,2).map(p => ({id:"promo-"+p.id,type:"promo",text:"🎁 "+(p.name||t("notifPromoActiva")),go:"c-promo"}))
               ];
             const notifs = allNotifs.filter(n => !dismissedNotifs.ids.includes(n.id));
@@ -2582,7 +2770,7 @@ export default function App() {
                   {notifs.map((n,i) => (
                     <div key={n.id} style={{padding:"12px 18px",borderBottom:i<notifs.length-1?"1px solid "+C.bg2:"none",fontSize:12,fontFamily:BD,color:C.dk,display:"flex",alignItems:"flex-start",gap:10,lineHeight:1.5}}>
                       <span style={{width:8,height:8,borderRadius:4,background:n.type==="access"?"#f39c12":n.type==="task"?C.rd:n.type==="stock"?C.yl:n.type==="promo"?"#8e44ad":C.gn,flexShrink:0,marginTop:4}} />
-                      <span style={{flex:1,cursor:"pointer"}} onClick={() => { dismissNotif(n.id); setNotifOpen(false); setView(n.go); if (n.conv) { setActiveConv(n.conv); } if (n.ord) { const o = orders.find(x => x.id === n.ord); if (o) { if (role === "admin" || role === "team") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o, idx: orders.indexOf(o)}); } } } }}>{n.text}</span>
+                      <span style={{flex:1,cursor:"pointer"}} onClick={() => { dismissNotif(n.id); setNotifOpen(false); setView(n.go); try { window.scrollTo({top:0}); } catch(e) {} if (n.pid) { setEd({_pQ:n.pq||"", _pGroup:"all", _pOpen:{[n.pid]:true}}); } if (n.uf) setUserFilter(n.uf); if (n.sq) setStockSearch(n.sq); if (n.cq) setFilter(n.cq); if (n.conv) { setActiveConv(n.conv); } if (n.ord) { const o = orders.find(x => x.id === n.ord); if (o) { if (role === "admin" || role === "team") { setModal("editOrd"); setEd({...o, idx: orders.indexOf(o)}); } else { setModal("viewOrd"); setEd({...o, idx: orders.indexOf(o)}); } } } }}>{n.text}</span>
                       <button onClick={(e) => { e.stopPropagation(); dismissNotif(n.id); }} title="Marcar como leído" style={{background:"transparent",border:"none",cursor:"pointer",fontSize:14,color:C.gr2,padding:0,lineHeight:1}}>✓</button>
                     </div>
                   ))}
@@ -2648,7 +2836,7 @@ export default function App() {
           if (lowStock > 0) workBadges["a-stock"] = lowStock;
         }
         if (role === "distributor") {
-          const newProsp = prospects.filter(p => p.distributor === user.co && p.stage === "nuevo").length;
+          const newProsp = prospects.filter(p => (!!user.co && p.distributor === user.co) && p.stage === "nuevo" && !ptag(p,"cartera")).length;
           if (newProsp > 0) workBadges["d-prospectos"] = newProsp;
         }
         const renderTile = ([v, k]) => {
@@ -2837,9 +3025,16 @@ export default function App() {
       modelGroups[p.model].colors.push(p);
       (p.tags||[]).forEach(t => modelGroups[p.model].tags.add(t));
     });
-    const models = Object.values(modelGroups);
+    // Orden "Top ventas": índice interno de ventas (Faire + Shopify + plataforma) guardado como etiqueta oculta pop:N. No se muestra nunca la cifra.
+    const popOf = p => { const tg = (p.tags||[]).find(x => /^pop:\d+$/.test(x)); return tg ? +tg.slice(4) : 0; };
+    Object.values(modelGroups).forEach(mg => { mg.colors.sort((a,b) => popOf(b) - popOf(a)); mg.pop = mg.colors.reduce((s,c) => s + popOf(c), 0); mg.isNew = mg.colors.some(c => (c.tags||[]).includes("new")); });
+    const models = Object.values(modelGroups).sort((a,b) => catSort === "az" ? a.model.localeCompare(b.model) : catSort === "new" ? ((b.isNew?1:0)-(a.isNew?1:0) || b.pop-a.pop) : (b.pop - a.pop || a.model.localeCompare(b.model)));
     const tagConf = {top:{l:t("topVenta"),c:"#c4956a"},new:{l:t("nuevo"),c:"#8e44ad"},rec:{l:t("recomendado"),c:"#722f37"},icons:{l:"Icons",c:"#b8860b"},privee:{l:"Privée",c:"#18332f"}};
     return <>
+      <div style={{display:"flex",justifyContent:"flex-end",alignItems:"center",gap:6,marginBottom:10,flexWrap:"wrap"}}>
+        <span style={{fontSize:12,fontFamily:BD,color:C.gr,fontWeight:600}}>{t("ordenarPor")}</span>
+        {[["top","🔥 "+t("ordTop")],["new","✨ "+t("ordNuevo")],["az","A–Z"]].map(([v,l]) => <button key={v} className="mn-press" onClick={() => setCatSort(v)} style={{padding:"6px 12px",borderRadius:16,border:"1px solid "+(catSort===v?C.dk:C.ln),background:catSort===v?C.dk:"transparent",color:catSort===v?C.bg:C.dk,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{l}</button>)}
+      </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(160px, calc(50% - 6px)),1fr))",gap:12}}>
         {models.map(mg => {
           const mainColor = mg.colors.find(c => c.imageUrl) || mg.colors[0];
@@ -2966,7 +3161,7 @@ export default function App() {
   const isESclient = cl => /^(es|españa|espana|spain|espagne)$/i.test(String(cl.country||"").trim());
   const defaultTax = cl => isESclient(cl) ? 21 : 0;
   const nextInvoiceNumber = () => { const y = new Date().getFullYear(); const max = orders.map(o => String(o.invoiceNumber||"").match(new RegExp("^M"+y+"(\\d{3,})$"))).filter(Boolean).reduce((m,x) => Math.max(m, +x[1]), 0); return "M"+y+String(max+1).padStart(3,"0"); };
-  const distRate = d => { const u = users.find(x => x.role === "distributor" && String(x.co||"").toLowerCase().trim() === String(d||"").toLowerCase().trim()); return ((u && u.commRate) || 15) / 100; };
+  const distRate = d => { const u = users.find(x => x.role === "distributor" && !isTeamUser(x) && String(x.co||"").toLowerCase().trim() === String(d||"").toLowerCase().trim()); return ((u && u.commRate) || 15) / 100; };
   const docLang = cl => { const c = String(cl.country||"").toUpperCase(); return /^(FR|FRANCE|BE|BELGIQUE|CH|LU)/.test(c) ? "fr" : /^(IT|ITALIA)/.test(c) ? "it" : isESclient(cl) ? "es" : "en"; };
   const IBAN_TXT = "IBAN ES11 2100 8447 6202 0010 9299 · BIC CAIXESBBXXX";
   const mailDoc = (o, kind, number, amount) => {
@@ -3757,7 +3952,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{marginTop:10}}>
                 <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:3}}>{t("canal")}</div>
                 <select value={ed.dist || "Direct"} onChange={e => setEd(p => ({...p, dist: e.target.value}))} style={{width:"100%",padding:8,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk,boxSizing:"border-box"}}>
-                  {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire",...users.filter(u => u.role === "distributor").map(u => u.co).filter(c => c && !["Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire"].includes(c))].map(d => <option key={d} value={d}>{d}</option>)}
+                  {["Direct","Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire",...users.filter(u => u.role === "distributor" && !isTeamUser(u)).map(u => u.co).filter(c => c && !["Agent Sud","MPM Diffusion","Showroom Nomada","MCModa","Faire"].includes(c))].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
             </div>
@@ -4601,6 +4796,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             }} style={{width:"100%",marginTop:8}}>{role === "client" ? t("guardarCambios")||t("editarCmd") : t("editarCmd")}</Btn>}
             {(role === "admin" || role === "team") && <Btn ghost onClick={() => downloadAlbaran(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarAlbaran")}</Btn>}
             {ed.pay !== "paid" && <Btn ghost onClick={() => downloadProforma(ed)} style={{width:"100%",marginTop:8}}>📄 {t("descargarProforma")}</Btn>}
+            {role === "distributor" && (orders.find(o => o.id === ed.id)||{}).invoiceNumber && <Btn ghost onClick={() => { const o = orders.find(x => x.id === ed.id); setEd({...o}); setModal("viewInv"); }} style={{width:"100%",marginTop:8}}>🧾 {t("verFactura")} {(orders.find(o => o.id === ed.id)||{}).invoiceNumber}</Btn>}
             {ed.pay === "paid" ? <div style={{marginTop:10,padding:"10px 14px",background:CL.gn+"0c",border:"1px solid "+CL.gn+"30",borderRadius:8,fontSize:12,fontFamily:BD,color:CL.gn,lineHeight:1.5}}>✓ {t("facturaPagada")}</div> : <div style={{marginTop:10,padding:"10px 14px",background:C.bg,border:"1px solid "+C.ln,borderRadius:8,fontSize:10.5,fontFamily:BD,color:C.gr,lineHeight:1.5}}>ℹ️ {t("facturaTrasPago")}</div>}
           </>;
           })()}
@@ -5047,7 +5243,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:8}}>
               <div style={{fontSize:18,fontFamily:DP,color:C.dk,fontWeight:600}}>📄 Factura</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                <button onClick={() => setEd(p => ({...p, _editMode: !p._editMode}))} style={{padding:"6px 12px",background:ed._editMode?C.dk:"transparent",color:ed._editMode?C.bg:C.dk,border:"1px solid "+C.dk,borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{ed._editMode ? "✓ Listo" : "✏️ Editar"}</button>
+                {(role === "admin" || role === "team") && <button onClick={() => setEd(p => ({...p, _editMode: !p._editMode}))} style={{padding:"6px 12px",background:ed._editMode?C.dk:"transparent",color:ed._editMode?C.bg:C.dk,border:"1px solid "+C.dk,borderRadius:4,fontSize:12,fontFamily:BD,fontWeight:600,cursor:"pointer"}}>{ed._editMode ? "✓ Listo" : "✏️ Editar"}</button>}
                 <button onClick={() => {
                   const lns = ed.lines || [];
                   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${invNumber} — Minuë Opticians</title><style>
@@ -5214,7 +5410,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             </div>
 
             {taxRate === 0 && !isESclient(cl) && <div style={{fontSize:12,fontFamily:BD,color:cl.taxId?C.gr:C.rd,marginTop:8,padding:cl.taxId?0:"8px 10px",background:cl.taxId?"transparent":C.rd+"10",borderRadius:8}}>{cl.taxId ? "Inversión del sujeto pasivo · NIF-IVA "+cl.taxId : "⚠ Falta el NIF-IVA de "+(cl.name||"la tienda")+": añádelo en su ficha antes de emitir sin IVA."}</div>}
-            {(ed._editMode || !issued) && <Btn onClick={() => {
+            {(role === "admin" || role === "team") && (ed._editMode || !issued) && <Btn onClick={() => {
               const base = orders.find(o => o.id === ed.id) || {};
               const custom = taxRate !== defaultTax(cl);
               const notes = String(base.notes||"").replace(/\s*\[iva:[\d.]+\]/g,"") + (custom ? " [iva:"+taxRate+"]" : "");
@@ -5223,7 +5419,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               logOrderChange(ed.id, issued ? "Factura editada" : "Factura emitida", "Número: "+upd.invoiceNumber+" · IVA: "+taxRate+"%");
               setEd(p => ({...p, ...upd, _editMode: false})); toast(issued ? t("enregistrer") : "🧾 "+upd.invoiceNumber);
             }} style={{width:"100%",marginTop:10}}>{issued ? "💾 Guardar factura" : "🧾 Emitir factura "+invNumber}</Btn>}
-            {issued && !ed._editMode && <Btn ghost onClick={() => mailDoc(ed, "factura", invNumber, total)} style={{width:"100%",marginTop:8}}>✉ Enviar factura por email{cl.companyEmail ? " · "+cl.companyEmail : ""}</Btn>}
+            {(role === "admin" || role === "team") && issued && !ed._editMode && <Btn ghost onClick={() => mailDoc(ed, "factura", invNumber, total)} style={{width:"100%",marginTop:8}}>✉ Enviar factura por email{cl.companyEmail ? " · "+cl.companyEmail : ""}</Btn>}
             </>;
           })()}
 
@@ -5519,7 +5715,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
           {/* NEW TASK */}
           {modal === "importProspects" && (() => {
-            const distUsers = users.filter(u => u.role === "distributor");
+            const distUsers = users.filter(u => u.role === "distributor" && !isTeamUser(u));
             const parseCSV = (text) => {
               const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
               if (lines.length === 0) return [];
@@ -5571,7 +5767,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             <div style={{display:"flex",flexDirection:"column",gap:10}}>
               {role === "admin" && !ed._byDist && <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>DISTRIBUIDOR *</div>
                 <select value={ed.distributor||""} onChange={e => setEd(p => ({...p, distributor:e.target.value}))} style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}}>
-                  {users.filter(u => u.role === "distributor").map(u => <option key={u.email} value={u.co}>{u.co} ({u.name})</option>)}
+                  <option value="">— {t("sinAsignar")} —</option>
+                  {users.filter(u => u.role === "distributor" && !isTeamUser(u)).map(u => <option key={u.email} value={u.co}>{u.co} ({u.name})</option>)}
                 </select>
               </div>}
               <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("nomBoutique")||"NOMBRE"} *</div><input value={ed.name||""} onChange={e => setEd(p => ({...p, name:e.target.value}))} placeholder="Óptica Bella Vista" style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box"}} /></div>
@@ -5589,8 +5786,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               </div>
               {(role === "admin") && <div><div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:4,fontWeight:600}}>{t("notaMinue").toUpperCase()}</div><textarea value={ed.noteAdmin||""} onChange={e => setEd(p => ({...p, noteAdmin:e.target.value}))} rows={2} placeholder="Contactar de mi parte, conocí al dueño en SILMO..." style={{width:"100%",padding:9,border:"1px solid "+C.ln,borderRadius:3,fontFamily:BD,fontSize:12,background:C.bg,color:C.dk,boxSizing:"border-box",resize:"vertical"}} /></div>}
             </div>
-            <Btn disabled={!ed.name || !ed.distributor} onClick={async () => {
-              if (ed._editing) { const np = {...ed}; delete np._editing; delete np._pDist; setProspects(x => x.map(y => y.id===ed.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); }
+            <Btn disabled={!ed.name || (role !== "admin" && !ed.distributor)} onClick={async () => {
+              if (ed._editing) { const np = {...ed}; Object.keys(np).forEach(k => { if (k[0] === "_") delete np[k]; }); setProspects(x => x.map(y => y.id===ed.id?{...y, ...np}:y)); const base = {name:np.name, city:np.city||"", country:np.country||"", email:np.email||"", phone:np.phone||"", web:np.web||"", instagram:np.instagram||""}; dbPatchProspect(np.id, role === "admin" ? {...base, distributor:np.distributor||"", note_admin:np.noteAdmin||""} : base); toast(t("borradorGuardado")||"Guardado"); }
               else { const tempId = "tmp-"+Date.now(); const np = {id:tempId, distributor:ed.distributor, name:ed.name, city:ed.city||"", country:ed.country||"", email:ed.email||"", phone:ed.phone||"", web:ed.web||"", instagram:ed.instagram||"", noteAdmin:ed.noteAdmin||"", noteDist:ed.noteDist||"", stage:"nuevo"}; setProspects(x => [np, ...x]); const saved = await dbSaveProspect(np); if (saved) setProspects(x => x.map(y => y.id===tempId?saved:y)); toast(t("prospectoCreado")); }
               setModal(null);
             }} style={{width:"100%",marginTop:14}}>{t("enregistrer")}</Btn>
@@ -6466,13 +6663,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
               {/* FUNDA COLOR SELECTOR - MULTIPLE */}
               {(() => {
-                const fundas = [["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"]];
+                const fundas = [["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"],["fundaBurdeos","Burdeos","#6d1f2c"],["fundaVerdeBotella","Verde botella","#1f4a36"]];
                 return <div style={{borderTop:"1px solid "+C.bg2,padding:"16px 0",marginTop:8}}>
                   <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:4}}>🎁 {t("fundasPreferidos")}</div>
                   <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:10}}>{t("fundasDesc")}</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                     {fundas.map(([k,label,color]) => {
-                      const stock = packStock[k]||0;
+                      const stock = packStock[k] === undefined ? 1 : (packStock[k]||0);
                       const isAvail = stock > 0;
                       const isSelected = (fundaPref||[]).includes(k);
                       return <button key={k} onClick={() => { if(!isAvail) return; setFundaPref(p => (p||[]).includes(k) ? p.filter(x => x !== k) : [...(p||[]), k]); }} disabled={!isAvail} style={{padding:"10px 14px",background:isSelected?C.dk:C.wh,color:isSelected?C.bg:isAvail?C.dk:C.gr2,border:"2px solid "+(isSelected?C.dk:isAvail?C.ln:C.ln+"60"),borderRadius:8,cursor:isAvail?"pointer":"not-allowed",fontSize:12,fontFamily:BD,fontWeight:isSelected?700:500,display:"flex",alignItems:"center",gap:8,opacity:isAvail?1:0.5}}>
@@ -6484,6 +6681,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     })}
                   </div>
                   {(fundaPref||[]).length > 0 && <div style={{marginTop:8,fontSize:11,fontFamily:BD,color:C.gr,fontStyle:"italic"}}>{t("coloresSeleccionados").replace("%n",String((fundaPref||[]).length))}</div>}
+                  <div style={{marginTop:14}}>{renderExpoPick()}</div>
                 </div>;
               })()}
 
@@ -6734,7 +6932,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       </Sec>}
 
       {/* TARIFS DISTRIBUTOR */}
-      {(view === "c-msg" || view === "d-msg") && <Sec title={"💬 "+t("atencionCliente")}>
+      {(view === "c-msg" || view === "d-msg") && <Sec title={view === "d-msg" ? "🤝 "+t("canalMarca") : "💬 "+t("atencionCliente")} sub={view === "d-msg" ? t("canalMarcaSub") : undefined}>
         {(() => {
           const myConvs = conversations.filter(c => c.clientEmail === user.email || c.clientCompany === user.co);
           if (activeConv) {
@@ -7506,18 +7704,18 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{width:54,height:54,borderRadius:27,background:"linear-gradient(135deg,#e0b25a,#c4956a)",color:CL.dk,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,fontFamily:DP,fontWeight:700,flexShrink:0,boxShadow:"0 6px 18px rgba(0,0,0,0.25), inset 0 0 0 2px rgba(255,255,255,0.35)"}}>{ini}</div>
               <div style={{minWidth:0}}>
                 <div style={{fontSize:"min(26px, 6vw)",fontFamily:DP,fontWeight:500,lineHeight:1.15}}>{t("bienvenida")}, {user.name} <span style={{color:"#e0b25a"}}>✦</span></div>
-                <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,letterSpacing:.3}}>{t("showroomOficial")}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:"rgba(248,239,230,0.65)",marginTop:3,letterSpacing:.3}}>{isDistTeam ? t("equipoShowroom")+" · "+(user.co||"") : t("showroomOficial")}</div>
               </div>
             </div>
             <div className="mn-fade" style={{position:"relative",display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}>
               {user.co && <span style={{...pill("linear-gradient(135deg,#e0b25a,#c4956a)",CL.dk),boxShadow:"0 4px 14px rgba(212,160,48,0.3)",fontWeight:700}}>{ic(ICO.spark, CL.dk)}{user.co}</span>}
               {zone && <span style={pill("rgba(248,239,230,0.1)","#f8efe6","rgba(248,239,230,0.22)")}>{ic(ICO.pin,"#8fc9a8")}{zone}</span>}
-              <span style={pill("rgba(143,201,168,0.14)","#bfe5cf","rgba(143,201,168,0.35)")}>{ic(ICO.percent,"#8fc9a8")}{(user.commRate||15)}% {t("condComision").toLowerCase()}</span>
+              {isDistTeam ? <span style={pill("rgba(143,201,168,0.14)","#bfe5cf","rgba(143,201,168,0.35)")}>{ic(ICO.users,"#8fc9a8")}{t("equipoShowroom")}</span> : <span style={pill("rgba(143,201,168,0.14)","#bfe5cf","rgba(143,201,168,0.35)")}>{ic(ICO.percent,"#8fc9a8")}{(user.commRate||15)}% {t("condComision").toLowerCase()}</span>}
             </div>
           </div>;
         })()}
         {(() => {
-          const newProsp = prospects.filter(p => p.distributor === user.co && p.stage === "nuevo");
+          const newProsp = prospects.filter(p => (!!user.co && p.distributor === user.co) && p.stage === "nuevo" && !ptag(p,"cartera"));
           if (newProsp.length === 0) return null;
           return <div style={{padding:"16px min(24px,4vw) 0"}}>
             <div onClick={() => setView("d-prospectos")} style={{background:"linear-gradient(135deg,#c4956a,#b8860b)",borderRadius:14,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:14,color:"#fff",boxShadow:"0 4px 16px rgba(184,134,11,0.25)"}}>
@@ -7547,8 +7745,8 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>;
         })()}
         {(() => {
-          const myP = prospects.filter(p => p.distributor === user.co);
-          const pending = myP.filter(p => p.stage === "nuevo" || p.stage === "contactado").length;
+          const myP = prospects.filter(p => (!!user.co && p.distributor === user.co) && !ptag(p,"cartera"));
+          const pending = myP.filter(p => (p.stage === "nuevo" || p.stage === "contactado") && !ptag(p,"cartera")).length;
           if (myP.length === 0) return null;
           return <div style={{margin:"14px min(24px,4vw) 0",background:"linear-gradient(135deg,#8e44ad12,#8e44ad06)",border:"1.5px solid #8e44ad35",borderRadius:12,padding:"14px 18px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",flexWrap:"wrap"}} onClick={() => setView("d-prospectos")}>
             <IconChip d={ICO.spark} c={ACC.gold} size={42} />
@@ -7597,11 +7795,22 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
             </>;
           })()}
+          {/* ARGUMENTOS DE VENTA: lo que el showroom debe contar a las tiendas */}
+          <div className="mn-fade" style={{background:"linear-gradient(150deg,"+ACC.gold+"14,"+C.wh+" 55%)",border:"1px solid "+ACC.gold+"45",borderRadius:14,padding:"16px 18px",marginBottom:18}}>
+            <div style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>💡 {t("argTitulo")}</div>
+            <div style={{fontSize:12,fontFamily:BD,color:C.gr,margin:"3px 0 12px"}}>{t("argSub")}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10}}>
+              {[["🏷️","arg1T","arg1D"],["📍","arg2T","arg2D"],["🔁","arg3T","arg3D"],["🤝","arg4T","arg4D"],["⚡","arg5T","arg5D"]].map(([ic,a,b]) => <div key={a} style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:10,padding:"12px 14px"}}>
+                <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{ic} {t(a)}</div>
+                <div style={{fontSize:12.5,fontFamily:BD,color:C.gr,marginTop:4,lineHeight:1.5}}>{t(b)}</div>
+              </div>)}
+            </div>
+          </div>
           {/* GUIA: pasos visibles hasta que el distribuidor la oculte */}
           {(() => {
             const hidden = (() => { try { return localStorage.getItem("minue_guide_hidden_"+user.email) === "1"; } catch(e) { return false; } })();
             const show = !hidden;
-            const steps = [[ICO.link,t("paso1Titulo"),t("paso1Desc"),ACC.green],[ICO.shield,t("paso2Titulo"),t("paso2Desc"),ACC.sea],[ICO.cart,t("paso3Titulo"),t("paso3Desc"),ACC.terra],[ICO.percent,t("paso4Titulo"),t("paso4Desc"),ACC.gold],[ICO.coins,t("paso5Titulo"),t("paso5Desc"),ACC.wine]];
+            const steps = [[ICO.link,t("paso1Titulo"),t("paso1Desc"),ACC.green],[ICO.shield,t("paso2Titulo"),t("paso2Desc"),ACC.sea],[ICO.cart,t("paso3Titulo"),t("paso3Desc"),ACC.terra],[ICO.percent,t("paso4Titulo"),t("paso4Desc"),ACC.gold],[ICO.coins,t("paso5Titulo"),t("paso5Desc"),ACC.wine]].filter(st => !isDistTeam || st[0] !== ICO.percent);
             const toggle = () => { try { localStorage.setItem("minue_guide_hidden_"+user.email, show ? "1" : "0"); } catch(e) {} setGuideOpen(g => !g); };
             return <div className="mn-fade" style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:14,marginBottom:18,overflow:"hidden"}}>
               <button onClick={toggle} style={{width:"100%",padding:"16px 18px",background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:12,textAlign:"left"}}>
@@ -7635,10 +7844,15 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
 
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(120px,1fr))",gap:10,marginBottom:20}}>
             {renderKPI(t("ventesTot"), fmt(distSales)+" €", null, () => setView("d-ord"), ICO.chart, ACC.sea)}
+            {isDistTeam ? <>
+              {renderKPI(t("commandes"), String(distOrders.length), null, () => setView("d-ord"), ICO.box, ACC.terra)}
+              {renderKPI(t("clients"), String(distClients.length), null, () => setView("d-cl"), ICO.users, ACC.green)}
+            </> : <>
             {renderKPI(t("commTot")+" ("+(user.commRate||15)+"%)", fmt(distComm)+" €", C.gn, null, ICO.percent, ACC.green)}
             {renderKPI(t("comAFacturar"), fmt(distAFacturar)+" €", C.gn, null, ICO.coins, ACC.green)}
             {renderKPI(t("comEnEspera"), fmt(distEnEspera)+" €", null, null, ICO.cal, ACC.gold)}
             {renderKPI(t("comPagada"), fmt(distPagada)+" €", null, null, ICO.shield, ACC.sage)}
+            </>}
           </div>
 
           {/* ACCIONES PENDIENTES (desde la ficha del distribuidor) */}
@@ -7710,9 +7924,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             distOrders.forEach(o => { const p = (o.date||"").split("/"); if (p.length !== 3) return; const mm = parseInt(p[1])-1, yy = parseInt(p[2]); const b = months.find(x => x.y===yy && x.m===mm); if (b) { b.total += o.total||0; b.n += 1; } });
             const max = Math.max(1, ...months.map(x => x.total));
             const sum6 = months.reduce((s,x) => s+x.total, 0);
-            const myProspects = prospects.filter(p => p.distributor === user.co);
-            const active = myProspects.filter(p => p.stage !== "cliente" && p.stage !== "descartado").sort((a,b) => (a.stage==="nuevo"?0:1)-(b.stage==="nuevo"?0:1));
-            const nNew = myProspects.filter(p => p.stage === "nuevo").length;
+            const myProspects = prospects.filter(p => (!!user.co && p.distributor === user.co) && !ptag(p,"cartera"));
+            const prioOf = p => { const m = (p.noteAdmin||"").match(/Priori(?:t[ée]|dad|ty|tà)\s*(\d)/i); return m ? +m[1] : 9; };
+            const today0 = new Date().toISOString().slice(0,10);
+            const urg = p => { const sg = dtag(p,"seg"); return sg && sg <= today0 ? 0 : p.stage === "interesado" ? 1 : 2; };
+            const active = myProspects.filter(p => p.stage !== "cliente" && p.stage !== "descartado").sort((a,b) => urg(a)-urg(b) || prioOf(a)-prioOf(b) || (a.stage==="nuevo"?0:1)-(b.stage==="nuevo"?0:1));
+            const nNew = myProspects.filter(p => p.stage === "nuevo" && !ptag(p,"cartera")).length;
             const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
             const out = products.filter(p => p.active !== false && p.stock === 0);
             const ic = (d,c,s=13) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>;
@@ -7744,7 +7961,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         </div>
                         <span style={{fontSize:10,fontFamily:BD,fontWeight:800,letterSpacing:.5,color:"#fff",background:st[2],padding:"3px 7px",borderRadius:8,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
                       </div>
-                      {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.wh,border:"1px dashed "+st[2]+"50",borderRadius:7,padding:"6px 8px",marginTop:8,lineHeight:1.4}}>💬 {p.noteAdmin}</div>}
+                      {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.wh,border:"1px dashed "+st[2]+"50",borderRadius:7,padding:"6px 8px",marginTop:8,lineHeight:1.4}}>💬 {linkify(pnote(p.noteAdmin))}</div>}
                       <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:10}}>
                         {phone && <a href={"https://wa.me/"+phone.replace("+","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={mini("#25D366","#fff")}>{ic(ICO.chat)}WhatsApp</a>}
                         {phone && <a href={"tel:"+phone} className="mn-press" style={mini(C.wh,C.dk,C.ln)}>{t("llamar")}</a>}
@@ -7847,7 +8064,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           })()}
 
           {/* COMMISSIONS BREAKDOWN BY QUARTER */}
-          {(() => {
+          {!isDistTeam && (() => {
             const now = new Date();
             const currYear = now.getFullYear();
             const currQuarter = Math.floor(now.getMonth()/3) + 1;
@@ -7961,7 +8178,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           </div>
         </div>
           {/* MIS CONDICIONES (plegadas) */}
-          {(() => {
+          {!isDistTeam && (() => {
             const myRef = user.referralCode || (user.co||"").toLowerCase().replace(/[^a-z0-9]/g,"") || user.email.split("@")[0].toLowerCase();
             const refUrl = "https://b2b.minueopticians.com" + "/?ref=" + myRef;
             const tradeUrl = "https://trade.minueopticians.com/";
@@ -8095,7 +8312,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("totalHT")}</div>
                     <div style={{fontSize:28,fontFamily:DP,fontWeight:400,color:C.dk,lineHeight:1}}>{fmt(finalTotal)} €</div>
-                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>
+                    {!isDistTeam && <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>}
                   </div>
                 </div>
               </div>
@@ -8130,13 +8347,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 </div>
                 {/* FUNDA COLOR SELECTOR DIST */}
                 {(() => {
-                  const fundas = [["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"]];
+                  const fundas = [["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"],["fundaBurdeos","Burdeos","#6d1f2c"],["fundaVerdeBotella","Verde botella","#1f4a36"]];
                   return <div style={{marginBottom:14,padding:"12px 14px",background:C.bg,borderRadius:6,border:"1px solid "+C.ln}}>
                     <div style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,marginBottom:4}}>🎁 Color de funda preferido</div>
                     <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:8}}>Sujeto a disponibilidad</div>
                     <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                       {fundas.map(([k,label,color]) => {
-                        const stock = packStock[k]||0;
+                        const stock = packStock[k] === undefined ? 1 : (packStock[k]||0);
                         const isAvail = stock > 0;
                         const arr = Array.isArray(fundaPref) ? fundaPref : (fundaPref ? [fundaPref] : []);
                         const isSelected = arr.includes(k);
@@ -8149,11 +8366,12 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     </div>
                   </div>;
                 })()}
+                {renderExpoPick()}
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",padding:"12px 0"}}>
                   <div>
                     <div style={{fontSize:11,color:C.gr,fontFamily:BD}}>{t("totalHT")}</div>
                     <div style={{fontSize:30,fontWeight:300,fontFamily:DP,color:C.dk}}>{fmt(finalTotal)} €</div>
-                    <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>
+                    {!isDistTeam && <div style={{fontSize:12,color:C.gn,fontFamily:BD,fontWeight:600,marginTop:4}}>{t("commEst")}: {fmt(finalTotal*(user.commRate||15)/100)} €</div>}
                   </div>
                   <Btn onClick={doOrder} disabled={!cartCl}>{t("passerCmd")}</Btn>
                 </div>
@@ -8178,10 +8396,10 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
               <div style={{fontSize:11,fontFamily:BD,color:C.gr2,letterSpacing:1,fontWeight:600}}>{t("ventesTotal").toUpperCase()}</div>
               <div style={{fontSize:20,fontFamily:DP,color:C.dk,marginTop:4,lineHeight:1}}>{fmt(totalSales)} €</div>
             </div>
-            <div style={{background:CL.gn+"0a",border:"1px solid "+CL.gn+"30",borderRadius:8,padding:"12px 14px"}}>
+            {!isDistTeam && <div style={{background:CL.gn+"0a",border:"1px solid "+CL.gn+"30",borderRadius:8,padding:"12px 14px"}}>
               <div style={{fontSize:11,fontFamily:BD,color:CL.gn,letterSpacing:1,fontWeight:600}}>{t("commission").toUpperCase()} ({user.commRate||0}%)</div>
               <div style={{fontSize:20,fontFamily:DP,color:CL.gn,marginTop:4,lineHeight:1,fontWeight:600}}>{fmt(myComm)} €</div>
-            </div>
+            </div>}
             {pendingOrders.length > 0 && <div style={{background:"#fff8e6",border:"1px solid #f0a02040",borderRadius:8,padding:"12px 14px"}}>
               <div style={{fontSize:11,fontFamily:BD,color:"#c47a00",letterSpacing:1,fontWeight:600}}>{t("enAttente").toUpperCase()}</div>
               <div style={{fontSize:20,fontFamily:DP,color:"#c47a00",marginTop:4,lineHeight:1}}>{fmt(pendingAmount)} €</div>
@@ -8452,6 +8670,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       {view === "d-account" && <Sec title={t("monCompte")}>
         <div style={{maxWidth:640}}>
           {renderPwChange()}
+          {!isDistTeam && renderTeam(user)}
           <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
             <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("datosPersonales")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
@@ -8467,13 +8686,13 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("entreprise")}</div>
                 <div style={{fontSize:13,fontFamily:BD,color:C.dk,padding:"9px 0"}}>{user.co || "—"}</div>
               </div>
-              <div style={{marginBottom:12}}>
+{!isDistTeam && <div style={{marginBottom:12}}>
                 <div style={{fontSize:11,color:C.gr,fontFamily:BD,marginBottom:4}}>{t("commission")}</div>
                 <div style={{fontSize:13,fontFamily:BD,color:C.gn,padding:"9px 0",fontWeight:600}}>{user.commRate||0}%</div>
-              </div>
+              </div>}
             </div>
           </div>
-          <div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
+          {!isDistTeam && <><div style={{background:C.wh,border:"1px solid "+C.ln,borderRadius:8,padding:"20px 22px",marginBottom:16}}>
             <div style={{fontSize:14,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:14}}>{t("donneesEntreprise")}</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 12px"}}>
               {[[t("raisonSociale"),"companyName"],[t("nif"),"taxId"],[t("direccion"),"address"],[t("ville"),"city"],[t("codePostal"),"postalCode"],[t("pays"),"country"],[t("telephone"),"phone"],[t("emailLabel"),"companyEmail"]].map(([l,k]) => (
@@ -8498,7 +8717,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{display:"flex",alignItems:"center",gap:12}}>
             <Btn onClick={() => { dbSaveAccountData(accountData); setAccountSaved(true); }}>{t("sauvegarder")}</Btn>
             {accountSaved && <span style={{fontSize:12,fontFamily:BD,color:C.gn,fontWeight:500}}>{t("donneesSauvees")}</span>}
-          </div>
+          </div></>}
         </div>
       </Sec>}
 
@@ -8623,7 +8842,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
         const daysSince = ts => ts ? Math.floor((now - ts) / 86400000) : null;
 
         // Distributor names (real distributor users)
-        const distributorList = users.filter(u => u.role === "distributor").map(u => (u.co||u.name||"").trim()).filter(Boolean);
+        const distributorList = users.filter(u => u.role === "distributor" && !isTeamUser(u)).map(u => (u.co||u.name||"").trim()).filter(Boolean);
 
         // Helper: which canal bucket
         const channelBucket = (c) => {
@@ -8911,7 +9130,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       {/* ADMIN DISTRIBUTORS */}
       {view === "a-dist" && <Sec title={t("distributeurs")} right={role==="admin" && <Btn small onClick={() => { setModal("newDist"); setEd({name:"",co:"",email:"",pw:"",phone:"",city:"",country:"",commRate:"15",lang:"fr",vatId:"",address:"",iban:"",bic:""}); }}>+ {t("distributeur")}</Btn>}>
         {(() => {
-          const dists = users.filter(u => u.role === "distributor");
+          const dists = users.filter(u => u.role === "distributor" && !isTeamUser(u));
           return dists.length === 0
             ? <div style={{fontSize:12,fontFamily:BD,color:C.gr2,textAlign:"center",padding:30}}>—</div>
             : <div style={{display:"flex",flexDirection:"column",gap:12}}>
@@ -8939,6 +9158,9 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                         <div style={{textAlign:"center"}}><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("commandes")}</div><div style={{fontSize:16,fontFamily:BD,color:C.dk,fontWeight:700}}>{dOrders.length}</div></div>
                         <div style={{textAlign:"center"}}><div style={{fontSize:11,fontFamily:BD,color:C.gr}}>{t("ventesTotal")}</div><div style={{fontSize:16,fontFamily:BD,color:C.gn,fontWeight:700}}>{fmt(dSales)} €</div></div>
                       </div>
+                    </div>
+                    <div style={{padding:"0 20px 14px"}} onClick={e => e.stopPropagation()}>
+                      {teamForm.open === "_v_"+d.co || teamForm.open === d.co ? renderTeam(d) : <button onClick={() => setTeamForm({name:"",login:"",pw:"",msg:"",open:"_v_"+d.co})} style={{padding:"6px 12px",borderRadius:8,border:"1px solid "+C.ln,background:C.bg,fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>👥 {t("equipoShowroom")} ({teamOf(d).length}) · {t("modifier")||"Gestionar"}</button>}
                     </div>
                   </div>
                 );
@@ -9522,14 +9744,36 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       })()}
 
       {view === "a-prospectos" && (() => {
-        const distUsers = users.filter(u => u.role === "distributor");
+        const distUsers = users.filter(u => u.role === "distributor" && !isTeamUser(u));
         const fDist = ed._pDist || "all";
-        const list = prospects.filter(p => fDist === "all" || p.distributor === fDist);
+        const fG = ed._aGroup || "all";
+        const aq = (ed._aQ || "").toLowerCase().trim();
+        const byDist = prospects.filter(p => fDist === "all" || (fDist === "__none" ? !p.distributor : p.distributor === fDist));
+        const gCounts = {}; byDist.forEach(p => { const g = PGROUP(p); gCounts[g] = (gCounts[g]||0) + 1; });
+        const list = byDist.filter(p => (fG === "all" || PGROUP(p) === fG) && (!aq || [p.name,p.city,p.country,p.email,p.phone,p.noteDist,p.noteAdmin].some(v => String(v||"").toLowerCase().includes(aq))));
+        const assign = (arr0, co) => { const carteraN = co ? arr0.filter(p => ptag(p,"cartera")).length : 0; const arr = co ? arr0.filter(p => !ptag(p,"cartera")) : arr0; if (carteraN) toast("🔒 "+carteraN+" "+t("carteraNoSeEnvia")); if (!arr.length) return; const ids = new Set(arr.map(x => x.id)); setProspects(x => x.map(y => ids.has(y.id) ? {...y, distributor:co} : y)); arr.forEach(y => dbPatchProspect(y.id, {distributor:co})); toast("✓ " + arr.length + " → " + (co || t("sinAsignar"))); };
+        const unassigned = prospects.filter(p => !p.distributor).length;
         const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
         return <Sec title={"🎯 " + t("prospectos")} sub="Asigna contactos a tus distribuidores para que los trabajen" right={<div style={{display:"flex",gap:6,flexWrap:"wrap"}}><Btn small ghost onClick={() => { setModal("importProspects"); setEd({impText:"", impDist:distUsers[0]?.co||"", impPreview:[]}); }}>📥 CSV</Btn><Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteAdmin:"",distributor:distUsers[0]?.co||"",_pDist:fDist}); }}>{t("nuevoProspecto")}</Btn></div>}>
           <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
-            {[["all",t("tous")+" ("+prospects.length+")"], ...distUsers.map(u => [u.co, u.co+" ("+prospects.filter(p => p.distributor===u.co).length+")"])].map(([v,l]) =>
-              <button key={v} onClick={() => setEd(p => ({...p, _pDist:v}))} style={{padding:"6px 14px",background:fDist===v?C.dk:"transparent",color:fDist===v?C.bg:C.gr,border:"1px solid "+(fDist===v?C.dk:C.ln),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
+            {[["all",t("tous")+" ("+prospects.length+")"], ["__none","📥 "+t("sinAsignar")+" ("+unassigned+")"], ...distUsers.map(u => [u.co, u.co+" ("+prospects.filter(p => p.distributor===u.co).length+")"])].map(([v,l]) =>
+              <button key={v} onClick={() => setEd(p => ({...p, _pDist:v, _aGroup:"all"}))} style={{padding:"6px 14px",background:fDist===v?C.dk:"transparent",color:fDist===v?C.bg:C.gr,border:"1px solid "+(fDist===v?C.dk:C.ln),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8,marginBottom:12}}>
+            {PGROUPS.map(([g,k,sk,c]) => { const on = fG === g; return <button key={g} className="mn-press" title={t(sk)} onClick={() => setEd(x => ({...x, _aGroup: on ? "all" : g}))} style={{textAlign:"left",padding:"9px 11px",borderRadius:10,cursor:"pointer",background:on?c:c+"10",border:"1.5px solid "+(on?c:c+"40"),color:on?"#fff":C.dk}}>
+              <div style={{fontSize:18,fontFamily:DP,fontWeight:600,lineHeight:1,color:on?"#fff":c}}>{gCounts[g]||0}</div>
+              <div style={{fontSize:11,fontFamily:BD,fontWeight:700,marginTop:3}}>{t(k)}</div>
+            </button>; })}
+          </div>
+          <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center",flexWrap:"wrap"}}>
+            <input value={ed._aQ||""} onChange={e => { const v = e.target.value; setEd(x => ({...x, _aQ:v})); }} placeholder={t("buscarContacto")} style={{flex:"1 1 200px",padding:"9px 12px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk}} />
+            {list.length > 0 && <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap",background:C.bg,border:"1px solid "+C.ln,borderRadius:8,padding:"5px 8px"}}>
+              <span style={{fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk}}>{t("enviarVisibles")} ({list.length}) →</span>
+              <select value="" onChange={e => { const co = e.target.value; if (!co) return; const arr = list.filter(p => p.distributor !== co); askConfirm(t("enviarA")+" "+co+": "+arr.length+" contactos", () => assign(arr, co)); }} style={{padding:"5px 8px",border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:12,background:C.wh,color:C.dk}}>
+                <option value="">{t("enviarA")}…</option>
+                {distUsers.map(u => <option key={u.email} value={u.co}>{u.co}</option>)}
+              </select>
+            </div>}
           </div>
           {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:10,fontSize:12,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> :
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:10}}>
@@ -9538,7 +9782,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8}}>
                   <div style={{minWidth:0}}>
                     <div style={{fontSize:13,fontFamily:BD,fontWeight:700,color:C.dk}}>{p.name}</div>
-                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(", ")||"—"} · <span style={{color:C.bl}}>{p.distributor}</span></div>
+                    <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginTop:2}}>{[p.city,p.country].filter(Boolean).join(", ")||"—"} · <span style={{color:p.distributor?C.bl:"#c47a00"}}>{p.distributor||t("sinAsignar")}</span></div>
                   </div>
                   <Badge l={t(st[1])} c={st[2]} />
                 </div>
@@ -9548,8 +9792,18 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                   {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noreferrer" style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>🌐 Web</a>}
                   {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noreferrer" style={{fontSize:11,fontFamily:BD,color:C.dk,background:C.bg,padding:"4px 10px",borderRadius:12,textDecoration:"none",border:"1px solid "+C.ln}}>📷 {p.instagram}</a>}
                 </div>
-                {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c030",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginTop:10,lineHeight:1.5}}>📝 {p.noteAdmin}</div>}
-                {p.noteDist && <div style={{fontSize:11,fontFamily:BD,color:C.gr,background:C.bg,borderRadius:6,padding:"6px 10px",marginTop:6,lineHeight:1.5}}>💬 {p.distributor}: {p.noteDist}</div>}
+                {p.noteAdmin && <div style={{fontSize:11,fontFamily:BD,color:"#7a5c3a",background:"#e8d5c030",border:"1px solid #e8d5c0",borderRadius:6,padding:"6px 10px",marginTop:10,lineHeight:1.5}}>📝 {linkify(pnote(p.noteAdmin))}</div>}
+                {(() => { const g = PGROUPS.find(x => x[0] === PGROUP(p)); const u = ptag(p,"ult"), n = ptag(p,"ped"), cr = ptag(p,"carrito"), sg = dtag(p,"seg"); return <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:8}}>
+                  {g && <span style={{fontSize:10,fontFamily:BD,fontWeight:700,color:"#fff",background:g[3],padding:"2px 7px",borderRadius:7}}>{t(g[1])}</span>}
+                  {u && <span style={{fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,background:C.bg,padding:"2px 7px",borderRadius:7}}>{t("ultPedido")} {fmtYM(u)}{n ? " · "+n : ""}</span>}
+                  {cr && <span style={{fontSize:10,fontFamily:BD,fontWeight:600,color:"#8e44ad",background:"#8e44ad14",padding:"2px 7px",borderRadius:7}}>🛒 {fmtYM(cr)}</span>}
+                  {sg && <span style={{fontSize:10,fontFamily:BD,fontWeight:600,color:C.dk,background:C.bg,padding:"2px 7px",borderRadius:7}}>📅 {sg.slice(8,10)+"/"+sg.slice(5,7)}</span>}
+                </div>; })()}
+                {plog(p).slice(0,3).map((l,i) => <div key={i} style={{fontSize:11,fontFamily:BD,color:C.gr,background:C.bg,borderRadius:6,padding:"5px 9px",marginTop:5,lineHeight:1.45}}>💬 {l.d && <b>{l.d}{l.who ? " · "+l.who : ""}: </b>}{l.txt}</div>)}
+                <select value={p.distributor||""} onChange={e => assign([p], e.target.value)} style={{width:"100%",marginTop:8,padding:"6px 8px",border:"1px solid "+C.ln,borderRadius:6,fontFamily:BD,fontSize:11,background:p.distributor?C.wh:"#fff7e6",color:C.dk}}>
+                  <option value="">📥 {t("sinAsignar")}</option>
+                  {distUsers.map(u => <option key={u.email} value={u.co}>→ {u.co}</option>)}
+                </select>
                 <div style={{display:"flex",gap:6,marginTop:10}}>
                   <button onClick={() => { setModal("newProspect"); setEd({...p, _editing:true, _pDist:fDist}); }} style={{flex:1,padding:"6px 0",background:"transparent",border:"1px solid "+C.ln,borderRadius:6,fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>{t("modifier")||"Editar"}</button>
                   <button onClick={() => askConfirm(t("confirmarEliminar"), () => { setProspects(x => x.filter(y => y.id !== p.id)); dbDeleteProspect(p.id); })} style={{padding:"6px 12px",background:"transparent",border:"1px solid "+C.rd+"50",borderRadius:6,fontSize:11,fontFamily:BD,color:C.rd,cursor:"pointer"}}>✕</button>
@@ -9560,35 +9814,55 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
       })()}
 
       {view === "d-prospectos" && (() => {
-        const myProspects = prospects.filter(p => p.distributor === user.co);
-        const fStage = ed._pStage || "all";
-        const list = myProspects.filter(p => fStage === "all" || p.stage === fStage);
+        // La cartera actual de Minuë es solo para admin: nunca se muestra al showroom ni a su equipo
+        const myProspects = prospects.filter(p => (!!user.co && p.distributor === user.co) && !ptag(p,"cartera"));
+        const DGROUPS = PGROUPS.filter(([g]) => g !== "cartera");
+        const fGroup = ed._pGroup || "all";
+        const q = (ed._pQ || "").toLowerCase().trim();
+        const prio = p => { const m = (p.noteAdmin||"").match(/Priori(?:t[ée]|dad|ty|tà)\s*(\d)/i); return m ? +m[1] : 9; };
+        const ult = p => ptag(p,"ult") || ptag(p,"carrito") || "";
+        const segOf = p => { const v = dtag(p,"seg"); return v && v <= new Date().toISOString().slice(0,10) ? 0 : 1; };
+        const sorted = arr => [...arr].sort((a,b) => segOf(a)-segOf(b) || prio(a)-prio(b) || ult(b).localeCompare(ult(a)) || (a.name||"").localeCompare(b.name||""));
+        const matches = p => !q || [p.name,p.city,p.email,p.noteDist,pnote(p.noteAdmin)].some(v => String(v||"").toLowerCase().includes(q));
+        const counts = {}; myProspects.forEach(p => { const g = PGROUP(p); counts[g] = (counts[g]||0) + 1; });
         const stageOf = s => PSTAGES.find(x => x[0] === s) || PSTAGES[0];
-        return <Sec title={"🎯 " + t("prospectos")} sub={t("prospectosSub")} right={<Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteDist:"",distributor:user.co,_byDist:true}); }}>{t("nuevoProspecto")}</Btn>}>
-          <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
-            {[["all",t("tous")+" ("+myProspects.length+")"], ...PSTAGES.map(([v,k,col]) => [v, t(k)+" ("+myProspects.filter(p => p.stage===v).length+")"])].map(([v,l]) =>
-              <button key={v} onClick={() => setEd(p => ({...p, _pStage:v}))} style={{padding:"6px 14px",background:fStage===v?C.dk:"transparent",color:fStage===v?C.bg:C.gr,border:"1px solid "+(fStage===v?C.dk:C.ln),cursor:"pointer",fontSize:12,fontFamily:BD,fontWeight:600,borderRadius:20}}>{l}</button>)}
-          </div>
-          {list.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12,fontSize:13,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> : (() => {
-            const open = ed._pOpen || {};
-            const toggle = id => setEd(x => ({...x, _pOpen:{...(x._pOpen||{}), [id]:!(x._pOpen||{})[id]}}));
-            const setStage = (p, v) => { const np = {...p, stage:v}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); };
-            const chip = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,fontSize:12,fontFamily:BD,fontWeight:600,color:fg,background:bg,padding:"7px 11px",borderRadius:8,textDecoration:"none",border:"1px solid "+(bd||bg)});
-            const prio = p => { const m = (p.noteAdmin||"").match(/Priorit[ée]\s*(\d)/i); return m ? +m[1] : 9; };
-            const viaMinue = list.filter(p => (p.noteAdmin||"").trim()).sort((a,b) => prio(a)-prio(b) || (a.name||"").localeCompare(b.name||""));
-            const mine = list.filter(p => !(p.noteAdmin||"").trim());
-            const renderCard = p => { const st = stageOf(p.stage); const isOpen = !!open[p.id]; const phone = (p.phone||"").replace(/[^0-9+]/g,""); return (
-              <div key={p.id} className="mn-lift" style={{background:"linear-gradient(150deg,"+st[2]+"0d,"+C.wh+" 60%)",border:"1px solid "+st[2]+"35",borderLeft:"4px solid "+st[2],borderRadius:12,overflow:"hidden"}}>
-                <button onClick={() => toggle(p.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left"}}>
-                  <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>{p.name}{(p.noteAdmin||"").trim() && <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:"#fff",background:CL.dk,padding:"2px 7px",borderRadius:8}}>{t("viaMinue").toUpperCase()}</span>}{prio(p) < 9 && <span style={{fontSize:10,fontWeight:800,color:"#fff",background:[ACC.wine,ACC.gold,ACC.sea][prio(p)-1]||C.gr,padding:"2px 7px",borderRadius:8}}>P{prio(p)}</span>}</div>
-                    <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:3}}>{[p.city,p.country].filter(Boolean).join(" · ")||"—"}</div>
-                  </div>
-                  <span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:"#fff",background:st[2],padding:"4px 9px",borderRadius:9,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
-                  <span style={{fontSize:14,color:C.gr,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
-                </button>
-                {isOpen && <div className="mn-fade" style={{padding:"0 16px 16px"}}>
-                  {p.noteAdmin && <div style={{fontSize:13,fontFamily:BD,color:CL.dk,background:ACC.terra+"14",border:"1px solid "+ACC.terra+"40",borderRadius:10,padding:"10px 12px",marginBottom:12,lineHeight:1.55}}><div style={{fontSize:11,fontWeight:800,letterSpacing:.8,color:ACC.terra,marginBottom:4}}>{t("notaMinue").toUpperCase()}</div>{p.noteAdmin}</div>}
+        const open = ed._pOpen || {};
+        const toggle = id => setEd(x => ({...x, _pOpen:{...(x._pOpen||{}), [id]:!(x._pOpen||{})[id]}}));
+        const setStage = (p, v) => { setProspects(x => x.map(y => y.id===p.id?{...y, stage:v}:y)); dbPatchProspect(p.id, {stage:v}); };
+        const chip = (bg,fg,bd) => ({display:"inline-flex",alignItems:"center",gap:5,fontSize:12,fontFamily:BD,fontWeight:600,color:fg,background:bg,padding:"7px 11px",borderRadius:8,textDecoration:"none",border:"1px solid "+(bd||bg)});
+        const today = new Date().toISOString().slice(0,10);
+        const saveNd = (p, nd) => { setProspects(x => x.map(y => y.id===p.id?{...y, noteDist:nd}:y)); dbPatchProspect(p.id, {note_dist:nd}); };
+        const addNote = p => { const txt = String(((ed._nt||{})[p.id])||"").trim(); if (!txt) return; const d = new Date(); const line = "[" + String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0") + "/" + String(d.getFullYear()).slice(2) + " · " + (user.name||user.co) + "] " + txt.replace(/\n+/g," "); const rest = setDtag(p.noteDist, "seg", ""); saveNd(p, setDtag(line + (rest ? "\n" + rest : ""), "seg", dtag(p,"seg"))); setEd(x => ({...x, _nt:{...(x._nt||{}), [p.id]:""}})); toast("✓ "+t("notaGuardada")); };
+        const TRADE_URL = "https://trade.minueopticians.com/";
+        const sendTrade = (p, via) => {
+          const msg = t("msgCatalogo") + " " + TRADE_URL;
+          const phone = (p.phone||"").replace(/[^0-9]/g,"");
+          if (via === "WhatsApp") window.open("https://wa.me/" + phone + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+          else window.location.href = "mailto:" + (p.email||"") + "?subject=" + encodeURIComponent("MINUË · " + t("catalogoTrade")) + "&body=" + encodeURIComponent(msg);
+          const d = new Date(); const line = "[" + String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0") + "/" + String(d.getFullYear()).slice(2) + " · " + (user.name||user.co) + "] 📤 " + t("tradeEnviado") + " " + via;
+          const rest = setDtag(p.noteDist, "seg", ""); const nd = setDtag(line + (rest ? "\n" + rest : ""), "seg", dtag(p,"seg"));
+          setProspects(x => x.map(y => y.id===p.id ? {...y, noteDist:nd, stage: y.stage === "nuevo" ? "contactado" : y.stage} : y));
+          dbPatchProspect(p.id, p.stage === "nuevo" ? {note_dist:nd, stage:"contactado"} : {note_dist:nd});
+        };
+        const renderCard = (p, gc) => { const st = stageOf(p.stage); const isOpen = !!open[p.id]; const phone = (p.phone||"").replace(/[^0-9+]/g,""); const u = ptag(p,"ult"), n = ptag(p,"ped"), cr = ptag(p,"carrito"); const note = pnote(p.noteAdmin); const pr = prio(p); const seg = dtag(p,"seg"); const due = seg && seg <= today; const crOld = cr && (monthsSince(cr)||0) > 12; const logs = plog(p); return (
+          <div key={p.id} className="mn-lift" style={{background:"linear-gradient(150deg,"+gc+"0d,"+C.wh+" 60%)",border:"1px solid "+gc+"35",borderLeft:"4px solid "+gc,borderRadius:12,overflow:"hidden"}}>
+            <button onClick={() => toggle(p.id)} style={{width:"100%",display:"flex",alignItems:"center",gap:10,padding:"14px 16px",background:"transparent",border:"none",cursor:"pointer",textAlign:"left"}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:14,fontFamily:BD,fontWeight:700,color:C.dk,display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>{p.name}{pr < 4 && <span style={{fontSize:10,fontWeight:800,color:"#fff",background:[ACC.wine,ACC.gold,ACC.sea][pr-1],padding:"2px 7px",borderRadius:8}}>P{pr}</span>}{note && <span style={{fontSize:10,fontWeight:800,letterSpacing:.5,color:"#fff",background:CL.dk,padding:"2px 7px",borderRadius:8}}>{t("viaMinue").toUpperCase()}</span>}</div>
+                <div style={{fontSize:12,fontFamily:BD,color:C.gr,marginTop:3}}>{[p.city,p.country].filter(Boolean).join(" · ")||"—"}</div>
+                {(u || cr || seg || logs.length > 0) && <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
+                  {u && <span style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.dk,background:gc+"18",padding:"3px 8px",borderRadius:7}}>{t("ultPedido")}: {fmtYM(u)}{n ? " · "+n+" "+t("pedidosN") : ""}</span>}
+                  {cr && <span style={{fontSize:11,fontFamily:BD,fontWeight:600,color:crOld?C.gr:"#8e44ad",background:(crOld?C.gr:"#8e44ad")+"18",padding:"3px 8px",borderRadius:7}}>🛒 {crOld ? t("carritoAntiguo") : t("carritoLbl")} {fmtYM(cr)}</span>}
+                  {seg && <span style={{fontSize:11,fontFamily:BD,fontWeight:700,color:due?"#fff":C.dk,background:due?ACC.wine:C.bg,border:"1px solid "+(due?ACC.wine:C.ln),padding:"3px 8px",borderRadius:7}}>📅 {due ? t("tocaHoy") : t("proxSeguimiento")} {seg.slice(8,10)+"/"+seg.slice(5,7)}</span>}
+                  {logs.length > 0 && <span style={{fontSize:11,fontFamily:BD,fontWeight:600,color:C.gr,background:C.bg,padding:"3px 8px",borderRadius:7}}>💬 {logs.length}{logs[0].d ? " · "+logs[0].d : ""}</span>}
+                </div>}
+              </div>
+              <span style={{fontSize:11,fontFamily:BD,fontWeight:800,color:"#fff",background:st[2],padding:"4px 9px",borderRadius:9,whiteSpace:"nowrap"}}>{t(st[1]).toUpperCase()}</span>
+              <span style={{fontSize:14,color:C.gr,transform:isOpen?"rotate(180deg)":"none",transition:"transform .2s"}}>▾</span>
+            </button>
+            {isOpen && <div className="mn-fade" style={{padding:"0 16px 16px"}}>
+              {ptag(p,"cartera") && <div style={{fontSize:13,fontFamily:BD,fontWeight:600,color:"#1f4e79",background:"#1f4e7912",border:"1px solid #1f4e7940",borderRadius:10,padding:"10px 12px",marginBottom:12}}>🔒 {t("carteraAviso")}</div>}
+              {note && <div style={{fontSize:13,fontFamily:BD,color:CL.dk,background:ACC.terra+"14",border:"1px solid "+ACC.terra+"40",borderRadius:10,padding:"10px 12px",marginBottom:12,lineHeight:1.55}}><div style={{fontSize:11,fontWeight:800,letterSpacing:.8,color:ACC.terra,marginBottom:4}}>{t("notaMinue").toUpperCase()}</div>{linkify(note)}</div>}
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
                     {phone && <a href={"https://wa.me/"+phone.replace("+","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip("#25D366","#fff")}>WhatsApp</a>}
                     {phone && <a href={"tel:"+phone} className="mn-press" style={chip(C.wh,C.dk,C.ln)}>📞 {p.phone}</a>}
@@ -9596,20 +9870,56 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
                     {p.web && <a href={p.web.startsWith("http")?p.web:"https://"+p.web} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip(C.wh,C.dk,C.ln)}>🌐 Web</a>}
                     {p.instagram && <a href={"https://instagram.com/"+p.instagram.replace("@","")} target="_blank" rel="noopener noreferrer" className="mn-press" style={chip(C.wh,C.dk,C.ln)}>📷 {p.instagram}</a>}
                   </div>
+                  {(phone || p.email) && <div style={{background:ACC.terra+"10",border:"1px solid "+ACC.terra+"35",borderRadius:10,padding:"10px 12px",marginBottom:12}}>
+                    <div style={{fontSize:12,fontFamily:BD,fontWeight:700,color:C.dk,marginBottom:6}}>⚡ {t("enviarTrade")} <span style={{fontWeight:500,color:C.gr}}>· {t("catalogoTradeDesc")}</span></div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {phone && <button className="mn-press" onClick={() => sendTrade(p, "WhatsApp")} style={{...chip("#25D366","#fff"),cursor:"pointer"}}>WhatsApp</button>}
+                      {p.email && <button className="mn-press" onClick={() => sendTrade(p, "email")} style={{...chip(C.wh,C.dk,C.ln),cursor:"pointer"}}>✉ Email</button>}
+                    </div>
+                  </div>}
                   <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("estadoLabel").toUpperCase()}</div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
                     {PSTAGES.map(([v,k,col]) => { const on = p.stage===v; return <button key={v} className="mn-press" onClick={() => setStage(p, v)} style={{padding:"7px 12px",borderRadius:16,border:"1.5px solid "+col,background:on?col:"transparent",color:on?"#fff":col,fontSize:12,fontFamily:BD,fontWeight:700,cursor:"pointer"}}>{t(k)}</button>; })}
                   </div>
-                  <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("misNotas").toUpperCase()}</div>
-                  <textarea defaultValue={p.noteDist} onBlur={e => { if(e.target.value !== p.noteDist){ const np = {...p, noteDist:e.target.value}; setProspects(x => x.map(y => y.id===p.id?np:y)); dbUpdateProspect(np); toast(t("borradorGuardado")||"Guardado"); } }} rows={3} style={{width:"100%",padding:"10px 12px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
-                </div>}
-              </div>); };
-            const block = (title, sub, arr, c) => arr.length > 0 && <div style={{marginBottom:20}}>
-              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><span style={{width:10,height:10,borderRadius:5,background:c}} /><span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{title} · {arr.length}</span>{sub && <span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{sub}</span>}</div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:10,alignItems:"start"}}>{arr.map(renderCard)}</div>
-            </div>;
-            return <>{block(t("contactosViaMinue"), t("contactosViaMinueSub"), viaMinue, ACC.terra)}{block(t("misProspectos"), "", mine, ACC.sea)}</>;
-          })()}
+                  <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("proxSeguimiento").toUpperCase()}</div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:12}}>
+                    <input type="date" value={seg} onChange={e => saveNd(p, setDtag(p.noteDist, "seg", e.target.value))} style={{padding:"8px 10px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk}} />
+                    {[[3,"+3d"],[7,"+1 sem"],[30,"+1 mes"]].map(([dd,l]) => <button key={dd} className="mn-press" onClick={() => { const d = new Date(); d.setDate(d.getDate()+dd); saveNd(p, setDtag(p.noteDist, "seg", d.toISOString().slice(0,10))); }} style={{padding:"7px 10px",borderRadius:8,border:"1px solid "+C.ln,background:C.wh,fontSize:12,fontFamily:BD,fontWeight:600,color:C.dk,cursor:"pointer"}}>{l}</button>)}
+                    {seg && <button onClick={() => saveNd(p, setDtag(p.noteDist, "seg", ""))} style={{padding:"7px 10px",borderRadius:8,border:"none",background:"transparent",fontSize:12,fontFamily:BD,color:C.gr,cursor:"pointer"}}>✕</button>}
+                  </div>
+                  <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("añadirNota").toUpperCase()}</div>
+                  <div style={{display:"flex",gap:6,marginBottom:10}}>
+                    <textarea value={(ed._nt||{})[p.id]||""} onChange={e => { const v = e.target.value; setEd(x => ({...x, _nt:{...(x._nt||{}), [p.id]:v}})); }} rows={2} placeholder={t("notaPh")} style={{flex:1,padding:"10px 12px",border:"1px solid "+C.ln,borderRadius:8,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk,boxSizing:"border-box",resize:"vertical"}} />
+                    <button className="mn-press" onClick={() => addNote(p)} disabled={!String((ed._nt||{})[p.id]||"").trim()} style={{padding:"0 14px",borderRadius:8,border:"none",background:gc,color:"#fff",fontSize:13,fontFamily:BD,fontWeight:700,cursor:"pointer",opacity:String((ed._nt||{})[p.id]||"").trim()?1:.4}}>＋</button>
+                  </div>
+                  {logs.length > 0 && <div style={{marginBottom:10}}>
+                    <div style={{fontSize:11,fontFamily:BD,fontWeight:700,letterSpacing:.8,color:C.gr,marginBottom:6}}>{t("historial").toUpperCase()}</div>
+                    {logs.map((l,i) => <div key={i} style={{display:"flex",gap:8,padding:"7px 0",borderTop:i?"1px solid "+C.ln:"none",fontSize:13,fontFamily:BD,color:C.dk,lineHeight:1.45}}>
+                      <span style={{width:6,height:6,borderRadius:3,background:gc,marginTop:7,flexShrink:0}} />
+                      <div>{l.d && <div style={{fontSize:11,color:C.gr,fontWeight:600}}>{l.d}{l.who ? " · "+l.who : ""}</div>}{l.txt}</div>
+                    </div>)}
+                  </div>}
+                  <button onClick={() => { setModal("newProspect"); setEd({...p, _editing:true, _byDist:true}); }} style={{padding:"7px 12px",borderRadius:8,border:"1px solid "+C.ln,background:"transparent",fontSize:12,fontFamily:BD,fontWeight:600,color:C.gr,cursor:"pointer"}}>✎ {t("editarDatos")}</button>
+</div>}
+          </div>); };
+        const groups = DGROUPS.filter(([g]) => fGroup === "all" || fGroup === g);
+        const shown = groups.map(([g,k,sk,c]) => [g,k,sk,c,sorted(myProspects.filter(p => PGROUP(p) === g && matches(p)))]).filter(x => x[4].length);
+        return <Sec title={"🎯 " + t("prospectos")} sub={t("prospectosSub")} right={<Btn small onClick={() => { setModal("newProspect"); setEd({name:"",city:"",country:"",email:"",phone:"",web:"",instagram:"",noteDist:"",distributor:user.co,_byDist:true}); }}>{t("nuevoProspecto")}</Btn>}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(150px,1fr))",gap:8,marginBottom:12}}>
+            {DGROUPS.map(([g,k,sk,c]) => { const on = fGroup === g; return <button key={g} className="mn-press" onClick={() => setEd(x => ({...x, _pGroup: on ? "all" : g}))} style={{textAlign:"left",padding:"10px 12px",borderRadius:12,cursor:"pointer",background:on?c:c+"10",border:"1.5px solid "+(on?c:c+"40"),color:on?"#fff":C.dk}}>
+              <div style={{fontSize:20,fontFamily:DP,fontWeight:600,lineHeight:1,color:on?"#fff":c}}>{counts[g]||0}</div>
+              <div style={{fontSize:12,fontFamily:BD,fontWeight:700,marginTop:4}}>{t(k)}</div>
+            </button>; })}
+          </div>
+          <div style={{display:"flex",gap:8,marginBottom:16,alignItems:"center",flexWrap:"wrap"}}>
+            <input value={ed._pQ||""} onChange={e => { const v = e.target.value; setEd(x => ({...x, _pQ:v})); }} placeholder={t("buscarContacto")} style={{flex:"1 1 200px",padding:"10px 14px",border:"1px solid "+C.ln,borderRadius:10,fontFamily:BD,fontSize:13,background:C.wh,color:C.dk}} />
+            {fGroup !== "all" && <button onClick={() => setEd(x => ({...x, _pGroup:"all"}))} style={{padding:"9px 14px",borderRadius:10,border:"1px solid "+C.ln,background:"transparent",fontSize:12,fontFamily:BD,fontWeight:600,color:C.gr,cursor:"pointer"}}>{t("tous")} ({myProspects.length}) ✕</button>}
+          </div>
+          {shown.length === 0 ? <div style={{textAlign:"center",padding:36,background:C.wh,border:"1px dashed "+C.ln,borderRadius:12,fontSize:13,fontFamily:BD,color:C.gr2}}>{t("sinProspectos")}</div> :
+            shown.map(([g,k,sk,c,arr]) => <div key={g} style={{marginBottom:22}}>
+              <div style={{display:"flex",alignItems:"baseline",gap:10,marginBottom:10,flexWrap:"wrap"}}><span style={{width:10,height:10,borderRadius:5,background:c,alignSelf:"center"}} /><span style={{fontSize:15,fontFamily:BD,fontWeight:700,color:C.dk}}>{t(k)} · {arr.length}</span><span style={{fontSize:12,fontFamily:BD,color:C.gr}}>{t(sk)}</span></div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:10,alignItems:"start"}}>{arr.map(p => renderCard(p, c))}</div>
+            </div>)}
         </Sec>;
       })()}
 
@@ -9881,7 +10191,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
             const clientEntry = hasClientEntry;
             return (
             <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderBottom:"1px solid "+C.bg2,cursor:"pointer",opacity:u.active===false?0.6:1,flexWrap:"wrap"}} onClick={() => { setModal("editUser"); setEd({...u, origEmail: u.email}); }}>
-              <Badge l={u.role === "distributor" ? t("distributeur") : u.role === "team" ? t("employe") : t("client")} c={u.role === "distributor" ? C.bl : u.role === "team" ? "#a8c8e8" : C.gn} />
+              <Badge l={u.role === "distributor" ? (isTeamUser(u) ? t("equipoShowroom")+" · "+(u.co||"") : t("distributeur")) : u.role === "team" ? t("employe") : t("client")} c={u.role === "distributor" ? C.bl : u.role === "team" ? "#a8c8e8" : C.gn} />
               <div style={{flex:1,minWidth:140}}>
                 <div style={{display:"flex",alignItems:"baseline",gap:6,flexWrap:"wrap"}}>
                   <span style={{fontSize:12,fontWeight:600,fontFamily:BD,color:C.dk}}>{u.name}</span>
@@ -10162,7 +10472,7 @@ Devuelve SOLO ese bloque, sin texto adicional.`;
           <div style={{fontSize:12,fontFamily:BD,color:C.dk,fontWeight:700,marginBottom:8}}>🎨 Fundas por color</div>
           <div style={{fontSize:11,fontFamily:BD,color:C.gr,marginBottom:8}}>Disponibilidad de fundas de color para los pedidos de clientes</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:8,marginBottom:20}}>
-            {[["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"]].map(([k,label,color]) => (
+            {[["fundaCrema","Crema","#f0e8d9"],["fundaPistacho","Pistacho","#a8c89a"],["fundaBabyBlue","Baby Blue","#a8c8d4"],["fundaYellowAmalfi","Amalfi","#f0d878"],["fundaNaranja","Naranja","#e89858"],["fundaBurdeos","Burdeos","#6d1f2c"],["fundaVerdeBotella","Verde botella","#1f4a36"]].map(([k,label,color]) => (
               <div key={k} style={{background:C.wh,border:"1px solid "+(packStock[k]<10?C.rd+"50":packStock[k]<20?C.yl+"50":C.ln),borderRadius:8,padding:"14px",textAlign:"center"}}>
                 <div style={{width:36,height:36,borderRadius:18,background:color,border:"2px solid "+C.ln,margin:"0 auto 8px"}}></div>
                 <div style={{fontSize:22,fontFamily:BD,fontWeight:700,color:packStock[k]<10?C.rd:packStock[k]<20?C.yl:C.gn}}>{packStock[k]||0}</div>
